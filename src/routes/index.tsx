@@ -14,7 +14,7 @@ import {
   UmrahSection,
 } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
-import heroImage from "@/assets/muscat-hero.jpg";
+import heroImage from "@/assets/muscat-hero.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({

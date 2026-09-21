@@ -18,9 +18,9 @@ import type { ReactNode } from "react";
 
 import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
 import portraitAsset from "@/assets/bangis-portrait-source.png.asset.json";
-import heroImage from "@/assets/muscat-hero.jpg";
-import resortImage from "@/assets/muscat-resort.jpg";
-import businessImage from "@/assets/business-website.jpg";
+import heroImage from "@/assets/muscat-hero.webp";
+import resortImage from "@/assets/muscat-resort.webp";
+import businessImage from "@/assets/business-website.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -87,7 +87,7 @@ export function PillarsSection() {
       <div className="mx-auto grid max-w-7xl gap-3 px-4 py-5 sm:grid-cols-2 sm:px-6 lg:-mt-8 lg:grid-cols-6 lg:rounded-lg lg:bg-card lg:px-5 lg:shadow-platform">
         {categoryCards.map((item) => (
           <Link key={item.title} to={item.href} className="group grid grid-cols-[auto_minmax(0,1fr)] items-center gap-3 rounded-md border border-border bg-card p-3 transition hover:-translate-y-0.5 hover:border-brand-cyan/50 hover:shadow-platform">
-            <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full text-primary-foreground ${item.tone}`}><item.icon className="h-5 w-5" /></span>
+            <span className={`grid h-10 w-10 shrink-0 place-items-center rounded-full ${item.tone} ${item.title === "Umrah" ? "text-brand-ink" : "text-primary-foreground"}`}><item.icon className="h-5 w-5" /></span>
             <span className="min-w-0"><strong className="block truncate text-sm text-foreground">{item.title}</strong><span className="block truncate text-[11px] text-muted-foreground">{item.detail}</span></span>
           </Link>
         ))}
@@ -184,7 +184,7 @@ export function ContactSection() {
       <div className="absolute inset-0 workspace-grid opacity-35" />
       <div className="relative mx-auto grid max-w-7xl gap-7 px-4 text-center sm:px-6 lg:px-8">
         <div><p className="text-xs font-bold uppercase text-brand-cyan">Contact</p><h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Let’s build something meaningful together.</h2><p className="mx-auto mt-3 max-w-2xl text-sm text-primary-foreground/75">Have a project, idea or partnership in mind? I’d love to hear from you.</p></div>
-        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">Contact Me <ArrowRight /></Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"><MessageCircle /> WhatsApp</Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10"><Mail /> Email</Button></div>
+        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">Contact Me <ArrowRight /></Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><MessageCircle /> WhatsApp</Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><Mail /> Email</Link></Button></div>
       </div>
     </section>
   );
