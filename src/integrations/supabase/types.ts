@@ -209,6 +209,120 @@ export type Database = {
         }
         Relationships: []
       }
+      member_documents: {
+        Row: {
+          byte_size: number
+          created_at: string
+          document_type: string
+          id: string
+          mime_type: string
+          original_name: string
+          review_status: string
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          byte_size: number
+          created_at?: string
+          document_type: string
+          id?: string
+          mime_type: string
+          original_name: string
+          review_status?: string
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          byte_size?: number
+          created_at?: string
+          document_type?: string
+          id?: string
+          mime_type?: string
+          original_name?: string
+          review_status?: string
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      notifications: {
+        Row: {
+          body: string | null
+          category: string
+          created_at: string
+          created_by: string | null
+          id: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string | null
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      profiles: {
+        Row: {
+          avatar_path: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          email: string
+          full_name: string
+          id: string
+          is_active: boolean
+          phone: string | null
+          preferred_language: string
+          updated_at: string
+        }
+        Insert: {
+          avatar_path?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id: string
+          is_active?: boolean
+          phone?: string | null
+          preferred_language?: string
+          updated_at?: string
+        }
+        Update: {
+          avatar_path?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          email?: string
+          full_name?: string
+          id?: string
+          is_active?: boolean
+          phone?: string | null
+          preferred_language?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       site_settings: {
         Row: {
           company_name: string
@@ -310,6 +424,8 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      claim_first_super_admin: { Args: never; Returns: boolean }
+      ensure_member_role: { Args: never; Returns: undefined }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -318,6 +434,7 @@ export type Database = {
         Returns: boolean
       }
       is_content_admin: { Args: { _user_id: string }; Returns: boolean }
+      is_platform_admin: { Args: { _user_id: string }; Returns: boolean }
     }
     Enums: {
       app_role:
