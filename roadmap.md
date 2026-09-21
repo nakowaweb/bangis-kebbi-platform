@@ -18,4 +18,4 @@
 
 - [x] Add the navy quick-action navigation directly below the hero
 - [x] Include visible icons and labels for Home, Services, Projects, Blog, Umrah, BK Foundations, and Community
-- [ ] Verify active states, navigation, and small-screen layout
+- [x] Verify active states, navigation, and small-screen layout
