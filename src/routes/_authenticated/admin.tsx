@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, FileText, History, Image, LogOut, Plus, Save, Settings, ShieldCheck, Upload } from "lucide-react";
+import { Archive, FileText, History, Image, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
+import { listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
@@ -105,6 +106,7 @@ function AdminPage() {
         <Tabs defaultValue="content">
           <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-card p-1">
             <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
+            <TabsTrigger value="members"><Users /> Members</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
             <TabsTrigger value="media"><Image /> Media</TabsTrigger>
             <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
@@ -128,6 +130,7 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
+          <TabsContent value="members"><MembersManager /></TabsContent>
           <TabsContent value="audit"><AuditLog rows={workspace.data?.audit ?? []} /></TabsContent>
         </Tabs>
       </div>
