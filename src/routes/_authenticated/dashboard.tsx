@@ -115,6 +115,7 @@ function DashboardPage() {
             <TabsTrigger value="projects"><FolderKanban /> Projects</TabsTrigger>
             <TabsTrigger value="umrah"><CalendarCheck /> Umrah</TabsTrigger>
             <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
+            <TabsTrigger value="community"><UsersRound /> Community</TabsTrigger>
             <TabsTrigger value="activities"><BriefcaseBusiness /> Activities</TabsTrigger>
             <TabsTrigger value="notifications"><Bell /> Notifications{unread.length ? ` (${unread.length})` : ""}</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
