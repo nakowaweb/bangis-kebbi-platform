@@ -13,3 +13,9 @@
 - [x] Shorten and reorder the homepage around the platform’s core activities
 - [x] Add a lightweight latest activities/video preview without loading video files
 - [x] Verify desktop/mobile rendering, links, image loading, and browser errors
+
+# Homepage Quick Actions
+
+- [x] Add the navy quick-action navigation directly below the hero
+- [x] Include visible icons and labels for Home, Services, Projects, Blog, Umrah, BK Foundations, and Community
+- [ ] Verify active states, navigation, and small-screen layout
