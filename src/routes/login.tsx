@@ -25,6 +25,7 @@ function LoginPage() {
           <Input type="email" placeholder="Email" aria-label="Email" required />
           <Input type="password" placeholder="Password" aria-label="Password" required />
           <Button type="submit" className="h-12">Login</Button>
+          <Link to="/forgot-password" className="text-sm font-semibold text-brand-cyan">Forgot password?</Link>
           <Link to="/register" className="text-sm font-semibold text-brand-cyan">Create an account</Link>
         </form>
       </SectionShell>
