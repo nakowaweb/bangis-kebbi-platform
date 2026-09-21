@@ -29,7 +29,13 @@ function RegisterPage() {
       password: String(form.get("password")),
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
-        data: { full_name: String(form.get("fullName")), phone: String(form.get("phone")), country: String(form.get("country")) },
+        data: {
+          full_name: String(form.get("fullName")),
+          phone: String(form.get("phone")),
+          country: String(form.get("country")),
+          city: String(form.get("city")),
+          preferred_language: String(form.get("preferredLanguage") || "en"),
+        },
       },
     });
     setBusy(false);
