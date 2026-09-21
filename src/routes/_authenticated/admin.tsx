@@ -299,3 +299,73 @@ function MembersManager() {
     </section>
   );
 }
+
+function AdminOverview() {
+  const loadOverview = useServerFn(getAdminOverview);
+  const overview = useQuery({ queryKey: ["admin-overview"], queryFn: () => loadOverview() });
+  if (overview.isPending) return <Skeleton className="h-64 w-full" />;
+  if (overview.isError) return <EmptyState text={overview.error.message} />;
+  const data = overview.data;
+  const cards = [
+    { title: "Members", value: `${data.members}`, note: `${data.activeMembers} active` },
+    { title: "Content items", value: `${data.entries}`, note: `${data.publishedEntries} published` },
+    { title: "Media files", value: `${data.media}`, note: "Private media library" },
+    { title: "Notifications", value: `${data.notifications}`, note: "Delivered to members" },
+  ];
+  return (
+    <section className="grid gap-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => (
+          <Card key={card.title}>
+            <CardHeader className="pb-2"><CardDescription>{card.title}</CardDescription><CardTitle className="font-display text-3xl">{card.value}</CardTitle></CardHeader>
+            <CardContent><p className="text-xs text-muted-foreground">{card.note}</p></CardContent>
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <CardHeader><CardTitle className="text-lg">Recent administrator activity</CardTitle><CardDescription>The five most recent recorded actions.</CardDescription></CardHeader>
+        <CardContent className="grid gap-3">
+          {data.recent.length === 0 ? <p className="text-sm text-muted-foreground">No administrator actions recorded yet.</p> : data.recent.map((row) => (
+            <div key={row.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 last:border-b-0 last:pb-0">
+              <span className="text-sm"><strong className="capitalize">{row.action}</strong> · {row.content_type.replaceAll("_", " ")}{row.content_label ? ` · ${row.content_label}` : ""}</span>
+              <time className="text-xs text-muted-foreground">{new Date(row.created_at).toLocaleString()}</time>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+
+function NotificationsComposer() {
+  const send = useServerFn(sendNotification);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [category, setCategory] = useState<"general" | "platform" | "community" | "umrah" | "foundation">("general");
+  const [audience, setAudience] = useState<"all" | "active">("active");
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const result = await send({ data: { title, body, category, audience } });
+      toast.success(result.sent === 0 ? "No members match this audience yet." : `Announcement sent to ${result.sent} member(s).`);
+      setTitle(""); setBody("");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Announcement could not be sent"); }
+    setBusy(false);
+  }
+
+  return (
+    <form onSubmit={submit} className="mx-auto grid max-w-2xl gap-5 rounded-lg border border-border bg-card p-6">
+      <div><h2 className="font-display text-xl font-bold">Send an announcement</h2><p className="mt-1 text-sm text-muted-foreground">Members see announcements in their dashboard. Each send is recorded in the audit log.</p></div>
+      <Field label="Title"><Input value={title} maxLength={160} required onChange={(event) => setTitle(event.target.value)} /></Field>
+      <Field label="Message"><Textarea className="min-h-28" value={body} maxLength={2000} onChange={(event) => setBody(event.target.value)} /></Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Category"><Select value={category} onValueChange={(value) => setCategory(value as typeof category)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["general", "platform", "community", "umrah", "foundation"].map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></Field>
+        <Field label="Audience"><Select value={audience} onValueChange={(value) => setAudience(value as typeof audience)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active members</SelectItem><SelectItem value="all">All members</SelectItem></SelectContent></Select></Field>
+      </div>
+      <Button type="submit" disabled={busy || title.trim().length < 2}><Bell /> {busy ? "Sending…" : "Send announcement"}</Button>
+    </form>
+  );
+}
