@@ -209,7 +209,7 @@ function SiteFooter() {
           <h2 className="text-sm font-bold uppercase text-primary">Quick Links</h2>
           <div className="mt-4 grid gap-2 text-sm">
             {groups.slice(0, 4).map(([label, href]) => (
-              <Link key={href} to={href} className="text-primary-foreground/80 transition-colors hover:text-brand-cyan">
+              <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {label}
               </Link>
             ))}
