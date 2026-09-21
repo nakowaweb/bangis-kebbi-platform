@@ -31,3 +31,11 @@
 - [x] Audit logging for member and role changes
 - [x] Verified pages, protected routes and mobile layout in a browser
 - [ ] Umrah applications, Foundation contributions and payments — later modules (not started by design)
+
+# Phase 2 — Step 1 completion
+
+- [x] Admin dashboard overview with real counts and recent administrator activity
+- [x] Admin announcement sender (audience + category) writing member notifications and audit entries
+- [x] Content area filter in the admin content list (services, projects, blog, umrah, foundations, community, etc.)
+- [x] Community tab in the member dashboard
+- [x] Verified public pages, auth pages, protected redirects and typecheck
