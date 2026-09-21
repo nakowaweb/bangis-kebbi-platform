@@ -44,13 +44,25 @@ export const listMembers = createServerFn({ method: "GET" })
     const { data: members, count, error } = await query;
     if (error) throw new Error(error.message);
 
-    const ids = (members ?? []).map((member: { id: string }) => member.id);
+    type MemberRow = {
+      id: string;
+      full_name: string;
+      email: string;
+      phone: string | null;
+      country: string | null;
+      city: string | null;
+      preferred_language: string;
+      is_active: boolean;
+      created_at: string;
+    };
+    const rows = (members ?? []) as MemberRow[];
+    const ids = rows.map((member) => member.id);
     const { data: roleRows } = ids.length
       ? await context.supabase.from("user_roles").select("user_id,role").in("user_id", ids)
       : { data: [] as { user_id: string; role: string }[] };
 
     return {
-      members: (members ?? []).map((member: { id: string }) => ({
+      members: rows.map((member) => ({
         ...member,
         roles: (roleRows ?? []).filter((row: { user_id: string }) => row.user_id === member.id).map((row: { role: string }) => row.role),
       })),
