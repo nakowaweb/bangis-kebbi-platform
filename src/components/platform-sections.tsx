@@ -5,8 +5,11 @@ import {
   Building2,
   CheckCircle2,
   Code2,
+  FileText,
+  FolderKanban,
   Globe2,
   HandHeart,
+  Home,
   Mail,
   MessageCircle,
   Network,
@@ -50,6 +53,20 @@ const categoryCards: Array<{ title: string; detail: string; href: "/services" | 
   { title: "Global Reach", detail: "Worldwide impact", href: "/about", icon: Globe2, tone: "bg-brand-ink" },
 ];
 
+const quickActions: Array<{
+  label: string;
+  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community";
+  icon: LucideIcon;
+}> = [
+  { label: "Home", href: "/", icon: Home },
+  { label: "Services", href: "/services", icon: Code2 },
+  { label: "Projects", href: "/projects", icon: FolderKanban },
+  { label: "Blog", href: "/blog", icon: FileText },
+  { label: "Umrah", href: "/umrah", icon: Plane },
+  { label: "BK Foundations", href: "/foundation", icon: HandHeart },
+  { label: "Community", href: "/community", icon: UsersRound },
+];
+
 export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
@@ -76,6 +93,32 @@ export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus
           </div>
         </div>
       </div>
+    </section>
+  );
+}
+
+export function QuickActionsSection() {
+  return (
+    <section className="border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label="Quick access">
+      <nav className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-5 lg:px-8" aria-label="Platform quick links">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">
+          {quickActions.map((item) => (
+            <Link
+              key={item.href}
+              to={item.href}
+              activeOptions={{ exact: item.href === "/" }}
+              activeProps={{ className: "border-brand-cyan bg-brand-cyan/15 text-brand-cyan shadow-glow" }}
+              inactiveProps={{ className: "border-primary-foreground/15 bg-primary-foreground/5 text-primary-foreground hover:border-brand-cyan/55 hover:bg-primary-foreground/10 hover:text-brand-cyan" }}
+              className="group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 rounded-lg border px-1 py-3 text-center transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-24 sm:px-2"
+            >
+              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary-foreground/10 transition group-hover:bg-brand-cyan/15 sm:h-10 sm:w-10">
+                <item.icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+              </span>
+              <span className="w-full text-[10px] font-bold leading-tight sm:text-xs">{item.label}</span>
+            </Link>
+          ))}
+        </div>
+      </nav>
     </section>
   );
 }

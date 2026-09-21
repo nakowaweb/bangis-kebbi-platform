@@ -7,6 +7,7 @@ import {
   HeroSection,
   LatestActivitiesSection,
   PlatformIntroduction,
+  QuickActionsSection,
   ServicesSection,
   UmrahSection,
 } from "@/components/platform-sections";
@@ -63,6 +64,7 @@ function Index() {
   return (
     <main>
       <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} location={publicContent.settings?.location ?? "Abuja, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
+      <QuickActionsSection />
       <PlatformIntroduction title={about?.title} description={about?.summary ?? undefined} />
       <ServicesSection items={services} />
       <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
