@@ -5,7 +5,6 @@ import {
   Building2,
   CheckCircle2,
   Code2,
-  FileText,
   FolderKanban,
   Globe2,
   HandHeart,
@@ -13,13 +12,40 @@ import {
   Mail,
   MessageCircle,
   Network,
+  Newspaper,
   Plane,
   Play,
   type LucideIcon,
   UsersRound,
   Video,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
+
+/** Tasteful line-art Kaaba icon for Umrah — matches Lucide's conventions (24×24, stroke 2, round caps/joins, no fill). */
+function KaabaIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* Kaaba cube body */}
+      <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" />
+      {/* Embroidered band (kiswah) near the top */}
+      <line x1="5.5" y1="9.5" x2="18.5" y2="9.5" />
+      {/* Door */}
+      <rect x="10" y="13" width="4" height="5.5" rx="0.5" />
+    </svg>
+  );
+}
+
+type IconType = ComponentType<{ className?: string }>;
 
 import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
 import communityImageAsset from "@/assets/bangis-official-community.webp.asset.json";
