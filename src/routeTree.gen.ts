@@ -15,6 +15,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FoundationRouteImport } from './routes/foundation'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -54,6 +55,11 @@ const CommunityRoute = CommunityRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
+  id: '/forgot-password',
+  path: '/forgot-password',
   getParentRoute: () => rootRouteImport,
 } as any)
 const FoundationRoute = FoundationRouteImport.update({
@@ -114,6 +120,7 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -132,6 +139,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -151,6 +159,7 @@ export interface FileRoutesById {
   '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
+  '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -171,6 +180,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/community'
     | '/contact'
+    | '/forgot-password'
     | '/foundation'
     | '/login'
     | '/privacy'
@@ -189,6 +199,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/community'
     | '/contact'
+    | '/forgot-password'
     | '/foundation'
     | '/login'
     | '/privacy'
@@ -207,6 +218,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/community'
     | '/contact'
+    | '/forgot-password'
     | '/foundation'
     | '/login'
     | '/privacy'
@@ -226,6 +238,7 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRoute
   CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
+  ForgotPasswordRoute: typeof ForgotPasswordRoute
   FoundationRoute: typeof FoundationRoute
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -279,6 +292,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/forgot-password': {
+      id: '/forgot-password'
+      path: '/forgot-password'
+      fullPath: '/forgot-password'
+      preLoaderRoute: typeof ForgotPasswordRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/foundation': {
@@ -373,6 +393,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRoute,
   CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,
+  ForgotPasswordRoute: ForgotPasswordRoute,
   FoundationRoute: FoundationRoute,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
