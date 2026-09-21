@@ -13,11 +13,7 @@ const profileInput = z.object({
 
 export type MemberAccount = Awaited<ReturnType<typeof loadAccount>>;
 
-async function loadAccount(context: {
-  supabase: Parameters<typeof Object.keys>[0] extends never ? never : any;
-  userId: string;
-  claims: Record<string, unknown>;
-}) {
+async function loadAccount(context: { supabase: any; userId: string; claims: Record<string, unknown> }) {
   const { supabase, userId, claims } = context;
   await supabase.rpc("ensure_member_role");
 
