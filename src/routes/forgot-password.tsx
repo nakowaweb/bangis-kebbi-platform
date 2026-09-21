@@ -24,7 +24,7 @@ function ForgotPasswordPage() {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     setBusy(true);
-    const { error } = await supabase.auth.resetPasswordForEmail(String(form.get("email")), { redirectTo: `${window.location.origin}/login` });
+    const { error } = await supabase.auth.resetPasswordForEmail(String(form.get("email")), { redirectTo: `${window.location.origin}/reset-password` });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
     toast.success("If an account exists, a recovery email has been sent.");

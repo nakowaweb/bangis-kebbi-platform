@@ -29,7 +29,13 @@ function RegisterPage() {
       password: String(form.get("password")),
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
-        data: { full_name: String(form.get("fullName")), phone: String(form.get("phone")), country: String(form.get("country")) },
+        data: {
+          full_name: String(form.get("fullName")),
+          phone: String(form.get("phone")),
+          country: String(form.get("country")),
+          city: String(form.get("city")),
+          preferred_language: String(form.get("preferredLanguage") || "en"),
+        },
       },
     });
     setBusy(false);
@@ -48,6 +54,14 @@ function RegisterPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Input name="phone" type="tel" placeholder="Phone" aria-label="Phone" autoComplete="tel" required />
             <Input name="country" placeholder="Country" aria-label="Country" autoComplete="country-name" required />
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <Input name="city" placeholder="City" aria-label="City" autoComplete="address-level2" required />
+            <select name="preferredLanguage" aria-label="Preferred language" defaultValue="en" className="h-10 rounded-md border border-input bg-background px-3 text-sm">
+              <option value="en">English</option>
+              <option value="ha">Hausa</option>
+              <option value="ar">Arabic</option>
+            </select>
           </div>
           <Input name="password" type="password" minLength={8} placeholder="Password" aria-label="Password" autoComplete="new-password" required />
           <label className="flex items-start gap-3 text-sm text-muted-foreground">

@@ -29,14 +29,14 @@ function LoginPage() {
     const { error } = await supabase.auth.signInWithPassword({ email: String(form.get("email")), password: String(form.get("password")) });
     setBusy(false);
     if (error) { toast.error(error.message); return; }
-    window.location.assign("/admin");
+    window.location.assign("/dashboard");
   }
   async function signInWithGoogle() {
     setBusy(true);
     const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
     if (result.error) { toast.error(result.error.message); setBusy(false); return; }
     if (result.redirected) return;
-    window.location.assign("/admin");
+    window.location.assign("/dashboard");
   }
   return (
     <main>

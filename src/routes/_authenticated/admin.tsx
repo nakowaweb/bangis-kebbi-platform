@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, FileText, History, Image, LogOut, Plus, Save, Settings, ShieldCheck, Upload } from "lucide-react";
+import { Archive, FileText, History, Image, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
+import { listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
@@ -105,6 +106,7 @@ function AdminPage() {
         <Tabs defaultValue="content">
           <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-card p-1">
             <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
+            <TabsTrigger value="members"><Users /> Members</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
             <TabsTrigger value="media"><Image /> Media</TabsTrigger>
             <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
@@ -128,6 +130,7 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
+          <TabsContent value="members"><MembersManager /></TabsContent>
           <TabsContent value="audit"><AuditLog rows={workspace.data?.audit ?? []} /></TabsContent>
         </Tabs>
       </div>
@@ -177,3 +180,105 @@ function Field({ label, children }: { label: string; children: ReactNode }) { re
 function EmptyState({ text }: { text: string }) { return <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">{text}</div>; }
 function AdminLoading() { return <main className="mx-auto grid min-h-[70vh] max-w-7xl gap-5 px-4 py-10"><Skeleton className="h-20 w-full" /><div className="grid gap-5 lg:grid-cols-[1fr_390px]"><Skeleton className="h-96" /><Skeleton className="h-96" /></div></main>; }
 function AdminDenied({ message, onSignOut }: { message: string; onSignOut: () => void }) { return <main className="grid min-h-[70vh] place-items-center px-4"><div className="max-w-md rounded-lg border border-border bg-card p-7 text-center"><ShieldCheck className="mx-auto h-10 w-10 text-primary" /><h1 className="mt-4 font-display text-2xl font-bold">Administrator access required</h1><p className="mt-3 text-sm text-muted-foreground">{message}</p><Button className="mt-6" variant="outline" onClick={onSignOut}>Sign out</Button></div></main>; }
+function MembersManager() {
+  const fetchMembers = useServerFn(listMembers);
+  const toggleActive = useServerFn(setMemberActive);
+  const toggleRole = useServerFn(setMemberRole);
+  const queryClient = useQueryClient();
+  const [search, setSearch] = useState("");
+  const [status, setStatus] = useState<"all" | "active" | "inactive">("all");
+  const [page, setPage] = useState(0);
+
+  const members = useQuery({
+    queryKey: ["admin-members", search, status, page],
+    queryFn: () => fetchMembers({ data: { search, status, page } }),
+  });
+  const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-members"] });
+
+  if (members.isError) return <EmptyState text={members.error.message} />;
+
+  const rows = members.data?.members ?? [];
+  const total = members.data?.total ?? 0;
+  const pageSize = members.data?.pageSize ?? 20;
+
+  return (
+    <section>
+      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+        <Input value={search} onChange={(event) => { setPage(0); setSearch(event.target.value); }} placeholder="Search name, email, country or city" aria-label="Search members" />
+        <Select value={status} onValueChange={(value) => { setPage(0); setStatus(value as "all" | "active" | "inactive"); }}>
+          <SelectTrigger className="sm:w-48"><SelectValue /></SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All members</SelectItem>
+            <SelectItem value="active">Active</SelectItem>
+            <SelectItem value="inactive">Deactivated</SelectItem>
+          </SelectContent>
+        </Select>
+      </div>
+
+      {members.isPending ? <Skeleton className="h-64 w-full" /> : rows.length === 0 ? <EmptyState text="No members match this view." /> : (
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
+          {rows.map((member: { id: string; full_name: string; email: string; phone: string | null; country: string | null; city: string | null; is_active: boolean; created_at: string; roles: string[] }) => (
+            <div key={member.id} className="grid gap-3 border-b border-border p-4 last:border-b-0 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+              <div className="min-w-0">
+                <strong className="block truncate text-sm">{member.full_name || "Unnamed member"}</strong>
+                <p className="mt-1 truncate text-xs text-muted-foreground">
+                  {member.email}{member.country ? ` · ${member.city ? `${member.city}, ` : ""}${member.country}` : ""} · Joined {new Date(member.created_at).toLocaleDateString()}
+                </p>
+                <div className="mt-2 flex flex-wrap gap-1.5">
+                  <Badge variant={member.is_active ? "default" : "secondary"}>{member.is_active ? "Active" : "Deactivated"}</Badge>
+                  {member.roles.map((role) => <Badge key={role} variant="outline">{role.replaceAll("_", " ")}</Badge>)}
+                </div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <AlertDialog>
+                  <AlertDialogTrigger asChild>
+                    <Button size="sm" variant={member.is_active ? "destructive" : "outline"}>{member.is_active ? "Deactivate" : "Activate"}</Button>
+                  </AlertDialogTrigger>
+                  <AlertDialogContent>
+                    <AlertDialogHeader>
+                      <AlertDialogTitle>{member.is_active ? "Deactivate this account?" : "Activate this account?"}</AlertDialogTitle>
+                      <AlertDialogDescription>This change is recorded in the audit log.</AlertDialogDescription>
+                    </AlertDialogHeader>
+                    <AlertDialogFooter>
+                      <AlertDialogCancel>Cancel</AlertDialogCancel>
+                      <AlertDialogAction onClick={async () => {
+                        try { await toggleActive({ data: { userId: member.id, isActive: !member.is_active } }); toast.success("Member status updated"); refresh(); }
+                        catch (error) { toast.error(error instanceof Error ? error.message : "Update failed"); }
+                      }}>Confirm</AlertDialogAction>
+                    </AlertDialogFooter>
+                  </AlertDialogContent>
+                </AlertDialog>
+                <Select value="" onValueChange={async (value) => {
+                  const [role, action] = value.split(":");
+                  try {
+                    await toggleRole({ data: { userId: member.id, role: role as "admin", grant: action === "grant" } });
+                    toast.success("Role updated");
+                    refresh();
+                  } catch (error) { toast.error(error instanceof Error ? error.message : "Only a Super Admin can change roles"); }
+                }}>
+                  <SelectTrigger className="h-9 w-44"><SelectValue placeholder="Manage role" /></SelectTrigger>
+                  <SelectContent>
+                    {["member", "content_manager", "support", "finance", "admin", "super_admin"].map((role) => (
+                      <SelectItem key={`${role}:grant`} value={`${role}:grant`}>Grant {role.replaceAll("_", " ")}</SelectItem>
+                    ))}
+                    {["content_manager", "support", "finance", "admin", "super_admin"].map((role) => (
+                      <SelectItem key={`${role}:revoke`} value={`${role}:revoke`}>Remove {role.replaceAll("_", " ")}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+
+      <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
+        <span>{total} member{total === 1 ? "" : "s"}</span>
+        <div className="flex gap-2">
+          <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button>
+          <Button size="sm" variant="outline" disabled={(page + 1) * pageSize >= total} onClick={() => setPage(page + 1)}>Next</Button>
+        </div>
+      </div>
+    </section>
+  );
+}

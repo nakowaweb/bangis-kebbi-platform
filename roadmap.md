@@ -19,3 +19,15 @@
 - [x] Add the navy quick-action navigation directly below the hero
 - [x] Include visible icons and labels for Home, Services, Projects, Blog, Umrah, BK Foundations, and Community
 - [x] Verify active states, navigation, and small-screen layout
+
+# Phase 2 — Backend Foundation & Member Platform
+
+- [x] Member profiles, roles (member/admin/super_admin), notifications, private document records
+- [x] Row Level Security policies and server-side authorization on every data function
+- [x] Private member-documents storage bucket with owner + admin only access
+- [x] Registration (name, email, phone, country, city, language), login, logout, password reset and password update
+- [x] Member dashboard (overview, profile, services, projects, umrah, foundations, activities, notifications, settings)
+- [x] Super Admin member management: search, filter, paginate, activate/deactivate, grant/remove roles
+- [x] Audit logging for member and role changes
+- [x] Verified pages, protected routes and mobile layout in a browser
+- [ ] Umrah applications, Foundation contributions and payments — later modules (not started by design)
