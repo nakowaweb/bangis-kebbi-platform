@@ -12,7 +12,7 @@ import {
 } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
 import { getPublicContent } from "@/lib/content.functions";
-import heroImage from "@/assets/bangis-official-hero.jpeg.asset.json";
+import heroImage from "@/assets/bangis-official-hero.webp.asset.json";
 
 export const Route = createFileRoute("/")({
   head: () => ({

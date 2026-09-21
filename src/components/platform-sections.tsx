@@ -19,8 +19,8 @@ import {
 import type { ReactNode } from "react";
 
 import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
-import communityImageAsset from "@/assets/bangis-official-community.png.asset.json";
-import portraitAsset from "@/assets/bangis-official-hero.jpeg.asset.json";
+import communityImageAsset from "@/assets/bangis-official-community.webp.asset.json";
+import portraitAsset from "@/assets/bangis-official-hero.webp.asset.json";
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
