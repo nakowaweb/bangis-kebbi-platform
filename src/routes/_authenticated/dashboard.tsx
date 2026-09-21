@@ -176,6 +176,9 @@ function DashboardPage() {
           <TabsContent value="foundations">
             <PlaceholderPanel title="BK Foundations" text="Initiative updates will appear here once published. BK Foundations is a community support programme, not an investment." href="/foundation" linkLabel="Foundation information" />
           </TabsContent>
+          <TabsContent value="community">
+            <PlaceholderPanel title="Community" text="Community updates and member activities will appear here as they are published." href="/community" linkLabel="Community information" />
+          </TabsContent>
           <TabsContent value="activities">
             <PlaceholderPanel title="Activities" text="Community and platform activities will be listed here as they are published." href="/blog" linkLabel="Latest updates" />
           </TabsContent>
