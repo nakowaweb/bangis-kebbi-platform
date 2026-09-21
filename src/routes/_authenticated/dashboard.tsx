@@ -39,7 +39,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
 });
 
-type TabKey = "overview" | "profile" | "services" | "projects" | "umrah" | "foundations" | "activities" | "notifications" | "settings";
+type TabKey = "overview" | "profile" | "services" | "projects" | "umrah" | "foundations" | "community" | "activities" | "notifications" | "settings";
 
 function DashboardPage() {
   const queryClient = useQueryClient();
