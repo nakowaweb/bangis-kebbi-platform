@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Sparkles,
   UserRound,
+  UsersRound,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
