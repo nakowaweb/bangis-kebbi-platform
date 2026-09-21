@@ -185,16 +185,26 @@ function MobileMenu() {
             ))}
           </nav>
           <div className="grid gap-3 border-t border-border pt-5">
-            <SheetClose asChild>
-              <Button variant="outline" className="h-12 justify-start" asChild>
-                <Link to="/login">{labels["login"]}</Link>
-              </Button>
-            </SheetClose>
-            <SheetClose asChild>
-              <Button className="h-12 justify-start bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
-                <Link to="/register">{labels["join"]}</Link>
-              </Button>
-            </SheetClose>
+            {signedIn ? (
+              <SheetClose asChild>
+                <Button className="h-12 justify-start bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
+                  <Link to="/dashboard">My Dashboard</Link>
+                </Button>
+              </SheetClose>
+            ) : (
+              <>
+                <SheetClose asChild>
+                  <Button variant="outline" className="h-12 justify-start" asChild>
+                    <Link to="/login">{labels["login"]}</Link>
+                  </Button>
+                </SheetClose>
+                <SheetClose asChild>
+                  <Button className="h-12 justify-start bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
+                    <Link to="/register">{labels["join"]}</Link>
+                  </Button>
+                </SheetClose>
+              </>
+            )}
             <div className="rounded-lg border border-border bg-secondary p-3">
               <p className="mb-2 text-sm font-semibold text-foreground">{labels["language"]}</p>
               <LanguageMenu />
