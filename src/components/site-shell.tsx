@@ -1,6 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import { Facebook, Instagram, Linkedin, Menu, Search, UserRound, Youtube } from "lucide-react";
-import type { ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
+
+import { supabase } from "@/integrations/supabase/client";
 
 import logoAsset from "@/assets/bangis-logo-lockup.png.asset.json";
 import iconAsset from "@/assets/bangis-app-icon.png.asset.json";
@@ -30,8 +32,20 @@ export function SiteShell({ children }: { children: ReactNode }) {
   );
 }
 
+function useSignedIn() {
+  const [signedIn, setSignedIn] = useState(false);
+  useEffect(() => {
+    void supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => setSignedIn(Boolean(session)));
+    return () => subscription.subscription.unsubscribe();
+  }, []);
+  return signedIn;
+}
+
 function SiteHeader() {
   const { labels } = useLanguage();
+  const signedIn = useSignedIn();
+
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
@@ -57,15 +71,26 @@ function SiteHeader() {
 
         <div className="hidden shrink-0 items-center gap-2 lg:flex">
           <SearchMenu />
-          <Button variant="ghost" size="sm" asChild>
-            <Link to="/login">
-              <UserRound />
-              {labels["login"]}
-            </Link>
-          </Button>
-          <Button size="sm" className="bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
-            <Link to="/register">{labels["join"]}</Link>
-          </Button>
+          {signedIn ? (
+            <Button size="sm" className="bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
+              <Link to="/dashboard">
+                <UserRound />
+                My Dashboard
+              </Link>
+            </Button>
+          ) : (
+            <>
+              <Button variant="ghost" size="sm" asChild>
+                <Link to="/login">
+                  <UserRound />
+                  {labels["login"]}
+                </Link>
+              </Button>
+              <Button size="sm" className="bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
+                <Link to="/register">{labels["join"]}</Link>
+              </Button>
+            </>
+          )}
           <LanguageMenu compact />
         </div>
 
