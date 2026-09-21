@@ -82,13 +82,13 @@ const categoryCards: Array<{ title: string; detail: string; href: "/services" | 
 const quickActions: Array<{
   label: string;
   href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community";
-  icon: LucideIcon;
+  icon: IconType;
 }> = [
   { label: "Home", href: "/", icon: Home },
   { label: "Services", href: "/services", icon: Code2 },
   { label: "Projects", href: "/projects", icon: FolderKanban },
-  { label: "Blog", href: "/blog", icon: FileText },
-  { label: "Umrah", href: "/umrah", icon: Plane },
+  { label: "Blog", href: "/blog", icon: Newspaper },
+  { label: "Umrah", href: "/umrah", icon: KaabaIcon },
   { label: "BK Foundations", href: "/foundation", icon: HandHeart },
   { label: "Community", href: "/community", icon: UsersRound },
 ];
