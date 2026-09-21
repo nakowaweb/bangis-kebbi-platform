@@ -85,7 +85,7 @@ function AdminPage() {
     onError: (error) => toast.error(error.message),
   });
 
-  const entries = useMemo(() => (workspace.data?.entries ?? []).filter((entry) => `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())), [workspace.data?.entries, query]);
+  const entries = useMemo(() => (workspace.data?.entries ?? []).filter((entry) => (area === "all" || entry.content_type === area) && `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())), [workspace.data?.entries, query, area]);
 
   async function signOut() {
     await queryClient.cancelQueries();
