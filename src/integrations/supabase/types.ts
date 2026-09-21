@@ -326,6 +326,7 @@ export type Database = {
         | "content_manager"
         | "support"
         | "finance"
+        | "member"
       content_status: "draft" | "published" | "unpublished" | "archived"
     }
     CompositeTypes: {
@@ -460,6 +461,7 @@ export const Constants = {
         "content_manager",
         "support",
         "finance",
+        "member",
       ],
       content_status: ["draft", "published", "unpublished", "archived"],
     },
