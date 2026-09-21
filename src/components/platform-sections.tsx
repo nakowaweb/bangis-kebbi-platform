@@ -132,13 +132,14 @@ export function QuickActionsSection() {
             <Link
               key={item.href}
               to={item.href}
+              aria-label={item.label}
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "border-brand-cyan bg-brand-cyan/15 text-brand-cyan shadow-glow" }}
               inactiveProps={{ className: "border-primary-foreground/15 bg-primary-foreground/5 text-primary-foreground hover:border-brand-cyan/55 hover:bg-primary-foreground/10 hover:text-brand-cyan" }}
               className="group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 rounded-lg border px-1 py-3 text-center transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-24 sm:px-2"
             >
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary-foreground/10 transition group-hover:bg-brand-cyan/15 sm:h-10 sm:w-10">
-                <item.icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <item.icon className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden="true" />
               </span>
               <span className="w-full text-[10px] font-bold leading-tight sm:text-xs">{item.label}</span>
             </Link>
