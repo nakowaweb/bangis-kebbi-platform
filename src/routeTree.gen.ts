@@ -23,10 +23,12 @@ import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as ResetPasswordRouteImport } from './routes/reset-password'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as UmrahRouteImport } from './routes/umrah'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
+import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as ProjectsBangiskebbiComRouteImport } from './routes/projects.bangiskebbi-com'
 
 const IndexRoute = IndexRouteImport.update({
@@ -98,6 +100,11 @@ const RegisterRoute = RegisterRouteImport.update({
   path: '/register',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ResetPasswordRoute = ResetPasswordRouteImport.update({
+  id: '/reset-password',
+  path: '/reset-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ServicesRoute = ServicesRouteImport.update({
   id: '/services',
   path: '/services',
@@ -116,6 +123,11 @@ const UmrahRoute = UmrahRouteImport.update({
 const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
+  id: '/dashboard',
+  path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
 const ProjectsBangiskebbiComRoute = ProjectsBangiskebbiComRouteImport.update({
@@ -138,10 +150,12 @@ export interface FileRoutesByFullPath {
   '/projects': typeof ProjectsRouteWithChildren
   '/refund-policy': typeof RefundPolicyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/umrah': typeof UmrahRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRoutesByTo {
@@ -158,10 +172,12 @@ export interface FileRoutesByTo {
   '/projects': typeof ProjectsRouteWithChildren
   '/refund-policy': typeof RefundPolicyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/umrah': typeof UmrahRoute
   '/admin': typeof AuthenticatedAdminRoute
+  '/dashboard': typeof AuthenticatedDashboardRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRoutesById {
@@ -180,10 +196,12 @@ export interface FileRoutesById {
   '/projects': typeof ProjectsRouteWithChildren
   '/refund-policy': typeof RefundPolicyRoute
   '/register': typeof RegisterRoute
+  '/reset-password': typeof ResetPasswordRoute
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/umrah': typeof UmrahRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
+  '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRouteTypes {
@@ -202,10 +220,12 @@ export interface FileRouteTypes {
     | '/projects'
     | '/refund-policy'
     | '/register'
+    | '/reset-password'
     | '/services'
     | '/terms'
     | '/umrah'
     | '/admin'
+    | '/dashboard'
     | '/projects/bangiskebbi-com'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -222,10 +242,12 @@ export interface FileRouteTypes {
     | '/projects'
     | '/refund-policy'
     | '/register'
+    | '/reset-password'
     | '/services'
     | '/terms'
     | '/umrah'
     | '/admin'
+    | '/dashboard'
     | '/projects/bangiskebbi-com'
   id:
     | '__root__'
@@ -243,10 +265,12 @@ export interface FileRouteTypes {
     | '/projects'
     | '/refund-policy'
     | '/register'
+    | '/reset-password'
     | '/services'
     | '/terms'
     | '/umrah'
     | '/_authenticated/admin'
+    | '/_authenticated/dashboard'
     | '/projects/bangiskebbi-com'
   fileRoutesById: FileRoutesById
 }
@@ -265,6 +289,7 @@ export interface RootRouteChildren {
   ProjectsRoute: typeof ProjectsRouteWithChildren
   RefundPolicyRoute: typeof RefundPolicyRoute
   RegisterRoute: typeof RegisterRoute
+  ResetPasswordRoute: typeof ResetPasswordRoute
   ServicesRoute: typeof ServicesRoute
   TermsRoute: typeof TermsRoute
   UmrahRoute: typeof UmrahRoute
@@ -370,6 +395,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RegisterRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/reset-password': {
+      id: '/reset-password'
+      path: '/reset-password'
+      fullPath: '/reset-password'
+      preLoaderRoute: typeof ResetPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/services': {
       id: '/services'
       path: '/services'
@@ -398,6 +430,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/_authenticated/dashboard': {
+      id: '/_authenticated/dashboard'
+      path: '/dashboard'
+      fullPath: '/dashboard'
+      preLoaderRoute: typeof AuthenticatedDashboardRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/projects/bangiskebbi-com': {
       id: '/projects/bangiskebbi-com'
       path: '/bangiskebbi-com'
@@ -410,10 +449,12 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+  AuthenticatedDashboardRoute: typeof AuthenticatedDashboardRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+  AuthenticatedDashboardRoute: AuthenticatedDashboardRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -446,6 +487,7 @@ const rootRouteChildren: RootRouteChildren = {
   ProjectsRoute: ProjectsRouteWithChildren,
   RefundPolicyRoute: RefundPolicyRoute,
   RegisterRoute: RegisterRoute,
+  ResetPasswordRoute: ResetPasswordRoute,
   ServicesRoute: ServicesRoute,
   TermsRoute: TermsRoute,
   UmrahRoute: UmrahRoute,

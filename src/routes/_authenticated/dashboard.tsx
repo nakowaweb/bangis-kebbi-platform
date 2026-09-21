@@ -54,7 +54,7 @@ function DashboardPage() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["member-account"] });
 
   const profileMutation = useMutation({
-    mutationFn: (values: Parameters<typeof saveProfile>[0]["data"]) => saveProfile({ data: values }),
+    mutationFn: (values: { fullName: string; phone: string; country: string; city: string; preferredLanguage: "en" | "ha" | "ar" }) => saveProfile({ data: values }),
     onSuccess: () => { toast.success("Profile updated"); refresh(); },
     onError: (error: Error) => toast.error(error.message),
   });
