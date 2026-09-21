@@ -5,7 +5,6 @@ import {
   Building2,
   CheckCircle2,
   Code2,
-  FolderKanban,
   Globe2,
   HandHeart,
   Home,
@@ -18,10 +17,11 @@ import {
   type LucideIcon,
   UsersRound,
   Video,
+  Wrench,
 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
-/** Tasteful line-art Kaaba icon for Umrah — matches Lucide's conventions (24×24, stroke 2, round caps/joins, no fill). */
+/** Recognizable Kaaba line icon for Umrah, drawn with the same geometry and stroke treatment as Lucide. */
 function KaabaIcon({ className }: { className?: string }) {
   return (
     <svg
@@ -35,12 +35,11 @@ function KaabaIcon({ className }: { className?: string }) {
       aria-hidden="true"
       focusable="false"
     >
-      {/* Kaaba cube body */}
-      <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" />
-      {/* Embroidered band (kiswah) near the top */}
-      <line x1="5.5" y1="9.5" x2="18.5" y2="9.5" />
-      {/* Door */}
-      <rect x="10" y="13" width="4" height="5.5" rx="0.5" />
+      <path d="m4 7 8-3 8 3v12l-8 2-8-2Z" />
+      <path d="m4 7 8 3 8-3M12 10v11" />
+      <path d="M4 11.25 12 14l8-2.75" />
+      <path d="M7.25 8.2v3.9M16.75 8.2v3.9" />
+      <path d="M8.75 19.8v-4.2l3.25.95v4.05" />
     </svg>
   );
 }
@@ -85,8 +84,8 @@ const quickActions: Array<{
   icon: IconType;
 }> = [
   { label: "Home", href: "/", icon: Home },
-  { label: "Services", href: "/services", icon: Code2 },
-  { label: "Projects", href: "/projects", icon: FolderKanban },
+  { label: "Services", href: "/services", icon: Wrench },
+  { label: "Projects", href: "/projects", icon: BriefcaseBusiness },
   { label: "Blog", href: "/blog", icon: Newspaper },
   { label: "Umrah", href: "/umrah", icon: KaabaIcon },
   { label: "BK Foundations", href: "/foundation", icon: HandHeart },
