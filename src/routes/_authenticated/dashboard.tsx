@@ -13,6 +13,7 @@ import {
   ShieldCheck,
   Sparkles,
   UserRound,
+  UsersRound,
 } from "lucide-react";
 import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
@@ -39,7 +40,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   component: DashboardPage,
 });
 
-type TabKey = "overview" | "profile" | "services" | "projects" | "umrah" | "foundations" | "activities" | "notifications" | "settings";
+type TabKey = "overview" | "profile" | "services" | "projects" | "umrah" | "foundations" | "community" | "activities" | "notifications" | "settings";
 
 function DashboardPage() {
   const queryClient = useQueryClient();
@@ -115,6 +116,7 @@ function DashboardPage() {
             <TabsTrigger value="projects"><FolderKanban /> Projects</TabsTrigger>
             <TabsTrigger value="umrah"><CalendarCheck /> Umrah</TabsTrigger>
             <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
+            <TabsTrigger value="community"><UsersRound /> Community</TabsTrigger>
             <TabsTrigger value="activities"><BriefcaseBusiness /> Activities</TabsTrigger>
             <TabsTrigger value="notifications"><Bell /> Notifications{unread.length ? ` (${unread.length})` : ""}</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
@@ -173,6 +175,9 @@ function DashboardPage() {
           </TabsContent>
           <TabsContent value="foundations">
             <PlaceholderPanel title="BK Foundations" text="Initiative updates will appear here once published. BK Foundations is a community support programme, not an investment." href="/foundation" linkLabel="Foundation information" />
+          </TabsContent>
+          <TabsContent value="community">
+            <PlaceholderPanel title="Community" text="Community updates and member activities will appear here as they are published." href="/community" linkLabel="Community information" />
           </TabsContent>
           <TabsContent value="activities">
             <PlaceholderPanel title="Activities" text="Community and platform activities will be listed here as they are published." href="/blog" linkLabel="Latest updates" />

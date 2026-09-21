@@ -117,3 +117,70 @@ export const setMemberRole = createServerFn({ method: "POST" })
     });
     return { ok: true };
   });
+
+export const getAdminOverview = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    await requireAdmin(context as never);
+    const [members, active, entries, published, media, notifications] = await Promise.all([
+      context.supabase.from("profiles").select("id", { count: "exact", head: true }),
+      context.supabase.from("profiles").select("id", { count: "exact", head: true }).eq("is_active", true),
+      context.supabase.from("content_entries").select("id", { count: "exact", head: true }).is("deleted_at", null),
+      context.supabase.from("content_entries").select("id", { count: "exact", head: true }).eq("status", "published").is("deleted_at", null),
+      context.supabase.from("media_assets").select("id", { count: "exact", head: true }).is("deleted_at", null),
+      context.supabase.from("notifications").select("id", { count: "exact", head: true }),
+    ]);
+    const { data: recent } = await context.supabase
+      .from("admin_audit_logs")
+      .select("id,action,content_type,content_label,created_at")
+      .order("created_at", { ascending: false })
+      .limit(5);
+    return {
+      members: members.count ?? 0,
+      activeMembers: active.count ?? 0,
+      entries: entries.count ?? 0,
+      publishedEntries: published.count ?? 0,
+      media: media.count ?? 0,
+      notifications: notifications.count ?? 0,
+      recent: (recent ?? []) as { id: string; action: string; content_type: string; content_label: string | null; created_at: string }[],
+    };
+  });
+
+export const sendNotification = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) =>
+    z
+      .object({
+        title: z.string().trim().min(2).max(160),
+        body: z.string().trim().max(2000).default(""),
+        category: z.enum(["general", "platform", "community", "umrah", "foundation"]).default("general"),
+        audience: z.enum(["all", "active"]).default("active"),
+      })
+      .parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as never);
+    let recipients = context.supabase.from("profiles").select("id");
+    if (data.audience === "active") recipients = recipients.eq("is_active", true);
+    const { data: rows, error } = await recipients;
+    if (error) throw new Error(error.message);
+    const targets = (rows ?? []) as { id: string }[];
+    if (targets.length === 0) return { sent: 0 };
+    const { error: insertError } = await context.supabase.from("notifications").insert(
+      targets.map((row) => ({
+        user_id: row.id,
+        title: data.title,
+        body: data.body || null,
+        category: data.category,
+        created_by: context.userId,
+      })),
+    );
+    if (insertError) throw new Error(insertError.message);
+    await context.supabase.from("admin_audit_logs").insert({
+      admin_id: context.userId,
+      action: `sent notification to ${targets.length} member(s)`,
+      content_type: "notifications",
+      content_label: data.title,
+    });
+    return { sent: targets.length };
+  });

@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, FileText, History, Image, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
+import { Archive, Bell, FileText, History, Image, LayoutDashboard, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -16,7 +16,8 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
-import { listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
+import { getAdminOverview, listMembers, sendNotification, setMemberActive, setMemberRole } from "@/lib/members.functions";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
@@ -55,6 +56,7 @@ function AdminPage() {
   const registerMedia = useServerFn(registerMediaAsset);
   const [editor, setEditor] = useState<EditorState>(emptyEditor);
   const [query, setQuery] = useState("");
+  const [area, setArea] = useState<string>("all");
 
   const workspace = useQuery({ queryKey: ["admin-workspace"], queryFn: () => getWorkspace() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-workspace"] });
@@ -83,7 +85,7 @@ function AdminPage() {
     onError: (error) => toast.error(error.message),
   });
 
-  const entries = useMemo(() => (workspace.data?.entries ?? []).filter((entry) => `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())), [workspace.data?.entries, query]);
+  const entries = useMemo(() => (workspace.data?.entries ?? []).filter((entry) => (area === "all" || entry.content_type === area) && `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())), [workspace.data?.entries, query, area]);
 
   async function signOut() {
     await queryClient.cancelQueries();
@@ -103,19 +105,34 @@ function AdminPage() {
           <Button variant="outline" onClick={signOut}><LogOut /> Sign out</Button>
         </div>
 
-        <Tabs defaultValue="content">
+        <Tabs defaultValue="overview">
           <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-card p-1">
+            <TabsTrigger value="overview"><LayoutDashboard /> Dashboard</TabsTrigger>
             <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
             <TabsTrigger value="members"><Users /> Members</TabsTrigger>
+            <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
             <TabsTrigger value="media"><Image /> Media</TabsTrigger>
             <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="overview"><AdminOverview /></TabsContent>
+          <TabsContent value="notifications"><NotificationsComposer /></TabsContent>
+
           <TabsContent value="content">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
               <section className="min-w-0">
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row"><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search content" aria-label="Search content" /><Button onClick={() => setEditor(emptyEditor)}><Plus /> New item</Button></div>
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+                  <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search content" aria-label="Search content" />
+                  <Select value={area} onValueChange={setArea}>
+                    <SelectTrigger className="sm:w-52" aria-label="Filter by content area"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All content areas</SelectItem>
+                      {contentTypes.map((type) => <SelectItem key={type} value={type}>{type.replaceAll("_", " ")}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={() => setEditor(emptyEditor)}><Plus /> New item</Button>
+                </div>
                 <div className="overflow-hidden rounded-lg border border-border bg-card">
                   {entries.length === 0 ? <div className="p-10 text-center text-sm text-muted-foreground">No content matches this view.</div> : entries.map((entry) => (
                     <button key={entry.id} type="button" onClick={() => setEditor({ id: entry.id, contentType: entry.content_type as EditorState["contentType"], slug: entry.slug, title: entry.title, summary: entry.summary ?? "", body: entry.body ?? "", imagePath: entry.image_path ?? "", status: entry.status, isEnabled: entry.is_enabled, isFeatured: entry.is_featured, sortOrder: entry.sort_order, scheduledFor: entry.scheduled_for ? entry.scheduled_for.slice(0, 16) : "" })} className="grid w-full gap-2 border-b border-border p-4 text-left transition last:border-b-0 hover:bg-secondary/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
@@ -280,5 +297,75 @@ function MembersManager() {
         </div>
       </div>
     </section>
+  );
+}
+
+function AdminOverview() {
+  const loadOverview = useServerFn(getAdminOverview);
+  const overview = useQuery({ queryKey: ["admin-overview"], queryFn: () => loadOverview() });
+  if (overview.isPending) return <Skeleton className="h-64 w-full" />;
+  if (overview.isError) return <EmptyState text={overview.error.message} />;
+  const data = overview.data;
+  const cards = [
+    { title: "Members", value: `${data.members}`, note: `${data.activeMembers} active` },
+    { title: "Content items", value: `${data.entries}`, note: `${data.publishedEntries} published` },
+    { title: "Media files", value: `${data.media}`, note: "Private media library" },
+    { title: "Notifications", value: `${data.notifications}`, note: "Delivered to members" },
+  ];
+  return (
+    <section className="grid gap-5">
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+        {cards.map((card) => (
+          <Card key={card.title}>
+            <CardHeader className="pb-2"><CardDescription>{card.title}</CardDescription><CardTitle className="font-display text-3xl">{card.value}</CardTitle></CardHeader>
+            <CardContent><p className="text-xs text-muted-foreground">{card.note}</p></CardContent>
+          </Card>
+        ))}
+      </div>
+      <Card>
+        <CardHeader><CardTitle className="text-lg">Recent administrator activity</CardTitle><CardDescription>The five most recent recorded actions.</CardDescription></CardHeader>
+        <CardContent className="grid gap-3">
+          {data.recent.length === 0 ? <p className="text-sm text-muted-foreground">No administrator actions recorded yet.</p> : data.recent.map((row) => (
+            <div key={row.id} className="flex flex-wrap items-center justify-between gap-2 border-b border-border pb-2 last:border-b-0 last:pb-0">
+              <span className="text-sm"><strong className="capitalize">{row.action}</strong> · {row.content_type.replaceAll("_", " ")}{row.content_label ? ` · ${row.content_label}` : ""}</span>
+              <time className="text-xs text-muted-foreground">{new Date(row.created_at).toLocaleString()}</time>
+            </div>
+          ))}
+        </CardContent>
+      </Card>
+    </section>
+  );
+}
+
+function NotificationsComposer() {
+  const send = useServerFn(sendNotification);
+  const [title, setTitle] = useState("");
+  const [body, setBody] = useState("");
+  const [category, setCategory] = useState<"general" | "platform" | "community" | "umrah" | "foundation">("general");
+  const [audience, setAudience] = useState<"all" | "active">("active");
+  const [busy, setBusy] = useState(false);
+
+  async function submit(event: FormEvent) {
+    event.preventDefault();
+    setBusy(true);
+    try {
+      const result = await send({ data: { title, body, category, audience } });
+      toast.success(result.sent === 0 ? "No members match this audience yet." : `Announcement sent to ${result.sent} member(s).`);
+      setTitle(""); setBody("");
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Announcement could not be sent"); }
+    setBusy(false);
+  }
+
+  return (
+    <form onSubmit={submit} className="mx-auto grid max-w-2xl gap-5 rounded-lg border border-border bg-card p-6">
+      <div><h2 className="font-display text-xl font-bold">Send an announcement</h2><p className="mt-1 text-sm text-muted-foreground">Members see announcements in their dashboard. Each send is recorded in the audit log.</p></div>
+      <Field label="Title"><Input value={title} maxLength={160} required onChange={(event) => setTitle(event.target.value)} /></Field>
+      <Field label="Message"><Textarea className="min-h-28" value={body} maxLength={2000} onChange={(event) => setBody(event.target.value)} /></Field>
+      <div className="grid gap-4 sm:grid-cols-2">
+        <Field label="Category"><Select value={category} onValueChange={(value) => setCategory(value as typeof category)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["general", "platform", "community", "umrah", "foundation"].map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></Field>
+        <Field label="Audience"><Select value={audience} onValueChange={(value) => setAudience(value as typeof audience)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active members</SelectItem><SelectItem value="all">All members</SelectItem></SelectContent></Select></Field>
+      </div>
+      <Button type="submit" disabled={busy || title.trim().length < 2}><Bell /> {busy ? "Sending…" : "Send announcement"}</Button>
+    </form>
   );
 }
