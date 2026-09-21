@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Menu, Search, UserRound } from "lucide-react";
+import { Facebook, Instagram, Linkedin, Menu, Search, UserRound, Youtube } from "lucide-react";
 import type { ReactNode } from "react";
 
 import logoAsset from "@/assets/bangis-logo-lockup.png.asset.json";
@@ -198,43 +198,44 @@ function SiteFooter() {
   ] as const;
 
   return (
-    <footer className="border-t border-border bg-brand-ink text-primary-foreground">
-      <div className="mx-auto grid max-w-7xl gap-10 px-4 py-12 sm:px-6 lg:grid-cols-[1.2fr_1fr_1fr] lg:px-8">
+    <footer className="border-t border-border bg-background text-foreground">
+      <div className="mx-auto grid max-w-7xl gap-9 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_0.8fr_1fr] lg:px-8">
         <div>
-          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-14 w-auto rounded-md bg-primary-foreground object-contain p-2" />
-          <p className="mt-5 max-w-md text-sm leading-7 text-primary-foreground/80">
-            BangisKebbi.com is a global personal-brand and business platform for ideas, technology, business and people.
-          </p>
-          <p className="mt-4 text-sm font-semibold text-brand-cyan">Technology gives you tools, but people give you opportunities.</p>
+          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-14 w-auto object-contain" />
+          <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">More than a website — a global platform for ideas, technology, business and people.</p>
+          <p className="mt-3 text-xs font-bold uppercase text-primary">BangisKebbi Global Ltd</p>
         </div>
         <div>
-          <h2 className="text-sm font-bold uppercase text-brand-cyan">Quick Links</h2>
-          <div className="mt-4 grid grid-cols-2 gap-3 text-sm">
-            {groups.map(([label, href]) => (
-              <Link key={href} to={href} className="text-primary-foreground/80 transition-colors hover:text-brand-cyan">
+          <h2 className="text-sm font-bold uppercase text-primary">Quick Links</h2>
+          <div className="mt-4 grid gap-2 text-sm">
+            {groups.slice(0, 4).map(([label, href]) => (
+              <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {label}
               </Link>
             ))}
           </div>
         </div>
         <div>
-          <h2 className="text-sm font-bold uppercase text-brand-cyan">Legal</h2>
+          <h2 className="text-sm font-bold uppercase text-primary">Platforms</h2>
           <div className="mt-4 grid gap-3 text-sm">
-            {policies.map(([label, href]) => (
-              <Link key={href} to={href} className="text-primary-foreground/80 transition-colors hover:text-brand-cyan">
+            {groups.slice(4).map(([label, href]) => (
+              <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {label}
               </Link>
             ))}
           </div>
-          <div className="mt-6 flex flex-wrap gap-2 text-xs text-primary-foreground/70">
-            <span>LinkedIn</span>
-            <span>GitHub</span>
-            <span>WhatsApp</span>
+        </div>
+        <div>
+          <h2 className="text-sm font-bold uppercase text-primary">Follow Us</h2>
+          <div className="mt-4 flex gap-2">
+            {[Facebook, Instagram, Linkedin, Youtube].map((Icon, index) => <span key={index} className="grid h-9 w-9 place-items-center rounded-md bg-primary text-primary-foreground"><Icon className="h-4 w-4" /></span>)}
           </div>
+          <p className="mt-5 text-sm font-bold">BK FOUNDATIONS</p>
+          <p className="mt-1 text-xs text-muted-foreground">People • Support • Community</p>
         </div>
       </div>
-      <div className="border-t border-primary-foreground/10 py-5 text-center text-xs text-primary-foreground/70">
-        © BangisKebbi.com. All Rights Reserved.
+      <div className="border-t border-border bg-brand-ink px-4 py-5 text-center text-xs text-primary-foreground/70">
+        © 2026 BangisKebbi.com. All Rights Reserved. · {policies.map(([label, href], index) => <span key={href}>{index > 0 ? " · " : ""}<Link to={href} className="hover:text-brand-cyan">{label}</Link></span>)}
       </div>
     </footer>
   );
