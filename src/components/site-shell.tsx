@@ -155,6 +155,8 @@ function LanguageMenu({ compact = false }: { compact?: boolean }) {
 
 function MobileMenu() {
   const { labels } = useLanguage();
+  const signedIn = useSignedIn();
+
 
   return (
     <Sheet>
