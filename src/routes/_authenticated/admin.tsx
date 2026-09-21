@@ -104,19 +104,34 @@ function AdminPage() {
           <Button variant="outline" onClick={signOut}><LogOut /> Sign out</Button>
         </div>
 
-        <Tabs defaultValue="content">
+        <Tabs defaultValue="overview">
           <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-card p-1">
+            <TabsTrigger value="overview"><LayoutDashboard /> Dashboard</TabsTrigger>
             <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
             <TabsTrigger value="members"><Users /> Members</TabsTrigger>
+            <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
             <TabsTrigger value="media"><Image /> Media</TabsTrigger>
             <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
           </TabsList>
 
+          <TabsContent value="overview"><AdminOverview /></TabsContent>
+          <TabsContent value="notifications"><NotificationsComposer /></TabsContent>
+
           <TabsContent value="content">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
               <section className="min-w-0">
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row"><Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search content" aria-label="Search content" /><Button onClick={() => setEditor(emptyEditor)}><Plus /> New item</Button></div>
+                <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+                  <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search content" aria-label="Search content" />
+                  <Select value={area} onValueChange={setArea}>
+                    <SelectTrigger className="sm:w-52" aria-label="Filter by content area"><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">All content areas</SelectItem>
+                      {contentTypes.map((type) => <SelectItem key={type} value={type}>{type.replaceAll("_", " ")}</SelectItem>)}
+                    </SelectContent>
+                  </Select>
+                  <Button onClick={() => setEditor(emptyEditor)}><Plus /> New item</Button>
+                </div>
                 <div className="overflow-hidden rounded-lg border border-border bg-card">
                   {entries.length === 0 ? <div className="p-10 text-center text-sm text-muted-foreground">No content matches this view.</div> : entries.map((entry) => (
                     <button key={entry.id} type="button" onClick={() => setEditor({ id: entry.id, contentType: entry.content_type as EditorState["contentType"], slug: entry.slug, title: entry.title, summary: entry.summary ?? "", body: entry.body ?? "", imagePath: entry.image_path ?? "", status: entry.status, isEnabled: entry.is_enabled, isFeatured: entry.is_featured, sortOrder: entry.sort_order, scheduledFor: entry.scheduled_for ? entry.scheduled_for.slice(0, 16) : "" })} className="grid w-full gap-2 border-b border-border p-4 text-left transition last:border-b-0 hover:bg-secondary/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
