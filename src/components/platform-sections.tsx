@@ -5,7 +5,6 @@ import {
   Building2,
   CheckCircle2,
   Code2,
-  FileText,
   FolderKanban,
   Globe2,
   HandHeart,
@@ -13,13 +12,40 @@ import {
   Mail,
   MessageCircle,
   Network,
+  Newspaper,
   Plane,
   Play,
   type LucideIcon,
   UsersRound,
   Video,
 } from "lucide-react";
-import type { ReactNode } from "react";
+import type { ComponentType, ReactNode } from "react";
+
+/** Tasteful line-art Kaaba icon for Umrah — matches Lucide's conventions (24×24, stroke 2, round caps/joins, no fill). */
+function KaabaIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={2}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+      aria-hidden="true"
+      focusable="false"
+    >
+      {/* Kaaba cube body */}
+      <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" />
+      {/* Embroidered band (kiswah) near the top */}
+      <line x1="5.5" y1="9.5" x2="18.5" y2="9.5" />
+      {/* Door */}
+      <rect x="10" y="13" width="4" height="5.5" rx="0.5" />
+    </svg>
+  );
+}
+
+type IconType = ComponentType<{ className?: string }>;
 
 import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
 import communityImageAsset from "@/assets/bangis-official-community.webp.asset.json";
@@ -56,13 +82,13 @@ const categoryCards: Array<{ title: string; detail: string; href: "/services" | 
 const quickActions: Array<{
   label: string;
   href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community";
-  icon: LucideIcon;
+  icon: IconType;
 }> = [
   { label: "Home", href: "/", icon: Home },
   { label: "Services", href: "/services", icon: Code2 },
   { label: "Projects", href: "/projects", icon: FolderKanban },
-  { label: "Blog", href: "/blog", icon: FileText },
-  { label: "Umrah", href: "/umrah", icon: Plane },
+  { label: "Blog", href: "/blog", icon: Newspaper },
+  { label: "Umrah", href: "/umrah", icon: KaabaIcon },
   { label: "BK Foundations", href: "/foundation", icon: HandHeart },
   { label: "Community", href: "/community", icon: UsersRound },
 ];
@@ -106,13 +132,14 @@ export function QuickActionsSection() {
             <Link
               key={item.href}
               to={item.href}
+              aria-label={item.label}
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "border-brand-cyan bg-brand-cyan/15 text-brand-cyan shadow-glow" }}
               inactiveProps={{ className: "border-primary-foreground/15 bg-primary-foreground/5 text-primary-foreground hover:border-brand-cyan/55 hover:bg-primary-foreground/10 hover:text-brand-cyan" }}
               className="group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 rounded-lg border px-1 py-3 text-center transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-24 sm:px-2"
             >
               <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary-foreground/10 transition group-hover:bg-brand-cyan/15 sm:h-10 sm:w-10">
-                <item.icon className="h-5 w-5 sm:h-6 sm:w-6" aria-hidden="true" />
+                <item.icon className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden="true" />
               </span>
               <span className="w-full text-[10px] font-bold leading-tight sm:text-xs">{item.label}</span>
             </Link>
