@@ -111,6 +111,7 @@
   --brand-cyan-soft: oklch(0.83 0.12 214);
   --brand-green: oklch(0.58 0.15 149);
   --brand-gold: oklch(0.78 0.13 83);
+  --brand-blue: oklch(0.55 0.19 251);
   --shadow-platform: 0 18px 50px -28px color-mix(in oklab, var(--brand-ink) 55%, transparent);
   --shadow-glow: 0 18px 38px -24px color-mix(in oklab, var(--brand-cyan) 70%, transparent);
 }
@@ -171,9 +172,7 @@
 }
 
 @utility hero-surface {
-  background:
-    linear-gradient(135deg, color-mix(in oklab, var(--brand-ink) 96%, black), color-mix(in oklab, var(--brand-navy) 72%, var(--brand-ink))),
-    radial-gradient(circle at 82% 18%, color-mix(in oklab, var(--brand-cyan) 18%, transparent), transparent 34%);
+  background: linear-gradient(90deg, color-mix(in oklab, var(--brand-ink) 98%, black) 0%, color-mix(in oklab, var(--brand-ink) 92%, transparent) 48%, color-mix(in oklab, var(--brand-ink) 25%, transparent) 100%);
 }
 
 @utility workspace-grid {
@@ -197,4 +196,17 @@
   & p + p {
     margin-top: 1rem;
   }
+}
+
+@keyframes section-reveal {
+  from { opacity: 0; transform: translateY(14px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .section-reveal { animation: section-reveal 520ms ease-out both; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }

@@ -142,6 +142,18 @@ export const projects = [
     category: "Personal Brand Platform",
     description: "A premium international digital platform for ideas, technology, business and people.",
   },
+  {
+    slug: "muscat-pearl-resort",
+    name: "Muscat Pearl Resort",
+    category: "UI/UX Design",
+    description: "A future luxury hospitality website concept.",
+  },
+  {
+    slug: "business-website",
+    name: "Business Website",
+    category: "Web Development",
+    description: "A modern business website concept prepared for a verified project.",
+  },
 ];
 
 export const blogPosts = [
@@ -184,11 +196,10 @@ export const philosophyCards = [
 ];
 
 export const aboutFacts = [
-  "Abubakar Alhaji Abubakar",
-  "Bangis Kebbi Nakowa",
-  "National Diploma (ND) in Information and Communication Technology",
-  "Kebbi State University of Science and Technology, Aliero",
-  "Completed October 24, 2024",
+  "Creative digital solutions with a clear purpose",
+  "Reliable support for brands and communities",
+  "A global mindset grounded in real people",
+  "Positive impact through technology and connection",
 ];
 
 export const aboutAreas = [

@@ -6,16 +6,15 @@ import {
   BusinessSection,
   CommunitySection,
   ContactSection,
-  DashboardPreviewSection,
   FoundationSection,
   HeroSection,
   PillarsSection,
   ProjectsSection,
   ServicesSection,
-  TestimonialsPlaceholder,
   UmrahSection,
 } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
+import heroImage from "@/assets/muscat-hero.jpg";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -49,6 +48,7 @@ export const Route = createFileRoute("/")({
         }),
       },
     ],
+    links: [{ rel: "preload", as: "image", href: heroImage, fetchPriority: "high" }],
   }),
   component: Index,
 });
@@ -62,12 +62,10 @@ function Index() {
       <ServicesSection />
       <ProjectsSection />
       <BusinessSection />
-      <CommunitySection />
       <UmrahSection />
       <FoundationSection />
-      <DashboardPreviewSection />
+      <CommunitySection />
       <BlogPreview />
-      <TestimonialsPlaceholder />
       <ContactSection />
     </main>
   );
