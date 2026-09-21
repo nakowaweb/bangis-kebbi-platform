@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, FileText, History, Image, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
+import { Archive, Bell, FileText, History, Image, LayoutDashboard, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
