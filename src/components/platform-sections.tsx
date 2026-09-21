@@ -11,13 +11,16 @@ import {
   MessageCircle,
   Network,
   Plane,
+  Play,
   type LucideIcon,
   UsersRound,
+  Video,
 } from "lucide-react";
 import type { ReactNode } from "react";
 
 import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
-import portraitAsset from "@/assets/bangis-portrait-source.png.asset.json";
+import communityImageAsset from "@/assets/bangis-official-community.webp.asset.json";
+import portraitAsset from "@/assets/bangis-official-hero.webp.asset.json";
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
@@ -50,32 +53,43 @@ const categoryCards: Array<{ title: string; detail: string; href: "/services" | 
 export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
-      <img src={heroImage} alt="Global waterfront cityscape at night" width={1600} height={900} fetchPriority="high" className="absolute inset-0 -z-20 h-full w-full object-cover object-center lg:object-right" />
-      <div className="absolute inset-0 -z-10 hero-surface" />
-      <div className="mx-auto grid min-h-[640px] max-w-7xl items-end gap-4 px-4 pt-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(350px,.8fr)] lg:px-8 lg:pt-16">
-        <div className="self-center pb-10 lg:pb-20">
-          <p className="text-xs font-bold uppercase text-brand-cyan">{content?.eyebrow ?? "More than a website"}</p>
+      <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
+      <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
+        <div>
+          <p className="text-xs font-bold uppercase text-brand-cyan">{content?.eyebrow ?? "Global vision • real impact"}</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
-            {content?.title ?? "A GLOBAL PLATFORM"}
+            {content?.title ?? <>MORE THAN A WEBSITE<br /><span className="text-brand-cyan">A GLOBAL PLATFORM</span></>}
           </h1>
-          <p className="mt-4 max-w-xl font-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
-            {content?.subtitle ? content.subtitle : <>Turning Ideas Into <span className="text-brand-cyan">Real Opportunities</span></>}
+          <p className="mt-5 max-w-xl font-display text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
+            {content?.subtitle ?? "Turning Ideas Into Real Opportunities"}
           </p>
-          <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
-            {["Learn", "Connect", "Build", "Support", "Grow", "Achieve"].map((word) => <span key={word} className="rounded-full border border-primary-foreground/35 px-3 py-1">{word}</span>)}
-          </div>
-          <p className="mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? "Technology, people and practical digital solutions working together for a brighter future."}</p>
+          <p className="mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? "Technology, business, community and practical support—connected through one professional global platform."}</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
             <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{content?.primaryCta ?? "Hire Me"} <ArrowRight /></Link></Button>
             <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{content?.secondaryCta ?? "Explore My Work"}</Link></Button>
           </div>
         </div>
-        <div className="relative mx-auto h-[390px] w-full max-w-[500px] self-end sm:h-[470px] lg:h-[590px]">
-          <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar, Bangis Kebbi" width={720} height={900} className="absolute bottom-0 left-1/2 h-full max-w-none -translate-x-1/2 object-contain object-bottom drop-shadow-2xl" />
-          <div className="absolute bottom-5 right-0 rounded-md border border-primary-foreground/20 bg-brand-ink/85 px-4 py-3 text-xs backdrop-blur sm:bottom-8">
+        <div className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
+          <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar at his BangisKebbi.com workspace" width={1254} height={1254} fetchPriority="high" className="aspect-square h-auto w-full rounded-md object-contain" />
+          <div className="absolute bottom-4 right-4 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur">
              <p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p>
           </div>
         </div>
+      </div>
+    </section>
+  );
+}
+
+export function PlatformIntroduction({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
+  return (
+    <section className="border-b border-border bg-background py-9 sm:py-11">
+      <div className="mx-auto grid max-w-7xl gap-6 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8">
+        <div className="max-w-3xl">
+          <p className="text-xs font-bold uppercase text-primary">Who we are</p>
+          <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">{title ?? "Ideas, technology, business and people—working together."}</h2>
+          <p className="mt-3 text-sm leading-6 text-muted-foreground">{description ?? "BangisKebbi.com creates useful digital experiences, connects people with legitimate opportunities and supports meaningful community initiatives."}</p>
+        </div>
+        <Button variant="outline" asChild><Link to="/about">About Bangis Kebbi <ArrowRight /></Link></Button>
       </div>
     </section>
   );
@@ -168,7 +182,45 @@ export function FoundationSection({ title, description }: { title?: string | und
 
 export function CommunitySection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   return (
-    <CompactPlatform icon={UsersRound} eyebrow="Join Our Community" title={title ?? "Connect, learn, share and grow together."} description={description ?? "A people-first network for learning, entrepreneurship and meaningful support."} href="/register" action="Join Now" tone="blue" />
+    <section className="section-reveal border-b border-border bg-secondary py-10 sm:py-12">
+      <div className="mx-auto grid max-w-7xl gap-7 px-4 sm:px-6 md:grid-cols-[minmax(0,.72fr)_minmax(0,1fr)] md:items-center lg:px-8">
+        <img src={communityImageAsset.url} alt="BangisKebbi.com community and global platform identity" loading="lazy" width={1254} height={1254} className="mx-auto aspect-square w-full max-w-[390px] rounded-full object-contain shadow-platform" />
+        <div>
+          <p className="text-xs font-bold uppercase text-primary">Join Our Community</p>
+          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{title ?? "Connect, learn, share and grow together."}</h2>
+          <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{description ?? "A people-first network for learning, entrepreneurship and meaningful support."}</p>
+          <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold text-muted-foreground">
+            {["Learn", "Connect", "Build", "Support", "Grow"].map((word) => <span key={word} className="rounded-full border border-border bg-card px-3 py-1.5">{word}</span>)}
+          </div>
+          <Button className="mt-6" asChild><Link to="/register">Join Now <ArrowRight /></Link></Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+const activityCards = [
+  { title: "Projects & business", detail: "Real project and business activity videos", image: businessImage },
+  { title: "Community activities", detail: "People, events and community updates", image: communityImageAsset.url },
+  { title: "Umrah & Foundation", detail: "Verified support activity updates", image: resortImage },
+];
+
+export function LatestActivitiesSection() {
+  return (
+    <SectionShell eyebrow="Latest activities / video" title="See what the platform is doing." description="Short videos from verified projects, events and support activities will appear here when published." action={{ label: "View Updates", href: "/blog" }}>
+      <div className="grid gap-4 md:grid-cols-3">
+        {activityCards.map((activity) => (
+          <article key={activity.title} className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm">
+            <div className="relative aspect-video overflow-hidden bg-brand-ink">
+              <img src={activity.image} alt="" loading="lazy" width={800} height={450} className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]" />
+              <span className="absolute inset-0 grid place-items-center bg-brand-ink/25"><span className="grid h-12 w-12 place-items-center rounded-full bg-background/90 text-primary shadow-platform"><Play className="ml-0.5 h-5 w-5" /></span></span>
+              <Badge className="absolute left-3 top-3 bg-brand-ink/90 text-primary-foreground"><Video /> Video coming soon</Badge>
+            </div>
+            <div className="p-4"><h3 className="font-display text-base font-bold">{activity.title}</h3><p className="mt-1 text-sm text-muted-foreground">{activity.detail}</p></div>
+          </article>
+        ))}
+      </div>
+    </SectionShell>
   );
 }
 
@@ -187,7 +239,7 @@ export function ContactSection() {
       <div className="absolute inset-0 workspace-grid opacity-35" />
       <div className="relative mx-auto grid max-w-7xl gap-7 px-4 text-center sm:px-6 lg:px-8">
         <div><p className="text-xs font-bold uppercase text-brand-cyan">Contact</p><h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">Let’s build something meaningful together.</h2><p className="mx-auto mt-3 max-w-2xl text-sm text-primary-foreground/75">Have a project, idea or partnership in mind? I’d love to hear from you.</p></div>
-        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">Contact Me <ArrowRight /></Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><MessageCircle /> WhatsApp</Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><Mail /> Email</Link></Button></div>
+        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">Contact Me <ArrowRight /></Link></Button><Button className="bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild><Link to="/register"><UsersRound /> Join the Community</Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><MessageCircle /> WhatsApp</Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><Mail /> Email</Link></Button></div>
       </div>
     </section>
   );
