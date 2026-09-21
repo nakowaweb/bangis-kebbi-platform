@@ -56,6 +56,7 @@ function AdminPage() {
   const registerMedia = useServerFn(registerMediaAsset);
   const [editor, setEditor] = useState<EditorState>(emptyEditor);
   const [query, setQuery] = useState("");
+  const [area, setArea] = useState<string>("all");
 
   const workspace = useQuery({ queryKey: ["admin-workspace"], queryFn: () => getWorkspace() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-workspace"] });
