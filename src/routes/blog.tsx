@@ -8,7 +8,7 @@ export const Route = createFileRoute("/blog")({
     pageHead({
       title: "Blog & Updates — Technology, AI, Business and Community",
       description:
-        "Read Bangis Kebbi updates on technology, AI, web design, business, entrepreneurship, Oman, community, Umrah and Foundation news.",
+        "Read Bangis Kebbi updates on technology, AI, web design, business, entrepreneurship, community, Umrah and Foundation news.",
       path: "/blog",
       type: "article",
     }),

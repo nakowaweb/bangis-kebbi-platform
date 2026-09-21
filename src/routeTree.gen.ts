@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BusinessRouteImport } from './routes/business'
@@ -25,11 +26,16 @@ import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ServicesRouteImport } from './routes/services'
 import { Route as TermsRouteImport } from './routes/terms'
 import { Route as UmrahRouteImport } from './routes/umrah'
+import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as ProjectsBangiskebbiComRouteImport } from './routes/projects.bangiskebbi-com'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AboutRoute = AboutRouteImport.update({
@@ -107,6 +113,11 @@ const UmrahRoute = UmrahRouteImport.update({
   path: '/umrah',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminRoute = AuthenticatedAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
 const ProjectsBangiskebbiComRoute = ProjectsBangiskebbiComRouteImport.update({
   id: '/bangiskebbi-com',
   path: '/bangiskebbi-com',
@@ -130,6 +141,7 @@ export interface FileRoutesByFullPath {
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/umrah': typeof UmrahRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRoutesByTo {
@@ -149,11 +161,13 @@ export interface FileRoutesByTo {
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/umrah': typeof UmrahRoute
+  '/admin': typeof AuthenticatedAdminRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/blog': typeof BlogRoute
   '/business': typeof BusinessRoute
@@ -169,6 +183,7 @@ export interface FileRoutesById {
   '/services': typeof ServicesRoute
   '/terms': typeof TermsRoute
   '/umrah': typeof UmrahRoute
+  '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRouteTypes {
@@ -190,6 +205,7 @@ export interface FileRouteTypes {
     | '/services'
     | '/terms'
     | '/umrah'
+    | '/admin'
     | '/projects/bangiskebbi-com'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,10 +225,12 @@ export interface FileRouteTypes {
     | '/services'
     | '/terms'
     | '/umrah'
+    | '/admin'
     | '/projects/bangiskebbi-com'
   id:
     | '__root__'
     | '/'
+    | '/_authenticated'
     | '/about'
     | '/blog'
     | '/business'
@@ -228,11 +246,13 @@ export interface FileRouteTypes {
     | '/services'
     | '/terms'
     | '/umrah'
+    | '/_authenticated/admin'
     | '/projects/bangiskebbi-com'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRoute
   BusinessRoute: typeof BusinessRoute
@@ -257,6 +277,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/about': {
@@ -364,6 +391,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof UmrahRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin': {
+      id: '/_authenticated/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AuthenticatedAdminRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/projects/bangiskebbi-com': {
       id: '/projects/bangiskebbi-com'
       path: '/bangiskebbi-com'
@@ -373,6 +407,17 @@ declare module '@tanstack/react-router' {
     }
   }
 }
+
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminRoute: typeof AuthenticatedAdminRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminRoute: AuthenticatedAdminRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
 interface ProjectsRouteChildren {
   ProjectsBangiskebbiComRoute: typeof ProjectsBangiskebbiComRoute
@@ -388,6 +433,7 @@ const ProjectsRouteWithChildren = ProjectsRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRoute,
   BusinessRoute: BusinessRoute,
