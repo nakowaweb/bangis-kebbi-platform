@@ -87,7 +87,7 @@ export const getAdminWorkspace = createServerFn({ method: "GET" })
 
 export const saveContentEntry = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => contentInput.parse(input))
+  .validator((input) => contentInput.parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
     const record = {
@@ -117,7 +117,7 @@ export const saveContentEntry = createServerFn({ method: "POST" })
 
 export const archiveContentEntry = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
     const { error } = await context.supabase.from("content_entries").update({ status: "archived", deleted_at: new Date().toISOString(), updated_by: context.userId }).eq("id", data.id);
@@ -127,7 +127,7 @@ export const archiveContentEntry = createServerFn({ method: "POST" })
 
 export const saveSiteSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => settingsInput.parse(input))
+  .validator((input) => settingsInput.parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
     const { data: saved, error } = await context.supabase.from("site_settings").update({
@@ -150,7 +150,7 @@ export const saveSiteSettings = createServerFn({ method: "POST" })
 
 export const registerMediaAsset = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((input) => z.object({
+  .validator((input) => z.object({
     name: z.string().trim().min(1).max(200),
     storagePath: z.string().trim().min(1).max(500),
     mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml"]),
