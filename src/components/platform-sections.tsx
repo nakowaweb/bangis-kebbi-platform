@@ -18,8 +18,8 @@ import type { ReactNode } from "react";
 
 import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
 import portraitAsset from "@/assets/bangis-portrait-source.png.asset.json";
-import heroImage from "@/assets/muscat-hero.webp";
-import resortImage from "@/assets/muscat-resort.webp";
+import heroImage from "@/assets/global-city-hero.webp";
+import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -47,33 +47,33 @@ const categoryCards: Array<{ title: string; detail: string; href: "/services" | 
   { title: "Global Reach", detail: "Worldwide impact", href: "/about", icon: Globe2, tone: "bg-brand-ink" },
 ];
 
-export function HeroSection() {
+export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
-      <img src={heroImage} alt="Muscat waterfront at night" width={1600} height={900} fetchPriority="high" className="absolute inset-0 -z-20 h-full w-full object-cover object-center lg:object-right" />
+      <img src={heroImage} alt="Global waterfront cityscape at night" width={1600} height={900} fetchPriority="high" className="absolute inset-0 -z-20 h-full w-full object-cover object-center lg:object-right" />
       <div className="absolute inset-0 -z-10 hero-surface" />
       <div className="mx-auto grid min-h-[640px] max-w-7xl items-end gap-4 px-4 pt-12 sm:px-6 lg:grid-cols-[minmax(0,1fr)_minmax(350px,.8fr)] lg:px-8 lg:pt-16">
         <div className="self-center pb-10 lg:pb-20">
-          <p className="text-xs font-bold uppercase text-brand-cyan">More than a website</p>
+          <p className="text-xs font-bold uppercase text-brand-cyan">{content?.eyebrow ?? "More than a website"}</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
-            A GLOBAL PLATFORM
+            {content?.title ?? "A GLOBAL PLATFORM"}
           </h1>
           <p className="mt-4 max-w-xl font-display text-2xl font-bold leading-tight sm:text-3xl lg:text-4xl">
-            Turning Ideas Into <span className="text-brand-cyan">Real Opportunities</span>
+            {content?.subtitle ? content.subtitle : <>Turning Ideas Into <span className="text-brand-cyan">Real Opportunities</span></>}
           </p>
           <div className="mt-5 flex flex-wrap gap-2 text-xs font-semibold">
             {["Learn", "Connect", "Build", "Support", "Grow", "Achieve"].map((word) => <span key={word} className="rounded-full border border-primary-foreground/35 px-3 py-1">{word}</span>)}
           </div>
-          <p className="mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">Technology, people and practical digital solutions working together for a brighter future.</p>
+          <p className="mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? "Technology, people and practical digital solutions working together for a brighter future."}</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">Hire Me <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">Explore My Work</Link></Button>
+            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{content?.primaryCta ?? "Hire Me"} <ArrowRight /></Link></Button>
+            <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{content?.secondaryCta ?? "Explore My Work"}</Link></Button>
           </div>
         </div>
         <div className="relative mx-auto h-[390px] w-full max-w-[500px] self-end sm:h-[470px] lg:h-[590px]">
           <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar, Bangis Kebbi" width={720} height={900} className="absolute bottom-0 left-1/2 h-full max-w-none -translate-x-1/2 object-contain object-bottom drop-shadow-2xl" />
           <div className="absolute bottom-5 right-0 rounded-md border border-primary-foreground/20 bg-brand-ink/85 px-4 py-3 text-xs backdrop-blur sm:bottom-8">
-            <p className="font-bold">Muscat, Oman</p><p className="mt-1 text-primary-foreground/70">Working globally</p>
+             <p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p>
           </div>
         </div>
       </div>
@@ -96,9 +96,9 @@ export function PillarsSection() {
   );
 }
 
-export function AboutPreview() {
+export function AboutPreview({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   return (
-    <SectionShell eyebrow="About Me" title="A passion for technology, people and impact." description="I build practical digital solutions, connect people to opportunities and support initiatives that make a positive difference.">
+    <SectionShell eyebrow="About Me" title={title ?? "A passion for technology, people and impact."} description={description ?? "I build practical digital solutions, connect people to opportunities and support initiatives that make a positive difference."}>
       <div className="grid gap-7 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <div className="relative min-h-[330px] overflow-hidden rounded-lg bg-secondary">
           <div className="absolute left-5 top-5 h-16 w-16 bg-[radial-gradient(circle,var(--brand-cyan)_2px,transparent_2px)] bg-[length:12px_12px] opacity-70" />
@@ -114,23 +114,25 @@ export function AboutPreview() {
   );
 }
 
-export function ServicesSection({ full = false }: { full?: boolean }) {
+export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; title: string; summary: string | null }> | undefined }) {
+  const visibleServices = items?.length ? items.map((item, index) => ({ title: item.title, description: item.summary ?? "Professional digital support shaped around practical needs.", icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 })) : serviceCards;
   return (
     <SectionShell eyebrow="Services" title="Digital solutions for a better tomorrow." description="Focused, responsive work for brands, businesses and communities." action={!full ? { label: "View All Services", href: "/services" } : undefined}>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {serviceCards.map((service) => <FeatureCard key={service.title} icon={service.icon} title={service.title} description={service.description} action="Learn More" href="/services" />)}
+        {visibleServices.map((service) => <FeatureCard key={service.title} icon={service.icon} title={service.title} description={service.description} action="Learn More" href="/services" />)}
       </div>
     </SectionShell>
   );
 }
 
 const projectImages = [heroImage, resortImage, businessImage];
-export function ProjectsSection({ full = false }: { full?: boolean }) {
+export function ProjectsSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; payload: unknown }> | undefined }) {
+  const visibleProjects = items?.length ? items.map((item) => ({ slug: item.slug, name: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : "Digital Project", description: item.summary ?? "A selected digital project from BangisKebbi.com." })) : projects;
   return (
     <SectionShell eyebrow="Featured Projects" title="Turning ideas into real results." description="Selected platform and website concepts, clearly marked until verified." action={!full ? { label: "View All Projects", href: "/projects" } : undefined}>
       {full && <div className="mb-5 flex flex-wrap gap-2">{projectCategories.map((category) => <Badge key={category} variant="outline">{category}</Badge>)}</div>}
       <div className="grid gap-4 md:grid-cols-3">
-        {projects.map((project, index) => (
+        {visibleProjects.map((project, index) => (
           <article key={project.slug} className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-platform">
             <div className="relative aspect-[16/9] overflow-hidden bg-brand-ink">
               <img src={projectImages[index] ?? heroImage} alt="" loading="lazy" width={1200} height={750} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
@@ -144,36 +146,37 @@ export function ProjectsSection({ full = false }: { full?: boolean }) {
   );
 }
 
-export function BusinessSection() {
+export function BusinessSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   return (
-    <SectionShell eyebrow="Business & Opportunities" title="Connection without borders." description="Digital services, business networking and legitimate opportunities—never investment returns or financial promises.">
+    <SectionShell eyebrow="Business & Opportunities" title={title ?? "Connection without borders."} description={description ?? "Digital services, business networking and legitimate opportunities—never investment returns or financial promises."}>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{businessCategories.map((item) => <FeatureCard key={item.title} icon={item.icon} title={item.title} description="A practical pathway for trusted connection and progress." />)}</div>
     </SectionShell>
   );
 }
 
-export function UmrahSection() {
+export function UmrahSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   return (
-    <CompactPlatform icon={Plane} eyebrow="Umrah Support Program" title="A simple, organized support journey." description="Helping members understand and follow an Umrah application and coordination process. No claim of visa authority or operator status." href="/umrah" action="Explore Umrah Support" tone="gold" />
+    <CompactPlatform icon={Plane} eyebrow="Umrah Support Program" title={title ?? "A simple, organized support journey."} description={description ?? "Helping members understand and follow an Umrah application and coordination process. No claim of visa authority or operator status."} href="/umrah" action="Explore Umrah Support" tone="gold" />
   );
 }
 
-export function FoundationSection() {
+export function FoundationSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   return (
-    <CompactPlatform icon={HandHeart} eyebrow="BK Foundations" title="Supporting people and communities." description="Community contribution initiatives designed for transparent support—not investment, profit sharing or promised returns." href="/foundation" action="Support an Initiative" tone="green" />
+    <CompactPlatform icon={HandHeart} eyebrow="BK Foundations" title={title ?? "Supporting people and communities."} description={description ?? "Community contribution initiatives designed for transparent support—not investment, profit sharing or promised returns."} href="/foundation" action="Support an Initiative" tone="green" />
   );
 }
 
-export function CommunitySection() {
+export function CommunitySection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   return (
-    <CompactPlatform icon={UsersRound} eyebrow="Join Our Community" title="Connect, learn, share and grow together." description="A people-first network for learning, entrepreneurship and meaningful support." href="/register" action="Join Now" tone="blue" />
+    <CompactPlatform icon={UsersRound} eyebrow="Join Our Community" title={title ?? "Connect, learn, share and grow together."} description={description ?? "A people-first network for learning, entrepreneurship and meaningful support."} href="/register" action="Join Now" tone="blue" />
   );
 }
 
-export function BlogPreview() {
+export function BlogPreview({ items }: { items?: Array<{ id: string; title: string; summary: string | null; payload: unknown }> | undefined }) {
+  const visiblePosts = items?.length ? items.slice(0, 3).map((item) => ({ title: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : "Update" })) : blogPosts;
   return (
     <SectionShell eyebrow="Latest Updates" title="Insights, ideas and opportunities." description="A concise selection from technology, AI, business, community, Umrah and foundation updates." action={{ label: "View All Posts", href: "/blog" }}>
-      <div className="grid gap-4 md:grid-cols-3">{blogPosts.map((post, index) => <article key={post.title} className="grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><img src={projectImages[index]} alt="" loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog">Read More <ArrowRight /></Link></Button></div></article>)}</div>
+      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post, index) => <article key={post.title} className="grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><img src={projectImages[index]} alt="" loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog">Read More <ArrowRight /></Link></Button></div></article>)}</div>
     </SectionShell>
   );
 }

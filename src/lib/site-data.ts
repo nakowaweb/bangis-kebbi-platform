@@ -143,8 +143,8 @@ export const projects = [
     description: "A premium international digital platform for ideas, technology, business and people.",
   },
   {
-    slug: "muscat-pearl-resort",
-    name: "Muscat Pearl Resort",
+    slug: "hospitality-resort-concept",
+    name: "Hospitality Resort Concept",
     category: "UI/UX Design",
     description: "A future luxury hospitality website concept.",
   },

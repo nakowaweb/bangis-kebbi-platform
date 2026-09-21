@@ -14,7 +14,8 @@ import {
   UmrahSection,
 } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
-import heroImage from "@/assets/muscat-hero.webp";
+import { getPublicContent } from "@/lib/content.functions";
+import heroImage from "@/assets/global-city-hero.webp";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -50,22 +51,32 @@ export const Route = createFileRoute("/")({
     ],
     links: [{ rel: "preload", as: "image", href: heroImage, fetchPriority: "high" }],
   }),
+  loader: () => getPublicContent(),
   component: Index,
 });
 
 function Index() {
+  const publicContent = Route.useLoaderData();
+  const hero = publicContent.entries.find((entry) => entry.content_type === "homepage" && entry.slug === "hero");
+  const about = publicContent.entries.find((entry) => entry.content_type === "about" && entry.slug === "summary");
+  const section = (type: string) => publicContent.entries.find((entry) => entry.content_type === type);
+  const services = publicContent.entries.filter((entry) => entry.content_type === "service");
+  const projects = publicContent.entries.filter((entry) => entry.content_type === "project");
+  const posts = publicContent.entries.filter((entry) => entry.content_type === "blog_post");
+  const payload = hero?.payload && typeof hero.payload === "object" && !Array.isArray(hero.payload) ? hero.payload : {};
+  const value = (key: string) => typeof payload[key] === "string" ? payload[key] : undefined;
   return (
     <main>
-      <HeroSection />
+      <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} location={publicContent.settings?.location ?? "Abuja, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
       <PillarsSection />
-      <AboutPreview />
-      <ServicesSection />
-      <ProjectsSection />
-      <BusinessSection />
-      <UmrahSection />
-      <FoundationSection />
-      <CommunitySection />
-      <BlogPreview />
+      <AboutPreview title={about?.title} description={about?.summary ?? undefined} />
+      <ServicesSection items={services} />
+      <ProjectsSection items={projects} />
+      <BusinessSection title={section("business")?.title} description={section("business")?.summary ?? undefined} />
+      <UmrahSection title={section("umrah")?.title} description={section("umrah")?.summary ?? undefined} />
+      <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} />
+      <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
+      <BlogPreview items={posts} />
       <ContactSection />
     </main>
   );
