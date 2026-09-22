@@ -74,6 +74,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const registerDoc = useServerFn(registerUmrahDocument);
   const removeDoc = useServerFn(deleteUmrahDocument);
   const documentLink = useServerFn(getUmrahDocumentLink);
+  const [savedApplicationId, setSavedApplicationId] = useState<string | null>(null);
 
   const query = useQuery({ queryKey: ["umrah-application"], queryFn: () => load() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-application"] });
@@ -83,8 +84,9 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
 
   const saveMutation = useMutation({
     mutationFn: (values: Record<string, string>) => save({ data: values as never }),
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       const created = wasNewRef.current;
+      setSavedApplicationId(result.id);
       toast.success(created ? "Application saved. You can now upload your documents." : "Your application has been saved.");
       await refresh();
       if (created) {
@@ -121,6 +123,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   }
 
   const application = query.data.application as Record<string, string | null> | null;
+  const applicationId = (application?.["id"] as string | undefined) ?? savedApplicationId;
   const documents = query.data.documents as UmrahDoc[];
   const history = query.data.history as {
     id: string;
@@ -206,7 +209,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
 
       <DocumentsCard
         userId={userId}
-        applicationId={(application?.["id"] as string | undefined) ?? null}
+        applicationId={applicationId}
         canEdit={canEdit}
         documents={documents}
         onChanged={refresh}
