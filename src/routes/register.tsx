@@ -43,7 +43,7 @@ function RegisterPage() {
     setBusy(true);
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: String(form.get("email")),
-      password: String(form.get("password")),
+      password,
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
         data: {
