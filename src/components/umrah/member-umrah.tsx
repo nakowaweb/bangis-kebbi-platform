@@ -583,7 +583,7 @@ function DocumentsCard({
           documentType: type,
           storagePath: path,
           originalName: file.name.slice(0, 200),
-          mimeType: file.type,
+          mimeType,
           byteSize: file.size,
         },
       });
