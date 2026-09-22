@@ -19,6 +19,34 @@ export const umrahStatuses = [
 export type UmrahStatus = (typeof umrahStatuses)[number];
 
 export const umrahDocumentTypes = ["passport", "identification", "photograph", "other"] as const;
+export type UmrahDocumentType = (typeof umrahDocumentTypes)[number];
+
+export const umrahDocumentLabels: Record<UmrahDocumentType, string> = {
+  passport: "Passport",
+  identification: "Identification Document",
+  photograph: "Passport Photograph",
+  other: "Additional Document",
+};
+
+/** Documents that must be present before an application can be submitted. */
+export const requiredUmrahDocumentTypes: UmrahDocumentType[] = ["passport"];
+
+export const UMRAH_MAX_BYTES = 10 * 1024 * 1024;
+
+export const umrahAcceptedMimeTypes = [
+  "application/pdf",
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/gif",
+] as const;
+
+export const umrahAcceptedExtensions = ["pdf", "jpg", "jpeg", "png", "webp", "gif"] as const;
+
+export function umrahFileExtension(name: string): string {
+  const parts = name.toLowerCase().split(".");
+  return parts.length > 1 ? (parts.pop() as string) : "";
+}
 
 /** Columns a member is allowed to read — internal_note is deliberately excluded. */
 const memberColumns =
