@@ -686,17 +686,18 @@ function DocumentsCard({
 }
 
 function DocumentUploadControl({
+  inputId,
   label,
   enabled,
   progress,
   onFile,
 }: {
+  inputId: string;
   label: string;
   enabled: boolean;
   progress: number | undefined;
   onFile: (file: File) => void;
 }) {
-  const inputId = useId();
   const busy = progress !== undefined;
   const unavailable = !enabled || busy;
 
