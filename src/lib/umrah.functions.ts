@@ -167,9 +167,12 @@ export const saveMyUmrahApplication = createServerFn({ method: "POST" })
       const { data: created, error } = await context.supabase
         .from("umrah_applications")
         .insert({ user_id: context.userId, status: "draft", ...toRow(data) })
-        .select("id")
+        .select(memberColumns)
         .single();
       if (error) throw new Error(error.message);
+      if (!created || created.user_id !== context.userId) {
+        throw new Error("The saved application could not be verified for this account.");
+      }
       await context.supabase.from("umrah_application_history").insert({
         application_id: created.id,
         actor_id: context.userId,
@@ -177,7 +180,7 @@ export const saveMyUmrahApplication = createServerFn({ method: "POST" })
         action: "Application draft created",
         to_status: "draft",
       });
-      return { id: created.id as string, created: true };
+      return { application: created, created: true };
     }
 
     const editable: UmrahStatus[] = ["draft", "documents_required"];
@@ -185,12 +188,18 @@ export const saveMyUmrahApplication = createServerFn({ method: "POST" })
       throw new Error("This application can no longer be edited. Please contact the platform for changes.");
     }
 
-    const { error } = await context.supabase
+    const { data: updated, error } = await context.supabase
       .from("umrah_applications")
       .update(toRow(data))
-      .eq("id", existing.id);
+      .eq("id", existing.id)
+      .eq("user_id", context.userId)
+      .select(memberColumns)
+      .single();
     if (error) throw new Error(error.message);
-    return { id: existing.id as string, created: false };
+    if (!updated || updated.user_id !== context.userId) {
+      throw new Error("The saved application could not be verified for this account.");
+    }
+    return { application: updated, created: false };
   });
 
 export const submitMyUmrahApplication = createServerFn({ method: "POST" })

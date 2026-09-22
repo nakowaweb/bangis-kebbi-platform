@@ -66,6 +66,12 @@ const statusLabels: Record<string, string> = {
 
 const editableStatuses = ["draft", "documents_required"];
 
+type MemberApplication = Record<string, string | null> & {
+  id: string;
+  user_id: string;
+  status: string;
+};
+
 export function MemberUmrahPanel({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
   const load = useServerFn(getMyUmrahApplication);
@@ -74,7 +80,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const registerDoc = useServerFn(registerUmrahDocument);
   const removeDoc = useServerFn(deleteUmrahDocument);
   const documentLink = useServerFn(getUmrahDocumentLink);
-  const [savedApplicationId, setSavedApplicationId] = useState<string | null>(null);
+  const [savedApplication, setSavedApplication] = useState<MemberApplication | null>(null);
 
   const query = useQuery({ queryKey: ["umrah-application"], queryFn: () => load() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-application"] });
@@ -85,8 +91,8 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const saveMutation = useMutation({
     mutationFn: (values: Record<string, string>) => save({ data: values as never }),
     onSuccess: async (result) => {
-      const created = wasNewRef.current;
-      setSavedApplicationId(result.id);
+      const created = result.created || wasNewRef.current;
+      setSavedApplication(result.application as MemberApplication);
       toast.success(created ? "Application saved. You can now upload your documents." : "Your application has been saved.");
       await refresh();
       if (created) {
@@ -122,8 +128,10 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
     );
   }
 
-  const application = query.data.application as Record<string, string | null> | null;
-  const applicationId = (application?.["id"] as string | undefined) ?? savedApplicationId;
+  const loadedApplication = query.data.application as MemberApplication | null;
+  const application = loadedApplication ?? savedApplication;
+  const applicationId = application?.id ?? null;
+  const applicationOwnerId = application?.user_id ?? null;
   const documents = query.data.documents as UmrahDoc[];
   const history = query.data.history as {
     id: string;
@@ -210,6 +218,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
       <DocumentsCard
         userId={userId}
         applicationId={applicationId}
+        applicationOwnerId={applicationOwnerId}
         canEdit={canEdit}
         documents={documents}
         onChanged={refresh}
@@ -466,12 +475,14 @@ function formatBytes(bytes: number) {
 function DocumentsCard({
   userId,
   applicationId,
+  applicationOwnerId,
   canEdit,
   documents,
   onChanged,
 }: {
   userId: string;
   applicationId: string | null;
+  applicationOwnerId: string | null;
   canEdit: boolean;
   documents: UmrahDoc[];
   onChanged: () => void;
@@ -480,6 +491,7 @@ function DocumentsCard({
   const removeDoc = useServerFn(deleteUmrahDocument);
   const documentLink = useServerFn(getUmrahDocumentLink);
   const [progress, setProgress] = useState<Record<string, number>>({});
+  const ownsApplication = Boolean(applicationId && applicationOwnerId === userId);
 
   async function openDocument(id: string) {
     try {
@@ -576,7 +588,7 @@ function DocumentsCard({
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
-        {!applicationId ? (
+        {!ownsApplication ? (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
             Step 1: fill in your application details above and press “Save Application &amp; Continue”. Uploads open here
             straight away — you do not need to leave this page.
@@ -601,7 +613,7 @@ function DocumentsCard({
                 </div>
                 <DocumentUploadControl
                   label={umrahDocumentLabels[type]}
-                  enabled={Boolean(applicationId) && canEdit}
+                  enabled={ownsApplication && canEdit}
                   progress={uploadProgress}
                   onFile={(file) => void handleFile(type, file)}
                 />
