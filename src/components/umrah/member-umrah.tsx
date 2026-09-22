@@ -524,11 +524,13 @@ function DocumentsCard({
       return;
     }
     const extension = umrahFileExtension(file.name);
-    if (
-      !(umrahAcceptedExtensions as readonly string[]).includes(extension) ||
-      !(umrahAcceptedMimeTypes as readonly string[]).includes(file.type)
-    ) {
+    const mimeType = resolveMimeType(file);
+    if (!(umrahAcceptedExtensions as readonly string[]).includes(extension) || !mimeType) {
       toast.error(`This file type is not accepted. Accepted files: ${acceptedLabel}.`);
+      return;
+    }
+    if (file.size < 1) {
+      toast.error("That file appears to be empty. Please choose another file.");
       return;
     }
     if (file.size > UMRAH_MAX_BYTES) {
