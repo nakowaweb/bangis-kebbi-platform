@@ -16,9 +16,10 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
+import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
 import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
-import { getAdminOverview, listMembers, sendNotification, setMemberActive, setMemberRole } from "@/lib/members.functions";
+import { getAdminOverview, listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
@@ -128,7 +129,7 @@ function AdminPage() {
           </TabsList>
 
           <TabsContent value="overview"><AdminOverview /></TabsContent>
-          <TabsContent value="notifications"><NotificationsComposer /></TabsContent>
+          <TabsContent value="notifications"><AdminNotificationManager /></TabsContent>
 
           <TabsContent value="content">
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
