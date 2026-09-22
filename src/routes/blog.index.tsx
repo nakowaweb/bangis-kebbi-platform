@@ -3,6 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { BlogPreview, SectionShell } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
 import { pageHead } from "@/lib/seo";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/blog/")({
   head: () => ({
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/blog/")({
       },
     ],
   }),
+  errorComponent: RouteError,
   loader: () => listPublicEntries({ data: { contentType: "blog_post" } }),
   component: BlogPage,
 });
