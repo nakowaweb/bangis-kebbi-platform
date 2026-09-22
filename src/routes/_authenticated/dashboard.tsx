@@ -48,6 +48,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
 type TabKey = "overview" | "profile" | "services" | "projects" | "umrah" | "foundations" | "community" | "activities" | "notifications" | "settings";
 
 function DashboardPage() {
+  const { t } = useLanguage();
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   const loadAccount = useServerFn(getMyAccount);
