@@ -630,8 +630,7 @@ function DocumentsCard({
               <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold">
-                    {umrahDocumentLabels[type]}
-                    {required ? <span className="ml-2 text-xs font-medium text-destructive">Required</span> : null}
+                    {label}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {forType.length === 0 ? "Not uploaded yet" : `${forType.length} file${forType.length > 1 ? "s" : ""}`}
