@@ -564,7 +564,7 @@ function DocumentsCard({
   }
 
   return (
-    <Card>
+    <Card id="umrah-documents">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Documents</CardTitle>
         <CardDescription>
@@ -575,7 +575,8 @@ function DocumentsCard({
       <CardContent className="grid gap-4">
         {!applicationId ? (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            Save your application details first to enable uploads.
+            Step 1: fill in your application details above and press “Save Application &amp; Continue”. Uploads open here
+            straight away — you do not need to leave this page.
           </p>
         ) : null}
 
