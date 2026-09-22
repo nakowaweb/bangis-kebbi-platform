@@ -214,8 +214,34 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive }: { edito
     <Field label="Full content"><Textarea className="min-h-32" value={editor.body} maxLength={20000} onChange={(event) => update("body", event.target.value)} /></Field>
     <div className="grid grid-cols-2 gap-3"><Field label="Status"><Select value={editor.status} onValueChange={(value) => update("status", value as ContentStatus)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["draft", "published", "unpublished", "archived"].map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent></Select></Field><Field label="Order"><Input type="number" value={editor.sortOrder} onChange={(event) => update("sortOrder", Number(event.target.value))} /></Field></div>
     <Field label="Schedule (optional)"><Input type="datetime-local" value={editor.scheduledFor} onChange={(event) => update("scheduledFor", event.target.value)} /></Field>
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="Category"><Input value={editor.category} maxLength={120} onChange={(event) => update("category", event.target.value)} /></Field>
+      <Field label="Language"><Select value={editor.language} onValueChange={(value) => update("language", value as EditorState["language"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ha">Hausa</SelectItem><SelectItem value="ar">Arabic</SelectItem></SelectContent></Select></Field>
+    </div>
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="Author"><Input value={editor.author} maxLength={120} onChange={(event) => update("author", event.target.value)} /></Field>
+      <Field label="Completion date"><Input type="date" value={editor.completedOn} onChange={(event) => update("completedOn", event.target.value)} /></Field>
+    </div>
+    <Field label="Tags / tools (comma separated)"><Input value={editor.tags} onChange={(event) => update("tags", event.target.value)} /></Field>
+    <Field label="Main image path or link"><Input value={editor.imagePath} maxLength={500} onChange={(event) => update("imagePath", event.target.value)} /></Field>
+    <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
+    <Field label="Gallery images (comma separated links)"><Textarea value={editor.gallery} onChange={(event) => update("gallery", event.target.value)} /></Field>
+    <Field label="Project link (optional)"><Input value={editor.projectUrl} maxLength={500} placeholder="https://" onChange={(event) => update("projectUrl", event.target.value)} /></Field>
+    <div className="rounded-lg border border-dashed border-border p-4">
+      <p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Search &amp; social</p>
+      <div className="grid gap-3">
+        <Field label="Search title (optional)"><Input value={editor.seoTitle} maxLength={180} onChange={(event) => update("seoTitle", event.target.value)} /></Field>
+        <Field label="Meta description (optional)"><Textarea value={editor.seoDescription} maxLength={400} onChange={(event) => update("seoDescription", event.target.value)} /></Field>
+        <Field label="Canonical link (optional)"><Input value={editor.canonicalUrl} maxLength={500} placeholder="https://" onChange={(event) => update("canonicalUrl", event.target.value)} /></Field>
+        <Field label="Social title (optional)"><Input value={editor.ogTitle} maxLength={180} onChange={(event) => update("ogTitle", event.target.value)} /></Field>
+        <Field label="Social description (optional)"><Textarea value={editor.ogDescription} maxLength={400} onChange={(event) => update("ogDescription", event.target.value)} /></Field>
+        <Field label="Social image path or link (optional)"><Input value={editor.ogImagePath} maxLength={500} onChange={(event) => update("ogImagePath", event.target.value)} /></Field>
+        <p className="text-xs text-muted-foreground">Left empty, the page title, short description and main image are used automatically.</p>
+      </div>
+    </div>
     <label className="flex items-center justify-between text-sm"><span>Visible when published</span><Switch checked={editor.isEnabled} onCheckedChange={(checked) => update("isEnabled", checked)} /></label>
     <label className="flex items-center justify-between text-sm"><span>Featured content</span><Switch checked={editor.isFeatured} onCheckedChange={(checked) => update("isFeatured", checked)} /></label>
+    {editor.slug && previewPath(editor) && <a href={previewPath(editor) as string} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary hover:underline">Preview this page in a new tab</a>}
     <Button disabled={saving || !editor.title || !editor.slug} onClick={onSave}><Save /> {saving ? "Saving…" : "Save content"}</Button>
     {onArchive && <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive"><Archive /> Archive item</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to archive this?</AlertDialogTitle><AlertDialogDescription>The item will leave the public website. Its history remains available for restoration.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={onArchive}>Archive</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
   </div></aside>;
