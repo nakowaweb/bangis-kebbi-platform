@@ -32,6 +32,7 @@ import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as FoundationIndexRouteImport } from './routes/foundation.index'
 import { Route as FoundationSlugRouteImport } from './routes/foundation.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
@@ -153,6 +154,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const FoundationIndexRoute = FoundationIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => FoundationRoute,
+} as any)
 const FoundationSlugRoute = FoundationSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -211,6 +217,7 @@ export interface FileRoutesByFullPath {
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/foundation/': typeof FoundationIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/services/': typeof ServicesIndexRoute
 }
@@ -221,7 +228,6 @@ export interface FileRoutesByTo {
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
@@ -238,6 +244,7 @@ export interface FileRoutesByTo {
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog': typeof BlogIndexRoute
+  '/foundation': typeof FoundationIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/services': typeof ServicesIndexRoute
 }
@@ -270,6 +277,7 @@ export interface FileRoutesById {
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/foundation/': typeof FoundationIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/services/': typeof ServicesIndexRoute
 }
@@ -302,6 +310,7 @@ export interface FileRouteTypes {
     | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog/'
+    | '/foundation/'
     | '/projects/'
     | '/services/'
   fileRoutesByTo: FileRoutesByTo
@@ -312,7 +321,6 @@ export interface FileRouteTypes {
     | '/community'
     | '/contact'
     | '/forgot-password'
-    | '/foundation'
     | '/login'
     | '/privacy'
     | '/refund-policy'
@@ -329,6 +337,7 @@ export interface FileRouteTypes {
     | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog'
+    | '/foundation'
     | '/projects'
     | '/services'
   id:
@@ -360,6 +369,7 @@ export interface FileRouteTypes {
     | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog/'
+    | '/foundation/'
     | '/projects/'
     | '/services/'
   fileRoutesById: FileRoutesById
@@ -549,6 +559,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/foundation/': {
+      id: '/foundation/'
+      path: '/'
+      fullPath: '/foundation/'
+      preLoaderRoute: typeof FoundationIndexRouteImport
+      parentRoute: typeof FoundationRoute
+    }
     '/foundation/$slug': {
       id: '/foundation/$slug'
       path: '/$slug'
@@ -621,10 +638,12 @@ const BlogRouteWithChildren = BlogRoute._addFileChildren(BlogRouteChildren)
 
 interface FoundationRouteChildren {
   FoundationSlugRoute: typeof FoundationSlugRoute
+  FoundationIndexRoute: typeof FoundationIndexRoute
 }
 
 const FoundationRouteChildren: FoundationRouteChildren = {
   FoundationSlugRoute: FoundationSlugRoute,
+  FoundationIndexRoute: FoundationIndexRoute,
 }
 
 const FoundationRouteWithChildren = FoundationRoute._addFileChildren(
