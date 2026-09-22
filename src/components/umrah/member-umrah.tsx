@@ -593,6 +593,8 @@ function DocumentsCard({
                       canEdit={canEdit}
                       onOpen={() => openDocument(doc.id)}
                       getLink={() => documentLink({ data: { id: doc.id } })}
+                      replacing={uploadProgress !== undefined}
+                      onReplace={(file) => void handleFile(type, file, doc.id)}
                       onRemove={async () => {
                         try {
                           await removeDoc({ data: { id: doc.id } });
@@ -619,12 +621,16 @@ export function DocumentRow({
   canEdit,
   onOpen,
   onRemove,
+  onReplace,
+  replacing,
   getLink,
 }: {
   doc: UmrahDoc;
   canEdit: boolean;
   onOpen: () => void;
   onRemove?: () => void;
+  onReplace?: (file: File) => void;
+  replacing?: boolean;
   getLink: () => Promise<{ url: string }>;
 }) {
   const isImage = doc.mime_type?.startsWith("image/");
