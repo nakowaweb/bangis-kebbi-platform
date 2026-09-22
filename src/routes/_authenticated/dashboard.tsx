@@ -30,6 +30,7 @@ import { MemberFoundationPanel } from "@/components/foundation/member-foundation
 import { MemberActivitiesPanel, MemberNotificationsPanel } from "@/components/notifications/member-notifications";
 import { MemberUmrahPanel } from "@/components/umrah/member-umrah";
 import { supabase } from "@/integrations/supabase/client";
+import { useLanguage } from "@/lib/language";
 import { claimFirstSuperAdmin, getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
 import { pageHead } from "@/lib/seo";
 
@@ -75,9 +76,9 @@ function DashboardPage() {
   if (account.isError) {
     return (
       <main className="mx-auto max-w-2xl px-4 py-20 text-center">
-        <h1 className="font-display text-2xl font-bold">We could not load your account</h1>
+        <h1 className="font-display text-2xl font-bold">{t("common.errorTitle")}</h1>
         <p className="mt-3 text-sm text-muted-foreground">{account.error.message}</p>
-        <Button className="mt-6" onClick={() => account.refetch()}>Try again</Button>
+        <Button className="mt-6" onClick={() => account.refetch()}>{t("common.tryAgain")}</Button>
       </main>
     );
   }
@@ -91,9 +92,9 @@ function DashboardPage() {
       <header className="border-b border-border bg-primary text-primary-foreground">
         <div className="mx-auto flex max-w-7xl flex-col gap-4 px-4 py-7 sm:px-6 lg:flex-row lg:items-center lg:justify-between lg:px-8">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-cyan">Member Dashboard</p>
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-brand-cyan">{t("member.dashboard")}</p>
             <h1 className="mt-2 font-display text-2xl font-bold sm:text-3xl">
-              Welcome{profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}
+              {t("member.welcome")}{profile?.full_name ? `, ${profile.full_name.split(" ")[0]}` : ""}
             </h1>
             <p className="mt-1 text-sm text-primary-foreground/75">{profile?.email}</p>
           </div>
@@ -105,7 +106,7 @@ function DashboardPage() {
               <Button asChild variant="secondary" size="sm"><Link to="/admin"><ShieldCheck /> Admin</Link></Button>
             ) : null}
             <Button variant="outline" size="sm" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" onClick={signOut}>
-              <LogOut /> Sign out
+              <LogOut /> {t("member.signOut")}
             </Button>
           </div>
         </div>
@@ -114,16 +115,16 @@ function DashboardPage() {
       <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
         <Tabs value={tab} onValueChange={(value) => setTab(value as TabKey)}>
           <TabsList className="mb-6 h-auto w-full justify-start gap-1 overflow-x-auto bg-card p-1">
-            <TabsTrigger value="overview"><LayoutDashboard /> Overview</TabsTrigger>
-            <TabsTrigger value="profile"><UserRound /> Profile</TabsTrigger>
-            <TabsTrigger value="services"><Sparkles /> Services</TabsTrigger>
-            <TabsTrigger value="projects"><FolderKanban /> Projects</TabsTrigger>
-            <TabsTrigger value="umrah"><CalendarCheck /> Umrah</TabsTrigger>
-            <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
-            <TabsTrigger value="community"><UsersRound /> Community</TabsTrigger>
-            <TabsTrigger value="activities"><BriefcaseBusiness /> Activities</TabsTrigger>
-            <TabsTrigger value="notifications"><Bell /> Notifications{unread ? ` (${unread})` : ""}</TabsTrigger>
-            <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
+            <TabsTrigger value="overview"><LayoutDashboard /> {t("member.overview")}</TabsTrigger>
+            <TabsTrigger value="profile"><UserRound /> {t("member.profile")}</TabsTrigger>
+            <TabsTrigger value="services"><Sparkles /> {t("member.services")}</TabsTrigger>
+            <TabsTrigger value="projects"><FolderKanban /> {t("member.projects")}</TabsTrigger>
+            <TabsTrigger value="umrah"><CalendarCheck /> {t("member.umrah")}</TabsTrigger>
+            <TabsTrigger value="foundations"><HandHeart /> {t("member.foundation")}</TabsTrigger>
+            <TabsTrigger value="community"><UsersRound /> {t("nav.community")}</TabsTrigger>
+            <TabsTrigger value="activities"><BriefcaseBusiness /> {t("member.activities")}</TabsTrigger>
+            <TabsTrigger value="notifications"><Bell /> {t("member.notifications")}{unread ? ` (${unread})` : ""}</TabsTrigger>
+            <TabsTrigger value="settings"><Settings /> {t("member.settings")}</TabsTrigger>
           </TabsList>
 
           <TabsContent value="overview">
@@ -210,7 +211,7 @@ function DashboardPage() {
               </CardHeader>
               <CardContent className="grid gap-3 sm:max-w-sm">
                 <Button asChild variant="outline"><Link to="/reset-password">Change password</Link></Button>
-                <Button variant="outline" onClick={signOut}><LogOut /> Sign out</Button>
+                <Button variant="outline" onClick={signOut}><LogOut /> {t("member.signOut")}</Button>
                 <p className="text-xs text-muted-foreground">Your role and permissions can only be changed by a Super Admin.</p>
               </CardContent>
             </Card>
