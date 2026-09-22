@@ -14,6 +14,7 @@ export const Route = createFileRoute("/forgot-password")({
       title: "Forgot Password — BangisKebbi.com",
       description: "Future password recovery page for secure BangisKebbi.com member access.",
       path: "/forgot-password",
+      noindex: true,
     }),
   component: ForgotPasswordPage,
 });

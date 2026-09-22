@@ -20,6 +20,7 @@ export const Route = createFileRoute("/login")({
       title: "Login — BangisKebbi.com Member Access",
       description: "Member login for BangisKebbi.com community, Umrah support, Foundation contributions and dashboard access.",
       path: "/login",
+      noindex: true,
     }),
   component: LoginPage,
 });

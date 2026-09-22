@@ -1,18 +1,20 @@
-import { createClient } from "@supabase/supabase-js";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
-import type { Database, Json } from "@/integrations/supabase/types";
+import type { Json } from "@/integrations/supabase/types";
+import { PUBLIC_ENTRY_FIELDS, createPublicSupabase, publicMediaUrl } from "@/lib/public-content.server";
 
 const contentTypes = [
   "homepage", "about", "service", "project", "blog_post", "blog_category",
   "business", "umrah", "umrah_step", "umrah_faq", "umrah_notice", "umrah_requirement",
   "umrah_information", "umrah_contact", "foundation", "foundation_mission",
   "foundation_vision", "foundation_what_we_do",
-  "foundation_initiative", "foundation_update", "community", "contact",
+  "foundation_initiative", "foundation_update", "community", "contact", "footer",
 ] as const;
 const contentStatuses = ["draft", "published", "unpublished", "archived"] as const;
+
+const optionalText = (max: number) => z.string().trim().max(max).optional();
 
 const contentInput = z.object({
   id: z.string().uuid().optional(),
@@ -21,7 +23,21 @@ const contentInput = z.object({
   title: z.string().trim().min(1).max(200),
   summary: z.string().trim().max(1000).optional(),
   body: z.string().trim().max(20000).optional(),
-  imagePath: z.string().trim().max(500).optional(),
+  imagePath: optionalText(500),
+  imageAlt: optionalText(300),
+  category: optionalText(120),
+  author: optionalText(120),
+  tags: z.array(z.string().trim().min(1).max(40)).max(20).optional(),
+  language: z.enum(["en", "ha", "ar"]).optional(),
+  gallery: z.array(z.string().trim().min(1).max(500)).max(20).optional(),
+  projectUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
+  completedOn: z.union([z.literal(""), z.string().trim().max(20)]).optional(),
+  seoTitle: optionalText(180),
+  seoDescription: optionalText(400),
+  canonicalUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
+  ogTitle: optionalText(180),
+  ogDescription: optionalText(400),
+  ogImagePath: optionalText(500),
   status: z.enum(contentStatuses),
   isEnabled: z.boolean(),
   isFeatured: z.boolean(),
@@ -46,18 +62,7 @@ const settingsInput = z.object({
 });
 
 function publicClient() {
-  const key = process.env["SUPABASE_PUBLISHABLE_KEY"]!;
-  return createClient<Database>(process.env["SUPABASE_URL"]!, key, {
-    auth: { persistSession: false, autoRefreshToken: false, storage: undefined },
-    global: {
-      fetch: (input, init) => {
-        const headers = new Headers(init?.headers);
-        if (key.startsWith("sb_") && headers.get("Authorization") === `Bearer ${key}`) headers.delete("Authorization");
-        headers.set("apikey", key);
-        return fetch(input, { ...init, headers });
-      },
-    },
-  });
+  return createPublicSupabase();
 }
 
 async function requireContentAdmin(context: { supabase: ReturnType<typeof publicClient>; userId: string }) {
@@ -69,10 +74,40 @@ export const getPublicContent = createServerFn({ method: "GET" }).handler(async 
   const client = publicClient();
   const [{ data: settings }, { data: entries }] = await Promise.all([
     client.from("site_settings").select("website_name,company_name,location,global_status,contact_email,phone,whatsapp,footer_content,default_language,seo_title,seo_description,logo_path,favicon_path,profile_image_path,open_graph_image_path").eq("is_active", true).limit(1).maybeSingle(),
-    client.from("content_entries").select("id,content_type,slug,title,summary,body,payload,image_path,is_featured,sort_order,published_at").order("sort_order", { ascending: true }).limit(200),
+    client.from("content_entries").select(PUBLIC_ENTRY_FIELDS).order("sort_order", { ascending: true }).limit(200),
   ]);
   return { settings, entries: entries ?? [] };
 });
+
+const publicListInput = z.object({ contentType: z.enum(contentTypes) });
+
+/** Published entries of one content area, ordered for public listing pages. */
+export const listPublicEntries = createServerFn({ method: "GET" })
+  .validator((input: unknown) => publicListInput.parse(input))
+  .handler(async ({ data }) => {
+    const { data: rows } = await createPublicSupabase()
+      .from("content_entries")
+      .select(PUBLIC_ENTRY_FIELDS)
+      .eq("content_type", data.contentType)
+      .order("sort_order", { ascending: true })
+      .order("published_at", { ascending: false })
+      .limit(200);
+    return (rows ?? []).map((row) => ({ ...row, imageUrl: publicMediaUrl(row.image_path), ogImageUrl: publicMediaUrl(row.og_image_path ?? row.image_path) }));
+  });
+
+/** A single published entry, used by public detail pages. */
+export const getPublicEntry = createServerFn({ method: "GET" })
+  .validator((input: unknown) => publicListInput.extend({ slug: z.string().trim().min(1).max(160) }).parse(input))
+  .handler(async ({ data }) => {
+    const { data: row } = await createPublicSupabase()
+      .from("content_entries")
+      .select(PUBLIC_ENTRY_FIELDS)
+      .eq("content_type", data.contentType)
+      .eq("slug", data.slug)
+      .maybeSingle();
+    if (!row) return null;
+    return { ...row, imageUrl: publicMediaUrl(row.image_path), ogImageUrl: publicMediaUrl(row.og_image_path ?? row.image_path) };
+  });
 
 export const getAdminWorkspace = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
@@ -99,12 +134,26 @@ export const saveContentEntry = createServerFn({ method: "POST" })
       summary: data.summary || null,
       body: data.body || null,
       image_path: data.imagePath || null,
+      image_alt: data.imageAlt || null,
+      category: data.category || null,
+      author: data.author || null,
+      tags: data.tags ?? [],
+      language: data.language ?? "en",
+      gallery: (data.gallery ?? []) as unknown as Json,
+      project_url: data.projectUrl || null,
+      completed_on: data.completedOn || null,
+      seo_title: data.seoTitle || null,
+      seo_description: data.seoDescription || null,
+      canonical_url: data.canonicalUrl || null,
+      og_title: data.ogTitle || null,
+      og_description: data.ogDescription || null,
+      og_image_path: data.ogImagePath || null,
       status: data.status,
       is_enabled: data.isEnabled,
       is_featured: data.isFeatured,
       sort_order: data.sortOrder,
       scheduled_for: data.scheduledFor || null,
-      published_at: data.status === "published" ? new Date().toISOString() : null,
+      published_at: data.status === "published" ? (data.scheduledFor || new Date().toISOString()) : null,
       payload: data.payload as Json,
       updated_by: context.userId,
       deleted_at: data.status === "archived" ? new Date().toISOString() : null,

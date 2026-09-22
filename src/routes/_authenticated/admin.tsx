@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => pageHead({ title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin" }),
+  head: () => pageHead({ title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin", noindex: true }),
   beforeLoad: async ({ context }) => {
     const userId = (context as { user?: { id?: string } }).user?.id;
     if (!userId) throw redirect({ to: "/login" });
@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact"] as const;
+const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact", "footer"] as const;
 type ContentStatus = "draft" | "published" | "unpublished" | "archived";
 
 type EditorState = {
@@ -47,6 +47,20 @@ type EditorState = {
   summary: string;
   body: string;
   imagePath: string;
+  imageAlt: string;
+  category: string;
+  author: string;
+  tags: string;
+  language: "en" | "ha" | "ar";
+  gallery: string;
+  projectUrl: string;
+  completedOn: string;
+  seoTitle: string;
+  seoDescription: string;
+  canonicalUrl: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImagePath: string;
   status: ContentStatus;
   isEnabled: boolean;
   isFeatured: boolean;
@@ -54,7 +68,14 @@ type EditorState = {
   scheduledFor: string;
 };
 
-const emptyEditor: EditorState = { contentType: "service", slug: "", title: "", summary: "", body: "", imagePath: "", status: "draft", isEnabled: true, isFeatured: false, sortOrder: 0, scheduledFor: "" };
+const emptyEditor: EditorState = { contentType: "service", slug: "", title: "", summary: "", body: "", imagePath: "", imageAlt: "", category: "", author: "", tags: "", language: "en", gallery: "", projectUrl: "", completedOn: "", seoTitle: "", seoDescription: "", canonicalUrl: "", ogTitle: "", ogDescription: "", ogImagePath: "", status: "draft", isEnabled: true, isFeatured: false, sortOrder: 0, scheduledFor: "" };
+
+const previewPath = (editor: EditorState) =>
+  editor.contentType === "service" ? `/services/${editor.slug}` :
+  editor.contentType === "project" ? `/projects/${editor.slug}` :
+  editor.contentType === "blog_post" ? `/blog/${editor.slug}` : null;
+
+const splitList = (value: string) => value.split(",").map((item) => item.trim()).filter(Boolean);
 
 function AdminPage() {
   const queryClient = useQueryClient();
@@ -79,6 +100,20 @@ function AdminPage() {
       ...(editor.summary ? { summary: editor.summary } : {}),
       ...(editor.body ? { body: editor.body } : {}),
       ...(editor.imagePath ? { imagePath: editor.imagePath } : {}),
+      ...(editor.imageAlt ? { imageAlt: editor.imageAlt } : {}),
+      ...(editor.category ? { category: editor.category } : {}),
+      ...(editor.author ? { author: editor.author } : {}),
+      tags: splitList(editor.tags),
+      language: editor.language,
+      gallery: splitList(editor.gallery),
+      projectUrl: editor.projectUrl,
+      completedOn: editor.completedOn,
+      ...(editor.seoTitle ? { seoTitle: editor.seoTitle } : {}),
+      ...(editor.seoDescription ? { seoDescription: editor.seoDescription } : {}),
+      canonicalUrl: editor.canonicalUrl,
+      ...(editor.ogTitle ? { ogTitle: editor.ogTitle } : {}),
+      ...(editor.ogDescription ? { ogDescription: editor.ogDescription } : {}),
+      ...(editor.ogImagePath ? { ogImagePath: editor.ogImagePath } : {}),
       status: editor.status,
       isEnabled: editor.isEnabled,
       isFeatured: editor.isFeatured,
@@ -147,7 +182,7 @@ function AdminPage() {
                 </div>
                 <div className="overflow-hidden rounded-lg border border-border bg-card">
                   {entries.length === 0 ? <div className="p-10 text-center text-sm text-muted-foreground">No content matches this view.</div> : entries.map((entry) => (
-                    <button key={entry.id} type="button" onClick={() => setEditor({ id: entry.id, contentType: entry.content_type as EditorState["contentType"], slug: entry.slug, title: entry.title, summary: entry.summary ?? "", body: entry.body ?? "", imagePath: entry.image_path ?? "", status: entry.status, isEnabled: entry.is_enabled, isFeatured: entry.is_featured, sortOrder: entry.sort_order, scheduledFor: entry.scheduled_for ? entry.scheduled_for.slice(0, 16) : "" })} className="grid w-full gap-2 border-b border-border p-4 text-left transition last:border-b-0 hover:bg-secondary/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
+                    <button key={entry.id} type="button" onClick={() => setEditor({ id: entry.id, contentType: entry.content_type as EditorState["contentType"], slug: entry.slug, title: entry.title, summary: entry.summary ?? "", body: entry.body ?? "", imagePath: entry.image_path ?? "", imageAlt: entry.image_alt ?? "", category: entry.category ?? "", author: entry.author ?? "", tags: (entry.tags ?? []).join(", "), language: (entry.language as EditorState["language"]) ?? "en", gallery: (Array.isArray(entry.gallery) ? entry.gallery.filter((item): item is string => typeof item === "string") : []).join(", "), projectUrl: entry.project_url ?? "", completedOn: entry.completed_on ?? "", seoTitle: entry.seo_title ?? "", seoDescription: entry.seo_description ?? "", canonicalUrl: entry.canonical_url ?? "", ogTitle: entry.og_title ?? "", ogDescription: entry.og_description ?? "", ogImagePath: entry.og_image_path ?? "", status: entry.status, isEnabled: entry.is_enabled, isFeatured: entry.is_featured, sortOrder: entry.sort_order, scheduledFor: entry.scheduled_for ? entry.scheduled_for.slice(0, 16) : "" })} className="grid w-full gap-2 border-b border-border p-4 text-left transition last:border-b-0 hover:bg-secondary/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                       <span className="min-w-0"><strong className="block truncate text-sm">{entry.title}</strong><span className="mt-1 block text-xs text-muted-foreground">{entry.content_type.replaceAll("_", " ")} · Updated {new Date(entry.updated_at).toLocaleDateString()}</span></span>
                       <Badge variant={entry.status === "published" ? "default" : "secondary"}>{entry.status}</Badge>
                     </button>
@@ -179,8 +214,34 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive }: { edito
     <Field label="Full content"><Textarea className="min-h-32" value={editor.body} maxLength={20000} onChange={(event) => update("body", event.target.value)} /></Field>
     <div className="grid grid-cols-2 gap-3"><Field label="Status"><Select value={editor.status} onValueChange={(value) => update("status", value as ContentStatus)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["draft", "published", "unpublished", "archived"].map((status) => <SelectItem key={status} value={status}>{status}</SelectItem>)}</SelectContent></Select></Field><Field label="Order"><Input type="number" value={editor.sortOrder} onChange={(event) => update("sortOrder", Number(event.target.value))} /></Field></div>
     <Field label="Schedule (optional)"><Input type="datetime-local" value={editor.scheduledFor} onChange={(event) => update("scheduledFor", event.target.value)} /></Field>
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="Category"><Input value={editor.category} maxLength={120} onChange={(event) => update("category", event.target.value)} /></Field>
+      <Field label="Language"><Select value={editor.language} onValueChange={(value) => update("language", value as EditorState["language"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ha">Hausa</SelectItem><SelectItem value="ar">Arabic</SelectItem></SelectContent></Select></Field>
+    </div>
+    <div className="grid grid-cols-2 gap-3">
+      <Field label="Author"><Input value={editor.author} maxLength={120} onChange={(event) => update("author", event.target.value)} /></Field>
+      <Field label="Completion date"><Input type="date" value={editor.completedOn} onChange={(event) => update("completedOn", event.target.value)} /></Field>
+    </div>
+    <Field label="Tags / tools (comma separated)"><Input value={editor.tags} onChange={(event) => update("tags", event.target.value)} /></Field>
+    <Field label="Main image path or link"><Input value={editor.imagePath} maxLength={500} onChange={(event) => update("imagePath", event.target.value)} /></Field>
+    <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
+    <Field label="Gallery images (comma separated links)"><Textarea value={editor.gallery} onChange={(event) => update("gallery", event.target.value)} /></Field>
+    <Field label="Project link (optional)"><Input value={editor.projectUrl} maxLength={500} placeholder="https://" onChange={(event) => update("projectUrl", event.target.value)} /></Field>
+    <div className="rounded-lg border border-dashed border-border p-4">
+      <p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Search &amp; social</p>
+      <div className="grid gap-3">
+        <Field label="Search title (optional)"><Input value={editor.seoTitle} maxLength={180} onChange={(event) => update("seoTitle", event.target.value)} /></Field>
+        <Field label="Meta description (optional)"><Textarea value={editor.seoDescription} maxLength={400} onChange={(event) => update("seoDescription", event.target.value)} /></Field>
+        <Field label="Canonical link (optional)"><Input value={editor.canonicalUrl} maxLength={500} placeholder="https://" onChange={(event) => update("canonicalUrl", event.target.value)} /></Field>
+        <Field label="Social title (optional)"><Input value={editor.ogTitle} maxLength={180} onChange={(event) => update("ogTitle", event.target.value)} /></Field>
+        <Field label="Social description (optional)"><Textarea value={editor.ogDescription} maxLength={400} onChange={(event) => update("ogDescription", event.target.value)} /></Field>
+        <Field label="Social image path or link (optional)"><Input value={editor.ogImagePath} maxLength={500} onChange={(event) => update("ogImagePath", event.target.value)} /></Field>
+        <p className="text-xs text-muted-foreground">Left empty, the page title, short description and main image are used automatically.</p>
+      </div>
+    </div>
     <label className="flex items-center justify-between text-sm"><span>Visible when published</span><Switch checked={editor.isEnabled} onCheckedChange={(checked) => update("isEnabled", checked)} /></label>
     <label className="flex items-center justify-between text-sm"><span>Featured content</span><Switch checked={editor.isFeatured} onCheckedChange={(checked) => update("isFeatured", checked)} /></label>
+    {editor.slug && previewPath(editor) && <a href={previewPath(editor) as string} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary hover:underline">Preview this page in a new tab</a>}
     <Button disabled={saving || !editor.title || !editor.slug} onClick={onSave}><Save /> {saving ? "Saving…" : "Save content"}</Button>
     {onArchive && <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive"><Archive /> Archive item</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to archive this?</AlertDialogTitle><AlertDialogDescription>The item will leave the public website. Its history remains available for restoration.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={onArchive}>Archive</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
   </div></aside>;

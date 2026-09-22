@@ -39,6 +39,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
       title: "Member Dashboard — BangisKebbi.com",
       description: "Secure member space for BangisKebbi.com updates, profile, services, Umrah support and BK Foundations.",
       path: "/dashboard",
+      noindex: true,
     }),
   component: DashboardPage,
 });
