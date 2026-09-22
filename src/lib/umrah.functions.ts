@@ -258,12 +258,30 @@ export const registerUmrahDocument = createServerFn({ method: "POST" })
         storagePath: z.string().trim().min(3).max(400),
         originalName: z.string().trim().min(1).max(200),
         mimeType: z.string().trim().min(3).max(120),
-        byteSize: z.number().int().min(1).max(10 * 1024 * 1024),
+        byteSize: z.number().int().min(1).max(UMRAH_MAX_BYTES),
       })
       .parse(input),
   )
   .handler(async ({ data, context }) => {
     if (!data.storagePath.startsWith(`${context.userId}/`)) throw new Error("Invalid document location.");
+    if (!(umrahAcceptedMimeTypes as readonly string[]).includes(data.mimeType)) {
+      throw new Error("Only PDF, JPG, JPEG, PNG, WEBP and GIF files are accepted.");
+    }
+    if (!(umrahAcceptedExtensions as readonly string[]).includes(umrahFileExtension(data.originalName))) {
+      throw new Error("Only PDF, JPG, JPEG, PNG, WEBP and GIF files are accepted.");
+    }
+
+    const { data: application } = await context.supabase
+      .from("umrah_applications")
+      .select("id,user_id,status")
+      .eq("id", data.applicationId)
+      .maybeSingle();
+    if (!application || application.user_id !== context.userId) throw new Error("Application not found.");
+    const editable: UmrahStatus[] = ["draft", "documents_required"];
+    if (!editable.includes(application.status as UmrahStatus)) {
+      throw new Error("Your application is being reviewed, so documents can no longer be changed.");
+    }
+
     const { error } = await context.supabase.from("umrah_documents").insert({
       application_id: data.applicationId,
       user_id: context.userId,
@@ -278,7 +296,7 @@ export const registerUmrahDocument = createServerFn({ method: "POST" })
       application_id: data.applicationId,
       actor_id: context.userId,
       actor_role: "member",
-      action: `Document uploaded (${data.documentType})`,
+      action: `Document uploaded (${umrahDocumentLabels[data.documentType]})`,
     });
     return { ok: true };
   });
@@ -289,11 +307,21 @@ export const deleteUmrahDocument = createServerFn({ method: "POST" })
   .handler(async ({ data, context }) => {
     const { data: row } = await context.supabase
       .from("umrah_documents")
-      .select("id,storage_path,user_id,review_status")
+      .select("id,storage_path,user_id,review_status,application_id")
       .eq("id", data.id)
       .maybeSingle();
     if (!row || row.user_id !== context.userId) throw new Error("Document not found.");
     if (row.review_status !== "pending") throw new Error("Reviewed documents cannot be removed.");
+
+    const { data: application } = await context.supabase
+      .from("umrah_applications")
+      .select("status")
+      .eq("id", row.application_id)
+      .maybeSingle();
+    const editable: UmrahStatus[] = ["draft", "documents_required"];
+    if (!application || !editable.includes(application.status as UmrahStatus)) {
+      throw new Error("Your application is being reviewed, so documents can no longer be removed.");
+    }
 
     const { error } = await context.supabase.from("umrah_documents").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
