@@ -14,6 +14,7 @@ export const Route = createFileRoute("/reset-password")({
       title: "Set a New Password — BangisKebbi.com",
       description: "Securely set a new password for your BangisKebbi.com member account.",
       path: "/reset-password",
+      noindex: true,
     }),
   component: ResetPasswordPage,
 });

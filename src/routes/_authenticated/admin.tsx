@@ -25,7 +25,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => pageHead({ title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin" }),
+  head: () => pageHead({ title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin", noindex: true }),
   beforeLoad: async ({ context }) => {
     const userId = (context as { user?: { id?: string } }).user?.id;
     if (!userId) throw redirect({ to: "/login" });
