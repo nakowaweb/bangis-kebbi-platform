@@ -474,14 +474,7 @@ export const updateUmrahApplication = createServerFn({ method: "POST" })
       });
     }
 
-    if (data.notifyMember && (statusChanged || data.memberMessage)) {
-      await notify(context.supabase, {
-        userId: existing.user_id,
-        title: `Umrah application ${existing.application_number}: ${data.status.replaceAll("_", " ")}`,
-        body: data.memberMessage,
-        createdBy: context.userId,
-      });
-    }
+    // Status changes and member messages notify the applicant automatically.
 
     await context.supabase.from("admin_audit_logs").insert({
       admin_id: context.userId,
