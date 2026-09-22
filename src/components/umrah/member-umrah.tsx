@@ -74,6 +74,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const registerDoc = useServerFn(registerUmrahDocument);
   const removeDoc = useServerFn(deleteUmrahDocument);
   const documentLink = useServerFn(getUmrahDocumentLink);
+  const [savedApplicationId, setSavedApplicationId] = useState<string | null>(null);
 
   const query = useQuery({ queryKey: ["umrah-application"], queryFn: () => load() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-application"] });
@@ -83,8 +84,9 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
 
   const saveMutation = useMutation({
     mutationFn: (values: Record<string, string>) => save({ data: values as never }),
-    onSuccess: async () => {
+    onSuccess: async (result) => {
       const created = wasNewRef.current;
+      setSavedApplicationId(result.id);
       toast.success(created ? "Application saved. You can now upload your documents." : "Your application has been saved.");
       await refresh();
       if (created) {
@@ -121,6 +123,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   }
 
   const application = query.data.application as Record<string, string | null> | null;
+  const applicationId = (application?.["id"] as string | undefined) ?? savedApplicationId;
   const documents = query.data.documents as UmrahDoc[];
   const history = query.data.history as {
     id: string;
@@ -206,7 +209,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
 
       <DocumentsCard
         userId={userId}
-        applicationId={(application?.["id"] as string | undefined) ?? null}
+        applicationId={applicationId}
         canEdit={canEdit}
         documents={documents}
         onChanged={refresh}
@@ -586,7 +589,7 @@ function DocumentsCard({
           const required = requiredUmrahDocumentTypes.includes(type);
           return (
             <section key={type} className="rounded-xl border border-border p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold">
                     {umrahDocumentLabels[type]}
@@ -596,24 +599,12 @@ function DocumentsCard({
                     {forType.length === 0 ? "Not uploaded yet" : `${forType.length} file${forType.length > 1 ? "s" : ""}`}
                   </p>
                 </div>
-                {applicationId && canEdit ? (
-                  <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus-within:ring-2 focus-within:ring-ring">
-                    {uploadProgress === undefined ? <Upload className="size-4" /> : <Loader2 className="size-4 animate-spin" />}
-                    {uploadProgress === undefined ? "Upload Document" : `Uploading… ${uploadProgress}%`}
-                    <input
-                      type="file"
-                      className="sr-only"
-                      accept={acceptAttribute}
-                      disabled={uploadProgress !== undefined}
-                      aria-label={`Upload ${umrahDocumentLabels[type]}`}
-                      onChange={(event) => {
-                        const file = event.target.files?.[0];
-                        event.target.value = "";
-                        if (file) void handleFile(type, file);
-                      }}
-                    />
-                  </label>
-                ) : null}
+                <DocumentUploadControl
+                  label={umrahDocumentLabels[type]}
+                  enabled={Boolean(applicationId) && canEdit}
+                  progress={uploadProgress}
+                  onFile={(file) => void handleFile(type, file)}
+                />
               </div>
 
               {uploadProgress !== undefined ? (
@@ -651,6 +642,54 @@ function DocumentsCard({
         })}
       </CardContent>
     </Card>
+  );
+}
+
+function DocumentUploadControl({
+  label,
+  enabled,
+  progress,
+  onFile,
+}: {
+  label: string;
+  enabled: boolean;
+  progress: number | undefined;
+  onFile: (file: File) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const busy = progress !== undefined;
+
+  return (
+    <div>
+      <input
+        ref={inputRef}
+        type="file"
+        className="sr-only"
+        accept={acceptAttribute}
+        disabled={!enabled || busy}
+        aria-label={`Choose ${label} file`}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = "";
+          if (file) onFile(file);
+        }}
+      />
+      <Button
+        type="button"
+        className="min-h-11 w-full sm:w-auto"
+        disabled={!enabled || busy}
+        aria-label={`Upload ${label}`}
+        onClick={() => inputRef.current?.click()}
+      >
+        {busy ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+        {busy ? `Uploading… ${progress}%` : `Upload ${label}`}
+      </Button>
+      {!enabled ? (
+        <p className="mt-1 max-w-64 text-xs text-muted-foreground">
+          Save your application first to enable document uploads.
+        </p>
+      ) : null}
+    </div>
   );
 }
 
@@ -707,7 +746,7 @@ export function DocumentRow({
           {doc.review_note ? ` · ${doc.review_note}` : ""}
         </p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
         <Badge variant={doc.review_status === "accepted" ? "default" : "secondary"} className="capitalize">
           {doc.review_status === "pending" ? "Uploaded" : doc.review_status}
         </Badge>
