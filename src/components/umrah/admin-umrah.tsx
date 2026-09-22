@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { ArrowLeft, Building2, Eye, Save, Search, Trash2 } from "lucide-react";
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
 import {
@@ -176,7 +176,14 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const [memberMessage, setMemberMessage] = useState("");
   const [internalNote, setInternalNote] = useState("");
   const [notify, setNotify] = useState(true);
-  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const current = query.data?.application as Record<string, any> | undefined;
+    if (!current) return;
+    setStatus(current["status"]);
+    setMemberMessage(current["admin_message"] ?? "");
+    setInternalNote(current["internal_note"] ?? "");
+  }, [query.data]);
 
   const saveMutation = useMutation({
     mutationFn: () =>
@@ -196,12 +203,6 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const history = query.data.history as any[];
   const profile = query.data.profile as Record<string, any> | null;
 
-  if (!ready) {
-    setReady(true);
-    setStatus(application["status"]);
-    setMemberMessage(application["admin_message"] ?? "");
-    setInternalNote(application["internal_note"] ?? "");
-  }
 
   async function openDocument(documentId: string) {
     try {
