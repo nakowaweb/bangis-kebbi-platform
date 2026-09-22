@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
-import { PUBLIC_ENTRY_FIELDS, createPublicSupabase, publicMediaUrl } from "@/lib/public-content.server";
+import { PUBLIC_ENTRY_FIELDS, createPublicSupabase, mediaUrl, signSiteMedia } from "@/lib/public-content.server";
 
 const contentTypes = [
   "homepage", "about", "service", "project", "blog_post", "blog_category",
@@ -92,7 +92,13 @@ export const listPublicEntries = createServerFn({ method: "GET" })
       .order("sort_order", { ascending: true })
       .order("published_at", { ascending: false })
       .limit(200);
-    return (rows ?? []).map((row) => ({ ...row, imageUrl: publicMediaUrl(row.image_path), ogImageUrl: publicMediaUrl(row.og_image_path ?? row.image_path) }));
+    const list = rows ?? [];
+    const signed = await signSiteMedia(list.flatMap((row) => [row.image_path, row.og_image_path]));
+    return list.map((row) => ({
+      ...row,
+      imageUrl: mediaUrl(row.image_path, signed),
+      ogImageUrl: mediaUrl(row.og_image_path ?? row.image_path, signed),
+    }));
   });
 
 /** A single published entry, used by public detail pages. */
