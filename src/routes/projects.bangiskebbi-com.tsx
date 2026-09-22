@@ -7,8 +7,8 @@ import { Button } from "@/components/ui/button";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/projects/bangiskebbi-com")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "BangisKebbi.com Project — Global Digital Platform",
       description:
         "Project detail for BangisKebbi.com, a premium personal-brand and business platform for ideas, technology, business and people.",

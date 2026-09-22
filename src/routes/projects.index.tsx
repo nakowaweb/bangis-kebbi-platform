@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { ProjectsSection, SectionShell } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
@@ -6,8 +7,8 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/projects/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
+    ...pageHead({ search: match.search,
       title: "Selected Work — Bangis Kebbi Projects",
       description:
         "Selected Bangis Kebbi web design, web development, UI/UX, business website and AI-assisted development projects.",
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/projects/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => listPublicEntries({ data: { contentType: "project" } }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: ({ deps }) => listPublicEntries({ data: { contentType: "project", language: deps.lang } }),
   component: ProjectsPage,
 });
 

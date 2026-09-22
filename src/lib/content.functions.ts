@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
-import { PUBLIC_ENTRY_FIELDS, createPublicSupabase, mediaUrl, signSiteMedia } from "@/lib/public-content.server";
+import { PUBLIC_ENTRY_FIELDS, applyTranslations, createPublicSupabase, mediaUrl, signSiteMedia } from "@/lib/public-content.server";
 
 const contentTypes = [
   "homepage", "about", "service", "project", "blog_post", "blog_category",
@@ -70,29 +70,34 @@ async function requireContentAdmin(context: { supabase: ReturnType<typeof public
   if (error || !data) throw new Error("Content administrator access is required.");
 }
 
-export const getPublicContent = createServerFn({ method: "GET" }).handler(async () => {
-  const client = publicClient();
-  const [{ data: settings }, { data: entries }] = await Promise.all([
-    client.from("site_settings").select("website_name,company_name,location,global_status,contact_email,phone,whatsapp,footer_content,default_language,seo_title,seo_description,logo_path,favicon_path,profile_image_path,open_graph_image_path").eq("is_active", true).limit(1).maybeSingle(),
-    client.from("content_entries").select(PUBLIC_ENTRY_FIELDS).order("sort_order", { ascending: true }).limit(200),
-  ]);
-  return { settings, entries: entries ?? [] };
-});
+const languageInput = z.enum(["en", "ha", "ar"]).default("en");
 
-const publicListInput = z.object({ contentType: z.enum(contentTypes) });
+export const getPublicContent = createServerFn({ method: "GET" })
+  .validator((input: unknown) => z.object({ language: languageInput }).default({ language: "en" }).parse(input ?? {}))
+  .handler(async ({ data }) => {
+    const client = publicClient();
+    const [{ data: settings }, { data: entries }] = await Promise.all([
+      client.from("site_settings").select("website_name,company_name,location,global_status,contact_email,phone,whatsapp,footer_content,default_language,seo_title,seo_description,logo_path,favicon_path,profile_image_path,open_graph_image_path").eq("is_active", true).limit(1).maybeSingle(),
+      client.from("content_entries").select(PUBLIC_ENTRY_FIELDS).order("sort_order", { ascending: true }).limit(200),
+    ]);
+    return { settings, entries: await applyTranslations(client, entries ?? [], data.language) };
+  });
+
+const publicListInput = z.object({ contentType: z.enum(contentTypes), language: languageInput });
 
 /** Published entries of one content area, ordered for public listing pages. */
 export const listPublicEntries = createServerFn({ method: "GET" })
   .validator((input: unknown) => publicListInput.parse(input))
   .handler(async ({ data }) => {
-    const { data: rows } = await createPublicSupabase()
+    const client = createPublicSupabase();
+    const { data: rows } = await client
       .from("content_entries")
       .select(PUBLIC_ENTRY_FIELDS)
       .eq("content_type", data.contentType)
       .order("sort_order", { ascending: true })
       .order("published_at", { ascending: false })
       .limit(200);
-    const list = rows ?? [];
+    const list = await applyTranslations(client, rows ?? [], data.language);
     const signed = await signSiteMedia(list.flatMap((row) => [row.image_path, row.og_image_path]));
     return list.map((row) => ({
       ...row,
@@ -105,12 +110,15 @@ export const listPublicEntries = createServerFn({ method: "GET" })
 export const getPublicEntry = createServerFn({ method: "GET" })
   .validator((input: unknown) => publicListInput.extend({ slug: z.string().trim().min(1).max(160) }).parse(input))
   .handler(async ({ data }) => {
-    const { data: row } = await createPublicSupabase()
+    const client = createPublicSupabase();
+    const { data: found } = await client
       .from("content_entries")
       .select(PUBLIC_ENTRY_FIELDS)
       .eq("content_type", data.contentType)
       .eq("slug", data.slug)
       .maybeSingle();
+    if (!found) return null;
+    const [row] = await applyTranslations(client, [found], data.language);
     if (!row) return null;
     const signed = await signSiteMedia([row.image_path, row.og_image_path]);
     return {

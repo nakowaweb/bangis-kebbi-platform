@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { applyTranslations } from "@/lib/public-content.server";
 
 export const foundationStatuses = ["planned", "active", "completed", "archived"] as const;
 export type FoundationStatus = (typeof foundationStatuses)[number];
@@ -114,7 +115,9 @@ async function decorate(rows: ProjectRow[]): Promise<FoundationProject[]> {
 
 /* --------------------------------- public -------------------------------- */
 
-export const getFoundationOverview = createServerFn({ method: "GET" }).handler(async () => {
+export const getFoundationOverview = createServerFn({ method: "GET" })
+  .validator((input: unknown) => z.object({ language: z.enum(["en", "ha", "ar"]).default("en") }).default({ language: "en" }).parse(input ?? {}))
+  .handler(async ({ data }) => {
   const client = publicClient();
   const [{ data: entries }, { data: projects }] = await Promise.all([
     client
@@ -144,7 +147,7 @@ export const getFoundationOverview = createServerFn({ method: "GET" }).handler(a
         .limit(12)
     : { data: [] };
 
-  return { content: entries ?? [], projects: decorated, updates: updates ?? [] };
+  return { content: await applyTranslations(client, entries ?? [], data.language), projects: decorated, updates: updates ?? [] };
 });
 
 export const getFoundationProject = createServerFn({ method: "GET" })

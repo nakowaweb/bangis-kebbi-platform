@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { BusinessSection, ContactSection, SectionShell, ServicesSection } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
@@ -6,8 +7,8 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
+    ...pageHead({ search: match.search,
       title: "Services — AI Web Design, Web Development & UI/UX",
       description:
         "Explore Bangis Kebbi services including AI web design, web development, UI/UX design, WordPress, digital business solutions and website maintenance.",
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/services/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => listPublicEntries({ data: { contentType: "service" } }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: ({ deps }) => listPublicEntries({ data: { contentType: "service", language: deps.lang } }),
   component: ServicesPage,
 });
 

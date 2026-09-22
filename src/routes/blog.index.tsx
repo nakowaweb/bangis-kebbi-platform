@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { BlogPreview, SectionShell } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
@@ -6,8 +7,8 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/blog/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
+    ...pageHead({ search: match.search,
       title: "Blog & Updates — Technology, AI, Business and Community",
       description:
         "Read Bangis Kebbi updates on technology, AI, web design, business, entrepreneurship, community, Umrah and Foundation news.",
@@ -28,7 +29,8 @@ export const Route = createFileRoute("/blog/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => listPublicEntries({ data: { contentType: "blog_post" } }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: ({ deps }) => listPublicEntries({ data: { contentType: "blog_post", language: deps.lang } }),
   component: BlogPage,
 });
 

@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import {
   CommunitySection,
@@ -17,13 +18,15 @@ import { getPublicContent } from "@/lib/content.functions";
 import heroImage from "@/assets/bangis-official-hero.webp.asset.json";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => {
+    const base = pageHead({ search: match.search,
       title: "Bangis Kebbi — AI Web Designer, Developer & Digital Entrepreneur",
       description:
         "BangisKebbi.com is a global platform by Abubakar Alhaji Abubakar for AI-assisted web design, web development, business networking, community support, Umrah coordination and digital opportunities.",
       path: "/",
-    }),
+    });
+    return {
+      ...base,
     scripts: [
       {
         type: "application/ld+json",
@@ -48,13 +51,12 @@ export const Route = createFileRoute("/")({
         }),
       },
     ],
-    links: [
-      { rel: "canonical", href: "/" },
-      { rel: "preload", as: "image", href: heroImage.url, fetchPriority: "high" },
-    ],
-  }),
+      links: [...base.links, { rel: "preload", as: "image", href: heroImage.url, fetchPriority: "high" }],
+    };
+  },
   errorComponent: RouteError,
-  loader: () => getPublicContent(),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: ({ deps }) => getPublicContent({ data: { language: deps.lang } }),
   component: Index,
 });
 

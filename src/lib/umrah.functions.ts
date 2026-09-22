@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { applyTranslations } from "@/lib/public-content.server";
 
 export const umrahStatuses = [
   "draft",
@@ -603,7 +604,9 @@ export const deleteUmrahPartner = createServerFn({ method: "POST" })
 
 const publicUmrahTypes = ["umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact"];
 
-export const getPublicUmrahInfo = createServerFn({ method: "GET" }).handler(async () => {
+export const getPublicUmrahInfo = createServerFn({ method: "GET" })
+  .validator((input: unknown) => z.object({ language: z.enum(["en", "ha", "ar"]).default("en") }).default({ language: "en" }).parse(input ?? {}))
+  .handler(async ({ data }) => {
   const client = createClient<Database>(
     process.env["SUPABASE_URL"]!,
     process.env["SUPABASE_PUBLISHABLE_KEY"]!,
@@ -629,5 +632,5 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" }).handler(asyn
       .limit(20),
   ]);
 
-  return { entries: entries ?? [], partners: partners ?? [] };
+  return { entries: await applyTranslations(client as never, entries ?? [], data.language), partners: partners ?? [] };
 });

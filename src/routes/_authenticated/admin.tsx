@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, Bell, FileText, HandHeart, History, Image, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
+import { Archive, Bell, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, Share2, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +15,8 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { AdminSocialManager } from "@/components/admin/social-manager";
+import { AdminTranslationManager } from "@/components/admin/translation-manager";
 import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
@@ -25,7 +27,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin")({
-  head: () => pageHead({ title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin", noindex: true }),
+  head: ({ match }) => pageHead({ search: match.search, title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin", noindex: true }),
   beforeLoad: async ({ context }) => {
     const userId = (context as { user?: { id?: string } }).user?.id;
     if (!userId) throw redirect({ to: "/login" });
@@ -154,6 +156,8 @@ function AdminPage() {
           <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-card p-1">
             <TabsTrigger value="overview"><LayoutDashboard /> Dashboard</TabsTrigger>
             <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
+            <TabsTrigger value="languages"><Languages /> Languages</TabsTrigger>
+            <TabsTrigger value="social"><Share2 /> Social links</TabsTrigger>
             <TabsTrigger value="members"><Users /> Members</TabsTrigger>
             <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
@@ -193,6 +197,8 @@ function AdminPage() {
             </div>
           </TabsContent>
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
+          <TabsContent value="languages"><AdminTranslationManager /></TabsContent>
+          <TabsContent value="social"><AdminSocialManager /></TabsContent>
           <TabsContent value="umrah"><AdminUmrahManager /></TabsContent>
           <TabsContent value="foundations"><AdminFoundationManager /></TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>

@@ -4,8 +4,8 @@ import { CommunitySection, DashboardPreviewSection } from "@/components/platform
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/community")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Bangis Kebbi Community — Learn, Connect, Build and Grow",
       description:
         "Join the Bangis Kebbi community for learning, technology, entrepreneurship, support and legitimate digital opportunities.",

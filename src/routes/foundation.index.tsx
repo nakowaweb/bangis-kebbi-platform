@@ -11,8 +11,8 @@ import { foundationCategoryLabels, foundationStatusLabels, getFoundationOverview
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/foundation/")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "BK Foundations — Community Support Projects",
       description:
         "BK Foundations is the community support arm of BangisKebbi.com: practical projects, honest updates and completed community work. Not an investment programme.",

@@ -4,8 +4,8 @@ import { SectionShell } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/privacy")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Privacy Policy — BangisKebbi.com",
       description: "Privacy principles for BangisKebbi.com member accounts, contact messages, applications and future private documents.",
       path: "/privacy",

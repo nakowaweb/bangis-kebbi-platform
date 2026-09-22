@@ -1,83 +1,29 @@
-# Phase 1 Correction #2
+# BangisKebbi.com roadmap
 
-- [x] Replace public profile location with Abuja, Nigeria and keep Working globally
-- [x] Verify official portrait/logo usage and exclude the design reference screenshot
-- [x] Enable Lovable Cloud and add secure Super Admin roles, content schema, media metadata, revisions, and audit logs
-- [x] Build protected Super Admin content dashboard and authentication flow
-- [x] Connect published content to the public homepage with efficient fallbacks
-- [x] Verify desktop/mobile presentation, content controls, security boundaries, and clean checks
+## Completed
+- Phase 1 — public site, identity, CMS/admin foundation, authentication
+- Phase 2.1–2.4 — roles, Umrah workflow, BK Foundations, Activities + Notifications
+- Phase 2.5 — Advanced CMS + SEO foundation
+- Phase 2.6 — security, performance and production readiness audit
+- Pre-launch test-data cleanup and public smoke test
+- Phase 3.1–3.3 — Hostinger Node.js deployment preparation
+- Registration confirm-password + show/hide refinement
+- Social links database + public icons; translation dictionary foundation
 
-# Official Image and Homepage Experience Update
+## In progress — multilingual + social management (remaining items)
+- [x] Expanded EN/HA/AR UI dictionary covering all public pages
+- [x] Language selector order: English, العربية, Hausa (codes unchanged)
+- [ ] Locale-aware CMS reads (services, projects, blog, Umrah, Foundations, community, about, contact)
+- [ ] Super Admin translations manager (create/edit/review/draft/publish/unpublish/archive + AI draft)
+- [ ] Super Admin social links manager (add/edit/enable/disable/reorder/remove)
+- [ ] Full public UI translation (header, hero, cards, sections, forms, errors, footer)
+- [ ] Member UI locale application
+- [ ] Arabic RTL layout verification
+- [ ] Language persistence (visitor local + member profile)
+- [ ] Localized URLs + canonical + hreflang + x-default
+- [ ] Localized sitemap entries
+- [ ] Full test round: social, languages, routes, SEO, mobile 360/390/430, desktop
 
-- [x] Replace public portrait and community imagery with the two new official uploads
-- [x] Shorten and reorder the homepage around the platform’s core activities
-- [x] Add a lightweight latest activities/video preview without loading video files
-- [x] Verify desktop/mobile rendering, links, image loading, and browser errors
-
-# Homepage Quick Actions
-
-- [x] Add the navy quick-action navigation directly below the hero
-- [x] Include visible icons and labels for Home, Services, Projects, Blog, Umrah, BK Foundations, and Community
-- [x] Verify active states, navigation, and small-screen layout
-
-# Phase 2 — Backend Foundation & Member Platform
-
-- [x] Member profiles, roles (member/admin/super_admin), notifications, private document records
-- [x] Row Level Security policies and server-side authorization on every data function
-- [x] Private member-documents storage bucket with owner + admin only access
-- [x] Registration (name, email, phone, country, city, language), login, logout, password reset and password update
-- [x] Member dashboard (overview, profile, services, projects, umrah, foundations, activities, notifications, settings)
-- [x] Super Admin member management: search, filter, paginate, activate/deactivate, grant/remove roles
-- [x] Audit logging for member and role changes
-- [x] Verified pages, protected routes and mobile layout in a browser
-- [ ] Umrah applications, Foundation contributions and payments — later modules (not started by design)
-
-# Phase 2 — Step 1 completion
-
-- [x] Admin dashboard overview with real counts and recent administrator activity
-- [x] Admin announcement sender (audience + category) writing member notifications and audit entries
-- [x] Content area filter in the admin content list (services, projects, blog, umrah, foundations, community, etc.)
-- [x] Community tab in the member dashboard
-- [x] Verified public pages, auth pages, protected redirects and typecheck
-
-# Phase 2 — Step 2 (Umrah module)
-
-- [x] Umrah application, secure private documents, statuses, history and member notifications
-- [x] Admin Umrah management: search, filter, review, document viewing, status changes, internal notes vs member messages
-- [x] Umrah partners structure (only verified + visible partners shown publicly)
-- [x] Public Umrah information page driven by editable content, with empty states instead of invented facts
-- [x] Tested member flow, admin flow, privacy of internal notes, mobile layout and outside access
-- [ ] Payment / contribution processing — deliberately not started
-- [x] Fix and verify visible Umrah upload controls for a newly saved member application
-
-# Phase 2.3 — BK Foundations
-
-- [x] Foundation projects and project updates data with public/member/admin access rules
-- [x] Public BK Foundations page (intro, mission, vision, what we do, projects, updates, completed work) and project detail pages
-- [x] Admin BK Foundations tab: create, edit, publish, unpublish, archive, restore, images, updates, member notifications
-- [x] Member dashboard BK Foundations panel (read-only published projects and updates)
-- [x] Separate private foundation media area (member documents untouched)
-- [x] Audit logging of foundation project and update actions
-- [x] Tested admin, member, public and security paths; test data removed
-- [ ] Donations / contributions / payments — deliberately not started
-
-# Phase 2.4 — Activities & Notifications
-
-- [x] Member activities feed from account, Umrah, document and Foundation events
-- [x] Member notifications with unread count, mark as read and mark all as read
-- [x] Notification types: system, Umrah, Foundation, account, announcement
-- [x] Automatic notifications created by the database for key events
-- [x] Admin draft / publish / send to all, active or selected members, with audit entries
-- [x] Access rules so members only see their own notifications and activities
-
-# Phase 2.5 — Advanced CMS & SEO Foundation
-
-- [x] Expanded content manager: homepage, services, projects, blog, about, Umrah, Foundations, community, contact, footer
-- [x] Draft, published, unpublished, archived states plus scheduling
-- [x] Service, project and blog fields: category, tags/tools, author, images, gallery, project link, completion date, language (English, Hausa, Arabic)
-- [x] Per-page search and social settings with automatic fallbacks
-- [x] Public detail pages for services, projects and blog posts with clean crawlable links
-- [x] Automatic sitemap, robots rules, canonical links, titles, descriptions and structured data
-- [x] Private areas (login, register, password pages, dashboard, admin) hidden from search
-- [x] Tested creating, publishing and previewing content, draft privacy, public pages and access rules
-- [x] Tested member and admin flows on phone and desktop; test data removed
+## Deferred / blocked
+- robots.txt sitemap URL points at https://bangiskebbi.com/sitemap.xml — correct once the domain is live
+- Deployment to Hostinger, DNS and Cloudflare changes — owner action, not to be performed here

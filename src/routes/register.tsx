@@ -10,8 +10,8 @@ import { pageHead } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/register")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Register — Join BangisKebbi.com Community",
       description: "Future registration page for BangisKebbi.com members with profile, verification, applications and community access.",
       path: "/register",

@@ -9,8 +9,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/reset-password")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Set a New Password — BangisKebbi.com",
       description: "Securely set a new password for your BangisKebbi.com member account.",
       path: "/reset-password",

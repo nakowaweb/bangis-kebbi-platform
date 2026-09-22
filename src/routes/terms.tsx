@@ -4,8 +4,8 @@ import { SectionShell } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/terms")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Terms — BangisKebbi.com",
       description: "Terms placeholder for BangisKebbi.com services, community features and future member access.",
       path: "/terms",

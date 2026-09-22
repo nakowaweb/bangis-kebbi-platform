@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { SectionShell } from "@/components/platform-sections";
 import { getPublicEntry } from "@/lib/content.functions";
@@ -7,18 +8,19 @@ import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/services/$slug")({
   errorComponent: RouteError,
-  loader: async ({ params }) => {
-    const service = await getPublicEntry({ data: { contentType: "service", slug: params.slug } });
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: async ({ params, deps }) => {
+    const service = await getPublicEntry({ data: { contentType: "service", slug: params.slug, language: deps.lang } });
     if (!service) throw notFound();
     return service;
   },
-  head: ({ params, loaderData }) => {
+  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData?: Awaited<ReturnType<typeof getPublicEntry>> | undefined; match: { search: { lang?: LanguageCode } } }) => {
     if (!loaderData) {
       return { meta: [{ title: "Service not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }
     const description = loaderData.seo_description || loaderData.summary || `A professional service from Bangis Kebbi: ${loaderData.title}`;
     return {
-      ...pageHead({
+      ...pageHead({ search: match.search,
         title: loaderData.seo_title || `${loaderData.title} — Bangis Kebbi Services`,
         description,
         path: `/services/${params.slug}`,
