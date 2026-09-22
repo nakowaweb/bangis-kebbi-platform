@@ -188,7 +188,10 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
         application={application}
         canEdit={canEdit}
         saving={saveMutation.isPending}
-        onSave={(values) => saveMutation.mutate(values)}
+        onSave={(values) => {
+          wasNewRef.current = !application;
+          saveMutation.mutate(values);
+        }}
       />
 
       <DocumentsCard
@@ -205,10 +208,20 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
             <CardTitle className="text-base">Submit your application</CardTitle>
             <CardDescription>Check your details and documents before submitting. An administrator will review it.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="grid gap-3">
+            {missing.length > 0 ? (
+              <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4">
+                <p className="text-sm font-semibold text-destructive">Before you can submit, please add:</p>
+                <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
+                  {missing.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button disabled={submitMutation.isPending}>
+                <Button disabled={submitMutation.isPending || missing.length > 0}>
                   <Send /> Submit application
                 </Button>
               </AlertDialogTrigger>
