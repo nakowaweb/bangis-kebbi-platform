@@ -3,8 +3,10 @@ import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { SectionShell } from "@/components/platform-sections";
 import { getPublicEntry } from "@/lib/content.functions";
 import { pageHead } from "@/lib/seo";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/services/$slug")({
+  errorComponent: RouteError,
   loader: async ({ params }) => {
     const service = await getPublicEntry({ data: { contentType: "service", slug: params.slug } });
     if (!service) throw notFound();
