@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -20,11 +20,14 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
   async function register(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    setError(null);
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: String(form.get("email")),
       password: String(form.get("password")),
       options: {
@@ -39,9 +42,10 @@ function RegisterPage() {
       },
     });
     setBusy(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Check your email to confirm your account, then sign in.");
-    event.currentTarget.reset();
+    if (signUpError) { setError(signUpError.message); toast.error(signUpError.message); return; }
+    toast.success("Welcome to BangisKebbi.com");
+    if (data.session) { await navigate({ to: "/dashboard", replace: true }); return; }
+    await navigate({ to: "/login", replace: true });
   }
   return (
     <main>
@@ -68,6 +72,7 @@ function RegisterPage() {
             <input type="checkbox" required className="mt-1 h-4 w-4 accent-brand-cyan" />
             <span>I accept the terms and community guidelines.</span>
           </label>
+          {error ? <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">{error}</p> : null}
           <Button type="submit" className="h-12" disabled={busy}>{busy ? "Creating account…" : "Create Account"}</Button>
           <Link to="/login" className="text-sm font-semibold text-brand-cyan">Already have an account?</Link>
         </form>
