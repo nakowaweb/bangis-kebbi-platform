@@ -303,7 +303,12 @@ export const setFoundationProjectState = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     await requireFoundationAdmin(context as never);
-    const patch: Record<string, unknown> = { updated_by: context.userId };
+    const patch: {
+      updated_by: string;
+      status?: FoundationStatus;
+      is_published?: boolean;
+      published_at?: string | null;
+    } = { updated_by: context.userId };
     if (data.status) {
       patch["status"] = data.status;
       if (data.status === "archived") {
