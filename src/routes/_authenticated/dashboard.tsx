@@ -121,7 +121,7 @@ function DashboardPage() {
             <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
             <TabsTrigger value="community"><UsersRound /> Community</TabsTrigger>
             <TabsTrigger value="activities"><BriefcaseBusiness /> Activities</TabsTrigger>
-            <TabsTrigger value="notifications"><Bell /> Notifications{unread.length ? ` (${unread.length})` : ""}</TabsTrigger>
+            <TabsTrigger value="notifications"><Bell /> Notifications{unread ? ` (${unread})` : ""}</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
           </TabsList>
 
@@ -132,9 +132,9 @@ function DashboardPage() {
                   Member since {profile ? new Date(profile.created_at).toLocaleDateString() : "—"}
                 </p>
               </SummaryCard>
-              <SummaryCard title="Notifications" description={`${unread.length} unread`}>
+              <SummaryCard title="Notifications" description={`${unread} unread`}>
                 <p className="text-sm text-muted-foreground">
-                  {data.notifications.length === 0 ? "No notifications yet." : "Open the notifications tab to read them."}
+                  {unread === 0 ? "You are up to date." : "Open the notifications tab to read them."}
                 </p>
               </SummaryCard>
               <SummaryCard title="Applications" description="Umrah & Foundation">
@@ -149,7 +149,18 @@ function DashboardPage() {
                 <p className="text-sm text-muted-foreground">Published updates will appear here.</p>
               </SummaryCard>
               <SummaryCard title="Recent activity" description="Your account">
-                <p className="text-sm text-muted-foreground">No recent activity recorded.</p>
+                {data.recentActivities.length === 0 ? (
+                  <p className="text-sm text-muted-foreground">No recent activity recorded.</p>
+                ) : (
+                  <ul className="grid gap-1.5">
+                    {data.recentActivities.slice(0, 3).map((item) => (
+                      <li key={item.id} className="text-sm">
+                        <span className="font-medium">{item.title}</span>
+                        <span className="block text-xs text-muted-foreground">{new Date(item.created_at).toLocaleString()}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
               </SummaryCard>
             </div>
             {!data.isSuperAdmin && !data.superAdminExists ? (
