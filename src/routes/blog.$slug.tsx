@@ -14,7 +14,7 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!post) throw notFound();
     return post;
   },
-  head: ({ params, loaderData, match }) => {
+  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData?: Awaited<ReturnType<typeof getPublicEntry>>; match: { search: { lang?: LanguageCode } } }) => {
     if (!loaderData) {
       return { meta: [{ title: "Article not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }

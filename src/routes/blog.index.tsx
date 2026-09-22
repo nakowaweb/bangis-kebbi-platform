@@ -7,7 +7,7 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/blog/")({
-  head: ({ match }) => ({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
     ...pageHead({ search: match.search,
       title: "Blog & Updates — Technology, AI, Business and Community",
       description:

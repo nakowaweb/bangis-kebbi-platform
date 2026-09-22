@@ -7,7 +7,7 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/projects/")({
-  head: ({ match }) => ({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
     ...pageHead({ search: match.search,
       title: "Selected Work — Bangis Kebbi Projects",
       description:

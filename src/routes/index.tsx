@@ -18,7 +18,7 @@ import { getPublicContent } from "@/lib/content.functions";
 import heroImage from "@/assets/bangis-official-hero.webp.asset.json";
 
 export const Route = createFileRoute("/")({
-  head: ({ match }) => ({
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
     ...pageHead({ search: match.search,
       title: "Bangis Kebbi — AI Web Designer, Developer & Digital Entrepreneur",
       description:
