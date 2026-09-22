@@ -676,6 +676,23 @@ export function DocumentRow({
         <Button size="sm" variant="outline" onClick={onOpen}>
           <Eye /> View
         </Button>
+        {onReplace && canEdit && doc.review_status === "pending" ? (
+          <label className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-md border border-border px-3 text-sm font-medium transition hover:bg-secondary focus-within:ring-2 focus-within:ring-ring">
+            <RefreshCw className="size-4" /> Replace
+            <input
+              type="file"
+              className="sr-only"
+              accept={acceptAttribute}
+              disabled={replacing}
+              aria-label={`Replace ${doc.original_name}`}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (file) onReplace(file);
+              }}
+            />
+          </label>
+        ) : null}
         {onRemove && canEdit && doc.review_status === "pending" ? (
           <AlertDialog>
             <AlertDialogTrigger asChild>
