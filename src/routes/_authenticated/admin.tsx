@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, Bell, FileText, History, Image, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
+import { Archive, Bell, FileText, HandHeart, History, Image, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -122,6 +122,7 @@ function AdminPage() {
             <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
             <TabsTrigger value="umrah"><Plane /> Umrah</TabsTrigger>
+            <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
             <TabsTrigger value="media"><Image /> Media</TabsTrigger>
             <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
           </TabsList>
@@ -157,6 +158,7 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="umrah"><AdminUmrahManager /></TabsContent>
+          <TabsContent value="foundations"><AdminFoundationManager /></TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
           <TabsContent value="members"><MembersManager /></TabsContent>
           <TabsContent value="audit"><AuditLog rows={workspace.data?.audit ?? []} /></TabsContent>
