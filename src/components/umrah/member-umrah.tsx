@@ -589,7 +589,7 @@ function DocumentsCard({
           const required = requiredUmrahDocumentTypes.includes(type);
           return (
             <section key={type} className="rounded-xl border border-border p-4">
-              <div className="flex flex-wrap items-center justify-between gap-3">
+              <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold">
                     {umrahDocumentLabels[type]}
@@ -676,7 +676,7 @@ function DocumentUploadControl({
       />
       <Button
         type="button"
-        className="min-h-11"
+        className="min-h-11 w-full sm:w-auto"
         disabled={!enabled || busy}
         aria-label={`Upload ${label}`}
         onClick={() => inputRef.current?.click()}
@@ -746,7 +746,7 @@ export function DocumentRow({
           {doc.review_note ? ` · ${doc.review_note}` : ""}
         </p>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex w-full flex-wrap items-center gap-2 sm:w-auto">
         <Badge variant={doc.review_status === "accepted" ? "default" : "secondary"} className="capitalize">
           {doc.review_status === "pending" ? "Uploaded" : doc.review_status}
         </Badge>
