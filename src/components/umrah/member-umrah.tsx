@@ -40,7 +40,8 @@ import {
   getMyUmrahApplication,
   getUmrahDocumentLink,
   registerUmrahDocument,
-  requiredUmrahDocumentTypes,
+  hasUmrahIdentityDocuments,
+  UMRAH_IDENTITY_ERROR,
   saveMyUmrahApplication,
   submitMyUmrahApplication,
   UMRAH_MAX_BYTES,
@@ -149,9 +150,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
     ...(!application?.["full_name"] || String(application["full_name"]).trim().length < 2
       ? ["Your full name in the application details"]
       : []),
-    ...requiredUmrahDocumentTypes
-      .filter((type) => !uploadedTypes.has(type))
-      .map((type) => `${umrahDocumentLabels[type]} document`),
+    ...(hasUmrahIdentityDocuments(uploadedTypes) ? [] : [UMRAH_IDENTITY_ERROR]),
   ];
 
 
@@ -610,8 +609,8 @@ function DocumentsCard({
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Documents</CardTitle>
         <CardDescription>
-          Stored privately. Only you and authorised administrators can open them. Accepted files: {acceptedLabel} · maximum
-          10MB each.
+          Upload either your Passport, or both the front and back of your ID Card. Stored privately — only you and
+          authorised administrators can open them. Accepted files: {acceptedLabel} · maximum 10MB each.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
@@ -625,14 +624,13 @@ function DocumentsCard({
         {umrahDocumentTypes.map((type) => {
           const forType = documents.filter((doc) => doc.document_type === type);
           const uploadProgress = progress[type];
-          const required = requiredUmrahDocumentTypes.includes(type);
+          const label = umrahDocumentLabels[type] ?? type;
           return (
             <section key={type} className="rounded-xl border border-border p-4">
               <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
                 <div>
                   <p className="text-sm font-semibold">
-                    {umrahDocumentLabels[type]}
-                    {required ? <span className="ml-2 text-xs font-medium text-destructive">Required</span> : null}
+                    {label}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     {forType.length === 0 ? "Not uploaded yet" : `${forType.length} file${forType.length > 1 ? "s" : ""}`}
@@ -640,7 +638,7 @@ function DocumentsCard({
                 </div>
                 <DocumentUploadControl
                   inputId={`umrah-upload-${type}`}
-                  label={umrahDocumentLabels[type]}
+                  label={label}
                   enabled={ownsApplication && canEdit}
                   progress={uploadProgress}
                   onFile={(file) => void handleFile(type, file)}
