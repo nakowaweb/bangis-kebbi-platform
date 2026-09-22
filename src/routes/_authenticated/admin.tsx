@@ -350,36 +350,3 @@ function AdminOverview() {
     </section>
   );
 }
-
-function NotificationsComposer() {
-  const send = useServerFn(sendNotification);
-  const [title, setTitle] = useState("");
-  const [body, setBody] = useState("");
-  const [category, setCategory] = useState<"general" | "platform" | "community" | "umrah" | "foundation">("general");
-  const [audience, setAudience] = useState<"all" | "active">("active");
-  const [busy, setBusy] = useState(false);
-
-  async function submit(event: FormEvent) {
-    event.preventDefault();
-    setBusy(true);
-    try {
-      const result = await send({ data: { title, body, category, audience } });
-      toast.success(result.sent === 0 ? "No members match this audience yet." : `Announcement sent to ${result.sent} member(s).`);
-      setTitle(""); setBody("");
-    } catch (error) { toast.error(error instanceof Error ? error.message : "Announcement could not be sent"); }
-    setBusy(false);
-  }
-
-  return (
-    <form onSubmit={submit} className="mx-auto grid max-w-2xl gap-5 rounded-lg border border-border bg-card p-6">
-      <div><h2 className="font-display text-xl font-bold">Send an announcement</h2><p className="mt-1 text-sm text-muted-foreground">Members see announcements in their dashboard. Each send is recorded in the audit log.</p></div>
-      <Field label="Title"><Input value={title} maxLength={160} required onChange={(event) => setTitle(event.target.value)} /></Field>
-      <Field label="Message"><Textarea className="min-h-28" value={body} maxLength={2000} onChange={(event) => setBody(event.target.value)} /></Field>
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field label="Category"><Select value={category} onValueChange={(value) => setCategory(value as typeof category)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{["general", "platform", "community", "umrah", "foundation"].map((item) => <SelectItem key={item} value={item}>{item}</SelectItem>)}</SelectContent></Select></Field>
-        <Field label="Audience"><Select value={audience} onValueChange={(value) => setAudience(value as typeof audience)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active members</SelectItem><SelectItem value="all">All members</SelectItem></SelectContent></Select></Field>
-      </div>
-      <Button type="submit" disabled={busy || title.trim().length < 2}><Bell /> {busy ? "Sending…" : "Send announcement"}</Button>
-    </form>
-  );
-}
