@@ -466,6 +466,22 @@ const acceptAttribute = [
 
 const acceptedLabel = "PDF, JPG, JPEG, PNG, WEBP, GIF";
 
+const extensionMimeTypes: Record<string, string> = {
+  pdf: "application/pdf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+};
+
+/** Mobile pickers often report "", "image/jpg" or "application/octet-stream" — trust the extension. */
+function resolveMimeType(file: File): string | null {
+  const byExtension = extensionMimeTypes[umrahFileExtension(file.name)];
+  if (byExtension) return byExtension;
+  return (umrahAcceptedMimeTypes as readonly string[]).includes(file.type) ? file.type : null;
+}
+
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
