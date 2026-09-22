@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { BusinessSection, ContactSection, SectionShell, ServicesSection } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/services/")({
     ],
   }),
   errorComponent: RouteError,
-  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
   loader: ({ deps }) => listPublicEntries({ data: { contentType: "service", language: deps.lang } }),
   component: ServicesPage,
 });

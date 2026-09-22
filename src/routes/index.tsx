@@ -1,4 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import {
   CommunitySection,
@@ -54,7 +55,7 @@ export const Route = createFileRoute("/")({
     ],
   }),
   errorComponent: RouteError,
-  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
   loader: ({ deps }) => getPublicContent({ data: { language: deps.lang } }),
   component: Index,
 });

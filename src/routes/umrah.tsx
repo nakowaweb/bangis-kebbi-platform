@@ -1,4 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { ContactSection, UmrahSection } from "@/components/platform-sections";
 import { Button } from "@/components/ui/button";
@@ -14,7 +15,7 @@ export const Route = createFileRoute("/umrah")({
         "Bangis Kebbi Umrah Support Program explains an organized member application, document and status tracking process.",
       path: "/umrah",
     }),
-  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
   loader: ({ deps }) => getPublicUmrahInfo({ data: { language: deps.lang } }),
   errorComponent: () => (
     <main className="mx-auto max-w-2xl px-4 py-20 text-center">

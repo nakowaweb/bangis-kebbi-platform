@@ -1,4 +1,5 @@
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import { SectionShell } from "@/components/platform-sections";
 import { getPublicEntry } from "@/lib/content.functions";
@@ -7,7 +8,7 @@ import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/projects/$slug")({
   errorComponent: RouteError,
-  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
   loader: async ({ params, deps }) => {
     const project = await getPublicEntry({ data: { contentType: "project", slug: params.slug, language: deps.lang } });
     if (!project) throw notFound();
