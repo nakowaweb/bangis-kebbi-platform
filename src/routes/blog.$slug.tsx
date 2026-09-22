@@ -8,7 +8,7 @@ import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/blog/$slug")({
   errorComponent: RouteError,
-  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
   loader: async ({ params, deps }) => {
     const post = await getPublicEntry({ data: { contentType: "blog_post", slug: params.slug, language: deps.lang } });
     if (!post) throw notFound();

@@ -15,7 +15,7 @@ export const Route = createFileRoute("/umrah")({
         "Bangis Kebbi Umrah Support Program explains an organized member application, document and status tracking process.",
       path: "/umrah",
     }),
-  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
   loader: ({ deps }) => getPublicUmrahInfo({ data: { language: deps.lang } }),
   errorComponent: () => (
     <main className="mx-auto max-w-2xl px-4 py-20 text-center">

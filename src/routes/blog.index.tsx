@@ -29,7 +29,7 @@ export const Route = createFileRoute("/blog/")({
     ],
   }),
   errorComponent: RouteError,
-  loaderDeps: ({ search }: { search: { lang?: LanguageCode } }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
   loader: ({ deps }) => listPublicEntries({ data: { contentType: "blog_post", language: deps.lang } }),
   component: BlogPage,
 });
