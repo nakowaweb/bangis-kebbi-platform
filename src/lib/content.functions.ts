@@ -7,7 +7,9 @@ import type { Database, Json } from "@/integrations/supabase/types";
 
 const contentTypes = [
   "homepage", "about", "service", "project", "blog_post", "blog_category",
-  "business", "umrah", "umrah_step", "umrah_faq", "umrah_notice", "foundation",
+  "business", "umrah", "umrah_step", "umrah_faq", "umrah_notice", "umrah_requirement",
+  "umrah_information", "umrah_contact", "foundation", "foundation_mission",
+  "foundation_vision", "foundation_what_we_do",
   "foundation_initiative", "foundation_update", "community", "contact",
 ] as const;
 const contentStatuses = ["draft", "published", "unpublished", "archived"] as const;
