@@ -65,7 +65,6 @@ const statusLabels: Record<string, string> = {
 };
 
 const editableStatuses = ["draft", "documents_required"];
-const MAX_BYTES = 10 * 1024 * 1024;
 
 export function MemberUmrahPanel({ userId }: { userId: string }) {
   const queryClient = useQueryClient();

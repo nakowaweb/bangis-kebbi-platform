@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Building2, Eye, Save, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -36,6 +36,7 @@ import {
   saveUmrahPartner,
   updateUmrahApplication,
   umrahStatuses,
+  umrahDocumentLabels,
 } from "@/lib/umrah.functions";
 
 export function AdminUmrahManager() {
@@ -545,4 +546,35 @@ function Detail({ label, value }: { label: string; value: string | null }) {
 
 function EmptyState({ text }: { text: string }) {
   return <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">{text}</div>;
+}
+
+function AdminDocThumb({ doc, getLink }: { doc: any; getLink: () => Promise<{ url: string }> }) {
+  const isImage = String(doc.mime_type ?? "").startsWith("image/");
+  const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isImage) return;
+    let active = true;
+    getLink()
+      .then(({ url }) => {
+        if (active) setPreview(url);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doc.id, isImage]);
+
+  return (
+    <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary/50">
+      {isImage && preview ? (
+        <img src={preview} alt={doc.original_name} className="size-full object-cover" />
+      ) : isImage ? (
+        <ImageIcon className="size-5 text-muted-foreground" />
+      ) : (
+        <FileText className="size-5 text-muted-foreground" />
+      )}
+    </div>
+  );
 }
