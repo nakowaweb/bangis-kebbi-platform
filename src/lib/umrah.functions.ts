@@ -235,10 +235,8 @@ export const submitMyUmrahApplication = createServerFn({ method: "POST" })
       .select("document_type")
       .eq("application_id", existing.id);
     const present = new Set((uploaded ?? []).map((row: { document_type: string }) => row.document_type));
-    const missing = requiredUmrahDocumentTypes.filter((type) => !present.has(type));
-    if (missing.length > 0) {
-      const names = missing.map((type) => umrahDocumentLabels[type]).join(", ");
-      throw new Error(`${names} is required before you can submit your application.`);
+    if (!hasUmrahIdentityDocuments(present)) {
+      throw new Error(UMRAH_IDENTITY_ERROR);
     }
 
     const { error } = await context.supabase
