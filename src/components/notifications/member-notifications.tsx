@@ -75,7 +75,10 @@ export function MemberNotificationsPanel() {
   const inbox = useInbox();
   const markRead = useServerFn(markNotificationAsRead);
   const markAll = useServerFn(markAllNotificationsRead);
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["member-inbox"] });
+  const refresh = () => {
+    void queryClient.invalidateQueries({ queryKey: ["member-inbox"] });
+    void queryClient.invalidateQueries({ queryKey: ["member-account"] });
+  };
 
   const readOne = useMutation({
     mutationFn: (id: string) => markRead({ data: { id } }),
