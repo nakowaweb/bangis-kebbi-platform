@@ -158,6 +158,119 @@ export type Database = {
           },
         ]
       }
+      foundation_project_updates: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_path: string | null
+          is_published: boolean
+          project_id: string
+          published_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          project_id: string
+          published_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          project_id?: string
+          published_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "foundation_project_updates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "foundation_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      foundation_projects: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          image_path: string | null
+          is_published: boolean
+          location: string | null
+          media: Json
+          published_at: string | null
+          slug: string
+          sort_order: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["foundation_status"]
+          summary: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          location?: string | null
+          media?: Json
+          published_at?: string | null
+          slug: string
+          sort_order?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["foundation_status"]
+          summary?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          location?: string | null
+          media?: Json
+          published_at?: string | null
+          slug?: string
+          sort_order?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["foundation_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       media_assets: {
         Row: {
           alt_text: string
@@ -683,6 +796,7 @@ export type Database = {
         | "finance"
         | "member"
       content_status: "draft" | "published" | "unpublished" | "archived"
+      foundation_status: "planned" | "active" | "completed" | "archived"
       umrah_status:
         | "draft"
         | "submitted"
@@ -829,6 +943,7 @@ export const Constants = {
         "member",
       ],
       content_status: ["draft", "published", "unpublished", "archived"],
+      foundation_status: ["planned", "active", "completed", "archived"],
       umrah_status: [
         "draft",
         "submitted",
