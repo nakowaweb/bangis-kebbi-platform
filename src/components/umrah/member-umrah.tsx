@@ -638,7 +638,7 @@ function DocumentsCard({
                 </div>
                 <DocumentUploadControl
                   inputId={`umrah-upload-${type}`}
-                  label={umrahDocumentLabels[type]}
+                  label={label}
                   enabled={ownsApplication && canEdit}
                   progress={uploadProgress}
                   onFile={(file) => void handleFile(type, file)}
