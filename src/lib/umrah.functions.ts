@@ -4,6 +4,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
+import { applyTranslations } from "@/lib/public-content.server";
 
 export const umrahStatuses = [
   "draft",
