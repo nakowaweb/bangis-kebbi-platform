@@ -609,8 +609,8 @@ function DocumentsCard({
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Documents</CardTitle>
         <CardDescription>
-          Stored privately. Only you and authorised administrators can open them. Accepted files: {acceptedLabel} · maximum
-          10MB each.
+          Upload either your Passport, or both the front and back of your ID Card. Stored privately — only you and
+          authorised administrators can open them. Accepted files: {acceptedLabel} · maximum 10MB each.
         </CardDescription>
       </CardHeader>
       <CardContent className="grid gap-4">
