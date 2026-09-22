@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Building2, Eye, Save, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -36,6 +36,7 @@ import {
   saveUmrahPartner,
   updateUmrahApplication,
   umrahStatuses,
+  umrahDocumentLabels,
 } from "@/lib/umrah.functions";
 
 export function AdminUmrahManager() {
@@ -263,11 +264,18 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
           ) : (
             documents.map((doc) => (
               <div key={doc.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{doc.original_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {doc.document_type} · {(doc.byte_size / 1024).toFixed(0)} KB · {new Date(doc.created_at).toLocaleDateString()}
-                  </p>
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <AdminDocThumb doc={doc} getLink={() => documentLink({ data: { id: doc.id } })} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{doc.original_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {umrahDocumentLabels[doc.document_type as keyof typeof umrahDocumentLabels] ?? doc.document_type} ·{" "}
+                      {doc.mime_type === "application/pdf"
+                        ? "PDF"
+                        : String(doc.mime_type ?? "").replace("image/", "").toUpperCase()}{" "}
+                      · {(doc.byte_size / 1024).toFixed(0)} KB · {new Date(doc.created_at).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant={doc.review_status === "accepted" ? "default" : "secondary"} className="capitalize">
@@ -538,4 +546,35 @@ function Detail({ label, value }: { label: string; value: string | null }) {
 
 function EmptyState({ text }: { text: string }) {
   return <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">{text}</div>;
+}
+
+function AdminDocThumb({ doc, getLink }: { doc: any; getLink: () => Promise<{ url: string }> }) {
+  const isImage = String(doc.mime_type ?? "").startsWith("image/");
+  const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isImage) return;
+    let active = true;
+    getLink()
+      .then(({ url }) => {
+        if (active) setPreview(url);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doc.id, isImage]);
+
+  return (
+    <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary/50">
+      {isImage && preview ? (
+        <img src={preview} alt={doc.original_name} className="size-full object-cover" />
+      ) : isImage ? (
+        <ImageIcon className="size-5 text-muted-foreground" />
+      ) : (
+        <FileText className="size-5 text-muted-foreground" />
+      )}
+    </div>
+  );
 }
