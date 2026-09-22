@@ -7,8 +7,8 @@ import { getPublicUmrahInfo } from "@/lib/umrah.functions";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/umrah")({
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Umrah Support Program — Bangis Kebbi",
       description:
         "Bangis Kebbi Umrah Support Program explains an organized member application, document and status tracking process.",

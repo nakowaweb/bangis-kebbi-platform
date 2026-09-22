@@ -6,8 +6,8 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/services/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }) => ({
+    ...pageHead({ search: match.search,
       title: "Services — AI Web Design, Web Development & UI/UX",
       description:
         "Explore Bangis Kebbi services including AI web design, web development, UI/UX design, WordPress, digital business solutions and website maintenance.",

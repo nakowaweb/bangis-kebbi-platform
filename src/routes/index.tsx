@@ -17,8 +17,8 @@ import { getPublicContent } from "@/lib/content.functions";
 import heroImage from "@/assets/bangis-official-hero.webp.asset.json";
 
 export const Route = createFileRoute("/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }) => ({
+    ...pageHead({ search: match.search,
       title: "Bangis Kebbi — AI Web Designer, Developer & Digital Entrepreneur",
       description:
         "BangisKebbi.com is a global platform by Abubakar Alhaji Abubakar for AI-assisted web design, web development, business networking, community support, Umrah coordination and digital opportunities.",

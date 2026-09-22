@@ -6,8 +6,8 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/blog/")({
-  head: () => ({
-    ...pageHead({
+  head: ({ match }) => ({
+    ...pageHead({ search: match.search,
       title: "Blog & Updates — Technology, AI, Business and Community",
       description:
         "Read Bangis Kebbi updates on technology, AI, web design, business, entrepreneurship, community, Umrah and Foundation news.",

@@ -15,8 +15,8 @@ import {
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/foundation/$slug")({
-  head: ({ params }) =>
-    pageHead({
+  head: ({ params, match }) =>
+    pageHead({ search: match.search,
       title: "BK Foundations Project — BangisKebbi.com",
       description: `Details and published updates for the BK Foundations community project "${params.slug.replaceAll("-", " ")}".`,
       path: `/foundation/${params.slug}`,

@@ -15,8 +15,8 @@ const searchSchema = z.object({ redirect: z.string().optional() });
 
 export const Route = createFileRoute("/login")({
   validateSearch: (search) => searchSchema.parse(search),
-  head: () =>
-    pageHead({
+  head: ({ match }) =>
+    pageHead({ search: match.search,
       title: "Login — BangisKebbi.com Member Access",
       description: "Member login for BangisKebbi.com community, Umrah support, Foundation contributions and dashboard access.",
       path: "/login",

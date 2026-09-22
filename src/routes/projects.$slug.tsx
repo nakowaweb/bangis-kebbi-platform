@@ -12,13 +12,13 @@ export const Route = createFileRoute("/projects/$slug")({
     if (!project) throw notFound();
     return project;
   },
-  head: ({ params, loaderData }) => {
+  head: ({ params, loaderData, match }) => {
     if (!loaderData) {
       return { meta: [{ title: "Project not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }
     const description = loaderData.seo_description || loaderData.summary || `A project by Bangis Kebbi: ${loaderData.title}`;
     return {
-      ...pageHead({
+      ...pageHead({ search: match.search,
         title: loaderData.seo_title || `${loaderData.title} — Bangis Kebbi Project`,
         description,
         path: `/projects/${params.slug}`,

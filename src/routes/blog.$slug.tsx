@@ -12,13 +12,13 @@ export const Route = createFileRoute("/blog/$slug")({
     if (!post) throw notFound();
     return post;
   },
-  head: ({ params, loaderData }) => {
+  head: ({ params, loaderData, match }) => {
     if (!loaderData) {
       return { meta: [{ title: "Article not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }
     const description = loaderData.seo_description || loaderData.summary || `An article from BangisKebbi.com: ${loaderData.title}`;
     return {
-      ...pageHead({
+      ...pageHead({ search: match.search,
         title: loaderData.seo_title || `${loaderData.title} — BangisKebbi.com`,
         description,
         path: `/blog/${params.slug}`,
