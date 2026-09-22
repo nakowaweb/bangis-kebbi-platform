@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MemberUmrahPanel } from "@/components/umrah/member-umrah";
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstSuperAdmin, getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
 import { pageHead } from "@/lib/seo";
@@ -171,7 +172,7 @@ function DashboardPage() {
             <PlaceholderPanel title="Projects" text="Published projects are shown on the public projects page." href="/projects" linkLabel="View projects" />
           </TabsContent>
           <TabsContent value="umrah">
-            <PlaceholderPanel title="Umrah Support" text="Umrah applications and status tracking are a separate upcoming module. No application is open yet." href="/umrah" linkLabel="Umrah information" />
+            {profile ? <MemberUmrahPanel userId={profile.id} /> : <EmptyPanel text="Your profile is still being prepared." />}
           </TabsContent>
           <TabsContent value="foundations">
             <PlaceholderPanel title="BK Foundations" text="Initiative updates will appear here once published. BK Foundations is a community support programme, not an investment." href="/foundation" linkLabel="Foundation information" />
