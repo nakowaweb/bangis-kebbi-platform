@@ -450,7 +450,7 @@ function DocumentsCard({
     }
   }
 
-  async function handleFile(type: UmrahDocumentType, file: File) {
+  async function handleFile(type: UmrahDocumentType, file: File, replaceId?: string) {
     if (!applicationId) {
       toast.error("Save your application details first.");
       return;
@@ -508,7 +508,12 @@ function DocumentsCard({
           byteSize: file.size,
         },
       });
-      toast.success(`${umrahDocumentLabels[type]} uploaded successfully.`);
+      if (replaceId) {
+        await removeDoc({ data: { id: replaceId } });
+      }
+      toast.success(
+        replaceId ? `${umrahDocumentLabels[type]} replaced successfully.` : `${umrahDocumentLabels[type]} uploaded successfully.`,
+      );
       onChanged();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "The document could not be uploaded.");
@@ -556,11 +561,7 @@ function DocumentsCard({
                 {applicationId && canEdit ? (
                   <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus-within:ring-2 focus-within:ring-ring">
                     {uploadProgress === undefined ? <Upload className="size-4" /> : <Loader2 className="size-4 animate-spin" />}
-                    {uploadProgress === undefined
-                      ? forType.length > 0
-                        ? "Add or replace"
-                        : `Upload ${umrahDocumentLabels[type]}`
-                      : `Uploading… ${uploadProgress}%`}
+                    {uploadProgress === undefined ? "Upload Document" : `Uploading… ${uploadProgress}%`}
                     <input
                       type="file"
                       className="sr-only"
