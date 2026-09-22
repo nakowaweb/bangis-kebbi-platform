@@ -39,3 +39,12 @@
 - [x] Content area filter in the admin content list (services, projects, blog, umrah, foundations, community, etc.)
 - [x] Community tab in the member dashboard
 - [x] Verified public pages, auth pages, protected redirects and typecheck
+
+# Phase 2 — Step 2 (Umrah module)
+
+- [x] Umrah application, secure private documents, statuses, history and member notifications
+- [x] Admin Umrah management: search, filter, review, document viewing, status changes, internal notes vs member messages
+- [x] Umrah partners structure (only verified + visible partners shown publicly)
+- [x] Public Umrah information page driven by editable content, with empty states instead of invented facts
+- [x] Tested member flow, admin flow, privacy of internal notes, mobile layout and outside access
+- [ ] Payment / contribution processing — deliberately not started
