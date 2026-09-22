@@ -211,6 +211,17 @@ export const submitMyUmrahApplication = createServerFn({ method: "POST" })
       throw new Error("Please complete your details before submitting.");
     }
 
+    const { data: uploaded } = await context.supabase
+      .from("umrah_documents")
+      .select("document_type")
+      .eq("application_id", existing.id);
+    const present = new Set((uploaded ?? []).map((row: { document_type: string }) => row.document_type));
+    const missing = requiredUmrahDocumentTypes.filter((type) => !present.has(type));
+    if (missing.length > 0) {
+      const names = missing.map((type) => umrahDocumentLabels[type]).join(", ");
+      throw new Error(`${names} is required before you can submit your application.`);
+    }
+
     const { error } = await context.supabase
       .from("umrah_applications")
       .update({ status: "submitted", submitted_at: new Date().toISOString() })
