@@ -60,3 +60,13 @@
 - [x] Audit logging of foundation project and update actions
 - [x] Tested admin, member, public and security paths; test data removed
 - [ ] Donations / contributions / payments — deliberately not started
+
+# Phase 2.4 — Activities & Notifications
+
+- [x] Member activities feed from account, Umrah, document and Foundation events
+- [x] Member notifications with unread count, mark as read and mark all as read
+- [x] Notification types: system, Umrah, Foundation, account, announcement
+- [x] Automatic notifications created by the database for key events
+- [x] Admin draft / publish / send to all, active or selected members, with audit entries
+- [x] Access rules so members only see their own notifications and activities
+- [x] Tested member and admin flows on phone and desktop; test data removed
