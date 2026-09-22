@@ -227,104 +227,15 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
         onSave={(values) => saveMutation.mutate(values)}
       />
 
-      <Card>
-        <CardHeader className="pb-3">
-          <CardTitle className="text-base">Documents</CardTitle>
-          <CardDescription>Stored privately. Only you and authorised administrators can open them.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-4">
-          {application ? (
-            <form onSubmit={upload} className="grid gap-3 sm:grid-cols-[minmax(0,200px)_minmax(0,1fr)_auto] sm:items-end">
-              <div className="grid gap-2">
-                <Label>Document type</Label>
-                <Select value={documentType} onValueChange={(value) => setDocumentType(value as typeof documentType)}>
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {umrahDocumentTypes.map((type) => (
-                      <SelectItem key={type} value={type} className="capitalize">
-                        {type}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="grid gap-2">
-                <Label htmlFor="umrah-file">File (max 10MB)</Label>
-                <Input id="umrah-file" name="file" type="file" accept="image/*,application/pdf" />
-              </div>
-              <Button type="submit" disabled={uploading}>
-                {uploading ? <Loader2 className="animate-spin" /> : <FileUp />} Upload
-              </Button>
-            </form>
-          ) : (
-            <p className="text-sm text-muted-foreground">Save your application details first to enable uploads.</p>
-          )}
-
-          {documents.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-              No documents uploaded yet.
-            </p>
-          ) : (
-            <ul className="grid gap-2">
-              {documents.map((doc) => (
-                <li key={doc.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium">{doc.original_name}</p>
-                    <p className="text-xs text-muted-foreground">
-                      {doc.document_type} · {(doc.byte_size / 1024).toFixed(0)} KB ·{" "}
-                      {new Date(doc.created_at).toLocaleDateString()}
-                      {doc.review_note ? ` · ${doc.review_note}` : ""}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={doc.review_status === "accepted" ? "default" : "secondary"} className="capitalize">
-                      {doc.review_status}
-                    </Badge>
-                    <Button size="sm" variant="outline" onClick={() => openDocument(doc.id)}>
-                      <Eye /> View
-                    </Button>
-                    {doc.review_status === "pending" ? (
-                      <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button size="sm" variant="outline" aria-label={`Remove ${doc.original_name}`}>
-                            <Trash2 />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Remove this document?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              {doc.original_name} will be deleted permanently from your secure storage.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={async () => {
-                                try {
-                                  await removeDoc({ data: { id: doc.id } });
-                                  toast.success("Document removed");
-                                  refresh();
-                                } catch (error) {
-                                  toast.error(error instanceof Error ? error.message : "Removal failed");
-                                }
-                              }}
-                            >
-                              Remove
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
-                    ) : null}
-                  </div>
-                </li>
-              ))}
-            </ul>
-          )}
-        </CardContent>
-      </Card>
+      <DocumentsCard
+        userId={userId}
+        applicationId={(application?.["id"] as string | undefined) ?? null}
+        canEdit={canEdit}
+        documents={documents}
+        onChanged={refresh}
+        onOpen={openDocument}
+        getLink={(id) => documentLink({ data: { id } })}
+      />
 
       {application && editableStatuses.includes(status) ? (
         <Card>
