@@ -381,19 +381,30 @@ export const saveFoundationUpdate = createServerFn({ method: "POST" })
       const { data: members } = await context.supabase.from("profiles").select("id").eq("is_active", true);
       const targets = (members ?? []) as { id: string }[];
       if (targets.length) {
-        await context.supabase.from("notifications").insert(
-          targets.map((member) => ({
-            user_id: member.id,
+        const { data: message, error: messageError } = await context.supabase
+          .from("notification_messages")
+          .insert({
             title: `BK Foundations update: ${data.title}`,
             body: data.body || null,
             category: "foundation",
+            link_path: "/foundation",
+            status: "published",
+            audience: "active",
             created_by: context.userId,
-          })),
-        );
+            published_at: new Date().toISOString(),
+          })
+          .select("id")
+          .single();
+        if (messageError) throw new Error(messageError.message);
+
+        await context.supabase
+          .from("notification_recipients")
+          .upsert(targets.map((member) => ({ message_id: message.id, user_id: member.id })), { onConflict: "message_id,user_id" });
         notified = targets.length;
+
         await context.supabase.from("admin_audit_logs").insert({
           admin_id: context.userId,
-          action: `notified ${notified} member(s) about a foundation update`,
+          action: `notification_sent to ${notified} member(s) about a foundation update`,
           content_type: "foundation_update",
           content_id: saved.id,
           content_label: saved.title,

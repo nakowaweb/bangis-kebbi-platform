@@ -119,18 +119,8 @@ async function requireAdmin(context: { supabase: any; userId: string }) {
   if (error || !data) throw new Error("Administrator access is required.");
 }
 
-async function notify(
-  client: any,
-  input: { userId: string; title: string; body: string; createdBy: string | null },
-) {
-  await client.from("notifications").insert({
-    user_id: input.userId,
-    title: input.title,
-    body: input.body || null,
-    category: "umrah",
-    created_by: input.createdBy,
-  });
-}
+// Member notifications for submissions, status changes and administrator messages
+// are created automatically by the database, so every path is covered exactly once.
 
 /* ------------------------------ member side ------------------------------ */
 
@@ -254,13 +244,7 @@ export const submitMyUmrahApplication = createServerFn({ method: "POST" })
       to_status: "submitted",
     });
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await notify(supabaseAdmin, {
-      userId: context.userId,
-      title: `Umrah application ${existing.application_number} submitted`,
-      body: "Your application has been received. You will be notified when its status changes.",
-      createdBy: null,
-    });
+    // The submission notification is created automatically by the database.
 
     return { ok: true };
   });
@@ -490,14 +474,7 @@ export const updateUmrahApplication = createServerFn({ method: "POST" })
       });
     }
 
-    if (data.notifyMember && (statusChanged || data.memberMessage)) {
-      await notify(context.supabase, {
-        userId: existing.user_id,
-        title: `Umrah application ${existing.application_number}: ${data.status.replaceAll("_", " ")}`,
-        body: data.memberMessage,
-        createdBy: context.userId,
-      });
-    }
+    // Status changes and member messages notify the applicant automatically.
 
     await context.supabase.from("admin_audit_logs").insert({
       admin_id: context.userId,

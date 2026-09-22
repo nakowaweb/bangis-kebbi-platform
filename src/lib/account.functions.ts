@@ -36,10 +36,11 @@ async function loadAccount(context: { supabase: any; userId: string; claims: Rec
     profile = created ?? null;
   }
 
-  const [{ data: roleRows }, { data: notifications }, { data: documents }] = await Promise.all([
+  const [{ data: roleRows }, { count: unreadCount }, { data: documents }, { data: activityRows }] = await Promise.all([
     supabase.from("user_roles").select("role").eq("user_id", userId),
-    supabase.from("notifications").select("id,title,body,category,read_at,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
+    supabase.from("notification_recipients").select("id", { count: "exact", head: true }).eq("user_id", userId).is("read_at", null),
     supabase.from("member_documents").select("id,document_type,original_name,review_status,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(20),
+    supabase.from("member_activities").select("id,title,description,created_at").eq("user_id", userId).order("created_at", { ascending: false }).limit(5),
   ]);
 
   const roles = (roleRows ?? []).map((row: { role: string }) => row.role);
@@ -58,7 +59,8 @@ async function loadAccount(context: { supabase: any; userId: string; claims: Rec
     superAdminExists,
     isAdmin: roles.includes("admin") || roles.includes("super_admin"),
     isSuperAdmin: roles.includes("super_admin"),
-    notifications: notifications ?? [],
+    unreadCount: unreadCount ?? 0,
+    recentActivities: (activityRows ?? []) as { id: string; title: string; description: string | null; created_at: string }[],
     documents: documents ?? [],
   };
 }
