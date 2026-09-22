@@ -36,7 +36,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact"] as const;
+const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact", "footer"] as const;
 type ContentStatus = "draft" | "published" | "unpublished" | "archived";
 
 type EditorState = {
@@ -47,6 +47,20 @@ type EditorState = {
   summary: string;
   body: string;
   imagePath: string;
+  imageAlt: string;
+  category: string;
+  author: string;
+  tags: string;
+  language: "en" | "ha" | "ar";
+  gallery: string;
+  projectUrl: string;
+  completedOn: string;
+  seoTitle: string;
+  seoDescription: string;
+  canonicalUrl: string;
+  ogTitle: string;
+  ogDescription: string;
+  ogImagePath: string;
   status: ContentStatus;
   isEnabled: boolean;
   isFeatured: boolean;
@@ -54,7 +68,14 @@ type EditorState = {
   scheduledFor: string;
 };
 
-const emptyEditor: EditorState = { contentType: "service", slug: "", title: "", summary: "", body: "", imagePath: "", status: "draft", isEnabled: true, isFeatured: false, sortOrder: 0, scheduledFor: "" };
+const emptyEditor: EditorState = { contentType: "service", slug: "", title: "", summary: "", body: "", imagePath: "", imageAlt: "", category: "", author: "", tags: "", language: "en", gallery: "", projectUrl: "", completedOn: "", seoTitle: "", seoDescription: "", canonicalUrl: "", ogTitle: "", ogDescription: "", ogImagePath: "", status: "draft", isEnabled: true, isFeatured: false, sortOrder: 0, scheduledFor: "" };
+
+const previewPath = (editor: EditorState) =>
+  editor.contentType === "service" ? `/services/${editor.slug}` :
+  editor.contentType === "project" ? `/projects/${editor.slug}` :
+  editor.contentType === "blog_post" ? `/blog/${editor.slug}` : null;
+
+const splitList = (value: string) => value.split(",").map((item) => item.trim()).filter(Boolean);
 
 function AdminPage() {
   const queryClient = useQueryClient();
