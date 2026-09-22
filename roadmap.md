@@ -49,3 +49,14 @@
 - [x] Tested member flow, admin flow, privacy of internal notes, mobile layout and outside access
 - [ ] Payment / contribution processing — deliberately not started
 - [x] Fix and verify visible Umrah upload controls for a newly saved member application
+
+# Phase 2.3 — BK Foundations
+
+- [x] Foundation projects and project updates data with public/member/admin access rules
+- [x] Public BK Foundations page (intro, mission, vision, what we do, projects, updates, completed work) and project detail pages
+- [x] Admin BK Foundations tab: create, edit, publish, unpublish, archive, restore, images, updates, member notifications
+- [x] Member dashboard BK Foundations panel (read-only published projects and updates)
+- [x] Separate private foundation media area (member documents untouched)
+- [x] Audit logging of foundation project and update actions
+- [x] Tested admin, member, public and security paths; test data removed
+- [ ] Donations / contributions / payments — deliberately not started
