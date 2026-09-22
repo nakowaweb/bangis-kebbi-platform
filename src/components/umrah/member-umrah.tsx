@@ -96,15 +96,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   }
 
   const application = query.data.application as Record<string, string | null> | null;
-  const documents = query.data.documents as {
-    id: string;
-    document_type: string;
-    original_name: string;
-    byte_size: number;
-    review_status: string;
-    review_note: string | null;
-    created_at: string;
-  }[];
+  const documents = query.data.documents as UmrahDoc[];
   const history = query.data.history as {
     id: string;
     action: string;
@@ -180,8 +172,6 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
         canEdit={canEdit}
         documents={documents}
         onChanged={refresh}
-        onOpen={openDocument}
-        getLink={(id) => documentLink({ data: { id } })}
       />
 
       {application && editableStatuses.includes(status) ? (
