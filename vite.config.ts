@@ -12,4 +12,10 @@ export default defineConfig({
     // nitro/vite builds from this
     server: { entry: "server" },
   },
+  // Production target for self-hosted Node.js (Hostinger). Inside the Lovable
+  // build environment this preset is ignored and the Cloudflare target is used,
+  // so Lovable preview/publish keeps working unchanged.
+  nitro: {
+    preset: "node-server",
+  },
 });
