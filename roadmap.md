@@ -48,4 +48,4 @@
 - [x] Public Umrah information page driven by editable content, with empty states instead of invented facts
 - [x] Tested member flow, admin flow, privacy of internal notes, mobile layout and outside access
 - [ ] Payment / contribution processing — deliberately not started
-- [ ] Fix and verify visible Umrah upload controls for a newly saved member application
+- [x] Fix and verify visible Umrah upload controls for a newly saved member application
