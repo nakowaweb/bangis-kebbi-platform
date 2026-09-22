@@ -1,0 +1,1 @@
+REVOKE EXECUTE ON FUNCTION public.guard_umrah_member_update() FROM PUBLIC, anon, authenticated;
