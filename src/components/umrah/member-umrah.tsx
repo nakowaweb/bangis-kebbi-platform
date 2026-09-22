@@ -380,3 +380,301 @@ export function StatusBadge({ status }: { status: string }) {
     <Badge variant={tone as "default" | "secondary" | "destructive"}>{statusLabels[status] ?? status}</Badge>
   );
 }
+
+/* ----------------------------- documents card ---------------------------- */
+
+export type UmrahDoc = {
+  id: string;
+  document_type: string;
+  original_name: string;
+  mime_type: string;
+  byte_size: number;
+  review_status: string;
+  review_note: string | null;
+  created_at: string;
+};
+
+const acceptAttribute = [
+  ...umrahAcceptedMimeTypes,
+  ...umrahAcceptedExtensions.map((extension) => `.${extension}`),
+].join(",");
+
+const acceptedLabel = "PDF, JPG, JPEG, PNG, WEBP, GIF";
+
+function formatBytes(bytes: number) {
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
+function DocumentsCard({
+  userId,
+  applicationId,
+  canEdit,
+  documents,
+  onChanged,
+}: {
+  userId: string;
+  applicationId: string | null;
+  canEdit: boolean;
+  documents: UmrahDoc[];
+  onChanged: () => void;
+}) {
+  const registerDoc = useServerFn(registerUmrahDocument);
+  const removeDoc = useServerFn(deleteUmrahDocument);
+  const documentLink = useServerFn(getUmrahDocumentLink);
+  const [progress, setProgress] = useState<Record<string, number>>({});
+
+  async function openDocument(id: string) {
+    try {
+      const { url } = await documentLink({ data: { id } });
+      window.open(url, "_blank", "noopener,noreferrer");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "The document could not be opened.");
+    }
+  }
+
+  async function handleFile(type: UmrahDocumentType, file: File) {
+    if (!applicationId) {
+      toast.error("Save your application details first.");
+      return;
+    }
+    const extension = umrahFileExtension(file.name);
+    if (
+      !(umrahAcceptedExtensions as readonly string[]).includes(extension) ||
+      !(umrahAcceptedMimeTypes as readonly string[]).includes(file.type)
+    ) {
+      toast.error(`This file type is not accepted. Accepted files: ${acceptedLabel}.`);
+      return;
+    }
+    if (file.size > UMRAH_MAX_BYTES) {
+      toast.error("File is too large. Please choose a smaller file (maximum 10MB).");
+      return;
+    }
+
+    setProgress((current) => ({ ...current, [type]: 0 }));
+    try {
+      const { data: sessionData } = await supabase.auth.getSession();
+      const token = sessionData.session?.access_token;
+      if (!token) throw new Error("Your session has expired. Please sign in again.");
+
+      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-80);
+      const path = `${userId}/umrah/${applicationId}/${crypto.randomUUID()}-${safeName}`;
+      const endpoint = `${import.meta.env["VITE_SUPABASE_URL"]}/storage/v1/object/member-documents/${path}`;
+
+      await new Promise<void>((resolve, reject) => {
+        const request = new XMLHttpRequest();
+        request.open("POST", endpoint, true);
+        request.setRequestHeader("Authorization", `Bearer ${token}`);
+        request.setRequestHeader("apikey", import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string);
+        request.setRequestHeader("x-upsert", "false");
+        request.setRequestHeader("content-type", file.type);
+        request.upload.onprogress = (event) => {
+          if (!event.lengthComputable) return;
+          setProgress((current) => ({ ...current, [type]: Math.round((event.loaded / event.total) * 100) }));
+        };
+        request.onload = () =>
+          request.status >= 200 && request.status < 300
+            ? resolve()
+            : reject(new Error("The file could not be uploaded. Please try again."));
+        request.onerror = () => reject(new Error("Network error while uploading. Please try again."));
+        request.send(file);
+      });
+
+      setProgress((current) => ({ ...current, [type]: 100 }));
+      await registerDoc({
+        data: {
+          applicationId,
+          documentType: type,
+          storagePath: path,
+          originalName: file.name.slice(0, 200),
+          mimeType: file.type,
+          byteSize: file.size,
+        },
+      });
+      toast.success(`${umrahDocumentLabels[type]} uploaded successfully.`);
+      onChanged();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "The document could not be uploaded.");
+    } finally {
+      setProgress((current) => {
+        const next = { ...current };
+        delete next[type];
+        return next;
+      });
+    }
+  }
+
+  return (
+    <Card>
+      <CardHeader className="pb-3">
+        <CardTitle className="text-base">Documents</CardTitle>
+        <CardDescription>
+          Stored privately. Only you and authorised administrators can open them. Accepted files: {acceptedLabel} · maximum
+          10MB each.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="grid gap-4">
+        {!applicationId ? (
+          <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
+            Save your application details first to enable uploads.
+          </p>
+        ) : null}
+
+        {umrahDocumentTypes.map((type) => {
+          const forType = documents.filter((doc) => doc.document_type === type);
+          const uploadProgress = progress[type];
+          const required = requiredUmrahDocumentTypes.includes(type);
+          return (
+            <section key={type} className="rounded-xl border border-border p-4">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div>
+                  <p className="text-sm font-semibold">
+                    {umrahDocumentLabels[type]}
+                    {required ? <span className="ml-2 text-xs font-medium text-destructive">Required</span> : null}
+                  </p>
+                  <p className="text-xs text-muted-foreground">
+                    {forType.length === 0 ? "Not uploaded yet" : `${forType.length} file${forType.length > 1 ? "s" : ""}`}
+                  </p>
+                </div>
+                {applicationId && canEdit ? (
+                  <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus-within:ring-2 focus-within:ring-ring">
+                    {uploadProgress === undefined ? <Upload className="size-4" /> : <Loader2 className="size-4 animate-spin" />}
+                    {uploadProgress === undefined
+                      ? forType.length > 0
+                        ? "Add or replace"
+                        : `Upload ${umrahDocumentLabels[type]}`
+                      : `Uploading… ${uploadProgress}%`}
+                    <input
+                      type="file"
+                      className="sr-only"
+                      accept={acceptAttribute}
+                      disabled={uploadProgress !== undefined}
+                      aria-label={`Upload ${umrahDocumentLabels[type]}`}
+                      onChange={(event) => {
+                        const file = event.target.files?.[0];
+                        event.target.value = "";
+                        if (file) void handleFile(type, file);
+                      }}
+                    />
+                  </label>
+                ) : null}
+              </div>
+
+              {uploadProgress !== undefined ? (
+                <div className="mt-3 h-2 w-full overflow-hidden rounded-full bg-secondary">
+                  <div className="h-full bg-brand-cyan transition-all" style={{ width: `${uploadProgress}%` }} />
+                </div>
+              ) : null}
+
+              {forType.length > 0 ? (
+                <ul className="mt-3 grid gap-2">
+                  {forType.map((doc) => (
+                    <DocumentRow
+                      key={doc.id}
+                      doc={doc}
+                      canEdit={canEdit}
+                      onOpen={() => openDocument(doc.id)}
+                      getLink={() => documentLink({ data: { id: doc.id } })}
+                      onRemove={async () => {
+                        try {
+                          await removeDoc({ data: { id: doc.id } });
+                          toast.success("Document removed.");
+                          onChanged();
+                        } catch (error) {
+                          toast.error(error instanceof Error ? error.message : "Removal failed.");
+                        }
+                      }}
+                    />
+                  ))}
+                </ul>
+              ) : null}
+            </section>
+          );
+        })}
+      </CardContent>
+    </Card>
+  );
+}
+
+export function DocumentRow({
+  doc,
+  canEdit,
+  onOpen,
+  onRemove,
+  getLink,
+}: {
+  doc: UmrahDoc;
+  canEdit: boolean;
+  onOpen: () => void;
+  onRemove?: () => void;
+  getLink: () => Promise<{ url: string }>;
+}) {
+  const isImage = doc.mime_type?.startsWith("image/");
+  const [preview, setPreview] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!isImage) return;
+    let active = true;
+    getLink()
+      .then(({ url }) => {
+        if (active) setPreview(url);
+      })
+      .catch(() => undefined);
+    return () => {
+      active = false;
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [doc.id, isImage]);
+
+  return (
+    <li className="flex flex-wrap items-center gap-3 rounded-lg border border-border p-3">
+      <div className="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-md border border-border bg-secondary/50">
+        {isImage && preview ? (
+          <img src={preview} alt={doc.original_name} className="size-full object-cover" />
+        ) : isImage ? (
+          <ImageIcon className="size-5 text-muted-foreground" />
+        ) : (
+          <FileText className="size-5 text-muted-foreground" />
+        )}
+      </div>
+      <div className="min-w-0 flex-1">
+        <p className="truncate text-sm font-medium">{doc.original_name}</p>
+        <p className="text-xs text-muted-foreground">
+          {doc.mime_type === "application/pdf" ? "PDF" : doc.mime_type.replace("image/", "").toUpperCase()} ·{" "}
+          {formatBytes(doc.byte_size)} · {new Date(doc.created_at).toLocaleDateString()}
+          {doc.review_note ? ` · ${doc.review_note}` : ""}
+        </p>
+      </div>
+      <div className="flex items-center gap-2">
+        <Badge variant={doc.review_status === "accepted" ? "default" : "secondary"} className="capitalize">
+          {doc.review_status === "pending" ? "Uploaded" : doc.review_status}
+        </Badge>
+        <Button size="sm" variant="outline" onClick={onOpen}>
+          <Eye /> View
+        </Button>
+        {onRemove && canEdit && doc.review_status === "pending" ? (
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button size="sm" variant="outline" aria-label={`Remove ${doc.original_name}`}>
+                <Trash2 />
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Remove this document?</AlertDialogTitle>
+                <AlertDialogDescription>
+                  {doc.original_name} will be deleted permanently from your secure storage.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                <AlertDialogAction onClick={onRemove}>Remove</AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+        ) : null}
+      </div>
+    </li>
+  );
+}
