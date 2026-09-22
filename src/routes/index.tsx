@@ -54,7 +54,8 @@ export const Route = createFileRoute("/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => getPublicContent(),
+  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loader: ({ deps }) => getPublicContent({ data: { language: deps.lang } }),
   component: Index,
 });
 

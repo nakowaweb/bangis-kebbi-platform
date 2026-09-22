@@ -28,7 +28,8 @@ export const Route = createFileRoute("/projects/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => listPublicEntries({ data: { contentType: "project" } }),
+  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loader: ({ deps }) => listPublicEntries({ data: { contentType: "project", language: deps.lang } }),
   component: ProjectsPage,
 });
 

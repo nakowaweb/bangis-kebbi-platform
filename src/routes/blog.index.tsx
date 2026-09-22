@@ -28,7 +28,8 @@ export const Route = createFileRoute("/blog/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => listPublicEntries({ data: { contentType: "blog_post" } }),
+  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loader: ({ deps }) => listPublicEntries({ data: { contentType: "blog_post", language: deps.lang } }),
   component: BlogPage,
 });
 

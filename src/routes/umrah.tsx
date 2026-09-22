@@ -14,7 +14,8 @@ export const Route = createFileRoute("/umrah")({
         "Bangis Kebbi Umrah Support Program explains an organized member application, document and status tracking process.",
       path: "/umrah",
     }),
-  loader: () => getPublicUmrahInfo(),
+  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loader: ({ deps }) => getPublicUmrahInfo({ data: { language: deps.lang } }),
   errorComponent: () => (
     <main className="mx-auto max-w-2xl px-4 py-20 text-center">
       <h1 className="font-display text-2xl font-bold">Umrah information is unavailable right now</h1>

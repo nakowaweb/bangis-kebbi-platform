@@ -28,7 +28,8 @@ export const Route = createFileRoute("/services/")({
     ],
   }),
   errorComponent: RouteError,
-  loader: () => listPublicEntries({ data: { contentType: "service" } }),
+  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loader: ({ deps }) => listPublicEntries({ data: { contentType: "service", language: deps.lang } }),
   component: ServicesPage,
 });
 
