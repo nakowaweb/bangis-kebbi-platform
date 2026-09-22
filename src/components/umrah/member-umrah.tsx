@@ -639,6 +639,7 @@ function DocumentsCard({
                   </p>
                 </div>
                 <DocumentUploadControl
+                  inputId={`umrah-upload-${type}`}
                   label={umrahDocumentLabels[type]}
                   enabled={ownsApplication && canEdit}
                   progress={uploadProgress}
