@@ -1,10 +1,10 @@
-import type { SVGProps } from "react";
+import type { ReactElement, SVGProps } from "react";
 
 type IconProps = SVGProps<SVGSVGElement>;
 
 const base = { viewBox: "0 0 24 24", fill: "currentColor", "aria-hidden": true, focusable: "false" } as const;
 
-export const socialIcons: Record<string, (props: IconProps) => JSX.Element> = {
+export const socialIcons: Record<string, (props: IconProps) => ReactElement> = {
   linkedin: (props) => (
     <svg {...base} {...props}><path d="M4.98 3.5a2.5 2.5 0 1 1 0 5 2.5 2.5 0 0 1 0-5ZM3 9h4v12H3V9Zm6 0h3.8v1.65h.05A4.17 4.17 0 0 1 16.6 8.7c4 0 4.4 2.5 4.4 5.76V21h-4v-5.6c0-1.34-.03-3.06-1.9-3.06-1.9 0-2.2 1.46-2.2 2.96V21H9V9Z" /></svg>
   ),
