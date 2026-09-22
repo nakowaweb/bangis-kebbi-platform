@@ -244,13 +244,7 @@ export const submitMyUmrahApplication = createServerFn({ method: "POST" })
       to_status: "submitted",
     });
 
-    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    await notify(supabaseAdmin, {
-      userId: context.userId,
-      title: `Umrah application ${existing.application_number} submitted`,
-      body: "Your application has been received. You will be notified when its status changes.",
-      createdBy: null,
-    });
+    // The submission notification is created automatically by the database.
 
     return { ok: true };
   });
