@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import { defaultLanguage, isLanguageCode, languageMeta } from "../lib/i18n/dictionary";
+import { defaultLanguage, isLanguageCode, languageMeta, type LanguageCode } from "../lib/i18n/dictionary";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteShell } from "../components/site-shell";
@@ -78,10 +78,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   // `?lang=` is the site-wide locale switch; every other search parameter is passed through untouched.
-  validateSearch: (search: Record<string, unknown>) => ({
-    ...search,
-    lang: isLanguageCode(search["lang"]) ? search["lang"] : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { lang?: LanguageCode } => {
+    const value = search["lang"];
+    return isLanguageCode(value) ? { lang: value } : {};
+  },
   head: () => ({
     meta: [
       { charSet: "utf-8" },
