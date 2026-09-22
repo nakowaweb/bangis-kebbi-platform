@@ -127,7 +127,18 @@ export const listNotificationMessages = createServerFn({ method: "GET" })
       .limit(50);
     if (error) throw new Error(error.message);
 
-    const rows = (messages ?? []) as { id: string }[];
+    type MessageRow = {
+      id: string;
+      title: string;
+      body: string | null;
+      category: NotificationCategory;
+      link_path: string | null;
+      status: "draft" | "published";
+      audience: string;
+      published_at: string | null;
+      created_at: string;
+    };
+    const rows = (messages ?? []) as MessageRow[];
     const ids = rows.map((row) => row.id);
     const { data: recipients } = ids.length
       ? await context.supabase.from("notification_recipients").select("message_id,read_at").in("message_id", ids)
