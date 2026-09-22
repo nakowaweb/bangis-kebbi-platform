@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { Archive, Eye, EyeOff, Image as ImageIcon, Plus, Save, Send, Trash2, Upload } from "lucide-react";
-import { useState, type ReactNode } from "react";
+import { cloneElement, isValidElement, useId, useState, type ReactElement, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import {
@@ -397,7 +397,13 @@ function UpdatesDialog({ projectId, projectTitle }: { projectId: string; project
 }
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
-  return <div className="grid min-w-0 gap-1.5"><Label>{label}</Label>{children}</div>;
+  const id = useId();
+  return (
+    <div className="grid min-w-0 gap-1.5">
+      <Label htmlFor={id}>{label}</Label>
+      {isValidElement(children) ? cloneElement(children as ReactElement<{ id?: string }>, { id }) : children}
+    </div>
+  );
 }
 function Empty({ text }: { text: string }) {
   return <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">{text}</div>;
