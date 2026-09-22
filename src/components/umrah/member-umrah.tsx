@@ -389,8 +389,13 @@ function ApplicationForm({
           {canEdit ? (
             <div className="sm:col-span-2">
               <Button type="submit" disabled={saving}>
-                {saving ? "Saving…" : application ? "Save changes" : "Save draft"}
+                {saving ? "Saving…" : application ? "Save changes" : "Save Application & Continue"}
               </Button>
+              {!application ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Saving creates your application and unlocks the document uploads below.
+                </p>
+              ) : null}
             </div>
           ) : null}
         </form>
