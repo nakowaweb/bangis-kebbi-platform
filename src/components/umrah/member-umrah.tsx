@@ -61,8 +61,6 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const query = useQuery({ queryKey: ["umrah-application"], queryFn: () => load() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-application"] });
 
-  const [documentType, setDocumentType] = useState<(typeof umrahDocumentTypes)[number]>("passport");
-  const [uploading, setUploading] = useState(false);
 
   const saveMutation = useMutation({
     mutationFn: (values: Record<string, string>) => save({ data: values as never }),
@@ -118,57 +116,6 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const status = (application?.["status"] as string | undefined) ?? "draft";
   const canEdit = !application || editableStatuses.includes(status);
 
-  async function upload(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-    const input = event.currentTarget.elements.namedItem("file") as HTMLInputElement | null;
-    const file = input?.files?.[0];
-    if (!file) {
-      toast.error("Choose a file first.");
-      return;
-    }
-    if (file.size > MAX_BYTES) {
-      toast.error("Files must be 10MB or smaller.");
-      return;
-    }
-    if (!application) {
-      toast.error("Save your application details first.");
-      return;
-    }
-
-    setUploading(true);
-    try {
-      const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-80);
-      const path = `${userId}/umrah/${application["id"]}/${crypto.randomUUID()}-${safeName}`;
-      const { error } = await supabase.storage.from("member-documents").upload(path, file, { upsert: false });
-      if (error) throw new Error(error.message);
-      await registerDoc({
-        data: {
-          applicationId: application["id"] as string,
-          documentType,
-          storagePath: path,
-          originalName: file.name.slice(0, 200),
-          mimeType: file.type || "application/octet-stream",
-          byteSize: file.size,
-        },
-      });
-      toast.success("Document uploaded securely.");
-      if (input) input.value = "";
-      refresh();
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "The document could not be uploaded.");
-    } finally {
-      setUploading(false);
-    }
-  }
-
-  async function openDocument(id: string) {
-    try {
-      const { url } = await documentLink({ data: { id } });
-      window.open(url, "_blank", "noopener,noreferrer");
-    } catch (error) {
-      toast.error(error instanceof Error ? error.message : "The document could not be opened.");
-    }
-  }
 
   return (
     <div className="grid gap-5">
