@@ -101,7 +101,7 @@ function RegisterPage() {
               {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
             </button>
           </div>
-          <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>
+          <p className="text-xs text-muted-foreground">Use at least 8 characters, and avoid common or leaked passwords.</p>
           <label className="flex items-start gap-3 text-sm text-muted-foreground">
             <input type="checkbox" required className="mt-1 h-4 w-4 accent-brand-cyan" />
             <span>I accept the terms and community guidelines.</span>
