@@ -320,7 +320,7 @@ export function DashboardPreviewSection() {
 
 export function TestimonialsPlaceholder() { return null; }
 
-export function SectionShell({ eyebrow, title, description, action, children }: { eyebrow: string; title: string; description?: string; action?: { label: string; href: "/services" | "/projects" | "/blog" } | undefined; children: ReactNode }) {
+export function SectionShell({ eyebrow, title, description, action, children }: { eyebrow: string; title: string; description?: string | undefined; action?: { label: string; href: "/services" | "/projects" | "/blog" } | undefined; children: ReactNode }) {
   return (
     <section className="section-reveal border-b border-border bg-background py-12 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
