@@ -150,9 +150,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
     ...(!application?.["full_name"] || String(application["full_name"]).trim().length < 2
       ? ["Your full name in the application details"]
       : []),
-    ...requiredUmrahDocumentTypes
-      .filter((type) => !uploadedTypes.has(type))
-      .map((type) => `${umrahDocumentLabels[type]} document`),
+    ...(hasUmrahIdentityDocuments(uploadedTypes) ? [] : [UMRAH_IDENTITY_ERROR]),
   ];
 
 
