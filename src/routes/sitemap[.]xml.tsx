@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 
+import { hreflangOrder } from "@/lib/i18n/dictionary";
 import { createPublicSupabase } from "@/lib/public-content.server";
 
 const STATIC_PATHS = [
@@ -40,12 +41,29 @@ export const Route = createFileRoute("/sitemap.xml")({
           ...(foundationProjects ?? []).map((row) => ({ loc: `/foundation/${row.slug}`, lastmod: row.updated_at })),
         ];
 
-        const urls = [
-          ...STATIC_PATHS.map((path) => `  <url><loc>${origin}${path}</loc></url>`),
-          ...dynamic.map((item) => `  <url><loc>${origin}${item.loc}</loc>${item.lastmod ? `<lastmod>${new Date(item.lastmod).toISOString()}</lastmod>` : ""}</url>`),
-        ].join("\n");
+        // Private areas (/login, /register, /forgot-password, /reset-password, /dashboard, /admin,
+        // member Umrah routes) are deliberately absent — only public pages are listed.
+        const pages = [
+          ...STATIC_PATHS.map((path) => ({ loc: path, lastmod: null as string | null })),
+          ...dynamic,
+        ];
 
-        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`;
+        const localized = (path: string, code: string) => `${origin}${path}${code === "en" ? "" : `${path.includes("?") ? "&" : "?"}lang=${code}`}`;
+        const escape = (value: string) => value.replaceAll("&", "&amp;");
+
+        const urls = pages
+          .flatMap((page) =>
+            hreflangOrder.map((code) => {
+              const alternates = [
+                ...hreflangOrder.map((alt) => `    <xhtml:link rel="alternate" hreflang="${alt}" href="${escape(localized(page.loc, alt))}" />`),
+                `    <xhtml:link rel="alternate" hreflang="x-default" href="${escape(localized(page.loc, "en"))}" />`,
+              ].join("\n");
+              return `  <url>\n    <loc>${escape(localized(page.loc, code))}</loc>\n${page.lastmod ? `    <lastmod>${new Date(page.lastmod).toISOString()}</lastmod>\n` : ""}${alternates}\n  </url>`;
+            }),
+          )
+          .join("\n");
+
+        const xml = `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">\n${urls}\n</urlset>\n`;
         return new Response(xml, {
           headers: { "Content-Type": "application/xml; charset=utf-8", "Cache-Control": "public, max-age=3600" },
         });

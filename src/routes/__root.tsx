@@ -4,11 +4,13 @@ import {
   Link,
   createRootRouteWithContext,
   useRouter,
+  useRouterState,
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
+import { defaultLanguage, isLanguageCode, languageMeta } from "../lib/i18n/dictionary";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteShell } from "../components/site-shell";
@@ -100,8 +102,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
 });
 
 function RootShell({ children }: { children: ReactNode }) {
+  // Server-rendered pages must already carry the right lang/dir, before any client code runs.
+  const code = useRouterState({
+    select: (state) => {
+      const value = (state.location.search as Record<string, unknown> | undefined)?.["lang"];
+      return isLanguageCode(value) ? value : defaultLanguage;
+    },
+  });
+  const meta = languageMeta(code);
   return (
-    <html lang="en">
+    <html lang={meta.code} dir={meta.dir}>
       <head>
         <HeadContent />
       </head>
