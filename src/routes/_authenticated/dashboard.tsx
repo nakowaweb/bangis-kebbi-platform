@@ -27,6 +27,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { MemberFoundationPanel } from "@/components/foundation/member-foundation";
+import { MemberActivitiesPanel, MemberNotificationsPanel } from "@/components/notifications/member-notifications";
 import { MemberUmrahPanel } from "@/components/umrah/member-umrah";
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstSuperAdmin, getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
@@ -82,7 +83,7 @@ function DashboardPage() {
 
   const data = account.data;
   const profile = data.profile;
-  const unread = data.notifications.filter((item: { read_at: string | null }) => !item.read_at);
+  const unread = data.unreadCount;
 
   return (
     <main className="min-h-[75vh] bg-secondary/40 pb-14">
@@ -182,33 +183,11 @@ function DashboardPage() {
             <PlaceholderPanel title="Community" text="Community updates and member activities will appear here as they are published." href="/community" linkLabel="Community information" />
           </TabsContent>
           <TabsContent value="activities">
-            <PlaceholderPanel title="Activities" text="Community and platform activities will be listed here as they are published." href="/blog" linkLabel="Latest updates" />
+            <MemberActivitiesPanel />
           </TabsContent>
 
           <TabsContent value="notifications">
-            {data.notifications.length === 0 ? (
-              <EmptyPanel text="No notifications yet." />
-            ) : (
-              <div className="grid gap-3">
-                {data.notifications.map((item: { id: string; title: string; body: string | null; category: string; read_at: string | null; created_at: string }) => (
-                  <Card key={item.id} className={item.read_at ? "" : "border-brand-cyan/60"}>
-                    <CardHeader className="pb-3">
-                      <div className="flex flex-wrap items-center justify-between gap-2">
-                        <CardTitle className="text-base">{item.title}</CardTitle>
-                        <Badge variant={item.read_at ? "secondary" : "default"}>{item.read_at ? "Read" : "New"}</Badge>
-                      </div>
-                      <CardDescription>{item.category} · {new Date(item.created_at).toLocaleString()}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="flex flex-wrap items-center justify-between gap-3">
-                      <p className="text-sm text-muted-foreground">{item.body}</p>
-                      {item.read_at ? null : (
-                        <Button size="sm" variant="outline" onClick={async () => { await markRead({ data: { id: item.id } }); refresh(); }}>Mark as read</Button>
-                      )}
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <MemberNotificationsPanel />
           </TabsContent>
 
           <TabsContent value="settings">
