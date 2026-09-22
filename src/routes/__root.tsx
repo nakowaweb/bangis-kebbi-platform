@@ -77,6 +77,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 }
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+  // `?lang=` is the site-wide locale switch; every other search parameter is passed through untouched.
+  validateSearch: (search: Record<string, unknown>) => ({
+    ...search,
+    lang: isLanguageCode(search["lang"]) ? search["lang"] : undefined,
+  }),
   head: () => ({
     meta: [
       { charSet: "utf-8" },
