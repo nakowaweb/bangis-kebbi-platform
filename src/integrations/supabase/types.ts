@@ -673,7 +673,6 @@ export type Database = {
       }
       is_content_admin: { Args: { _user_id: string }; Returns: boolean }
       is_platform_admin: { Args: { _user_id: string }; Returns: boolean }
-      super_admin_exists: { Args: never; Returns: boolean }
     }
     Enums: {
       app_role:
