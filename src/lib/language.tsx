@@ -75,8 +75,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         if (userId) void supabase.from("profiles").update({ preferred_language: next }).eq("id", userId);
       });
       void navigate({
-        to: ".",
-        search: (prev: Record<string, unknown>) => ({ ...prev, ...(next === defaultLanguage ? { lang: undefined } : { lang: next }) }),
+        search: ((prev: Record<string, unknown>) => ({
+          ...prev,
+          lang: next === defaultLanguage ? undefined : next,
+        })) as never,
         replace: true,
       });
     },
