@@ -112,7 +112,12 @@ export const getPublicEntry = createServerFn({ method: "GET" })
       .eq("slug", data.slug)
       .maybeSingle();
     if (!row) return null;
-    return { ...row, imageUrl: publicMediaUrl(row.image_path), ogImageUrl: publicMediaUrl(row.og_image_path ?? row.image_path) };
+    const signed = await signSiteMedia([row.image_path, row.og_image_path]);
+    return {
+      ...row,
+      imageUrl: mediaUrl(row.image_path, signed),
+      ogImageUrl: mediaUrl(row.og_image_path ?? row.image_path, signed),
+    };
   });
 
 export const getAdminWorkspace = createServerFn({ method: "GET" })
