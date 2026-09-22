@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { MemberFoundationPanel } from "@/components/foundation/member-foundation";
 import { MemberUmrahPanel } from "@/components/umrah/member-umrah";
 import { supabase } from "@/integrations/supabase/client";
 import { claimFirstSuperAdmin, getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
@@ -175,7 +176,7 @@ function DashboardPage() {
             {profile ? <MemberUmrahPanel userId={profile.id} /> : <EmptyPanel text="Your profile is still being prepared." />}
           </TabsContent>
           <TabsContent value="foundations">
-            <PlaceholderPanel title="BK Foundations" text="Initiative updates will appear here once published. BK Foundations is a community support programme, not an investment." href="/foundation" linkLabel="Foundation information" />
+            <MemberFoundationPanel />
           </TabsContent>
           <TabsContent value="community">
             <PlaceholderPanel title="Community" text="Community updates and member activities will appear here as they are published." href="/community" linkLabel="Community information" />

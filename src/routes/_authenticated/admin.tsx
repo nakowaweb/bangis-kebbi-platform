@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
 import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { getAdminOverview, listMembers, sendNotification, setMemberActive, setMemberRole } from "@/lib/members.functions";
