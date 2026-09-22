@@ -150,7 +150,7 @@ function DashboardPage() {
                 <p className="text-sm text-muted-foreground">No recent activity recorded.</p>
               </SummaryCard>
             </div>
-            {!data.isSuperAdmin ? (
+            {!data.isSuperAdmin && !data.superAdminExists ? (
               <BootstrapCard onClaim={async () => {
                 try {
                   const result = await claimAdmin({});

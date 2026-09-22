@@ -43,9 +43,19 @@ async function loadAccount(context: { supabase: any; userId: string; claims: Rec
   ]);
 
   const roles = (roleRows ?? []).map((row: { role: string }) => row.role);
+
+  // Server-side truth: the one-time owner bootstrap is only offered while no super admin exists.
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { count } = await supabaseAdmin
+    .from("user_roles")
+    .select("id", { count: "exact", head: true })
+    .eq("role", "super_admin");
+  const superAdminExists = (count ?? 0) > 0;
+
   return {
     profile,
     roles,
+    superAdminExists,
     isAdmin: roles.includes("admin") || roles.includes("super_admin"),
     isSuperAdmin: roles.includes("super_admin"),
     notifications: notifications ?? [],

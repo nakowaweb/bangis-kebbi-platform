@@ -13,7 +13,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import {
@@ -79,11 +79,19 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-application"] });
 
 
+  const wasNewRef = useRef(false);
+
   const saveMutation = useMutation({
     mutationFn: (values: Record<string, string>) => save({ data: values as never }),
-    onSuccess: () => {
-      toast.success("Your application has been saved.");
-      refresh();
+    onSuccess: async () => {
+      const created = wasNewRef.current;
+      toast.success(created ? "Application saved. You can now upload your documents." : "Your application has been saved.");
+      await refresh();
+      if (created) {
+        window.setTimeout(() => {
+          document.getElementById("umrah-documents")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+      }
     },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -124,6 +132,16 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
 
   const status = (application?.["status"] as string | undefined) ?? "draft";
   const canEdit = !application || editableStatuses.includes(status);
+
+  const uploadedTypes = new Set(documents.map((doc) => doc.document_type));
+  const missing: string[] = [
+    ...(!application?.["full_name"] || String(application["full_name"]).trim().length < 2
+      ? ["Your full name in the application details"]
+      : []),
+    ...requiredUmrahDocumentTypes
+      .filter((type) => !uploadedTypes.has(type))
+      .map((type) => `${umrahDocumentLabels[type]} document`),
+  ];
 
 
   return (
@@ -180,7 +198,10 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
         application={application}
         canEdit={canEdit}
         saving={saveMutation.isPending}
-        onSave={(values) => saveMutation.mutate(values)}
+        onSave={(values) => {
+          wasNewRef.current = !application;
+          saveMutation.mutate(values);
+        }}
       />
 
       <DocumentsCard
@@ -197,10 +218,20 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
             <CardTitle className="text-base">Submit your application</CardTitle>
             <CardDescription>Check your details and documents before submitting. An administrator will review it.</CardDescription>
           </CardHeader>
-          <CardContent>
+          <CardContent className="grid gap-3">
+            {missing.length > 0 ? (
+              <div className="rounded-lg border border-destructive/40 bg-destructive/5 p-4">
+                <p className="text-sm font-semibold text-destructive">Before you can submit, please add:</p>
+                <ul className="mt-2 list-disc pl-5 text-sm text-muted-foreground">
+                  {missing.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button disabled={submitMutation.isPending}>
+                <Button disabled={submitMutation.isPending || missing.length > 0}>
                   <Send /> Submit application
                 </Button>
               </AlertDialogTrigger>
@@ -358,8 +389,13 @@ function ApplicationForm({
           {canEdit ? (
             <div className="sm:col-span-2">
               <Button type="submit" disabled={saving}>
-                {saving ? "Saving…" : application ? "Save changes" : "Save draft"}
+                {saving ? "Saving…" : application ? "Save changes" : "Save Application & Continue"}
               </Button>
+              {!application ? (
+                <p className="mt-2 text-xs text-muted-foreground">
+                  Saving creates your application and unlocks the document uploads below.
+                </p>
+              ) : null}
             </div>
           ) : null}
         </form>
@@ -528,7 +564,7 @@ function DocumentsCard({
   }
 
   return (
-    <Card>
+    <Card id="umrah-documents">
       <CardHeader className="pb-3">
         <CardTitle className="text-base">Documents</CardTitle>
         <CardDescription>
@@ -539,7 +575,8 @@ function DocumentsCard({
       <CardContent className="grid gap-4">
         {!applicationId ? (
           <p className="rounded-lg border border-dashed border-border p-6 text-center text-sm text-muted-foreground">
-            Save your application details first to enable uploads.
+            Step 1: fill in your application details above and press “Save Application &amp; Continue”. Uploads open here
+            straight away — you do not need to leave this page.
           </p>
         ) : null}
 
