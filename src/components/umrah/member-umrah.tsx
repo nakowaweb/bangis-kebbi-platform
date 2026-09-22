@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   Info,
   Loader2,
+  RefreshCw,
   Send,
   Trash2,
   Upload,
