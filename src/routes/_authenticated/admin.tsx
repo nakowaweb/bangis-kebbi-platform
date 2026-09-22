@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, Bell, FileText, History, Image, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
+import { Archive, Bell, FileText, HandHeart, History, Image, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -15,6 +15,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
+import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
 import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { getAdminOverview, listMembers, sendNotification, setMemberActive, setMemberRole } from "@/lib/members.functions";
@@ -34,7 +35,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_initiative", "foundation_update", "community", "contact"] as const;
+const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact"] as const;
 type ContentStatus = "draft" | "published" | "unpublished" | "archived";
 
 type EditorState = {
@@ -121,6 +122,7 @@ function AdminPage() {
             <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
             <TabsTrigger value="umrah"><Plane /> Umrah</TabsTrigger>
+            <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
             <TabsTrigger value="media"><Image /> Media</TabsTrigger>
             <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
           </TabsList>
@@ -156,6 +158,7 @@ function AdminPage() {
           </TabsContent>
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="umrah"><AdminUmrahManager /></TabsContent>
+          <TabsContent value="foundations"><AdminFoundationManager /></TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
           <TabsContent value="members"><MembersManager /></TabsContent>
           <TabsContent value="audit"><AuditLog rows={workspace.data?.audit ?? []} /></TabsContent>

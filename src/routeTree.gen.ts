@@ -29,6 +29,7 @@ import { Route as TermsRouteImport } from './routes/terms'
 import { Route as UmrahRouteImport } from './routes/umrah'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
+import { Route as FoundationSlugRouteImport } from './routes/foundation.$slug'
 import { Route as ProjectsBangiskebbiComRouteImport } from './routes/projects.bangiskebbi-com'
 
 const IndexRoute = IndexRouteImport.update({
@@ -130,6 +131,11 @@ const AuthenticatedDashboardRoute = AuthenticatedDashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const FoundationSlugRoute = FoundationSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => FoundationRoute,
+} as any)
 const ProjectsBangiskebbiComRoute = ProjectsBangiskebbiComRouteImport.update({
   id: '/bangiskebbi-com',
   path: '/bangiskebbi-com',
@@ -144,7 +150,7 @@ export interface FileRoutesByFullPath {
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/foundation': typeof FoundationRoute
+  '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -156,6 +162,7 @@ export interface FileRoutesByFullPath {
   '/umrah': typeof UmrahRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRoutesByTo {
@@ -166,7 +173,7 @@ export interface FileRoutesByTo {
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/foundation': typeof FoundationRoute
+  '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -178,6 +185,7 @@ export interface FileRoutesByTo {
   '/umrah': typeof UmrahRoute
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
+  '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRoutesById {
@@ -190,7 +198,7 @@ export interface FileRoutesById {
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/forgot-password': typeof ForgotPasswordRoute
-  '/foundation': typeof FoundationRoute
+  '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRouteWithChildren
@@ -202,6 +210,7 @@ export interface FileRoutesById {
   '/umrah': typeof UmrahRoute
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
+  '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
 }
 export interface FileRouteTypes {
@@ -226,6 +235,7 @@ export interface FileRouteTypes {
     | '/umrah'
     | '/admin'
     | '/dashboard'
+    | '/foundation/$slug'
     | '/projects/bangiskebbi-com'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -248,6 +258,7 @@ export interface FileRouteTypes {
     | '/umrah'
     | '/admin'
     | '/dashboard'
+    | '/foundation/$slug'
     | '/projects/bangiskebbi-com'
   id:
     | '__root__'
@@ -271,6 +282,7 @@ export interface FileRouteTypes {
     | '/umrah'
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
+    | '/foundation/$slug'
     | '/projects/bangiskebbi-com'
   fileRoutesById: FileRoutesById
 }
@@ -283,7 +295,7 @@ export interface RootRouteChildren {
   CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
-  FoundationRoute: typeof FoundationRoute
+  FoundationRoute: typeof FoundationRouteWithChildren
   LoginRoute: typeof LoginRoute
   PrivacyRoute: typeof PrivacyRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
@@ -437,6 +449,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedDashboardRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/foundation/$slug': {
+      id: '/foundation/$slug'
+      path: '/$slug'
+      fullPath: '/foundation/$slug'
+      preLoaderRoute: typeof FoundationSlugRouteImport
+      parentRoute: typeof FoundationRoute
+    }
     '/projects/bangiskebbi-com': {
       id: '/projects/bangiskebbi-com'
       path: '/bangiskebbi-com'
@@ -460,6 +479,18 @@ const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
 const AuthenticatedRouteRouteWithChildren =
   AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
 
+interface FoundationRouteChildren {
+  FoundationSlugRoute: typeof FoundationSlugRoute
+}
+
+const FoundationRouteChildren: FoundationRouteChildren = {
+  FoundationSlugRoute: FoundationSlugRoute,
+}
+
+const FoundationRouteWithChildren = FoundationRoute._addFileChildren(
+  FoundationRouteChildren,
+)
+
 interface ProjectsRouteChildren {
   ProjectsBangiskebbiComRoute: typeof ProjectsBangiskebbiComRoute
 }
@@ -481,7 +512,7 @@ const rootRouteChildren: RootRouteChildren = {
   CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
-  FoundationRoute: FoundationRoute,
+  FoundationRoute: FoundationRouteWithChildren,
   LoginRoute: LoginRoute,
   PrivacyRoute: PrivacyRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
