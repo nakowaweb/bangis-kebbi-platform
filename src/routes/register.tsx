@@ -56,7 +56,15 @@ function RegisterPage() {
       },
     });
     setBusy(false);
-    if (signUpError) { setError(signUpError.message); toast.error(signUpError.message); return; }
+    if (signUpError) {
+      const raw = signUpError.message.toLowerCase();
+      const message = raw.includes("password") && (raw.includes("weak") || raw.includes("at least") || raw.includes("easy to guess") || raw.includes("strength") || raw.includes("characters"))
+        ? "That password is too weak. Use at least 8 characters with a mix of letters, numbers and symbols."
+        : signUpError.message;
+      setError(message);
+      toast.error(message);
+      return;
+    }
     toast.success("Welcome to BangisKebbi.com");
     if (data.session) { await navigate({ to: "/dashboard", replace: true }); return; }
     await navigate({ to: "/login", replace: true });
