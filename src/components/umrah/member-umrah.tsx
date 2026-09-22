@@ -13,7 +13,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useEffect, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import {
@@ -79,11 +79,19 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-application"] });
 
 
+  const wasNewRef = useRef(false);
+
   const saveMutation = useMutation({
     mutationFn: (values: Record<string, string>) => save({ data: values as never }),
-    onSuccess: () => {
-      toast.success("Your application has been saved.");
-      refresh();
+    onSuccess: async () => {
+      const created = wasNewRef.current;
+      toast.success(created ? "Application saved. You can now upload your documents." : "Your application has been saved.");
+      await refresh();
+      if (created) {
+        window.setTimeout(() => {
+          document.getElementById("umrah-documents")?.scrollIntoView({ behavior: "smooth", block: "start" });
+        }, 150);
+      }
     },
     onError: (error: Error) => toast.error(error.message),
   });
