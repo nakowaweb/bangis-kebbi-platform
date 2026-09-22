@@ -96,13 +96,16 @@ const quickActions: Array<{
 ];
 
 export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
+  // Short payload labels (eyebrow and buttons) are not part of the translatable CMS fields,
+  // so outside English the reviewed dictionary wording is used instead of the English payload.
+  const label = (value: string | undefined, key: Parameters<typeof t>[0]) => (language === "en" ? value ?? t(key) : t(key));
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
       <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
       <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
         <div>
-          <p className="text-xs font-bold uppercase text-brand-cyan">{content?.eyebrow ?? t("home.heroEyebrow")}</p>
+          <p className="text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow, "home.heroEyebrow")}</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
             {content?.title ?? <>{t("home.heroTitleLine1")}<br /><span className="text-brand-cyan">{t("home.heroTitleLine2")}</span></>}
           </h1>
@@ -111,8 +114,8 @@ export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus
           </p>
           <p className="mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? t("home.heroDescription")}</p>
           <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{content?.primaryCta ?? t("common.hireMe")} <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{content?.secondaryCta ?? t("common.exploreWork")}</Link></Button>
+            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{label(content?.primaryCta, "common.hireMe")} <ArrowRight /></Link></Button>
+            <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{label(content?.secondaryCta, "common.exploreWork")}</Link></Button>
           </div>
         </div>
         <div className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
