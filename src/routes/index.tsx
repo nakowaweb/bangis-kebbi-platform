@@ -12,6 +12,7 @@ import {
   UmrahSection,
 } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
+import { RouteError } from "@/components/route-error";
 import { getPublicContent } from "@/lib/content.functions";
 import heroImage from "@/assets/bangis-official-hero.webp.asset.json";
 
@@ -52,6 +53,7 @@ export const Route = createFileRoute("/")({
       { rel: "preload", as: "image", href: heroImage.url, fetchPriority: "high" },
     ],
   }),
+  errorComponent: RouteError,
   loader: () => getPublicContent(),
   component: Index,
 });

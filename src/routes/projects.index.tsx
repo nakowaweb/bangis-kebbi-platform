@@ -3,6 +3,7 @@ import { Link, createFileRoute } from "@tanstack/react-router";
 import { ProjectsSection, SectionShell } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
 import { pageHead } from "@/lib/seo";
+import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/projects/")({
   head: () => ({
@@ -26,6 +27,7 @@ export const Route = createFileRoute("/projects/")({
       },
     ],
   }),
+  errorComponent: RouteError,
   loader: () => listPublicEntries({ data: { contentType: "project" } }),
   component: ProjectsPage,
 });
