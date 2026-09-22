@@ -133,6 +133,16 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const status = (application?.["status"] as string | undefined) ?? "draft";
   const canEdit = !application || editableStatuses.includes(status);
 
+  const uploadedTypes = new Set(documents.map((doc) => doc.document_type));
+  const missing: string[] = [
+    ...(!application?.["full_name"] || String(application["full_name"]).trim().length < 2
+      ? ["Your full name in the application details"]
+      : []),
+    ...requiredUmrahDocumentTypes
+      .filter((type) => !uploadedTypes.has(type))
+      .map((type) => `${umrahDocumentLabels[type]} document`),
+  ];
+
 
   return (
     <div className="grid gap-5">
