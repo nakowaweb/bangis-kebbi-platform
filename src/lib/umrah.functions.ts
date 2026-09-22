@@ -119,18 +119,8 @@ async function requireAdmin(context: { supabase: any; userId: string }) {
   if (error || !data) throw new Error("Administrator access is required.");
 }
 
-async function notify(
-  client: any,
-  input: { userId: string; title: string; body: string; createdBy: string | null },
-) {
-  await client.from("notifications").insert({
-    user_id: input.userId,
-    title: input.title,
-    body: input.body || null,
-    category: "umrah",
-    created_by: input.createdBy,
-  });
-}
+// Member notifications for submissions, status changes and administrator messages
+// are created automatically by the database, so every path is covered exactly once.
 
 /* ------------------------------ member side ------------------------------ */
 
