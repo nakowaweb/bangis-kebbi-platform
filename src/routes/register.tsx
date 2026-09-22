@@ -89,7 +89,19 @@ function RegisterPage() {
               <option value="ar">Arabic</option>
             </select>
           </div>
-          <Input name="password" type="password" minLength={8} placeholder="Password" aria-label="Password" autoComplete="new-password" required />
+          <div className="relative">
+            <Input name="password" type={showPassword ? "text" : "password"} minLength={8} placeholder="Password" aria-label="Password" autoComplete="new-password" className="pr-11" required />
+            <button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? "Hide password" : "Show password"} className="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-md text-muted-foreground transition-colors hover:text-foreground">
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <div className="relative">
+            <Input name="confirmPassword" type={showConfirm ? "text" : "password"} minLength={8} placeholder="Confirm Password" aria-label="Confirm Password" autoComplete="new-password" className="pr-11" required />
+            <button type="button" onClick={() => setShowConfirm((v) => !v)} aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"} className="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-md text-muted-foreground transition-colors hover:text-foreground">
+              {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>
           <label className="flex items-start gap-3 text-sm text-muted-foreground">
             <input type="checkbox" required className="mt-1 h-4 w-4 accent-brand-cyan" />
             <span>I accept the terms and community guidelines.</span>
