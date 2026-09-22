@@ -13,7 +13,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import {
@@ -466,6 +466,22 @@ const acceptAttribute = [
 
 const acceptedLabel = "PDF, JPG, JPEG, PNG, WEBP, GIF";
 
+const extensionMimeTypes: Record<string, string> = {
+  pdf: "application/pdf",
+  jpg: "image/jpeg",
+  jpeg: "image/jpeg",
+  png: "image/png",
+  webp: "image/webp",
+  gif: "image/gif",
+};
+
+/** Mobile pickers often report "", "image/jpg" or "application/octet-stream" — trust the extension. */
+function resolveMimeType(file: File): string | null {
+  const byExtension = extensionMimeTypes[umrahFileExtension(file.name)];
+  if (byExtension) return byExtension;
+  return (umrahAcceptedMimeTypes as readonly string[]).includes(file.type) ? file.type : null;
+}
+
 function formatBytes(bytes: number) {
   if (bytes < 1024) return `${bytes} B`;
   if (bytes < 1024 * 1024) return `${(bytes / 1024).toFixed(0)} KB`;
@@ -508,11 +524,13 @@ function DocumentsCard({
       return;
     }
     const extension = umrahFileExtension(file.name);
-    if (
-      !(umrahAcceptedExtensions as readonly string[]).includes(extension) ||
-      !(umrahAcceptedMimeTypes as readonly string[]).includes(file.type)
-    ) {
+    const mimeType = resolveMimeType(file);
+    if (!(umrahAcceptedExtensions as readonly string[]).includes(extension) || !mimeType) {
       toast.error(`This file type is not accepted. Accepted files: ${acceptedLabel}.`);
+      return;
+    }
+    if (file.size < 1) {
+      toast.error("That file appears to be empty. Please choose another file.");
       return;
     }
     if (file.size > UMRAH_MAX_BYTES) {
@@ -536,15 +554,24 @@ function DocumentsCard({
         request.setRequestHeader("Authorization", `Bearer ${token}`);
         request.setRequestHeader("apikey", import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string);
         request.setRequestHeader("x-upsert", "false");
-        request.setRequestHeader("content-type", file.type);
+        request.setRequestHeader("content-type", mimeType);
         request.upload.onprogress = (event) => {
           if (!event.lengthComputable) return;
           setProgress((current) => ({ ...current, [type]: Math.round((event.loaded / event.total) * 100) }));
         };
-        request.onload = () =>
-          request.status >= 200 && request.status < 300
-            ? resolve()
-            : reject(new Error("The file could not be uploaded. Please try again."));
+        request.onload = () => {
+          if (request.status >= 200 && request.status < 300) {
+            resolve();
+            return;
+          }
+          let detail = "";
+          try {
+            detail = (JSON.parse(request.responseText) as { message?: string }).message ?? "";
+          } catch {
+            detail = "";
+          }
+          reject(new Error(detail || `The file could not be uploaded (error ${request.status}). Please try again.`));
+        };
         request.onerror = () => reject(new Error("Network error while uploading. Please try again."));
         request.send(file);
       });
@@ -556,7 +583,7 @@ function DocumentsCard({
           documentType: type,
           storagePath: path,
           originalName: file.name.slice(0, 200),
-          mimeType: file.type,
+          mimeType,
           byteSize: file.size,
         },
       });
@@ -612,6 +639,7 @@ function DocumentsCard({
                   </p>
                 </div>
                 <DocumentUploadControl
+                  inputId={`umrah-upload-${type}`}
                   label={umrahDocumentLabels[type]}
                   enabled={ownsApplication && canEdit}
                   progress={uploadProgress}
@@ -658,17 +686,18 @@ function DocumentsCard({
 }
 
 function DocumentUploadControl({
+  inputId,
   label,
   enabled,
   progress,
   onFile,
 }: {
+  inputId: string;
   label: string;
   enabled: boolean;
   progress: number | undefined;
   onFile: (file: File) => void;
 }) {
-  const inputId = useId();
   const busy = progress !== undefined;
   const unavailable = !enabled || busy;
 
