@@ -624,7 +624,7 @@ function DocumentsCard({
         {umrahDocumentTypes.map((type) => {
           const forType = documents.filter((doc) => doc.document_type === type);
           const uploadProgress = progress[type];
-          const required = requiredUmrahDocumentTypes.includes(type);
+          const label = umrahDocumentLabels[type] ?? type;
           return (
             <section key={type} className="rounded-xl border border-border p-4">
               <div className="flex flex-col items-stretch gap-3 sm:flex-row sm:items-center sm:justify-between">
