@@ -554,7 +554,7 @@ function DocumentsCard({
         request.setRequestHeader("Authorization", `Bearer ${token}`);
         request.setRequestHeader("apikey", import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string);
         request.setRequestHeader("x-upsert", "false");
-        request.setRequestHeader("content-type", file.type);
+        request.setRequestHeader("content-type", mimeType);
         request.upload.onprogress = (event) => {
           if (!event.lengthComputable) return;
           setProgress((current) => ({ ...current, [type]: Math.round((event.loaded / event.total) * 100) }));
