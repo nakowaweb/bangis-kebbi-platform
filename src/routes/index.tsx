@@ -47,7 +47,10 @@ export const Route = createFileRoute("/")({
         }),
       },
     ],
-    links: [{ rel: "preload", as: "image", href: heroImage.url, fetchPriority: "high" }],
+    links: [
+      { rel: "canonical", href: "/" },
+      { rel: "preload", as: "image", href: heroImage.url, fetchPriority: "high" },
+    ],
   }),
   loader: () => getPublicContent(),
   component: Index,
