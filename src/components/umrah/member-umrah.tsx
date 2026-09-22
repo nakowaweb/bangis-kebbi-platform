@@ -596,24 +596,12 @@ function DocumentsCard({
                     {forType.length === 0 ? "Not uploaded yet" : `${forType.length} file${forType.length > 1 ? "s" : ""}`}
                   </p>
                 </div>
-                {applicationId && canEdit ? (
-                  <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus-within:ring-2 focus-within:ring-ring">
-                    {uploadProgress === undefined ? <Upload className="size-4" /> : <Loader2 className="size-4 animate-spin" />}
-                    {uploadProgress === undefined ? "Upload Document" : `Uploading… ${uploadProgress}%`}
-                    <input
-                      type="file"
-                      className="sr-only"
-                      accept={acceptAttribute}
-                      disabled={uploadProgress !== undefined}
-                      aria-label={`Upload ${umrahDocumentLabels[type]}`}
-                      onChange={(event) => {
-                        const file = event.target.files?.[0];
-                        event.target.value = "";
-                        if (file) void handleFile(type, file);
-                      }}
-                    />
-                  </label>
-                ) : null}
+                <DocumentUploadControl
+                  label={umrahDocumentLabels[type]}
+                  enabled={Boolean(applicationId) && canEdit}
+                  progress={uploadProgress}
+                  onFile={(file) => void handleFile(type, file)}
+                />
               </div>
 
               {uploadProgress !== undefined ? (
@@ -651,6 +639,54 @@ function DocumentsCard({
         })}
       </CardContent>
     </Card>
+  );
+}
+
+function DocumentUploadControl({
+  label,
+  enabled,
+  progress,
+  onFile,
+}: {
+  label: string;
+  enabled: boolean;
+  progress: number | undefined;
+  onFile: (file: File) => void;
+}) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const busy = progress !== undefined;
+
+  return (
+    <div>
+      <input
+        ref={inputRef}
+        type="file"
+        className="sr-only"
+        accept={acceptAttribute}
+        disabled={!enabled || busy}
+        aria-label={`Choose ${label} file`}
+        onChange={(event) => {
+          const file = event.target.files?.[0];
+          event.target.value = "";
+          if (file) onFile(file);
+        }}
+      />
+      <Button
+        type="button"
+        className="min-h-11"
+        disabled={!enabled || busy}
+        aria-label={`Upload ${label}`}
+        onClick={() => inputRef.current?.click()}
+      >
+        {busy ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
+        {busy ? `Uploading… ${progress}%` : `Upload ${label}`}
+      </Button>
+      {!enabled ? (
+        <p className="mt-1 max-w-64 text-xs text-muted-foreground">
+          Save your application first to enable document uploads.
+        </p>
+      ) : null}
+    </div>
   );
 }
 
