@@ -122,9 +122,18 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
     event.preventDefault();
     const input = event.currentTarget.elements.namedItem("file") as HTMLInputElement | null;
     const file = input?.files?.[0];
-    if (!file) return toast.error("Choose a file first.");
-    if (file.size > MAX_BYTES) return toast.error("Files must be 10MB or smaller.");
-    if (!application) return toast.error("Save your application details first.");
+    if (!file) {
+      toast.error("Choose a file first.");
+      return;
+    }
+    if (file.size > MAX_BYTES) {
+      toast.error("Files must be 10MB or smaller.");
+      return;
+    }
+    if (!application) {
+      toast.error("Save your application details first.");
+      return;
+    }
 
     setUploading(true);
     try {
