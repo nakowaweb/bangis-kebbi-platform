@@ -14,7 +14,7 @@ export const Route = createFileRoute("/projects/$slug")({
     if (!project) throw notFound();
     return project;
   },
-  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData: Awaited<ReturnType<typeof getPublicEntry>> | undefined; match: { search: { lang?: LanguageCode } } }) => {
+  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData?: Awaited<ReturnType<typeof getPublicEntry>> | undefined; match: { search: { lang?: LanguageCode } } }) => {
     if (!loaderData) {
       return { meta: [{ title: "Project not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }
