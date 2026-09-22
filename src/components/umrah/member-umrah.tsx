@@ -559,10 +559,19 @@ function DocumentsCard({
           if (!event.lengthComputable) return;
           setProgress((current) => ({ ...current, [type]: Math.round((event.loaded / event.total) * 100) }));
         };
-        request.onload = () =>
-          request.status >= 200 && request.status < 300
-            ? resolve()
-            : reject(new Error("The file could not be uploaded. Please try again."));
+        request.onload = () => {
+          if (request.status >= 200 && request.status < 300) {
+            resolve();
+            return;
+          }
+          let detail = "";
+          try {
+            detail = (JSON.parse(request.responseText) as { message?: string }).message ?? "";
+          } catch {
+            detail = "";
+          }
+          reject(new Error(detail || `The file could not be uploaded (error ${request.status}). Please try again.`));
+        };
         request.onerror = () => reject(new Error("Network error while uploading. Please try again."));
         request.send(file);
       });
