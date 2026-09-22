@@ -1,4 +1,5 @@
 import { defaultLanguage, hreflangOrder, isLanguageCode, type LanguageCode } from "@/lib/i18n/dictionary";
+import { pageSeo } from "@/lib/i18n/seo-text";
 
 /** Public site origin. Absolute URLs are required for canonical, og:url and hreflang. */
 export const SITE_ORIGIN = "https://bangiskebbi.com";
@@ -45,10 +46,12 @@ type MetaOptions = {
 };
 
 export function pageHead({
-  title,
-  description,
+  title: rawTitle,
+  description: rawDescription,
   path,
-  language = defaultLanguage,
+  language: explicitLanguage,
+  search,
+  localized = false,
   type = "website",
   canonical,
   ogTitle,
@@ -57,6 +60,10 @@ export function pageHead({
   noindex = false,
   alternates = true,
 }: MetaOptions) {
+  const language = explicitLanguage ?? (search === undefined ? defaultLanguage : headLanguage(search));
+  const resolved = localized ? { title: rawTitle, description: rawDescription } : pageSeo(path, language, { title: rawTitle, description: rawDescription });
+  const title = resolved.title;
+  const description = resolved.description;
   const selfUrl = canonical || absoluteUrl(path, language);
   const meta: Array<Record<string, string>> = [
     { title },
