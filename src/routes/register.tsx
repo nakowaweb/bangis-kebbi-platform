@@ -20,11 +20,14 @@ export const Route = createFileRoute("/register")({
 
 function RegisterPage() {
   const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
   async function register(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    setError(null);
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error: signUpError } = await supabase.auth.signUp({
       email: String(form.get("email")),
       password: String(form.get("password")),
       options: {
@@ -39,9 +42,10 @@ function RegisterPage() {
       },
     });
     setBusy(false);
-    if (error) { toast.error(error.message); return; }
-    toast.success("Check your email to confirm your account, then sign in.");
-    event.currentTarget.reset();
+    if (signUpError) { setError(signUpError.message); toast.error(signUpError.message); return; }
+    toast.success("Welcome to BangisKebbi.com");
+    if (data.session) { await navigate({ to: "/dashboard", replace: true }); return; }
+    await navigate({ to: "/login", replace: true });
   }
   return (
     <main>
