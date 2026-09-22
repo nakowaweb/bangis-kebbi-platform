@@ -4,11 +4,15 @@
  */
 export type LanguageCode = "en" | "ha" | "ar";
 
+/** Display order requested by the site owner: English, العربية, Hausa. Codes are unchanged. */
 export const languages: Array<{ code: LanguageCode; short: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; locale: string }> = [
   { code: "en", short: "EN", label: "English", nativeLabel: "English", dir: "ltr", locale: "en-NG" },
-  { code: "ha", short: "HA", label: "Hausa", nativeLabel: "Hausa", dir: "ltr", locale: "ha-NG" },
   { code: "ar", short: "AR", label: "Arabic", nativeLabel: "العربية", dir: "rtl", locale: "ar" },
+  { code: "ha", short: "HA", label: "Hausa", nativeLabel: "Hausa", dir: "ltr", locale: "ha-NG" },
 ];
+
+/** Canonical SEO order for hreflang alternates — independent of the visual menu order. */
+export const hreflangOrder: LanguageCode[] = ["en", "ar", "ha"];
 
 export const defaultLanguage: LanguageCode = "en";
 
