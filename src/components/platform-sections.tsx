@@ -21,6 +21,8 @@ import {
 } from "lucide-react";
 import type { ComponentType, ReactNode } from "react";
 
+import { useLanguage } from "@/lib/language";
+
 /** Recognizable Kaaba line icon for Umrah, drawn with the same geometry and stroke treatment as Lucide. */
 function KaabaIcon({ className }: { className?: string }) {
   return (
@@ -69,27 +71,27 @@ import {
   umrahStatuses,
 } from "@/lib/site-data";
 
-const categoryCards: Array<{ title: string; detail: string; href: "/services" | "/business" | "/community" | "/umrah" | "/foundation" | "/about"; icon: LucideIcon; tone: string }> = [
-  { title: "Web Design", detail: "Modern & responsive", href: "/services", icon: Code2, tone: "bg-primary" },
-  { title: "Business", detail: "Real opportunities", href: "/business", icon: BriefcaseBusiness, tone: "bg-brand-green" },
-  { title: "Community", detail: "People & network", href: "/community", icon: UsersRound, tone: "bg-primary" },
-  { title: "Umrah", detail: "Support program", href: "/umrah", icon: Plane, tone: "bg-brand-gold" },
-  { title: "BK Foundations", detail: "Helping people", href: "/foundation", icon: HandHeart, tone: "bg-brand-green" },
-  { title: "Global Reach", detail: "Worldwide impact", href: "/about", icon: Globe2, tone: "bg-brand-ink" },
+const categoryCards: Array<{ key: string; title: TranslationKey; detail: TranslationKey; href: "/services" | "/business" | "/community" | "/umrah" | "/foundation" | "/about"; icon: LucideIcon; tone: string }> = [
+  { key: "web", title: "card.webDesign", detail: "card.webDesignDetail", href: "/services", icon: Code2, tone: "bg-primary" },
+  { key: "business", title: "card.business", detail: "card.businessDetail", href: "/business", icon: BriefcaseBusiness, tone: "bg-brand-green" },
+  { key: "community", title: "card.community", detail: "card.communityDetail", href: "/community", icon: UsersRound, tone: "bg-primary" },
+  { key: "umrah", title: "nav.umrah", detail: "card.umrahDetail", href: "/umrah", icon: Plane, tone: "bg-brand-gold" },
+  { key: "foundation", title: "nav.foundation", detail: "card.foundationDetail", href: "/foundation", icon: HandHeart, tone: "bg-brand-green" },
+  { key: "global", title: "card.globalReach", detail: "card.globalReachDetail", href: "/about", icon: Globe2, tone: "bg-brand-ink" },
 ];
 
 const quickActions: Array<{
-  label: string;
+  label: TranslationKey;
   href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community";
   icon: IconType;
 }> = [
-  { label: "Home", href: "/", icon: Home },
-  { label: "Services", href: "/services", icon: Wrench },
-  { label: "Projects", href: "/projects", icon: BriefcaseBusiness },
-  { label: "Blog", href: "/blog", icon: Newspaper },
-  { label: "Umrah", href: "/umrah", icon: KaabaIcon },
-  { label: "BK Foundations", href: "/foundation", icon: HandHeart },
-  { label: "Community", href: "/community", icon: UsersRound },
+  { label: "nav.home", href: "/", icon: Home },
+  { label: "nav.services", href: "/services", icon: Wrench },
+  { label: "nav.projects", href: "/projects", icon: BriefcaseBusiness },
+  { label: "nav.blog", href: "/blog", icon: Newspaper },
+  { label: "nav.umrah", href: "/umrah", icon: KaabaIcon },
+  { label: "nav.foundation", href: "/foundation", icon: HandHeart },
+  { label: "nav.community", href: "/community", icon: UsersRound },
 ];
 
 export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
