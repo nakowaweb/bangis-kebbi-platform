@@ -30,6 +30,10 @@ type MetaOptions = {
   description: string;
   path: string;
   language?: LanguageCode;
+  /** Route search params. When supplied, the active `?lang=` decides the language automatically. */
+  search?: unknown;
+  /** Set for detail pages whose wording comes from translated CMS content, not the fixed page map. */
+  localized?: boolean;
   type?: "website" | "article";
   canonical?: string | null | undefined;
   ogTitle?: string | null | undefined;
