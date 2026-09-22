@@ -263,11 +263,18 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
           ) : (
             documents.map((doc) => (
               <div key={doc.id} className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border p-3">
-                <div className="min-w-0">
-                  <p className="truncate text-sm font-medium">{doc.original_name}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {doc.document_type} · {(doc.byte_size / 1024).toFixed(0)} KB · {new Date(doc.created_at).toLocaleDateString()}
-                  </p>
+                <div className="flex min-w-0 flex-1 items-center gap-3">
+                  <AdminDocThumb doc={doc} getLink={() => documentLink({ data: { id: doc.id } })} />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium">{doc.original_name}</p>
+                    <p className="text-xs text-muted-foreground">
+                      {umrahDocumentLabels[doc.document_type as keyof typeof umrahDocumentLabels] ?? doc.document_type} ·{" "}
+                      {doc.mime_type === "application/pdf"
+                        ? "PDF"
+                        : String(doc.mime_type ?? "").replace("image/", "").toUpperCase()}{" "}
+                      · {(doc.byte_size / 1024).toFixed(0)} KB · {new Date(doc.created_at).toLocaleString()}
+                    </p>
+                  </div>
                 </div>
                 <div className="flex flex-wrap items-center gap-2">
                   <Badge variant={doc.review_status === "accepted" ? "default" : "secondary"} className="capitalize">
