@@ -1,4 +1,4 @@
-import { Link, createFileRoute } from "@tanstack/react-router";
+import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -72,6 +72,7 @@ function RegisterPage() {
             <input type="checkbox" required className="mt-1 h-4 w-4 accent-brand-cyan" />
             <span>I accept the terms and community guidelines.</span>
           </label>
+          {error ? <p role="alert" className="rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm text-destructive">{error}</p> : null}
           <Button type="submit" className="h-12" disabled={busy}>{busy ? "Creating account…" : "Create Account"}</Button>
           <Link to="/login" className="text-sm font-semibold text-brand-cyan">Already have an account?</Link>
         </form>
