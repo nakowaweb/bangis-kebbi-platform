@@ -1,4 +1,5 @@
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
+import { Eye, EyeOff } from "lucide-react";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -22,15 +23,27 @@ export const Route = createFileRoute("/register")({
 function RegisterPage() {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirm, setShowConfirm] = useState(false);
   const navigate = useNavigate();
   async function register(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const password = String(form.get("password") ?? "");
+    const confirmPassword = String(form.get("confirmPassword") ?? "");
     setError(null);
+    if (!password || !confirmPassword) {
+      setError("Please enter and confirm your password.");
+      return;
+    }
+    if (password !== confirmPassword) {
+      setError("Passwords do not match.");
+      return;
+    }
     setBusy(true);
     const { data, error: signUpError } = await supabase.auth.signUp({
       email: String(form.get("email")),
-      password: String(form.get("password")),
+      password,
       options: {
         emailRedirectTo: `${window.location.origin}/login`,
         data: {
@@ -43,7 +56,15 @@ function RegisterPage() {
       },
     });
     setBusy(false);
-    if (signUpError) { setError(signUpError.message); toast.error(signUpError.message); return; }
+    if (signUpError) {
+      const raw = signUpError.message.toLowerCase();
+      const message = raw.includes("password") && (raw.includes("weak") || raw.includes("at least") || raw.includes("easy to guess") || raw.includes("strength") || raw.includes("characters"))
+        ? "That password is too weak. Use at least 8 characters with a mix of letters, numbers and symbols."
+        : signUpError.message;
+      setError(message);
+      toast.error(message);
+      return;
+    }
     toast.success("Welcome to BangisKebbi.com");
     if (data.session) { await navigate({ to: "/dashboard", replace: true }); return; }
     await navigate({ to: "/login", replace: true });
@@ -68,7 +89,19 @@ function RegisterPage() {
               <option value="ar">Arabic</option>
             </select>
           </div>
-          <Input name="password" type="password" minLength={8} placeholder="Password" aria-label="Password" autoComplete="new-password" required />
+          <div className="relative">
+            <Input name="password" type={showPassword ? "text" : "password"} minLength={8} placeholder="Password" aria-label="Password" autoComplete="new-password" className="pr-11" required />
+            <button type="button" onClick={() => setShowPassword((v) => !v)} aria-label={showPassword ? "Hide password" : "Show password"} className="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-md text-muted-foreground transition-colors hover:text-foreground">
+              {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <div className="relative">
+            <Input name="confirmPassword" type={showConfirm ? "text" : "password"} minLength={8} placeholder="Confirm Password" aria-label="Confirm Password" autoComplete="new-password" className="pr-11" required />
+            <button type="button" onClick={() => setShowConfirm((v) => !v)} aria-label={showConfirm ? "Hide confirm password" : "Show confirm password"} className="absolute right-1 top-1 grid h-8 w-8 place-items-center rounded-md text-muted-foreground transition-colors hover:text-foreground">
+              {showConfirm ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+            </button>
+          </div>
+          <p className="text-xs text-muted-foreground">Use at least 8 characters, and avoid common or leaked passwords.</p>
           <label className="flex items-start gap-3 text-sm text-muted-foreground">
             <input type="checkbox" required className="mt-1 h-4 w-4 accent-brand-cyan" />
             <span>I accept the terms and community guidelines.</span>
