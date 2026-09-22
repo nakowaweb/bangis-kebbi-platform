@@ -1,7 +1,18 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { CheckCircle2, ClipboardList, Eye, FileUp, Info, Loader2, Send, Trash2 } from "lucide-react";
-import { useState, type FormEvent, type ReactNode } from "react";
+import {
+  CheckCircle2,
+  ClipboardList,
+  Eye,
+  FileText,
+  Image as ImageIcon,
+  Info,
+  Loader2,
+  Send,
+  Trash2,
+  Upload,
+} from "lucide-react";
+import { useEffect, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import {
@@ -29,9 +40,16 @@ import {
   getMyUmrahApplication,
   getUmrahDocumentLink,
   registerUmrahDocument,
+  requiredUmrahDocumentTypes,
   saveMyUmrahApplication,
   submitMyUmrahApplication,
+  UMRAH_MAX_BYTES,
+  umrahAcceptedExtensions,
+  umrahAcceptedMimeTypes,
+  umrahDocumentLabels,
   umrahDocumentTypes,
+  umrahFileExtension,
+  type UmrahDocumentType,
 } from "@/lib/umrah.functions";
 
 const statusLabels: Record<string, string> = {
