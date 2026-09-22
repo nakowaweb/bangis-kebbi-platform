@@ -13,7 +13,7 @@ import {
   Trash2,
   Upload,
 } from "lucide-react";
-import { useEffect, useRef, useState, type FormEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type FormEvent, type KeyboardEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import {
@@ -668,17 +668,24 @@ function DocumentUploadControl({
   progress: number | undefined;
   onFile: (file: File) => void;
 }) {
-  const inputRef = useRef<HTMLInputElement>(null);
+  const inputId = useId();
   const busy = progress !== undefined;
+  const unavailable = !enabled || busy;
+
+  function openFromKeyboard(event: KeyboardEvent<HTMLLabelElement>) {
+    if (unavailable || (event.key !== "Enter" && event.key !== " ")) return;
+    event.preventDefault();
+    document.getElementById(inputId)?.click();
+  }
 
   return (
     <div>
       <input
-        ref={inputRef}
+        id={inputId}
         type="file"
         className="sr-only"
         accept={acceptAttribute}
-        disabled={!enabled || busy}
+        disabled={unavailable}
         aria-label={`Choose ${label} file`}
         onChange={(event) => {
           const file = event.target.files?.[0];
@@ -686,16 +693,18 @@ function DocumentUploadControl({
           if (file) onFile(file);
         }}
       />
-      <Button
-        type="button"
-        className="min-h-11 w-full sm:w-auto"
-        disabled={!enabled || busy}
+      <label
+        htmlFor={unavailable ? undefined : inputId}
+        role="button"
+        tabIndex={unavailable ? -1 : 0}
+        aria-disabled={unavailable}
         aria-label={`Upload ${label}`}
-        onClick={() => inputRef.current?.click()}
+        onKeyDown={openFromKeyboard}
+        className="inline-flex min-h-11 w-full cursor-pointer items-center justify-center gap-2 whitespace-nowrap rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground shadow transition-colors hover:bg-primary/90 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring aria-disabled:pointer-events-none aria-disabled:cursor-not-allowed aria-disabled:opacity-50 sm:w-auto [&_svg]:pointer-events-none [&_svg]:size-4 [&_svg]:shrink-0"
       >
         {busy ? <Loader2 className="size-4 animate-spin" /> : <Upload className="size-4" />}
         {busy ? `Uploading… ${progress}%` : `Upload ${label}`}
-      </Button>
+      </label>
       {!enabled ? (
         <p className="mt-1 max-w-64 text-xs text-muted-foreground">
           Save your application first to enable document uploads.
