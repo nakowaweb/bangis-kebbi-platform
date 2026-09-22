@@ -8,6 +8,7 @@ import {
   Image as ImageIcon,
   Info,
   Loader2,
+  RefreshCw,
   Send,
   Trash2,
   Upload,
@@ -450,7 +451,7 @@ function DocumentsCard({
     }
   }
 
-  async function handleFile(type: UmrahDocumentType, file: File) {
+  async function handleFile(type: UmrahDocumentType, file: File, replaceId?: string) {
     if (!applicationId) {
       toast.error("Save your application details first.");
       return;
@@ -508,7 +509,12 @@ function DocumentsCard({
           byteSize: file.size,
         },
       });
-      toast.success(`${umrahDocumentLabels[type]} uploaded successfully.`);
+      if (replaceId) {
+        await removeDoc({ data: { id: replaceId } });
+      }
+      toast.success(
+        replaceId ? `${umrahDocumentLabels[type]} replaced successfully.` : `${umrahDocumentLabels[type]} uploaded successfully.`,
+      );
       onChanged();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "The document could not be uploaded.");
@@ -556,11 +562,7 @@ function DocumentsCard({
                 {applicationId && canEdit ? (
                   <label className="inline-flex min-h-11 cursor-pointer items-center gap-2 rounded-md bg-primary px-4 text-sm font-medium text-primary-foreground transition hover:opacity-90 focus-within:ring-2 focus-within:ring-ring">
                     {uploadProgress === undefined ? <Upload className="size-4" /> : <Loader2 className="size-4 animate-spin" />}
-                    {uploadProgress === undefined
-                      ? forType.length > 0
-                        ? "Add or replace"
-                        : `Upload ${umrahDocumentLabels[type]}`
-                      : `Uploading… ${uploadProgress}%`}
+                    {uploadProgress === undefined ? "Upload Document" : `Uploading… ${uploadProgress}%`}
                     <input
                       type="file"
                       className="sr-only"
@@ -592,6 +594,8 @@ function DocumentsCard({
                       canEdit={canEdit}
                       onOpen={() => openDocument(doc.id)}
                       getLink={() => documentLink({ data: { id: doc.id } })}
+                      replacing={uploadProgress !== undefined}
+                      onReplace={(file) => void handleFile(type, file, doc.id)}
                       onRemove={async () => {
                         try {
                           await removeDoc({ data: { id: doc.id } });
@@ -618,12 +622,16 @@ export function DocumentRow({
   canEdit,
   onOpen,
   onRemove,
+  onReplace,
+  replacing,
   getLink,
 }: {
   doc: UmrahDoc;
   canEdit: boolean;
   onOpen: () => void;
   onRemove?: () => void;
+  onReplace?: (file: File) => void;
+  replacing?: boolean;
   getLink: () => Promise<{ url: string }>;
 }) {
   const isImage = doc.mime_type?.startsWith("image/");
@@ -669,6 +677,23 @@ export function DocumentRow({
         <Button size="sm" variant="outline" onClick={onOpen}>
           <Eye /> View
         </Button>
+        {onReplace && canEdit && doc.review_status === "pending" ? (
+          <label className="inline-flex min-h-9 cursor-pointer items-center gap-2 rounded-md border border-border px-3 text-sm font-medium transition hover:bg-secondary focus-within:ring-2 focus-within:ring-ring">
+            <RefreshCw className="size-4" /> Replace
+            <input
+              type="file"
+              className="sr-only"
+              accept={acceptAttribute}
+              disabled={replacing}
+              aria-label={`Replace ${doc.original_name}`}
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                event.target.value = "";
+                if (file) onReplace(file);
+              }}
+            />
+          </label>
+        ) : null}
         {onRemove && canEdit && doc.review_status === "pending" ? (
           <AlertDialog>
             <AlertDialogTrigger asChild>
