@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
+import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { Archive, Bell, FileText, History, Image, LayoutDashboard, LogOut, Plus, Save, Settings, ShieldCheck, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
@@ -23,6 +23,13 @@ import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/admin")({
   head: () => pageHead({ title: "Content Management — BangisKebbi.com", description: "Secure BangisKebbi.com content-management workspace.", path: "/admin" }),
+  beforeLoad: async ({ context }) => {
+    const userId = (context as { user?: { id?: string } }).user?.id;
+    if (!userId) throw redirect({ to: "/login" });
+    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
+    const roles = (data ?? []).map((row) => row.role as string);
+    if (!roles.includes("admin") && !roles.includes("super_admin")) throw redirect({ to: "/dashboard" });
+  },
   component: AdminPage,
 });
 
