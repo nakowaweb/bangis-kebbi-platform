@@ -18,18 +18,28 @@ export const umrahStatuses = [
 ] as const;
 export type UmrahStatus = (typeof umrahStatuses)[number];
 
-export const umrahDocumentTypes = ["passport", "identification", "photograph", "other"] as const;
+export const umrahDocumentTypes = ["passport", "id_card_front", "id_card_back"] as const;
 export type UmrahDocumentType = (typeof umrahDocumentTypes)[number];
 
-export const umrahDocumentLabels: Record<UmrahDocumentType, string> = {
+export const umrahDocumentLabels: Record<string, string> = {
   passport: "Passport",
-  identification: "Identification Document",
-  photograph: "Passport Photograph",
-  other: "Additional Document",
+  id_card_front: "ID Card — Front",
+  id_card_back: "ID Card — Back",
+  // Legacy categories kept only so older uploads still display a readable name.
+  identification: "ID Card — Front",
+  photograph: "Previously uploaded document",
+  other: "Previously uploaded document",
 };
 
-/** Documents that must be present before an application can be submitted. */
-export const requiredUmrahDocumentTypes: UmrahDocumentType[] = ["passport"];
+export const UMRAH_IDENTITY_ERROR =
+  "Please upload either your Passport, or both the front and back of your ID Card.";
+
+/** Identity requirement: passport alone, or both sides of an ID card. */
+export function hasUmrahIdentityDocuments(types: Iterable<string>): boolean {
+  const present = new Set(types);
+  if (present.has("passport")) return true;
+  return (present.has("id_card_front") || present.has("identification")) && present.has("id_card_back");
+}
 
 export const UMRAH_MAX_BYTES = 10 * 1024 * 1024;
 
