@@ -200,6 +200,80 @@ export type Database = {
           },
         ]
       }
+      content_translations: {
+        Row: {
+          body: string | null
+          content_entry_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          image_alt: string | null
+          is_machine_generated: boolean
+          language: string
+          og_description: string | null
+          og_title: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seo_description: string | null
+          seo_title: string | null
+          status: Database["public"]["Enums"]["translation_status"]
+          summary: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body?: string | null
+          content_entry_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_alt?: string | null
+          is_machine_generated?: boolean
+          language: string
+          og_description?: string | null
+          og_title?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          status?: Database["public"]["Enums"]["translation_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string | null
+          content_entry_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_alt?: string | null
+          is_machine_generated?: boolean
+          language?: string
+          og_description?: string | null
+          og_title?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          status?: Database["public"]["Enums"]["translation_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_translations_content_entry_id_fkey"
+            columns: ["content_entry_id"]
+            isOneToOne: false
+            referencedRelation: "content_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       foundation_project_updates: {
         Row: {
           body: string | null
@@ -657,6 +731,48 @@ export type Database = {
         }
         Relationships: []
       }
+      site_social_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          display_label: string
+          icon_key: string | null
+          id: string
+          is_enabled: boolean
+          platform: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          display_label?: string
+          icon_key?: string | null
+          id?: string
+          is_enabled?: boolean
+          platform: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          display_label?: string
+          icon_key?: string | null
+          id?: string
+          is_enabled?: boolean
+          platform?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
       umrah_application_history: {
         Row: {
           action: string
@@ -971,6 +1087,7 @@ export type Database = {
         | "account"
         | "announcement"
       notification_status: "draft" | "published"
+      translation_status: "draft" | "ready" | "published"
       umrah_status:
         | "draft"
         | "submitted"
@@ -1126,6 +1243,7 @@ export const Constants = {
         "announcement",
       ],
       notification_status: ["draft", "published"],
+      translation_status: ["draft", "ready", "published"],
       umrah_status: [
         "draft",
         "submitted",

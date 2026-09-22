@@ -1,87 +1,99 @@
-import { createContext, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
+import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
-export type LanguageCode = "en" | "ha" | "ar";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  defaultLanguage,
+  formatDate,
+  isLanguageCode,
+  languageMeta,
+  languages,
+  translate,
+  type LanguageCode,
+  type TranslationKey,
+} from "@/lib/i18n/dictionary";
 
-export const languages: Array<{ code: LanguageCode; short: string; label: string; dir: "ltr" | "rtl" }> = [
-  { code: "en", short: "EN", label: "English", dir: "ltr" },
-  { code: "ha", short: "HA", label: "Hausa", dir: "ltr" },
-  { code: "ar", short: "AR", label: "Arabic", dir: "rtl" },
-];
+export { languages, languageMeta, formatDate, isLanguageCode, defaultLanguage };
+export type { LanguageCode, TranslationKey };
 
-const fallbackLanguage = { code: "en", short: "EN", label: "English", dir: "ltr" } as const;
-
-function getLanguageMeta(language: LanguageCode) {
-  return languages.find((item) => item.code === language) ?? fallbackLanguage;
-}
-
-const navLabels: Record<LanguageCode, Record<string, string>> = {
-  en: {
-    home: "Home",
-    about: "About",
-    services: "Services",
-    projects: "Projects",
-    business: "Business",
-    umrah: "Umrah",
-    foundation: "Foundation",
-    blog: "Blog",
-    contact: "Contact",
-    search: "Search",
-    login: "Login",
-    join: "Join Now",
-    language: "Language",
-  },
-  ha: {
-    home: "Gida",
-    about: "Game da mu",
-    services: "Ayyuka",
-    projects: "Ayyuka na baya",
-    business: "Kasuwanci",
-    umrah: "Umrah",
-    foundation: "Gidauniya",
-    blog: "Labarai",
-    contact: "Tuntuɓa",
-    search: "Bincike",
-    login: "Shiga",
-    join: "Shiga Yanzu",
-    language: "Harshe",
-  },
-  ar: {
-    home: "الرئيسية",
-    about: "من نحن",
-    services: "الخدمات",
-    projects: "الأعمال",
-    business: "الأعمال",
-    umrah: "العمرة",
-    foundation: "المؤسسة",
-    blog: "المدونة",
-    contact: "اتصل",
-    search: "بحث",
-    login: "دخول",
-    join: "انضم الآن",
-    language: "اللغة",
-  },
-};
+const STORAGE_KEY = "bk.language";
 
 type LanguageContextValue = {
   language: LanguageCode;
+  dir: "ltr" | "rtl";
   setLanguage: (language: LanguageCode) => void;
-  labels: Record<string, string>;
+  t: (key: TranslationKey) => string;
+  formatDate: (value: string | Date | null | undefined, withTime?: boolean) => string;
 };
 
 const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
 
+/** Reads ?lang= from the current URL so localized links are server-rendered in that language. */
+function useUrlLanguage(): LanguageCode | null {
+  return useRouterState({
+    select: (state) => {
+      const value = (state.location.search as Record<string, unknown> | undefined)?.["lang"];
+      return isLanguageCode(value) ? value : null;
+    },
+  });
+}
+
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<LanguageCode>("en");
+  const urlLanguage = useUrlLanguage();
+  const navigate = useNavigate();
+  // Server and first client render always agree; the stored preference is applied after hydration.
+  const [stored, setStored] = useState<LanguageCode | null>(null);
+  const language = urlLanguage ?? stored ?? defaultLanguage;
+  const meta = languageMeta(language);
 
   useEffect(() => {
-    const current = getLanguageMeta(language);
-    document.documentElement.lang = current.code;
-    document.documentElement.dir = current.dir;
-  }, [language]);
+    if (urlLanguage) return;
+    try {
+      const saved = window.localStorage.getItem(STORAGE_KEY);
+      if (isLanguageCode(saved)) setStored(saved);
+    } catch {
+      /* storage unavailable — English stays the default */
+    }
+  }, [urlLanguage]);
 
-  const value = useMemo(
-    () => ({ language, setLanguage, labels: navLabels[language] }),
-    [language],
+  useEffect(() => {
+    document.documentElement.lang = meta.code;
+    document.documentElement.dir = meta.dir;
+  }, [meta.code, meta.dir]);
+
+  const setLanguage = useCallback(
+    (next: LanguageCode) => {
+      setStored(next);
+      try {
+        window.localStorage.setItem(STORAGE_KEY, next);
+      } catch {
+        /* ignore */
+      }
+      // Members keep the preference on their profile; visitors keep it locally only.
+      void supabase.auth.getSession().then(({ data }) => {
+        const userId = data.session?.user.id;
+        if (userId) void supabase.from("profiles").update({ preferred_language: next }).eq("id", userId);
+      });
+      void navigate({
+        search: ((prev: Record<string, unknown>) => ({
+          ...prev,
+          lang: next === defaultLanguage ? undefined : next,
+        })) as never,
+        replace: true,
+      });
+    },
+    [navigate],
+  );
+
+  const value = useMemo<LanguageContextValue>(
+    () => ({
+      language,
+      dir: meta.dir,
+      setLanguage,
+      t: (key: TranslationKey) => translate(language, key),
+      formatDate: (input, withTime = false) => formatDate(input, language, withTime),
+    }),
+    [language, meta.dir, setLanguage],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
@@ -89,8 +101,6 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
 export function useLanguage() {
   const context = useContext(LanguageContext);
-  if (!context) {
-    throw new Error("useLanguage must be used within LanguageProvider");
-  }
+  if (!context) throw new Error("useLanguage must be used within LanguageProvider");
   return context;
 }
