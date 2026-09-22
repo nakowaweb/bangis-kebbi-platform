@@ -1087,7 +1087,12 @@ export type Database = {
         | "account"
         | "announcement"
       notification_status: "draft" | "published"
-      translation_status: "draft" | "ready" | "published"
+      translation_status:
+        | "draft"
+        | "ready"
+        | "published"
+        | "unpublished"
+        | "archived"
       umrah_status:
         | "draft"
         | "submitted"
@@ -1243,7 +1248,13 @@ export const Constants = {
         "announcement",
       ],
       notification_status: ["draft", "published"],
-      translation_status: ["draft", "ready", "published"],
+      translation_status: [
+        "draft",
+        "ready",
+        "published",
+        "unpublished",
+        "archived",
+      ],
       umrah_status: [
         "draft",
         "submitted",
