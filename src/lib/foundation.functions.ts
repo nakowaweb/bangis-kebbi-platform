@@ -79,15 +79,36 @@ async function signPaths(paths: string[]): Promise<Record<string, string>> {
   return map;
 }
 
-type ProjectRow = Record<string, unknown> & { id: string; image_path: string | null; media: unknown };
+export type FoundationProject = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  description: string | null;
+  category: string;
+  location: string | null;
+  image_path: string | null;
+  start_date: string | null;
+  end_date: string | null;
+  status: FoundationStatus;
+  is_published: boolean;
+  published_at: string | null;
+  sort_order: number;
+  created_at: string;
+  updated_at: string;
+  image_url: string | null;
+  media_items: SignedMedia[];
+};
 
-async function decorate(rows: ProjectRow[]) {
+type ProjectRow = Omit<FoundationProject, "image_url" | "media_items"> & { media: unknown };
+
+async function decorate(rows: ProjectRow[]): Promise<FoundationProject[]> {
   const paths = rows.flatMap((row) => [row.image_path ?? "", ...toMediaList(row.media).map((item) => item.path)]);
   const signed = await signPaths(paths);
-  return rows.map((row) => ({
+  return rows.map(({ media, ...row }) => ({
     ...row,
     image_url: row.image_path ? (signed[row.image_path] ?? null) : null,
-    media_items: toMediaList(row.media).map((item) => ({ ...item, url: signed[item.path] ?? null })) as SignedMedia[],
+    media_items: toMediaList(media).map((item) => ({ ...item, url: signed[item.path] ?? null })),
   }));
 }
 
