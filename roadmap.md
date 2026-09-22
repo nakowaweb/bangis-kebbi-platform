@@ -69,4 +69,15 @@
 - [x] Automatic notifications created by the database for key events
 - [x] Admin draft / publish / send to all, active or selected members, with audit entries
 - [x] Access rules so members only see their own notifications and activities
+
+# Phase 2.5 — Advanced CMS & SEO Foundation
+
+- [x] Expanded content manager: homepage, services, projects, blog, about, Umrah, Foundations, community, contact, footer
+- [x] Draft, published, unpublished, archived states plus scheduling
+- [x] Service, project and blog fields: category, tags/tools, author, images, gallery, project link, completion date, language (English, Hausa, Arabic)
+- [x] Per-page search and social settings with automatic fallbacks
+- [x] Public detail pages for services, projects and blog posts with clean crawlable links
+- [x] Automatic sitemap, robots rules, canonical links, titles, descriptions and structured data
+- [x] Private areas (login, register, password pages, dashboard, admin) hidden from search
+- [x] Tested creating, publishing and previewing content, draft privacy, public pages and access rules
 - [x] Tested member and admin flows on phone and desktop; test data removed
