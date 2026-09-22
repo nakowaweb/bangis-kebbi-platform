@@ -505,10 +505,10 @@ function ApplicationForm({
 
 function Field({ label, children }: { label: string; children: ReactNode }) {
   return (
-    <div className="grid gap-2">
-      <Label>{label}</Label>
+    <label className="grid gap-2">
+      <span className="text-sm font-medium leading-none">{label}</span>
       {children}
-    </div>
+    </label>
   );
 }
 
