@@ -14,7 +14,7 @@ export const Route = createFileRoute("/services/$slug")({
     if (!service) throw notFound();
     return service;
   },
-  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData?: Awaited<ReturnType<typeof getPublicEntry>>; match: { search: { lang?: LanguageCode } } }) => {
+  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData: Awaited<ReturnType<typeof getPublicEntry>> | undefined; match: { search: { lang?: LanguageCode } } }) => {
     if (!loaderData) {
       return { meta: [{ title: "Service not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }
