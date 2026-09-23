@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Building2, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Download, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -29,6 +29,7 @@ import { StatusBadge } from "@/components/umrah/member-umrah";
 import {
   deleteUmrahPartner,
   getUmrahApplication,
+  downloadUmrahDocument,
   getUmrahDocumentLink,
   listUmrahApplications,
   listUmrahPartners,
