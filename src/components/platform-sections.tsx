@@ -49,9 +49,12 @@ function KaabaIcon({ className }: { className?: string }) {
 
 type IconType = ComponentType<{ className?: string }>;
 
-import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
-import communityImageAsset from "@/assets/bangis-official-community.webp.asset.json";
-import portraitAsset from "@/assets/bangis-official-hero.webp.asset.json";
+import appIconAssetSrc from "@/assets/bangis-app-icon.png";
+const appIconAsset = { url: appIconAssetSrc };
+import communityImageAssetSrc from "@/assets/bangis-official-community.webp";
+const communityImageAsset = { url: communityImageAssetSrc };
+import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
+const portraitAsset = { url: portraitAssetSrc };
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";

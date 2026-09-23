@@ -15,7 +15,8 @@ import {
 import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 import { getPublicContent } from "@/lib/content.functions";
-import heroImage from "@/assets/bangis-official-hero.webp.asset.json";
+import heroImageSrc from "@/assets/bangis-official-hero.webp";
+const heroImage = { url: heroImageSrc };
 
 export const Route = createFileRoute("/")({
   head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => {

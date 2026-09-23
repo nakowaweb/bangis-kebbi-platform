@@ -1,7 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { ArrowLeft, CheckCircle2 } from "lucide-react";
 
-import appIconAsset from "@/assets/bangis-app-icon.png.asset.json";
+import appIconAssetSrc from "@/assets/bangis-app-icon.png";
+const appIconAsset = { url: appIconAssetSrc };
 import { SectionShell } from "@/components/platform-sections";
 import { Button } from "@/components/ui/button";
 import { pageHead } from "@/lib/seo";
