@@ -352,6 +352,36 @@ export const getUmrahDocumentLink = createServerFn({ method: "POST" })
     return { url: signed.signedUrl as string };
   });
 
+/** Admin-only short-lived download link. Verifies the document belongs to the given application. */
+export const downloadUmrahDocument = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) =>
+    z.object({ id: z.string().uuid(), applicationId: z.string().uuid() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as never);
+
+    const { data: row } = await context.supabase
+      .from("umrah_documents")
+      .select("id,storage_path,original_name,application_id")
+      .eq("id", data.id)
+      .maybeSingle();
+    if (!row) throw new Error("Document not found.");
+    if (row.application_id !== data.applicationId) {
+      throw new Error("This document does not belong to the selected application.");
+    }
+
+    const fileName =
+      String(row.original_name ?? "").replace(/[\\/:*?"<>|\r\n]+/g, "_").trim() ||
+      `umrah-document-${row.id}.pdf`;
+
+    const { data: signed, error } = await context.supabase.storage
+      .from("member-documents")
+      .createSignedUrl(row.storage_path, 60, { download: fileName });
+    if (error || !signed) throw new Error(error?.message ?? "The download link could not be created.");
+    return { url: signed.signedUrl as string };
+  });
+
 /* ------------------------------- admin side ------------------------------ */
 
 export const listUmrahApplications = createServerFn({ method: "GET" })
