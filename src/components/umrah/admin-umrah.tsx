@@ -167,6 +167,7 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const update = useServerFn(updateUmrahApplication);
   const reviewDoc = useServerFn(reviewUmrahDocument);
   const documentLink = useServerFn(getUmrahDocumentLink);
+  const downloadDocument = useServerFn(downloadUmrahDocument);
 
   const query = useQuery({ queryKey: ["umrah-application-detail", id], queryFn: () => load({ data: { id } }) });
   const refresh = () => {
@@ -212,6 +213,20 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "The document could not be opened.");
+    }
+  }
+
+  async function saveDocument(documentId: string) {
+    try {
+      const { url } = await downloadDocument({ data: { id: documentId, applicationId: id } });
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.rel = "noopener,noreferrer";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "The document could not be downloaded.");
     }
   }
 
@@ -284,6 +299,9 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
                   </Badge>
                   <Button size="sm" variant="outline" onClick={() => openDocument(doc.id)}>
                     <Eye /> View
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => saveDocument(doc.id)}>
+                    <Download /> Download Document
                   </Button>
                   <Select
                     value={doc.review_status}
