@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
@@ -68,7 +69,7 @@ function ServiceDetailPage() {
           <Link to="/" className="hover:underline">Home</Link> <span aria-hidden>/</span>{" "}
           <Link to="/services" className="hover:underline">Services</Link>
         </nav>
-        {service.imageUrl && <img src={service.imageUrl} alt={service.image_alt ?? service.title} className="mb-6 w-full rounded-xl border border-border object-cover" />}
+        {service.imageUrl && <SafeImage src={service.imageUrl} alt={service.image_alt ?? service.title} className="mb-6 w-full rounded-xl border border-border object-cover" />}
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(service.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
         </div>

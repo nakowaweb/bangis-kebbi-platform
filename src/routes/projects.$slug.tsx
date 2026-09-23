@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
@@ -58,7 +59,7 @@ function ProjectPage() {
           <Link to="/" className="hover:underline">Home</Link> <span aria-hidden>/</span>{" "}
           <Link to="/projects" className="hover:underline">Projects</Link>
         </nav>
-        {project.imageUrl && <img src={project.imageUrl} alt={project.image_alt ?? project.title} className="mb-6 w-full rounded-xl border border-border object-cover" />}
+        {project.imageUrl && <SafeImage src={project.imageUrl} alt={project.image_alt ?? project.title} className="mb-6 w-full rounded-xl border border-border object-cover" />}
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(project.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
         </div>

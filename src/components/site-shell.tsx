@@ -6,8 +6,10 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 
-import logoAsset from "@/assets/bangis-logo-lockup.png.asset.json";
-import iconAsset from "@/assets/bangis-app-icon.png.asset.json";
+import logoAssetSrc from "@/assets/bangis-logo-lockup.png";
+const logoAsset = { url: logoAssetSrc };
+import iconAssetSrc from "@/assets/bangis-app-icon.png";
+const iconAsset = { url: iconAssetSrc };
 import { platformLabels, socialIcons } from "@/components/social-icons";
 import { Button } from "@/components/ui/button";
 import {

@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
@@ -46,7 +47,7 @@ function BlogPage() {
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article key={post.id} className="overflow-hidden rounded-lg border border-border bg-card shadow-sm">
-                {post.imageUrl && <img src={post.imageUrl} alt={post.image_alt ?? post.title} loading="lazy" className="aspect-[16/9] w-full object-cover" />}
+                {post.imageUrl && <SafeImage src={post.imageUrl} alt={post.image_alt ?? post.title} loading="lazy" className="aspect-[16/9] w-full object-cover" />}
                 <div className="p-5">
                   {post.category && <p className="text-xs font-bold uppercase text-primary">{post.category}</p>}
                   <h2 className="mt-1 font-display text-lg font-bold leading-tight">

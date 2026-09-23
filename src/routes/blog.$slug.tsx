@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
@@ -71,7 +72,7 @@ function BlogPostPage() {
           <Link to="/" className="hover:underline">Home</Link> <span aria-hidden>/</span>{" "}
           <Link to="/blog" className="hover:underline">Blog</Link>
         </nav>
-        {post.imageUrl && <img src={post.imageUrl} alt={post.image_alt ?? post.title} className="mb-6 w-full rounded-xl border border-border object-cover" />}
+        {post.imageUrl && <SafeImage src={post.imageUrl} alt={post.image_alt ?? post.title} className="mb-6 w-full rounded-xl border border-border object-cover" />}
         <p className="mb-5 text-xs text-muted-foreground">
           {post.author ? `${post.author} · ` : ""}
           {post.published_at ? new Date(post.published_at).toLocaleDateString() : ""}

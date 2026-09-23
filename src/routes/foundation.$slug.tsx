@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -62,7 +63,7 @@ function FoundationProjectPage() {
         </div>
 
         {project.image_url ? (
-          <img src={project.image_url} alt={project.title} className="mt-6 aspect-[16/9] w-full rounded-lg border border-border object-cover" />
+          <SafeImage src={project.image_url} alt={project.title} className="mt-6 aspect-[16/9] w-full rounded-lg border border-border object-cover" />
         ) : null}
 
         {project.summary ? <p className="mt-6 text-base leading-7 text-muted-foreground">{project.summary}</p> : null}
@@ -75,7 +76,7 @@ function FoundationProjectPage() {
               {project.media_items.map((item) =>
                 item.url ? (
                   <figure key={item.path} className="overflow-hidden rounded-lg border border-border bg-card">
-                    <img src={item.url} alt={item.caption || project.title} loading="lazy" className="aspect-[4/3] w-full object-cover" />
+                    <SafeImage src={item.url} alt={item.caption || project.title} loading="lazy" className="aspect-[4/3] w-full object-cover" />
                     {item.caption ? <figcaption className="p-3 text-xs text-muted-foreground">{item.caption}</figcaption> : null}
                   </figure>
                 ) : null,
