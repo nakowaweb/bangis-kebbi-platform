@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -50,7 +51,7 @@ export function MemberFoundationPanel() {
             <article key={project.id} className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card">
               <div className="aspect-[16/9] w-full bg-secondary">
                 {project.image_url ? (
-                  <img src={project.image_url} alt={project.title} loading="lazy" className="h-full w-full object-cover" />
+                  <SafeImage src={project.image_url} alt={project.title} loading="lazy" className="h-full w-full object-cover" />
                 ) : (
                   <div className="grid h-full place-items-center text-muted-foreground"><Sparkles className="h-6 w-6" /></div>
                 )}

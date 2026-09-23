@@ -1,3 +1,4 @@
+import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
@@ -44,7 +45,7 @@ function ProjectsPage() {
           <div className="grid gap-4 md:grid-cols-3">
             {projects.map((project) => (
               <article key={project.id} className="overflow-hidden rounded-lg border border-border bg-card">
-                {project.imageUrl && <img src={project.imageUrl} alt={project.image_alt ?? project.title} loading="lazy" className="aspect-[16/9] w-full object-cover" />}
+                {project.imageUrl && <SafeImage src={project.imageUrl} alt={project.image_alt ?? project.title} loading="lazy" className="aspect-[16/9] w-full object-cover" />}
                 <div className="p-5">
                   {project.category && <p className="text-xs font-bold uppercase text-primary">{project.category}</p>}
                   <h3 className="mt-1 font-display text-base font-bold">
