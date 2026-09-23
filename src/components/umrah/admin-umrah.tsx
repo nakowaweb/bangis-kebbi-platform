@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Building2, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Download, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -29,6 +29,7 @@ import { StatusBadge } from "@/components/umrah/member-umrah";
 import {
   deleteUmrahPartner,
   getUmrahApplication,
+  downloadUmrahDocument,
   getUmrahDocumentLink,
   listUmrahApplications,
   listUmrahPartners,
@@ -166,6 +167,7 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
   const update = useServerFn(updateUmrahApplication);
   const reviewDoc = useServerFn(reviewUmrahDocument);
   const documentLink = useServerFn(getUmrahDocumentLink);
+  const downloadDocument = useServerFn(downloadUmrahDocument);
 
   const query = useQuery({ queryKey: ["umrah-application-detail", id], queryFn: () => load({ data: { id } }) });
   const refresh = () => {
@@ -211,6 +213,20 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
       window.open(url, "_blank", "noopener,noreferrer");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "The document could not be opened.");
+    }
+  }
+
+  async function saveDocument(documentId: string) {
+    try {
+      const { url } = await downloadDocument({ data: { id: documentId, applicationId: id } });
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.rel = "noopener,noreferrer";
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "The document could not be downloaded.");
     }
   }
 
@@ -283,6 +299,9 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
                   </Badge>
                   <Button size="sm" variant="outline" onClick={() => openDocument(doc.id)}>
                     <Eye /> View
+                  </Button>
+                  <Button size="sm" variant="outline" onClick={() => saveDocument(doc.id)}>
+                    <Download /> Download Document
                   </Button>
                   <Select
                     value={doc.review_status}
