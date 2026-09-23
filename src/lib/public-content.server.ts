@@ -27,24 +27,46 @@ export function publicMediaUrl(path: string | null | undefined): string | null {
   return /^https?:\/\//i.test(path) ? path : null;
 }
 
-/** Signs stored site-media paths so public pages can display admin-uploaded images. */
-export async function signSiteMedia(paths: Array<string | null | undefined>): Promise<Record<string, string>> {
-  const unique = [...new Set(paths.filter((path): path is string => !!path && !/^https?:\/\//i.test(path)))];
-  if (unique.length === 0) return {};
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin.storage.from("site-media").createSignedUrls(unique, 60 * 60 * 24);
-  const signed: Record<string, string> = {};
-  for (const item of data ?? []) {
-    if (item.path && item.signedUrl) signed[item.path] = item.signedUrl;
-  }
-  return signed;
+/**
+ * Turns an old storage link (from any previous backend) that points into `bucket`
+ * back into its plain stored path, so it can be signed against the current backend.
+ * Other values are returned unchanged.
+ */
+export function normalizeStoragePath(value: string, bucket: string): string {
+  const match = value.match(new RegExp(`/storage/v1/object/(?:public|sign|authenticated)/${bucket}/([^?#]+)`, "i"));
+  return match ? decodeURIComponent(match[1]!) : value;
 }
 
-/** Resolves an image reference to a usable URL: external links as-is, stored paths from the signed map. */
+/** Signs stored site-media paths so public pages can display admin-uploaded images. */
+export async function signSiteMedia(paths: Array<string | null | undefined>): Promise<Record<string, string>> {
+  const unique = [
+    ...new Set(
+      paths
+        .filter((path): path is string => !!path)
+        .map((path) => normalizeStoragePath(path, "site-media"))
+        .filter((path) => !/^https?:\/\//i.test(path)),
+    ),
+  ];
+  if (unique.length === 0) return {};
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.storage.from("site-media").createSignedUrls(unique, 60 * 60 * 24);
+    const signed: Record<string, string> = {};
+    for (const item of data ?? []) {
+      if (item.path && item.signedUrl && !item.error) signed[item.path] = item.signedUrl;
+    }
+    return signed;
+  } catch {
+    return {};
+  }
+}
+
+/** Resolves an image reference: stored paths (or old storage links) from the signed map, other external links as-is. */
 export function mediaUrl(path: string | null | undefined, signed: Record<string, string>): string | null {
   if (!path) return null;
-  if (/^https?:\/\//i.test(path)) return path;
-  return signed[path] ?? null;
+  const normalized = normalizeStoragePath(path, "site-media");
+  if (/^https?:\/\//i.test(normalized)) return normalized;
+  return signed[normalized] ?? null;
 }
 
 /* ------------------------------------------------------------------ *

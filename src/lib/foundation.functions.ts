@@ -68,16 +68,25 @@ function toMediaList(value: unknown): FoundationMediaItem[] {
 }
 
 /** Short-lived links for images stored in the private foundation media bucket. */
+const foundationPath = (value: string) => {
+  const match = value.match(new RegExp(`/storage/v1/object/(?:public|sign|authenticated)/${FOUNDATION_MEDIA_BUCKET}/([^?#]+)`, "i"));
+  return match ? decodeURIComponent(match[1]!) : value;
+};
+
 async function signPaths(paths: string[]): Promise<Record<string, string>> {
-  const unique = [...new Set(paths.filter(Boolean))];
+  const unique = [...new Set(paths.filter(Boolean).map(foundationPath))];
   if (unique.length === 0) return {};
-  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-  const { data } = await supabaseAdmin.storage.from(FOUNDATION_MEDIA_BUCKET).createSignedUrls(unique, 60 * 60);
-  const map: Record<string, string> = {};
-  for (const item of data ?? []) {
-    if (item.path && item.signedUrl) map[item.path] = item.signedUrl;
+  try {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data } = await supabaseAdmin.storage.from(FOUNDATION_MEDIA_BUCKET).createSignedUrls(unique, 60 * 60);
+    const map: Record<string, string> = {};
+    for (const item of data ?? []) {
+      if (item.path && item.signedUrl && !item.error) map[item.path] = item.signedUrl;
+    }
+    return map;
+  } catch {
+    return {};
   }
-  return map;
 }
 
 export type FoundationProject = {
@@ -108,8 +117,8 @@ async function decorate(rows: ProjectRow[]): Promise<FoundationProject[]> {
   const signed = await signPaths(paths);
   return rows.map(({ media, ...row }) => ({
     ...row,
-    image_url: row.image_path ? (signed[row.image_path] ?? null) : null,
-    media_items: toMediaList(media).map((item) => ({ ...item, url: signed[item.path] ?? null })),
+    image_url: row.image_path ? (signed[foundationPath(row.image_path)] ?? null) : null,
+    media_items: toMediaList(media).map((item) => ({ ...item, url: signed[foundationPath(item.path)] ?? null })),
   }));
 }
 
