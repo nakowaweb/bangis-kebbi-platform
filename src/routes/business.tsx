@@ -8,7 +8,7 @@ export const Route = createFileRoute("/business")({
     pageHead({ search: match.search,
       title: "Business & Opportunities — Bangis Kebbi",
       description:
-        "Bangis Kebbi connects people, ideas, technology and legitimate business opportunities without investment promises or financial return claims.",
+        "Bangis Kebbi connects people, ideas, technology, professional services and legitimate business opportunities.",
       path: "/business",
     }),
   component: BusinessPage,

@@ -42,7 +42,7 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
     ha: { title: "Bulogi da Labarai — BangisKebbi.com", description: "Labarai da sabuntawa daga BangisKebbi.com kan ra'ayoyi, fasaha, kasuwanci da mutane." },
   },
   "/business": {
-    en: { title: "Business — BangisKebbi.com", description: "Business information from BangisKebbi.com. This is not an investment offer or financial service." },
+    en: { title: "Business — BangisKebbi.com", description: "Professional services, useful connections and legitimate business opportunities from BangisKebbi.com." },
     ar: { title: "الأعمال — بانجيس كيبي", description: "معلومات الأعمال من بانجيس كيبي. هذا ليس عرض استثمار ولا خدمة مالية." },
     ha: { title: "Kasuwanci — BangisKebbi.com", description: "Bayanin kasuwanci daga BangisKebbi.com. Wannan ba tayin zuba jari ba ne kuma ba sabis na kuɗi ba." },
   },
@@ -52,7 +52,7 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
     ha: { title: "Bayanin Umrah — BangisKebbi.com", description: "Bayanin Umrah na jama'a, matakai, buƙatu da tambayoyin da ake yawan yi daga BangisKebbi.com." },
   },
   "/foundation": {
-    en: { title: "BK Foundations — Humanitarian Work", description: "BK Foundations is the humanitarian side of BangisKebbi.com. It is not an investment or financial programme." },
+    en: { title: "BK Foundations — Humanitarian Work", description: "BK Foundations is the humanitarian side of BangisKebbi.com, focused on practical help and accountable community updates." },
     ar: { title: "مؤسسات BK — العمل الإنساني", description: "مؤسسات BK هي الجانب الإنساني من بانجيس كيبي. وهي ليست برنامجًا استثماريًا أو ماليًا." },
     ha: { title: "BK Foundations — Aikin Jin Kai", description: "BK Foundations shi ne ɓangaren jin kai na BangisKebbi.com. Ba shiri ne na zuba jari ko na kuɗi ba." },
   },

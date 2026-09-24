@@ -16,7 +16,7 @@ export const Route = createFileRoute("/foundation/")({
     pageHead({ search: match.search,
       title: "BK Foundations — Community Support Projects",
       description:
-        "BK Foundations is the community support arm of BangisKebbi.com: practical projects, honest updates and completed community work. Not an investment programme.",
+        "BK Foundations is the humanitarian arm of BangisKebbi.com, sharing practical support areas, honest updates and completed community work.",
       path: "/foundation",
     }),
   component: FoundationPage,
@@ -52,7 +52,7 @@ function FoundationPage() {
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-primary-foreground/80">
             {intro?.summary ??
-              "BK Foundations is the community and humanitarian side of BangisKebbi.com. It is not an investment programme and offers no financial returns."}
+              "BK Foundations is the community and humanitarian side of BangisKebbi.com, focused on practical help and accountable public updates."}
           </p>
           {intro?.body ? <p className="mt-3 max-w-3xl whitespace-pre-line text-sm leading-6 text-primary-foreground/70">{intro.body}</p> : null}
           <div className="mt-6 flex flex-wrap gap-3">
@@ -68,8 +68,8 @@ function FoundationPage() {
 
       <section className="border-b border-border bg-background py-10">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
-          <Panel icon={Target} eyebrow="Mission" title={mission?.title ?? "Support people with practical help."} text={mission?.summary ?? mission?.body ?? "Our mission text will appear here once it is published from the admin area."} />
-          <Panel icon={Compass} eyebrow="Vision" title={vision?.title ?? "Stronger, better-connected communities."} text={vision?.summary ?? vision?.body ?? "Our vision text will appear here once it is published from the admin area."} />
+           <Panel icon={Target} eyebrow="Mission" title={mission?.title ?? "Support people with practical help."} text={mission?.summary ?? mission?.body ?? "Respond to verified needs with dignity, careful coordination and clear public updates that protect personal privacy."} />
+           <Panel icon={Compass} eyebrow="Vision" title={vision?.title ?? "Stronger, better-connected communities."} text={vision?.summary ?? vision?.body ?? "Communities where people can access useful support, knowledge and trusted connections without exposing vulnerable individuals."} />
         </div>
       </section>
 
@@ -79,9 +79,7 @@ function FoundationPage() {
           <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Community support activities.</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {whatWeDo.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-border bg-card p-8 text-sm text-muted-foreground sm:col-span-2 lg:col-span-3">
-                Activity areas will be listed here once they are published.
-              </p>
+              ["Essential-needs support", "Learning and digital access", "Community response"].map((title) => <article key={title} className="rounded-lg border border-border bg-card p-5"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-green/10 text-brand-green"><HeartHandshake className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Support is considered against verified need, available capacity and a privacy-respecting delivery plan.</p></article>)
             ) : (
               whatWeDo.map((entry) => (
                 <article key={entry.id} className="rounded-lg border border-border bg-card p-5">
@@ -103,6 +101,8 @@ function FoundationPage() {
         projects={active}
         emptyText="No foundation projects have been published yet."
       />
+
+      <section className="border-b border-border bg-secondary py-10"><div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-3 lg:px-8"><Panel icon={HeartHandshake} eyebrow="Process" title="Need, review, coordinate, update." text="Requests and opportunities are reviewed, appropriate partners are identified, delivery is coordinated and verified updates are published when suitable." /><Panel icon={ShieldCheck} eyebrow="Impact and privacy" title="Dignity comes before publicity." text="Updates focus on the work delivered. Personal stories, identities and sensitive circumstances are not published without a clear, appropriate basis." /><Panel icon={UsersRound} eyebrow="Partners" title="Work with BK Foundations." text="Organizations and professionals with relevant capacity can contact the team to discuss a responsible partnership." /></div></section>
 
       <section className="border-b border-border bg-secondary py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
