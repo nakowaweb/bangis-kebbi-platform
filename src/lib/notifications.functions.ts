@@ -201,7 +201,7 @@ export const saveNotificationDraft = createServerFn({ method: "POST" })
         .select("status")
         .eq("id", data.id)
         .maybeSingle();
-      if (existing?.status === "published") throw new Error("A published notification can no longer be edited.");
+      if (!existing) throw new Error("This notification no longer exists.");
       const { error } = await context.supabase.from("notification_messages").update(record).eq("id", data.id);
       if (error) throw new Error(error.message);
       await audit(context as never, "notification_updated", data.id, data.title);
@@ -277,9 +277,12 @@ export const deleteNotificationDraft = createServerFn({ method: "POST" })
       .eq("id", data.id)
       .maybeSingle();
     if (!message) throw new Error("This notification no longer exists.");
-    if (message.status === "published") throw new Error("Published notifications cannot be deleted.");
+    if (message.status === "published") {
+      const { error: recipientError } = await context.supabase.from("notification_recipients").delete().eq("message_id", data.id);
+      if (recipientError) throw new Error(recipientError.message);
+    }
     const { error } = await context.supabase.from("notification_messages").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
-    await audit(context as never, "notification_updated", null, `deleted draft: ${message.title}`);
+    await audit(context as never, "notification_deleted", null, `deleted ${message.status} notification: ${message.title}`);
     return { ok: true };
   });

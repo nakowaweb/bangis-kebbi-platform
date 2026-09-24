@@ -4,6 +4,7 @@ import { Bell, Send, Trash2 } from "lucide-react";
 import { useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -53,6 +54,7 @@ export function AdminNotificationManager() {
   const [audience, setAudience] = useState<"all" | "active" | "selected">("active");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
+  const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string; published: boolean } | null>(null);
 
   const messages = useQuery({ queryKey: ["admin-notifications"], queryFn: () => loadMessages() });
   const members = useQuery({
@@ -60,6 +62,7 @@ export function AdminNotificationManager() {
     queryFn: () => loadMembers({ data: { search } }),
     enabled: audience === "selected",
   });
+  const editingPublished = Boolean(draft.id && messages.data?.messages.find((m) => m.id === draft.id)?.status === "published");
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-notifications"] });
 
   const saveMutation = useMutation({
@@ -73,7 +76,7 @@ export function AdminNotificationManager() {
           linkPath: draft.linkPath,
         },
       }),
-    onSuccess: (result) => { toast.success("Draft saved"); setDraft((state) => ({ ...state, id: result.id })); refresh(); },
+    onSuccess: (result) => { toast.success(editingPublished ? "Notification updated" : "Draft saved"); setDraft((state) => ({ ...state, id: result.id })); refresh(); },
     onError: (error: Error) => toast.error(error.message),
   });
 
@@ -85,7 +88,7 @@ export function AdminNotificationManager() {
 
   const deleteMutation = useMutation({
     mutationFn: (id: string) => removeDraft({ data: { id } }),
-    onSuccess: () => { toast.success("Draft deleted"); setDraft(emptyDraft); refresh(); },
+    onSuccess: () => { toast.success("Notification deleted"); setDraft(emptyDraft); setPendingDelete(null); refresh(); },
     onError: (error: Error) => toast.error(error.message),
   });
 
@@ -136,14 +139,14 @@ export function AdminNotificationManager() {
                       ? `${item.recipients} recipient(s) · ${item.read} read`
                       : "Not sent yet"}
                   </p>
-                  {item.status === "draft" ? (
+                  {(
                     <div className="flex gap-2">
                       <Button size="sm" variant="outline" onClick={() => setDraft({ id: item.id, title: item.title, body: item.body ?? "", category: item.category as NotificationCategory, linkPath: item.link_path ?? "" })}>
                         Edit
                       </Button>
-                      <Button size="sm" variant="ghost" onClick={() => deleteMutation.mutate(item.id)}><Trash2 /> Delete</Button>
+                      <Button size="sm" variant="ghost" onClick={() => setPendingDelete({ id: item.id, title: item.title, published: item.status === "published" })}><Trash2 /> Delete</Button>
                     </div>
-                  ) : null}
+                  )}
                 </CardContent>
               </Card>
             ))
@@ -153,7 +156,7 @@ export function AdminNotificationManager() {
 
       <form onSubmit={submit} className="grid h-fit gap-5 rounded-lg border border-border bg-card p-6">
         <div>
-          <h3 className="font-display text-lg font-bold">{draft.id ? "Edit draft" : "New notification"}</h3>
+          <h3 className="font-display text-lg font-bold">{draft.id ? (editingPublished ? "Edit sent notification" : "Edit draft") : "New notification"}</h3>
           <p className="mt-1 text-sm text-muted-foreground">Members see this in their dashboard. Every action is recorded in the audit log.</p>
         </div>
         <Field label="Title"><Input value={draft.title} maxLength={160} required onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></Field>
@@ -169,7 +172,8 @@ export function AdminNotificationManager() {
         <Field label="Link to a page (optional)">
           <Input value={draft.linkPath} placeholder="/foundation" maxLength={200} onChange={(event) => setDraft({ ...draft, linkPath: event.target.value })} />
         </Field>
-        <Field label="Send to">
+        {editingPublished ? <p className="rounded-md bg-secondary p-3 text-xs text-muted-foreground">Already sent. Saving updates the text members see; it does not send it again.</p> : null}
+        {editingPublished ? null : <Field label="Send to">
           <Select value={audience} onValueChange={(value) => setAudience(value as typeof audience)}>
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
@@ -178,9 +182,9 @@ export function AdminNotificationManager() {
               <SelectItem value="selected">Selected members</SelectItem>
             </SelectContent>
           </Select>
-        </Field>
+        </Field>}
 
-        {audience === "selected" ? (
+        {audience === "selected" && !editingPublished ? (
           <div className="grid gap-2">
             <Input value={search} placeholder="Search members" aria-label="Search members" onChange={(event) => setSearch(event.target.value)} />
             <div className="max-h-56 overflow-y-auto rounded-md border border-border p-2">
@@ -211,14 +215,32 @@ export function AdminNotificationManager() {
 
         <div className="flex flex-wrap gap-2">
           <Button type="submit" variant="outline" disabled={saveMutation.isPending || draft.title.trim().length < 2}>
-            {saveMutation.isPending ? "Saving…" : "Save draft"}
+            {saveMutation.isPending ? "Saving…" : editingPublished ? "Save changes" : "Save draft"}
           </Button>
-          <Button type="button" disabled={publishMutation.isPending || draft.title.trim().length < 2} onClick={saveAndSend}>
+          {editingPublished ? null : <Button type="button" disabled={publishMutation.isPending || draft.title.trim().length < 2} onClick={saveAndSend}>
             <Send /> {publishMutation.isPending ? "Sending…" : "Publish & send"}
-          </Button>
+          </Button>}
           {draft.id ? <Button type="button" variant="ghost" onClick={() => setDraft(emptyDraft)}><Bell /> New</Button> : null}
         </div>
       </form>
+
+      <AlertDialog open={pendingDelete !== null} onOpenChange={(open) => { if (!open) setPendingDelete(null); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this notification?</AlertDialogTitle>
+            <AlertDialogDescription>
+              "{pendingDelete?.title}" will be permanently deleted
+              {pendingDelete?.published ? " and removed from every member's inbox" : ""}. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction className="bg-destructive text-destructive-foreground hover:bg-destructive/90" disabled={deleteMutation.isPending} onClick={(event) => { event.preventDefault(); if (pendingDelete) deleteMutation.mutate(pendingDelete.id); }}>
+              {deleteMutation.isPending ? "Deleting…" : "Delete permanently"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

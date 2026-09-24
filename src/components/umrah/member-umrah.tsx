@@ -364,13 +364,12 @@ function ApplicationForm({
           <CountryRegionFields
             countryName="countryOfResidence"
             regionName="stateRegion"
+            cityName="city"
             defaultCountry={field("country_of_residence")}
             defaultRegion={field("state_region")}
+            defaultCity={field("city")}
             disabled={!canEdit}
           />
-          <Field label="City">
-            <Input name="city" defaultValue={field("city")} maxLength={80} disabled={!canEdit} />
-          </Field>
           <Field label="Passport number">
             <Input name="passportNumber" defaultValue={field("passport_number")} maxLength={40} disabled={!canEdit} />
           </Field>

@@ -42,7 +42,7 @@ const contentInput = z.object({
   isEnabled: z.boolean(),
   isFeatured: z.boolean(),
   sortOrder: z.number().int().min(-100000).max(100000),
-  scheduledFor: z.string().datetime().optional(),
+  scheduledFor: z.union([z.literal(""), z.null(), z.string().datetime()]).optional().transform((value) => value || undefined),
   publishedAt: z.string().datetime().optional(),
   payload: z.record(z.string(), z.union([z.string().max(2000), z.number(), z.boolean(), z.null()])),
 });
@@ -60,7 +60,7 @@ const settingsInput = z.object({
   defaultLanguage: z.enum(["en", "ha", "ar"]),
   seoTitle: z.string().trim().min(1).max(180),
   seoDescription: z.string().trim().min(1).max(500),
-  googleSearchCx: z.string().trim().max(200),
+  googleSearchCx: z.union([z.literal(""), z.string().trim().regex(/^[A-Za-z0-9:_-]{5,100}$/, "The Search Engine ID contains invalid characters.")]),
 });
 
 function publicClient() {
@@ -358,4 +358,21 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "uploaded media", content_type: "media", content_id: saved.id, content_label: saved.name });
     return saved;
+  });
+/** Checks a Google Programmable Search Engine ID against Google's own loader; never claims success without Google accepting it. */
+export const testGoogleSearchCx = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ cx: z.string().trim().regex(/^[A-Za-z0-9:_-]{5,100}$/, "Enter a valid Search Engine ID.") }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    try {
+      const response = await fetch(`https://cse.google.com/cse.js?cx=${encodeURIComponent(data.cx)}`, { headers: { accept: "*/*" } });
+      const text = await response.text();
+      const valid = response.ok && !/<html/i.test(text.slice(0, 300));
+      return valid
+        ? { ok: true as const, message: "Google accepted this Search Engine ID. Save settings to activate Web Search." }
+        : { ok: false as const, message: `Google rejected this Search Engine ID (status ${response.status}). Check the ID in your Programmable Search Engine control panel.` };
+    } catch {
+      return { ok: false as const, message: "Google could not be reached to test the ID. Try again shortly." };
+    }
   });

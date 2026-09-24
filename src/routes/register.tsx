@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { SectionShell } from "@/components/platform-sections";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CountryRegionFields } from "@/components/umrah/country-region-select";
 import { pageHead } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,6 +33,10 @@ function RegisterPage() {
     const password = String(form.get("password") ?? "");
     const confirmPassword = String(form.get("confirmPassword") ?? "");
     setError(null);
+    if (!String(form.get("country") ?? "").trim() || !String(form.get("city") ?? "").trim()) {
+      setError("Please select your country and city.");
+      return;
+    }
     if (!password || !confirmPassword) {
       setError("Please enter and confirm your password.");
       return;
@@ -51,6 +56,7 @@ function RegisterPage() {
           phone: String(form.get("phone")),
           country: String(form.get("country")),
           city: String(form.get("city")),
+          region: String(form.get("region") ?? ""),
           preferred_language: String(form.get("preferredLanguage") || "en"),
         },
       },
@@ -79,15 +85,14 @@ function RegisterPage() {
           </div>
           <div className="grid gap-4 sm:grid-cols-2">
             <Input name="phone" type="tel" placeholder="Phone" aria-label="Phone" autoComplete="tel" required />
-            <Input name="country" placeholder="Country" aria-label="Country" autoComplete="country-name" required />
-          </div>
-          <div className="grid gap-4 sm:grid-cols-2">
-            <Input name="city" placeholder="City" aria-label="City" autoComplete="address-level2" required />
             <select name="preferredLanguage" aria-label="Preferred language" defaultValue="en" className="h-10 rounded-md border border-input bg-background px-3 text-sm">
               <option value="en">English</option>
               <option value="ha">Hausa</option>
               <option value="ar">Arabic</option>
             </select>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-3">
+            <CountryRegionFields countryName="country" regionName="region" cityName="city" countryLabel="Country" showLabels={false} />
           </div>
           <div className="relative">
             <Input name="password" type={showPassword ? "text" : "password"} minLength={8} placeholder="Password" aria-label="Password" autoComplete="new-password" className="pr-11" required />
