@@ -50,6 +50,11 @@ export const Route = createFileRoute("/")({
           name: "BangisKebbi.com",
           url: "https://bangiskebbi.com",
           description: "More than a website — a global platform.",
+          potentialAction: {
+            "@type": "SearchAction",
+            target: "https://bangiskebbi.com/?q={search_term_string}",
+            "query-input": "required name=search_term_string",
+          },
         }),
       },
     ],
