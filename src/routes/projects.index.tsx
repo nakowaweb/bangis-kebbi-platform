@@ -40,11 +40,12 @@ export const Route = createFileRoute("/projects/")({
 function ProjectsPage() {
   const loadedProjects = Route.useLoaderData();
   const { language } = useLanguage();
-  const projects = loadedProjects.length ? loadedProjects : fallbackProjects.map((project) => ({ id: project.slug, slug: project.slug, title: text(project.title, language), summary: text(project.summary, language), category: text(project.category, language), imageUrl: project.image, image_alt: text(project.imageAlt, language), payload: {}, concept: project.concept }));
+  const cmsSlugs = new Set(loadedProjects.map((item) => item.slug));
+  const projects = [...loadedProjects.map((item) => ({ ...item, concept: false })), ...fallbackProjects.filter((item) => !cmsSlugs.has(item.slug)).map((project) => ({ id: project.slug, slug: project.slug, title: text(project.title, language), summary: text(project.summary, language), category: text(project.category, language), imageUrl: project.image, image_alt: text(project.imageAlt, language), payload: {}, concept: project.concept }))];
   return (
     <main>
       <ProjectsSection full items={projects} />
-      {loadedProjects.length > 0 && (
+      {false && (
         <SectionShell eyebrow="Project library" title="Open a project for the full case study." description="Every published project has its own page.">
           <div className="grid gap-4 md:grid-cols-3">
             {projects.map((project) => (

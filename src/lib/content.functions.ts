@@ -10,7 +10,7 @@ const contentTypes = [
   "business", "umrah", "umrah_step", "umrah_faq", "umrah_notice", "umrah_requirement",
   "umrah_information", "umrah_contact", "foundation", "foundation_mission",
   "foundation_vision", "foundation_what_we_do",
-  "foundation_initiative", "foundation_update", "community", "contact", "footer", "privacy", "terms", "refund_policy", "cv",
+  "foundation_initiative", "foundation_update", "community", "contact", "footer",
 ] as const;
 const contentStatuses = ["draft", "published", "unpublished", "archived"] as const;
 
@@ -135,7 +135,7 @@ export const getAdminWorkspace = createServerFn({ method: "GET" })
     const [{ data: settings }, { data: entries }, { data: media }, { data: audit }] = await Promise.all([
       context.supabase.from("site_settings").select("*").eq("setting_key", "primary").single(),
       context.supabase.from("content_entries").select("*").order("updated_at", { ascending: false }).limit(100),
-      context.supabase.from("media_assets").select("*").is("deleted_at", null).order("created_at", { ascending: false }).limit(60),
+       context.supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(60),
       context.supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(50),
     ]);
     return { settings, entries: entries ?? [], media: media ?? [], audit: audit ?? [], userId: context.userId };
@@ -227,8 +227,20 @@ export const archiveMediaAsset = createServerFn({ method: "POST" })
   .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
-    const { error } = await context.supabase.from("media_assets").update({ deleted_at: new Date().toISOString() }).eq("id", data.id);
+    const { data: media, error } = await context.supabase.from("media_assets").update({ deleted_at: new Date().toISOString() }).eq("id", data.id).select("id,name").single();
     if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "archived media", content_type: "media", content_id: media.id, content_label: media.name });
+    return { ok: true };
+  });
+
+export const restoreMediaAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: media, error } = await context.supabase.from("media_assets").update({ deleted_at: null }).eq("id", data.id).select("id,name").single();
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "restored media", content_type: "media", content_id: media.id, content_label: media.name });
     return { ok: true };
   });
 

@@ -39,7 +39,8 @@ export const Route = createFileRoute("/services/")({
 function ServicesPage() {
   const loadedServices = Route.useLoaderData();
   const { language } = useLanguage();
-  const services = loadedServices.length ? loadedServices : fallbackServices.map((service) => ({ id: service.slug, slug: service.slug, title: text(service.title, language), summary: text(service.summary, language), category: null }));
+  const cmsSlugs = new Set(loadedServices.map((item) => item.slug));
+  const services = [...loadedServices, ...fallbackServices.filter((item) => !cmsSlugs.has(item.slug)).map((service) => ({ id: service.slug, slug: service.slug, title: text(service.title, language), summary: text(service.summary, language), category: null }))];
   return (
     <main>
       <ServicesSection full items={services} />

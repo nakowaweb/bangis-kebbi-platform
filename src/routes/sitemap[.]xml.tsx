@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { hreflangOrder } from "@/lib/i18n/dictionary";
 import { createPublicSupabase } from "@/lib/public-content.server";
+import { articles, projects, services } from "@/lib/portfolio-content";
 
 const STATIC_PATHS = [
   "/",
@@ -46,8 +47,11 @@ export const Route = createFileRoute("/sitemap.xml")({
         // member Umrah routes) are deliberately absent — only public pages are listed.
         const pages = [
           ...STATIC_PATHS.map((path) => ({ loc: path, lastmod: null as string | null })),
+          ...services.map((item) => ({ loc: `/services/${item.slug}`, lastmod: null as string | null })),
+          ...projects.map((item) => ({ loc: `/projects/${item.slug}`, lastmod: null as string | null })),
+          ...articles.map((item) => ({ loc: `/blog/${item.slug}`, lastmod: null as string | null })),
           ...dynamic,
-        ];
+        ].filter((page, index, all) => all.findIndex((candidate) => candidate.loc === page.loc) === index);
 
         const localized = (path: string, code: string) => `${origin}${path}${code === "en" ? "" : `${path.includes("?") ? "&" : "?"}lang=${code}`}`;
         const escape = (value: string) => value.replaceAll("&", "&amp;");
