@@ -217,11 +217,28 @@
   to { transform: translateX(-50%); }
 }
 
+@keyframes hero-grid-drift { to { background-position: 54px 27px, 27px 54px, 0 0; } }
+@keyframes hero-float { 50% { transform: translateY(-7px); } }
+@keyframes badge-float { 50% { transform: translateY(-3px); } }
+@keyframes image-breathe { 50% { transform: scale(1.012); } }
+
 @media (prefers-reduced-motion: no-preference) {
   .section-reveal { animation: section-reveal 520ms ease-out both; }
   .hero-copy-enter { animation: hero-copy-enter 620ms ease-out both; }
   .hero-media-enter { animation: hero-media-enter 720ms 90ms ease-out both; }
+  .hero-line { animation: hero-copy-enter 560ms ease-out both; }
+  .hero-line-1 { animation-delay: 40ms; }
+  .hero-line-2 { animation-delay: 110ms; }
+  .hero-line-3 { animation-delay: 180ms; }
+  .hero-line-4 { animation-delay: 250ms; }
+  .hero-cta-enter { animation: hero-copy-enter 560ms 320ms ease-out both; }
+  .hero-visual-float { animation: hero-media-enter 720ms 90ms ease-out both, hero-float 8s 1s ease-in-out infinite; }
+  .hero-image-shift { animation: image-breathe 11s 1s ease-in-out infinite; }
+  .location-badge-motion { animation: badge-float 6s 1.2s ease-in-out infinite; }
+  .workspace-grid { animation: hero-grid-drift 32s linear infinite; }
   .service-strip-track { animation: service-strip-move 42s linear infinite; }
+  .motion-card, .social-card { transition-duration: 260ms; }
+  .motion-card:hover, .social-card:hover { transform: translateY(-3px); }
 }
 
 @media (prefers-reduced-motion: reduce) {

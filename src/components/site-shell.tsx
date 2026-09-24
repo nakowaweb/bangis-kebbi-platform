@@ -232,13 +232,13 @@ function MobileMenu() {
   );
 }
 
-/** Official links configured by the Super Admin. Nothing renders until at least one is enabled. */
+/** Official links configured by the Super Admin, with canonical launch fallbacks. */
 function SocialRow() {
   const links = useSocialLinks();
   const contact = useContactLinks();
   const items = links.data ?? [];
   return (
-    <div className="flex flex-wrap gap-2">
+    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Follow Us">
       {items.map((item) => {
         const Icon = socialIcons[item.platform];
         const label = item.display_label || platformLabels[item.platform] || item.platform;
@@ -250,9 +250,10 @@ function SocialRow() {
             rel="noopener noreferrer me"
             aria-label={label}
             title={label}
-            className="grid h-11 w-11 place-items-center rounded-md bg-primary text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
+            className="social-card flex h-11 min-w-0 items-center justify-center gap-2 rounded-md bg-primary px-3 text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:w-11 sm:px-0"
           >
             {Icon ? <Icon className="h-5 w-5" /> : <span className="text-xs font-bold uppercase">{label.slice(0, 2)}</span>}
+            <span className="truncate text-xs font-semibold sm:sr-only">{label}</span>
           </a>
         );
       })}
@@ -260,9 +261,10 @@ function SocialRow() {
         href={contact.email}
         aria-label="Email"
         title="Email"
-        className="grid h-11 w-11 place-items-center rounded-md bg-primary text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
+        className="social-card flex h-11 min-w-0 items-center justify-center gap-2 rounded-md bg-primary px-3 text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:w-11 sm:px-0"
       >
         <Mail className="h-5 w-5" />
+        <span className="truncate text-xs font-semibold sm:sr-only">Email</span>
       </a>
     </div>
   );
