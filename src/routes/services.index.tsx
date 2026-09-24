@@ -5,6 +5,8 @@ import { BusinessSection, ContactSection, SectionShell, ServicesSection } from "
 import { listPublicEntries } from "@/lib/content.functions";
 import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
+import { services as fallbackServices, text } from "@/lib/portfolio-content";
+import { useLanguage } from "@/lib/language";
 
 export const Route = createFileRoute("/services/")({
   head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
@@ -35,7 +37,9 @@ export const Route = createFileRoute("/services/")({
 });
 
 function ServicesPage() {
-  const services = Route.useLoaderData();
+  const loadedServices = Route.useLoaderData();
+  const { language } = useLanguage();
+  const services = loadedServices.length ? loadedServices : fallbackServices.map((service) => ({ id: service.slug, slug: service.slug, title: text(service.title, language), summary: text(service.summary, language), category: null }));
   return (
     <main>
       <ServicesSection full items={services} />
