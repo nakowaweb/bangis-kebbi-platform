@@ -256,6 +256,7 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
           <Detail label="Email" value={application["email"]} />
           <Detail label="Nationality" value={application["nationality"]} />
           <Detail label="Residence" value={application["country_of_residence"]} />
+          <Detail label="State / region" value={application["state_region"]} />
           <Detail label="City" value={application["city"]} />
           <Detail label="Passport number" value={application["passport_number"]} />
           <Detail label="Passport expiry" value={application["passport_expiry_date"]} />
