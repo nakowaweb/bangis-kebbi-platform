@@ -37,7 +37,6 @@ import { Route as FoundationIndexRouteImport } from './routes/foundation.index'
 import { Route as FoundationSlugRouteImport } from './routes/foundation.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
-import { Route as ProjectsBangiskebbiComRouteImport } from './routes/projects.bangiskebbi-com'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 
@@ -180,11 +179,6 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ProjectsRoute,
 } as any)
-const ProjectsBangiskebbiComRoute = ProjectsBangiskebbiComRouteImport.update({
-  id: '/bangiskebbi-com',
-  path: '/bangiskebbi-com',
-  getParentRoute: () => ProjectsRoute,
-} as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -221,7 +215,6 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/foundation/': typeof FoundationIndexRoute
@@ -249,7 +242,6 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog': typeof BlogIndexRoute
   '/foundation': typeof FoundationIndexRoute
@@ -283,7 +275,6 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/foundation/': typeof FoundationIndexRoute
@@ -317,7 +308,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
-    | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog/'
     | '/foundation/'
@@ -345,7 +335,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
-    | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog'
     | '/foundation'
@@ -378,7 +367,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
-    | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog/'
     | '/foundation/'
@@ -607,13 +595,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof ProjectsRoute
     }
-    '/projects/bangiskebbi-com': {
-      id: '/projects/bangiskebbi-com'
-      path: '/bangiskebbi-com'
-      fullPath: '/projects/bangiskebbi-com'
-      preLoaderRoute: typeof ProjectsBangiskebbiComRouteImport
-      parentRoute: typeof ProjectsRoute
-    }
     '/services/': {
       id: '/services/'
       path: '/'
@@ -672,13 +653,11 @@ const FoundationRouteWithChildren = FoundationRoute._addFileChildren(
 
 interface ProjectsRouteChildren {
   ProjectsSlugRoute: typeof ProjectsSlugRoute
-  ProjectsBangiskebbiComRoute: typeof ProjectsBangiskebbiComRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
   ProjectsSlugRoute: ProjectsSlugRoute,
-  ProjectsBangiskebbiComRoute: ProjectsBangiskebbiComRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }
 

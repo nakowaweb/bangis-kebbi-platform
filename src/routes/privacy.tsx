@@ -3,6 +3,8 @@ import { createFileRoute } from "@tanstack/react-router";
 import { SectionShell } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
 import { LegalPage } from "@/components/legal-page";
+import { getPublicEntry } from "@/lib/content.functions";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 export const Route = createFileRoute("/privacy")({
   head: ({ match }) =>
@@ -11,11 +13,13 @@ export const Route = createFileRoute("/privacy")({
       description: "Privacy principles for BangisKebbi.com member accounts, contact messages, applications and future private documents.",
       path: "/privacy",
     }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: ({ deps }) => getPublicEntry({ data: { contentType: "footer", slug: "privacy-policy", language: deps.lang } }),
   component: PrivacyPage,
 });
 
 function PrivacyPage() {
-  return <LegalPage copy={copy} />;
+  return <LegalPage copy={copy} managed={Route.useLoaderData()} />;
 }
 
 const copy = {

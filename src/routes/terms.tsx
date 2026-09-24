@@ -2,6 +2,8 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { LegalPage } from "@/components/legal-page";
 import { pageHead } from "@/lib/seo";
+import { getPublicEntry } from "@/lib/content.functions";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 export const Route = createFileRoute("/terms")({
   head: ({ match }) =>
@@ -10,11 +12,13 @@ export const Route = createFileRoute("/terms")({
       description: "Terms governing use of BangisKebbi.com services, content, accounts, community and Umrah support information.",
       path: "/terms",
     }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loader: ({ deps }) => getPublicEntry({ data: { contentType: "footer", slug: "terms-of-use", language: deps.lang } }),
   component: TermsPage,
 });
 
 function TermsPage() {
-  return <LegalPage copy={copy} />;
+  return <LegalPage copy={copy} managed={Route.useLoaderData()} />;
 }
 
 const shared = {
