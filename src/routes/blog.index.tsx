@@ -6,6 +6,8 @@ import { BlogPreview, SectionShell } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
 import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
+import { articles as fallbackArticles, text } from "@/lib/portfolio-content";
+import { useLanguage } from "@/lib/language";
 
 export const Route = createFileRoute("/blog/")({
   head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
@@ -36,13 +38,13 @@ export const Route = createFileRoute("/blog/")({
 });
 
 function BlogPage() {
-  const posts = Route.useLoaderData();
+  const loadedPosts = Route.useLoaderData();
+  const { language } = useLanguage();
+  const posts = loadedPosts.length ? loadedPosts : fallbackArticles.map((post) => ({ id: post.slug, slug: post.slug, title: text(post.title, language), category: text(post.category, language), summary: text(post.summary, language), imageUrl: post.image, image_alt: text(post.title, language), author: post.author, published_at: null }));
 
   return (
     <main>
-      {posts.length === 0 ? (
-        <BlogPreview />
-      ) : (
+      {posts.length === 0 ? <BlogPreview /> : (
         <SectionShell eyebrow="Blog" title="Insights, ideas and opportunities." description="Published articles from BangisKebbi.com.">
           <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (

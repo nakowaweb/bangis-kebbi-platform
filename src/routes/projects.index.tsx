@@ -6,6 +6,8 @@ import { ProjectsSection, SectionShell } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
 import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
+import { projects as fallbackProjects, text } from "@/lib/portfolio-content";
+import { useLanguage } from "@/lib/language";
 
 export const Route = createFileRoute("/projects/")({
   head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => ({
@@ -36,17 +38,20 @@ export const Route = createFileRoute("/projects/")({
 });
 
 function ProjectsPage() {
-  const projects = Route.useLoaderData();
+  const loadedProjects = Route.useLoaderData();
+  const { language } = useLanguage();
+  const projects = loadedProjects.length ? loadedProjects : fallbackProjects.map((project) => ({ id: project.slug, slug: project.slug, title: text(project.title, language), summary: text(project.summary, language), category: text(project.category, language), imageUrl: project.image, image_alt: text(project.imageAlt, language), payload: {}, concept: project.concept }));
   return (
     <main>
-      <ProjectsSection full />
-      {projects.length > 0 && (
+      <ProjectsSection full items={projects} />
+      {loadedProjects.length > 0 && (
         <SectionShell eyebrow="Project library" title="Open a project for the full case study." description="Every published project has its own page.">
           <div className="grid gap-4 md:grid-cols-3">
             {projects.map((project) => (
               <article key={project.id} className="overflow-hidden rounded-lg border border-border bg-card">
                 {project.imageUrl && <SafeImage src={project.imageUrl} alt={project.image_alt ?? project.title} loading="lazy" className="aspect-[16/9] w-full object-cover" />}
                 <div className="p-5">
+                  {(project as { concept?: boolean }).concept && <p className="mb-2 text-xs font-bold uppercase text-primary">Concept / Demo</p>}
                   {project.category && <p className="text-xs font-bold uppercase text-primary">{project.category}</p>}
                   <h3 className="mt-1 font-display text-base font-bold">
                     <Link to="/projects/$slug" params={{ slug: project.slug }} className="hover:underline">{project.title}</Link>

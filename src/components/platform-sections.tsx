@@ -23,6 +23,8 @@ import type { ComponentType, ReactNode } from "react";
 
 import { useLanguage } from "@/lib/language";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
+import { articles as portfolioArticles, projects as portfolioProjects, services as portfolioServices, text } from "@/lib/portfolio-content";
+import { SafeImage } from "@/components/safe-image";
 
 /** Recognizable Kaaba line icon for Umrah, drawn with the same geometry and stroke treatment as Lucide. */
 function KaabaIcon({ className }: { className?: string }) {
@@ -68,7 +70,6 @@ import {
   foundationInitiatives,
   philosophyCards,
   projectCategories,
-  projects,
   quickStats,
   serviceCards,
   umrahProcess,
@@ -212,22 +213,24 @@ export function AboutPreview({ title, description }: { title?: string | undefine
   );
 }
 
-export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; title: string; summary: string | null }> | undefined }) {
-  const { t } = useLanguage();
-  const visibleServices = items?.length ? items.map((item, index) => ({ title: item.title, description: item.summary ?? t("home.serviceFallback"), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 })) : serviceCards;
+export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null }> | undefined }) {
+  const { t, language } = useLanguage();
+  const visibleServices = items?.length
+    ? items.map((item, index) => ({ slug: item.slug, title: item.title, description: item.summary ?? t("home.serviceFallback"), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }))
+    : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} action={!full ? { label: t("common.viewAllServices"), href: "/services" } : undefined}>
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {visibleServices.map((service) => <FeatureCard key={service.title} icon={service.icon} title={service.title} description={service.description} action={t("common.learnMore")} href="/services" />)}
+        {visibleServices.map((service) => <FeatureCard key={service.slug} icon={service.icon} title={service.title} description={service.description} action={t("common.learnMore")} href="/services/$slug" slug={service.slug} />)}
       </div>
     </SectionShell>
   );
 }
 
 const projectImages = [heroImage, resortImage, businessImage];
-export function ProjectsSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; payload: unknown }> | undefined }) {
-  const { t } = useLanguage();
-  const visibleProjects = items?.length ? items.map((item) => ({ slug: item.slug, name: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("home.projectFallbackCategory"), description: item.summary ?? t("home.projectFallbackSummary") })) : projects;
+export function ProjectsSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; payload: unknown; imageUrl?: string | null }> | undefined }) {
+  const { t, language } = useLanguage();
+  const visibleProjects = items?.length ? items.map((item, index) => ({ slug: item.slug, name: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("home.projectFallbackCategory"), description: item.summary ?? t("home.projectFallbackSummary"), image: item.imageUrl ?? projectImages[index] ?? heroImage, concept: false })) : portfolioProjects.map((item) => ({ slug: item.slug, name: text(item.title, language), category: text(item.category, language), description: text(item.summary, language), image: item.image, concept: item.concept }));
   return (
     <SectionShell eyebrow={t("home.projectsEyebrow")} title={t("home.projectsTitle")} description={t("home.projectsDescription")} action={!full ? { label: t("common.viewAllProjects"), href: "/projects" } : undefined}>
       {full && <div className="mb-5 flex flex-wrap gap-2">{projectCategories.map((category) => <Badge key={category} variant="outline">{category}</Badge>)}</div>}
@@ -235,10 +238,10 @@ export function ProjectsSection({ full = false, items }: { full?: boolean; items
         {visibleProjects.map((project, index) => (
           <article key={project.slug} className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-platform">
             <div className="relative aspect-[16/9] overflow-hidden bg-brand-ink">
-              <img src={projectImages[index] ?? heroImage} alt="" loading="lazy" width={1200} height={750} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+               <SafeImage src={project.image} alt={project.name} loading="lazy" width={1200} height={750} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
               {index === 0 && <img src={appIconAsset.url} alt="BangisKebbi.com" loading="lazy" className="absolute left-5 top-5 h-14 w-14 rounded-lg" />}
             </div>
-            <div className="p-5"><h3 className="font-display text-lg font-bold">{project.name}</h3><p className="mt-1 text-xs font-semibold text-primary">{project.category}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{project.description}</p><Button variant="link" className="mt-2 px-0" asChild><Link to={index === 0 ? "/projects/bangiskebbi-com" : "/projects"}>{t("common.viewProject")} <ArrowRight /></Link></Button></div>
+             <div className="p-5">{project.concept && <Badge variant="secondary" className="mb-3">Concept / Demo</Badge>}<h3 className="font-display text-lg font-bold">{project.name}</h3><p className="mt-1 text-xs font-semibold text-primary">{project.category}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{project.description}</p><Button variant="link" className="mt-2 px-0" asChild><Link to="/projects/$slug" params={{ slug: project.slug }}>{t("common.viewProject")} <ArrowRight /></Link></Button></div>
           </article>
         ))}
       </div>
@@ -316,12 +319,12 @@ export function LatestActivitiesSection() {
   );
 }
 
-export function BlogPreview({ items }: { items?: Array<{ id: string; title: string; summary: string | null; payload: unknown }> | undefined }) {
-  const { t } = useLanguage();
-  const visiblePosts = items?.length ? items.slice(0, 3).map((item) => ({ title: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("blog.updateLabel") })) : blogPosts;
+export function BlogPreview({ items }: { items?: Array<{ id: string; slug: string; title: string; summary: string | null; payload: unknown; imageUrl?: string | null }> | undefined }) {
+  const { t, language } = useLanguage();
+  const visiblePosts = items?.length ? items.slice(0, 3).map((item, index) => ({ slug: item.slug, title: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("blog.updateLabel"), image: item.imageUrl ?? projectImages[index] ?? heroImage })) : portfolioArticles.map((item) => ({ slug: item.slug, title: text(item.title, language), category: text(item.category, language), image: item.image }));
   return (
     <SectionShell eyebrow={t("home.blogEyebrow")} title={t("home.blogTitle")} description={t("home.blogDescription")} action={{ label: t("common.viewAllPosts"), href: "/blog" }}>
-      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post, index) => <article key={post.title} className="grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><img src={projectImages[index]} alt="" loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog">{t("common.readMore")} <ArrowRight /></Link></Button></div></article>)}</div>
+      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post) => <article key={post.slug} className="grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><SafeImage src={post.image} alt={post.title} loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog/$slug" params={{ slug: post.slug }}>{t("common.readMore")} <ArrowRight /></Link></Button></div></article>)}</div>
     </SectionShell>
   );
 }
@@ -358,8 +361,8 @@ export function SectionShell({ eyebrow, title, description, action, children }: 
   );
 }
 
-function FeatureCard({ icon: Icon, title, description, action, href }: { icon: LucideIcon; title: string; description: string; action?: string; href?: "/services" }) {
-  return <article className="h-full rounded-lg border border-border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-platform"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-cyan/10 text-primary"><Icon className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>{action && href && <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to={href}>{action} <ArrowRight /></Link></Button>}</article>;
+function FeatureCard({ icon: Icon, title, description, action, href, slug }: { icon: LucideIcon; title: string; description: string; action?: string; href?: "/services" | "/services/$slug"; slug?: string }) {
+  return <article className="h-full rounded-lg border border-border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-platform"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-cyan/10 text-primary"><Icon className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>{action && href === "/services/$slug" && slug ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to="/services/$slug" params={{ slug }}>{action} <ArrowRight /></Link></Button> : action && href ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to={href}>{action} <ArrowRight /></Link></Button> : null}</article>;
 }
 
 function CompactPlatform({ icon: Icon, eyebrow, title, description, href, action, tone }: { icon: LucideIcon; eyebrow: string; title: string; description: string; href: "/umrah" | "/foundation" | "/register"; action: string; tone: "gold" | "green" | "blue" }) {
