@@ -1,3 +1,4 @@
+import { useLanguage } from "@/lib/language";
 import { SafeImage } from "@/components/safe-image";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
@@ -22,9 +23,17 @@ export const Route = createFileRoute("/foundation/")({
   component: FoundationPage,
 });
 
+const foundationCopy = {
+  en: { headline: "Community support, done with purpose.", description: "BK Foundations is the community and humanitarian side of BangisKebbi.com, focused on practical support for people and families facing genuine hardship.", join: "Join the Community", contact: "Contact BK Foundations", missionLabel: "Mission", mission: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", visionLabel: "Vision", vision: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", areasLabel: "Support areas", areasTitle: "Where support is focused.", areas: ["Food assistance", "Orphan support", "Support for low-income families", "Emergency relief", "Essential supplies", "Community relief", "Support for people facing hardship", "Support coordination for people receiving serious treatment or facing difficult circumstances", "Zakat/Sadaqah support where properly handled", "In-kind support"], processLabel: "Process", processTitle: "How support is delivered.", steps: ["Identify a genuine need", "Review and verify the request", "Coordinate appropriate support", "Deliver the support", "Record the activity", "Publish appropriate impact updates without exposing private beneficiary information"] },
+  ar: { headline: "دعم مجتمعي بهدف واضح.", description: "مؤسسات BK هي الجانب المجتمعي والإنساني من BangisKebbi.com، وتركز على الدعم العملي للأفراد والأسر الذين يواجهون صعوبات حقيقية.", join: "انضم إلى المجتمع", contact: "تواصل مع مؤسسات BK", missionLabel: "الرسالة", mission: "تقديم دعم عملي وكريم وموجّه للأفراد والأسر الذين يواجهون صعوبات حقيقية، مع إعطاء الأولوية للاحتياجات المجتمعية الموثقة.", visionLabel: "الرؤية", vision: "مجتمعات أقوى وأكثر ترابطاً يستطيع فيها من يواجهون الصعوبات الحصول على دعم مفيد وفي الوقت المناسب.", areasLabel: "مجالات الدعم", areasTitle: "أين يتركز الدعم.", areas: ["المساعدات الغذائية", "دعم الأيتام", "دعم الأسر محدودة الدخل", "الإغاثة الطارئة", "المستلزمات الأساسية", "الإغاثة المجتمعية", "دعم من يواجهون الصعوبات", "تنسيق الدعم لمن يتلقون علاجاً صعباً أو يمرون بظروف قاسية", "دعم الزكاة والصدقة عند التعامل الصحيح", "الدعم العيني"], processLabel: "المنهجية", processTitle: "كيف يُقدَّم الدعم.", steps: ["تحديد حاجة حقيقية", "مراجعة الطلب والتحقق منه", "تنسيق الدعم المناسب", "تقديم الدعم", "تسجيل النشاط", "نشر تحديثات أثر مناسبة دون كشف معلومات المستفيدين الخاصة"] },
+  ha: { headline: "Tallafin al'umma, da manufa.", description: "BK Foundations ɓangaren al'umma da jin ƙai ne na BangisKebbi.com, wanda ya mai da hankali kan tallafi mai amfani ga mutane da iyalan da ke fuskantar wahala ta gaske.", join: "Shiga Al'umma", contact: "Tuntuɓi BK Foundations", missionLabel: "Manufa", mission: "Samar da tallafi mai amfani, mai mutunci kuma da aka nufa ga mutane da iyalan da ke fuskantar wahala ta gaske, tare da fifita bukatun al'umma da aka tabbatar.", visionLabel: "Hangen nesa", vision: "Al'ummomi masu ƙarfi da haɗin kai inda masu fuskantar wahala za su sami tallafi mai ma'ana a lokacin da ya dace.", areasLabel: "Fannonin tallafi", areasTitle: "Inda tallafi ya fi mai da hankali.", areas: ["Taimakon abinci", "Tallafin marayu", "Tallafin iyalai masu ƙaramin kuɗi", "Agajin gaggawa", "Kayan buƙatu na yau da kullum", "Agajin al'umma", "Tallafi ga masu fuskantar wahala", "Haɗa tallafi ga masu jinya mai tsanani ko cikin mawuyacin hali", "Tallafin Zakka/Sadaka idan an sarrafa shi yadda ya kamata", "Tallafin kayayyaki"], processLabel: "Tsari", processTitle: "Yadda ake ba da tallafi.", steps: ["Gano buƙata ta gaske", "Duba da tabbatar da buƙatar", "Haɗa tallafin da ya dace", "Isar da tallafin", "Rubuta aikin", "Wallafa bayanan tasiri ba tare da fallasa bayanan sirri na masu amfana ba"] },
+};
+
 type ContentEntry = { id: string; content_type: string; title: string; summary: string | null; body: string | null };
 
 function FoundationPage() {
+  const { language } = useLanguage();
+  const fcopy = foundationCopy[language];
   const load = useServerFn(getFoundationOverview);
   const overview = useQuery({ queryKey: ["foundation-public"], queryFn: () => load() });
 
@@ -48,19 +57,18 @@ function FoundationPage() {
             <HandHeart className="h-4 w-4" /> BK Foundations
           </span>
           <h1 className="mt-4 max-w-3xl font-display text-3xl font-bold leading-tight sm:text-4xl">
-            {intro?.title ?? "Community support, done openly."}
+            {intro?.title ?? fcopy.headline}
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-primary-foreground/80">
-            {intro?.summary ??
-              "BK Foundations is the community and humanitarian side of BangisKebbi.com, focused on practical help and accountable public updates."}
+            {intro?.summary ?? fcopy.description}
           </p>
           {intro?.body ? <p className="mt-3 max-w-3xl whitespace-pre-line text-sm leading-6 text-primary-foreground/70">{intro.body}</p> : null}
           <div className="mt-6 flex flex-wrap gap-3">
             <Button className="bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
-              <Link to="/register">Join the community <ArrowRight /></Link>
+              <Link to="/register">{fcopy.join} <ArrowRight /></Link>
             </Button>
             <Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>
-              <Link to="/contact">Contact BK Foundations</Link>
+              <Link to="/contact">{fcopy.contact}</Link>
             </Button>
           </div>
         </div>
@@ -68,18 +76,18 @@ function FoundationPage() {
 
       <section className="border-b border-border bg-background py-10">
         <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
-           <Panel icon={Target} eyebrow="Mission" title={mission?.title ?? "Support people with practical help."} text={mission?.summary ?? mission?.body ?? "Respond to verified needs with dignity, careful coordination and clear public updates that protect personal privacy."} />
-           <Panel icon={Compass} eyebrow="Vision" title={vision?.title ?? "Stronger, better-connected communities."} text={vision?.summary ?? vision?.body ?? "Communities where people can access useful support, knowledge and trusted connections without exposing vulnerable individuals."} />
+           <Panel icon={Target} eyebrow={fcopy.missionLabel} title={mission?.title ?? fcopy.missionLabel} text={mission?.summary ?? mission?.body ?? fcopy.mission} />
+           <Panel icon={Compass} eyebrow={fcopy.visionLabel} title={vision?.title ?? fcopy.visionLabel} text={vision?.summary ?? vision?.body ?? fcopy.vision} />
         </div>
       </section>
 
       <section className="border-b border-border bg-secondary py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-bold uppercase text-primary">What we do</p>
-          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Community support activities.</h2>
+          <p className="text-xs font-bold uppercase text-primary">{fcopy.areasLabel}</p>
+          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{fcopy.areasTitle}</h2>
           <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
             {whatWeDo.length === 0 ? (
-              ["Essential-needs support", "Learning and digital access", "Community response"].map((title) => <article key={title} className="rounded-lg border border-border bg-card p-5"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-green/10 text-brand-green"><HeartHandshake className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">Support is considered against verified need, available capacity and a privacy-respecting delivery plan.</p></article>)
+              fcopy.areas.map((title) => <article key={title} className="rounded-lg border border-border bg-card p-5"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-green/10 text-brand-green"><HeartHandshake className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3></article>)
             ) : (
               whatWeDo.map((entry) => (
                 <article key={entry.id} className="rounded-lg border border-border bg-card p-5">
@@ -101,6 +109,8 @@ function FoundationPage() {
         projects={active}
         emptyText="No foundation projects have been published yet."
       />
+
+      <section className="border-b border-border bg-background py-10"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><p className="text-xs font-bold uppercase text-primary">{fcopy.processLabel}</p><h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{fcopy.processTitle}</h2><ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{fcopy.steps.map((step, index) => <li key={step} className="flex gap-3 rounded-lg border border-border bg-card p-5 text-sm leading-6"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary font-bold text-primary-foreground">{index + 1}</span>{step}</li>)}</ol></div></section>
 
       <section className="border-b border-border bg-secondary py-10"><div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-3 lg:px-8"><Panel icon={HeartHandshake} eyebrow="Process" title="Need, review, coordinate, update." text="Requests and opportunities are reviewed, appropriate partners are identified, delivery is coordinated and verified updates are published when suitable." /><Panel icon={ShieldCheck} eyebrow="Impact and privacy" title="Dignity comes before publicity." text="Updates focus on the work delivered. Personal stories, identities and sensitive circumstances are not published without a clear, appropriate basis." /><Panel icon={UsersRound} eyebrow="Partners" title="Work with BK Foundations." text="Organizations and professionals with relevant capacity can contact the team to discuss a responsible partnership." /></div></section>
 
