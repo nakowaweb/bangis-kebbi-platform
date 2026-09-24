@@ -91,7 +91,13 @@ export const projects: ProjectDefinition[] = projectRows.map((row) => ({
   slug: row.slug,
   title: { en: row.title[0], ar: row.title[1], ha: row.title[2] },
   category: { en: row.category[0], ar: row.category[1], ha: row.category[2] },
-  summary: row.concept
+  summary: row.slug === "hospitality-resort-concept"
+    ? { en: "Luxury hospitality website concept with premium visual presentation, strong UX structure and responsive design.", ar: "تصور موقع ضيافة فاخر بعرض بصري راقٍ وبنية تجربة مستخدم قوية وتصميم متجاوب.", ha: "Samfurin gidan yanar gizon masauki na alfarma mai kyan gani, tsarin UX mai ƙarfi da ƙira mai daidaituwa." }
+    : row.slug === "business-website-concept"
+    ? { en: "Modern business website concept prepared as a demonstration of professional web development.", ar: "تصور موقع أعمال حديث أُعدّ كعرض لتطوير الويب الاحترافي.", ha: "Samfurin gidan yanar gizon kasuwanci na zamani da aka shirya don nuna haɓaka yanar gizo na ƙwararru." }
+    : row.slug === "bangiskebbi-com"
+    ? { en: "A premium international digital platform for ideas, technology, business and people.", ar: "منصة رقمية دولية راقية للأفكار والتقنية والأعمال والناس.", ha: "Dandalin dijital na duniya mai inganci don ra'ayoyi, fasaha, kasuwanci da mutane." }
+    : row.concept
     ? { en: "A premium demonstration exploring clear content, responsive structure and a focused customer journey.", ar: "نموذج احترافي يستكشف وضوح المحتوى والبنية المتجاوبة ورحلة عميل مركزة.", ha: "Samfurin ƙwararru da ke nuna ingantaccen abun ciki, tsari mai daidaituwa da tafiyar abokin ciniki." }
     : { en: "A multilingual personal-brand platform combining professional services, portfolio content, community information and secure member experiences.", ar: "منصة علامة شخصية متعددة اللغات تجمع الخدمات المهنية والأعمال والمجتمع وتجربة أعضاء آمنة.", ha: "Dandalin brand na kai mai harsuna da ke haɗa ayyukan ƙwararru, kundin aiki, al’umma da wurin mamba mai tsaro." },
   image: row.image,
@@ -104,7 +110,7 @@ export const projects: ProjectDefinition[] = projectRows.map((row) => ({
       { title: "Design reasoning", body: "Strong hierarchy, useful spacing and mobile-first decisions keep important actions visible without overwhelming the visitor." },
     ] : [
       { title: "Purpose and direction", body: "BangisKebbi.com presents Abubakar Alhaji Abubakar’s professional work, ideas and community initiatives through one coherent global platform." },
-      { title: "Platform capabilities", body: "The platform includes responsive public pages, a CMS, multilingual content, search foundations, secure authentication, a member dashboard, Umrah information and humanitarian updates." },
+      { title: "Platform capabilities", body: "Premium responsive design, a CMS with full admin control, secure authentication, a member dashboard, English/Arabic/Hausa multilingual support, SEO foundations, community pages, Umrah support and the BK Foundations community system." },
       { title: "Technology and workflow", body: "The project uses a modern full-stack web architecture, database-backed publishing, private media access and role-based administration." },
     ],
     ar: row.concept ? [

@@ -79,7 +79,16 @@ const emptyEditor: EditorState = { contentType: "service", slug: "", title: "", 
 const previewPath = (editor: EditorState) =>
   editor.contentType === "service" ? `/services/${editor.slug}` :
   editor.contentType === "project" ? `/projects/${editor.slug}` :
-  editor.contentType === "blog_post" ? `/blog/${editor.slug}` : null;
+  editor.contentType === "blog_post" ? `/blog/${editor.slug}` :
+  editor.slug === "professional-cv" ? "/cv" :
+  editor.slug === "privacy-policy" ? "/privacy" :
+  editor.slug === "terms-of-use" ? "/terms" :
+  editor.slug === "refund-policy" ? "/refund-policy" :
+  editor.contentType.startsWith("umrah") ? "/umrah" :
+  editor.contentType.startsWith("foundation") ? "/foundation" :
+  editor.contentType === "community" ? "/community" :
+  editor.contentType === "contact" ? "/contact" :
+  editor.contentType === "about" ? "/about" : null;
 
 const splitList = (value: string) => value.split(",").map((item) => item.trim()).filter(Boolean);
 
