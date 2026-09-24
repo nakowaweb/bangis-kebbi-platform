@@ -71,7 +71,7 @@ function Index() {
   const value = (key: string) => typeof payload[key] === "string" ? payload[key] : undefined;
   return (
     <main>
-      <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} location={publicContent.settings?.location ?? "Abuja, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
+      <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
       <QuickActionsSection />
       <PlatformIntroduction title={about?.title} description={about?.summary ?? undefined} />
       <ServicesSection items={services} />

@@ -1,3 +1,4 @@
+import { EntryVideo } from "@/components/entry-video";
 import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
@@ -9,6 +10,8 @@ import { RouteError } from "@/components/route-error";
 import { ContactActions } from "@/components/contact-actions";
 import { serviceBySlug, text } from "@/lib/portfolio-content";
 import { useLanguage } from "@/lib/language";
+import { serviceDetails } from "@/lib/service-details";
+import { Button } from "@/components/ui/button";
 
 export const Route = createFileRoute("/services/$slug")({
   errorComponent: RouteError,
@@ -71,7 +74,8 @@ function ServiceDetailPage() {
   const { language } = useLanguage();
   const title = service?.title ?? (fallback ? text(fallback.title, language) : "Service");
   const summary = service?.summary ?? (fallback ? text(fallback.summary, language) : undefined);
-  const labels = language === "ar" ? { capabilities: "ما يمكنني تقديمه", audience: "لمن تناسب هذه الخدمة", process: "طريقة العمل", discuss: "ناقش هذه الخدمة", home: "الرئيسية", services: "الخدمات" } : language === "ha" ? { capabilities: "Abin da zan iya yi", audience: "Wa wannan sabis ya dace da shi", process: "Yadda aikin ke gudana", discuss: "Tattauna wannan sabis", home: "Gida", services: "Ayyuka" } : { capabilities: "What I can deliver", audience: "Who this is for", process: "How the work runs", discuss: "Discuss this service", home: "Home", services: "Services" };
+  const labels = language === "ar" ? { meaning: "ما معنى هذه الخدمة", useCases: "أمثلة وحالات استخدام", capabilities: "ما يمكنني تقديمه", audience: "لمن تناسب هذه الخدمة", process: "طريقة العمل", discuss: "ناقش هذه الخدمة", home: "الرئيسية", services: "الخدمات" } : language === "ha" ? { meaning: "Ma'anar wannan sabis", useCases: "Misalai", capabilities: "Abin da zan iya yi", audience: "Wa wannan sabis ya dace da shi", process: "Yadda aikin ke gudana", discuss: "Tattauna wannan sabis", home: "Gida", services: "Ayyuka" } : { meaning: "What this service means", useCases: "Examples and use cases", capabilities: "What I can provide", audience: "Who this is for", process: "How I work", discuss: "Discuss this service", home: "Home", services: "Services" };
+  const detail = serviceDetails[fallback?.slug ?? ""];
   return (
     <main>
       <SectionShell eyebrow={service?.category ?? labels.services} title={title} description={summary ?? undefined}>
@@ -83,7 +87,10 @@ function ServiceDetailPage() {
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(service?.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
-        {fallback && <div className="mt-10 grid gap-8 lg:grid-cols-3"><ListBlock title={labels.capabilities} items={fallback.canDo[language]} /><ListBlock title={labels.audience} items={fallback.audience[language]} /><ListBlock title={labels.process} items={fallback.process[language]} numbered /></div>}
+        {detail && !service?.body && <section className="max-w-3xl"><h2 className="font-display text-xl font-bold">{labels.meaning}</h2><p className="mt-3 text-base leading-8 text-muted-foreground">{detail.meaning[language]}</p></section>}
+        {fallback && <div className="mt-10 grid gap-8 lg:grid-cols-3"><ListBlock title={labels.capabilities} items={detail?.provide[language] ?? fallback.canDo[language]} /><ListBlock title={labels.audience} items={fallback.audience[language]} /><ListBlock title={labels.process} items={fallback.process[language]} numbered /></div>}
+        {detail && <section className="mt-10"><ListBlock title={labels.useCases} items={detail.useCases[language]} /><Button className="mt-6" asChild><Link to="/contact">{detail.cta[language]}</Link></Button></section>}
+        {service ? <EntryVideo payload={service.payload} fileUrl={service.videoFileUrl} title={title} /> : null}
         <ContactActions />
       </SectionShell>
     </main>

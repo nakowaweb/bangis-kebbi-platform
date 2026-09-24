@@ -25,25 +25,31 @@ function RefundPage() {
 }
 
 const copy = {
-  en: { eyebrow: "Policy", title: "Refund Policy", description: "How refund requests are considered for separately agreed services.", updated: "Effective: 2026", sections: [
-    { title: "No checkout on this website", body: "BangisKebbi.com does not currently collect payments through the public website, member dashboard, Umrah application or BK Foundations pages." },
-    { title: "Professional services", body: "If a client engagement is agreed separately, its written proposal or agreement sets the price, milestones, cancellation terms and refund eligibility. Work already completed, accepted milestones and non-recoverable costs may not be refundable." },
-    { title: "Umrah and third-party services", body: "Travel, visa, accommodation and related services are provided by independent providers under their own rules. Any eligible refund depends on the provider’s written terms, work completed and costs already committed. Visa decisions and processing delays are outside BangisKebbi.com’s control." },
-    { title: "BK Foundations", body: "The public Foundation pages do not process contributions. If a future support arrangement is introduced, its specific terms will be presented before any transaction." },
-    { title: "Requesting a review", body: "Contact us with your name, the relevant written agreement or reference and the reason for your request. We will acknowledge it, verify the circumstances and explain the outcome. This policy does not limit rights that cannot lawfully be excluded." },
+  en: { eyebrow: "Policy", title: "Refund Policy", description: "How refund requests are handled for Umrah support balances and for digital/web services.", updated: "Effective: 2026", sections: [
+    { title: "Umrah support: unused balance", body: "A member may request a refund of an unused available Umrah support balance. The balance is support planning toward the member's own Umrah goal; it is not a return-generating product and involves no profit, interest or promised gain." },
+    { title: "Umrah support: full refund where nothing is committed", body: "If funds have not already been committed to non-refundable third-party services or bookings, the unused amount should be refundable in full after review." },
+    { title: "Umrah support: third-party costs", body: "Where a non-refundable third-party cost (for example a confirmed booking or provider fee) has already been incurred, only the remaining refundable amount can be returned. The member will be shown which costs were committed." },
+    { title: "How to request an Umrah refund", body: "Submit the request through the member dashboard support channel or the Contact page, including your name and application reference. The request is reviewed and the member receives a clear status update at each stage, including the final outcome." },
+    { title: "Digital and web services", body: "Refunds for website design, development, maintenance and related services follow the written service or project agreement and the work already completed. Any non-refundable third-party costs (such as domains, hosting, licences or plugins) are disclosed before payment." },
+    { title: "BK Foundations", body: "The public Foundation pages do not process contributions. If a support arrangement is introduced, its specific terms will be presented before any transaction." },
+    { title: "Your rights", body: "This policy explains our process in plain terms. It does not limit any rights that cannot lawfully be excluded, and it does not create guarantees beyond what is written here." },
   ]},
-  ar: { eyebrow: "السياسة", title: "سياسة الاسترداد", description: "كيفية النظر في طلبات الاسترداد للخدمات المتفق عليها بصورة منفصلة.", updated: "سارية من: 2026", sections: [
-    { title: "لا يوجد دفع عبر الموقع", body: "لا يجمع BangisKebbi.com حالياً مدفوعات عبر الموقع العام أو لوحة الأعضاء أو طلب العمرة أو صفحات BK Foundations." },
-    { title: "الخدمات المهنية", body: "إذا تم الاتفاق على عمل مع عميل بصورة منفصلة، يحدد العرض أو الاتفاق المكتوب السعر والمراحل والإلغاء وأهلية الاسترداد. وقد لا تكون الأعمال المنجزة والمراحل المقبولة والتكاليف غير القابلة للاسترداد قابلة للرد." },
-    { title: "العمرة وخدمات الأطراف الأخرى", body: "يقدم السفر والتأشيرات والإقامة والخدمات المرتبطة مزودون مستقلون وفق شروطهم. ويتوقف أي استرداد مؤهل على شروط المزود والعمل المنجز والتكاليف الملتزم بها. قرارات التأشيرة والتأخير خارج سيطرة BangisKebbi.com." },
-    { title: "BK Foundations", body: "لا تعالج صفحات المؤسسة العامة أي مساهمات. وإذا أضيف ترتيب دعم مستقبلاً فستظهر شروطه المحددة قبل أي معاملة." },
-    { title: "طلب المراجعة", body: "تواصل معنا باسمك والاتفاق أو المرجع ذي الصلة وسبب الطلب. سنؤكد الاستلام ونتحقق من الظروف ونوضح النتيجة. لا تحد هذه السياسة من الحقوق التي لا يجوز استبعادها قانوناً." },
+  ar: { eyebrow: "السياسة", title: "سياسة الاسترداد", description: "كيفية التعامل مع طلبات استرداد رصيد دعم العمرة والخدمات الرقمية وخدمات المواقع.", updated: "سارية من: 2026", sections: [
+    { title: "دعم العمرة: الرصيد غير المستخدم", body: "يمكن للعضو طلب استرداد رصيد دعم العمرة المتاح وغير المستخدم. هذا الرصيد تخطيط دعم لهدف العضو في أداء العمرة، وليس منتجاً يحقق عائداً ولا يتضمن ربحاً أو فائدة أو مكسباً موعوداً." },
+    { title: "دعم العمرة: استرداد كامل عند عدم الالتزام", body: "إذا لم تُلتزم الأموال لخدمات أو حجوزات غير قابلة للاسترداد لدى أطراف أخرى، فينبغي رد المبلغ غير المستخدم كاملاً بعد المراجعة." },
+    { title: "دعم العمرة: تكاليف الأطراف الأخرى", body: "إذا تم تحمل تكلفة غير قابلة للاسترداد لدى طرف آخر، فلا يمكن رد إلا المبلغ المتبقي القابل للاسترداد، مع توضيح التكاليف الملتزم بها للعضو." },
+    { title: "طريقة طلب استرداد العمرة", body: "قدّم الطلب عبر قناة الدعم في لوحة العضو أو صفحة التواصل مع اسمك ورقم الطلب. تتم مراجعة الطلب ويتلقى العضو تحديثاً واضحاً للحالة في كل مرحلة بما فيها النتيجة النهائية." },
+    { title: "الخدمات الرقمية وخدمات المواقع", body: "يتبع الاسترداد لخدمات التصميم والتطوير والصيانة الاتفاق المكتوب للخدمة أو المشروع والعمل المنجز. ويتم الإفصاح عن أي تكاليف غير قابلة للاسترداد لأطراف أخرى قبل الدفع." },
+    { title: "BK Foundations", body: "لا تعالج صفحات المؤسسة العامة أي مساهمات. وإذا أضيف ترتيب دعم فستظهر شروطه قبل أي معاملة." },
+    { title: "حقوقك", body: "توضح هذه السياسة إجراءاتنا بلغة واضحة، ولا تحد من الحقوق التي لا يجوز استبعادها قانوناً، ولا تنشئ ضمانات تتجاوز ما هو مكتوب هنا." },
   ]},
-  ha: { eyebrow: "Manufa", title: "Manufar Mayar da Kuɗi", description: "Yadda ake duba buƙatar mayar da kuɗi ga sabis da aka amince daban.", updated: "Ta fara aiki: 2026", sections: [
-    { title: "Babu biyan kuɗi a shafin", body: "BangisKebbi.com ba ya karɓar biyan kuɗi yanzu ta shafin jama’a, dashboard na mamba, aikace-aikacen Umrah ko shafukan BK Foundations." },
-    { title: "Ayyukan ƙwararru", body: "Idan an amince da aikin kwastoma daban, rubutacciyar yarjejeniya za ta bayyana farashi, matakai, sokewa da damar mayar da kuɗi. Aikin da aka riga aka yi, matakin da aka karɓa da kuɗin da ba za a dawo da shi ba na iya zama ba a mayarwa." },
-    { title: "Umrah da sabis na wasu", body: "Masu ba da tafiya, visa, masauki da sauran ayyuka suna aiki bisa sharuɗɗansu. Duk wata damar mayar da kuɗi tana dogara da sharuɗɗan mai sabis, aikin da aka yi da kuɗin da aka riga aka kashe. Shawarar visa da jinkiri ba su ƙarƙashin BangisKebbi.com." },
-    { title: "BK Foundations", body: "Shafukan Gidauniyar ba sa sarrafa gudummawa. Idan aka samar da tsarin tallafi a gaba, za a nuna sharuɗɗansa kafin wata mu’amala." },
-    { title: "Neman a duba", body: "Tuntuɓe mu da sunanka, yarjejeniya ko lambar da ta dace da dalilin buƙatarka. Za mu tabbatar da karɓa, mu bincika sannan mu bayyana sakamako. Wannan manufar ba ta rage haƙƙin da doka ba ta yarda a cire ba." },
+  ha: { eyebrow: "Manufa", title: "Manufar Mayar da Kuɗi", description: "Yadda ake sarrafa buƙatar mayar da kuɗin tallafin Umrah da na ayyukan dijital/yanar gizo.", updated: "Ta fara aiki: 2026", sections: [
+    { title: "Tallafin Umrah: ragowar da ba a yi amfani da shi ba", body: "Mamba na iya neman a mayar masa da ragowar kuɗin tallafin Umrah da ba a yi amfani da shi ba. Wannan tsarin tallafi ne ga burin mamba na yin Umrah; ba samfurin samun riba ba ne kuma babu riba, ruwa ko alƙawarin ƙari." },
+    { title: "Tallafin Umrah: cikakken mayarwa idan ba a kashe ba", body: "Idan ba a riga an sanya kuɗin a cikin sabis ko booking na wasu da ba a mayarwa ba, ya kamata a mayar da cikakken adadin bayan an duba." },
+    { title: "Tallafin Umrah: kuɗin wasu", body: "Idan an riga an biya kuɗin wani sabis da ba a mayarwa ba, ragowar da za a iya mayarwa kawai za a dawo, kuma za a nuna wa mamba kuɗin da aka kashe." },
+    { title: "Yadda ake neman mayar da kuɗin Umrah", body: "Aika buƙata ta hanyar tallafi a dashboard na mamba ko shafin Tuntuɓa, tare da sunanka da lambar aikace-aikace. Za a duba buƙatar kuma mamba zai sami bayanin matsayi a kowane mataki har zuwa sakamako." },
+    { title: "Ayyukan dijital da yanar gizo", body: "Mayar da kuɗin ƙira, haɓakawa, kulawa da sauran ayyuka yana bin rubutacciyar yarjejeniyar aiki da aikin da aka riga aka yi. Za a bayyana duk kuɗin wasu da ba a mayarwa kafin biya." },
+    { title: "BK Foundations", body: "Shafukan Gidauniyar ba sa sarrafa gudummawa. Idan aka samar da tsarin tallafi, za a nuna sharuɗɗansa kafin wata mu'amala." },
+    { title: "Haƙƙoƙinka", body: "Wannan manufa tana bayyana tsarinmu a sauƙaƙe. Ba ta rage haƙƙin da doka ba ta yarda a cire ba, kuma ba ta ba da tabbaci fiye da abin da aka rubuta." },
   ]},
 };

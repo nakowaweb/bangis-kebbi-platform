@@ -10,15 +10,15 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
   "/": {
     en: {
       title: "BangisKebbi.com — Ideas, Technology, Business and People",
-      description: "BangisKebbi.com is a global platform for ideas, technology, business and people, based in Abuja, Nigeria.",
+      description: "BangisKebbi.com is a global platform for ideas, technology, business and people, based in Kebbi State, Nigeria.",
     },
     ar: {
       title: "بانجيس كيبي — أفكار وتقنية وأعمال وأشخاص",
-      description: "بانجيس كيبي منصة عالمية للأفكار والتقنية والأعمال والأشخاص، ومقرها أبوجا، نيجيريا.",
+      description: "بانجيس كيبي منصة عالمية للأفكار والتقنية والأعمال والأشخاص، ومقرها ولاية كيبي، نيجيريا.",
     },
     ha: {
       title: "BangisKebbi.com — Ra'ayoyi, Fasaha, Kasuwanci da Mutane",
-      description: "BangisKebbi.com dandali ne na duniya don ra'ayoyi, fasaha, kasuwanci da mutane, tare da cibiya a Abuja, Najeriya.",
+      description: "BangisKebbi.com dandali ne na duniya don ra'ayoyi, fasaha, kasuwanci da mutane, tare da cibiya a Jihar Kebbi, Najeriya.",
     },
   },
   "/about": {
@@ -62,9 +62,9 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
     ha: { title: "Al'umma — BangisKebbi.com", description: "Al'ummar BangisKebbi.com ga mutanen da ke gina da ra'ayoyi, fasaha da kasuwanci." },
   },
   "/contact": {
-    en: { title: "Contact — BangisKebbi.com", description: "Contact BangisKebbi.com in Abuja, Nigeria for enquiries about services, projects and the community." },
-    ar: { title: "اتصل بنا — بانجيس كيبي", description: "تواصل مع بانجيس كيبي في أبوجا، نيجيريا للاستفسار عن الخدمات والمشاريع والمجتمع." },
-    ha: { title: "Tuntuɓe Mu — BangisKebbi.com", description: "Tuntuɓi BangisKebbi.com a Abuja, Najeriya don tambayoyi kan ayyuka, aiyukan da al'umma." },
+    en: { title: "Contact — BangisKebbi.com", description: "Contact BangisKebbi.com in Kebbi State, Nigeria for enquiries about services, projects and the community." },
+    ar: { title: "اتصل بنا — بانجيس كيبي", description: "تواصل مع بانجيس كيبي في ولاية كيبي، نيجيريا للاستفسار عن الخدمات والمشاريع والمجتمع." },
+    ha: { title: "Tuntuɓe Mu — BangisKebbi.com", description: "Tuntuɓi BangisKebbi.com a Jihar Kebbi, Najeriya don tambayoyi kan ayyuka, aiyukan da al'umma." },
   },
   "/privacy": {
     en: { title: "Privacy Policy — BangisKebbi.com", description: "How BangisKebbi.com collects, uses and protects personal information." },
@@ -82,9 +82,9 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
     ha: { title: "Manufar Mayar da Kuɗi — BangisKebbi.com", description: "Manufar mayar da kuɗi da ke aiki kan ayyukan BangisKebbi.com." },
   },
   "/cv": {
-    en: { title: "Professional CV — Abubakar Alhaji Abubakar", description: "Professional profile, digital capabilities, selected work and availability in Abuja, Nigeria." },
-    ar: { title: "السيرة المهنية — أبوبكر الحاج أبوبكر", description: "الملف المهني والقدرات الرقمية والأعمال المختارة والتوفر في أبوجا، نيجيريا." },
-    ha: { title: "Tarihin Sana'a — Abubakar Alhaji Abubakar", description: "Bayanan sana'a, ƙwarewar dijital, zaɓaɓɓun ayyuka da samuwa a Abuja, Najeriya." },
+    en: { title: "Professional CV — Abubakar Alhaji Abubakar", description: "Professional profile, digital capabilities, selected work and availability in Kebbi State, Nigeria." },
+    ar: { title: "السيرة المهنية — أبوبكر الحاج أبوبكر", description: "الملف المهني والقدرات الرقمية والأعمال المختارة والتوفر في ولاية كيبي، نيجيريا." },
+    ha: { title: "Tarihin Sana'a — Abubakar Alhaji Abubakar", description: "Bayanan sana'a, ƙwarewar dijital, zaɓaɓɓun ayyuka da samuwa a Jihar Kebbi, Najeriya." },
   },
 };
 
