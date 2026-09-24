@@ -23,3 +23,9 @@
 - [x] Verify public interactions, languages, RTL, 360/390/430/desktop layouts, security boundaries, typecheck and production build
 - [ ] Verify authenticated Super Admin controls against production — blocked because the connected external production database is unreachable from this workspace
 - [ ] Confirm GitHub main synchronization — current workspace branch is not main and repository pushes are platform-managed
+## Final production polish
+- [ ] Apply confirmed contact and social links across public fallbacks and managed data defaults
+- [ ] Change saved/default public location to Kebbi State, Nigeria
+- [ ] Confirm Super Admin CMS/social controls and 50 MB video storage configuration
+- [ ] Add restrained motion with reduced-motion support
+- [ ] Verify social links, routes, mobile/desktop, TypeScript, production build, and repository status
