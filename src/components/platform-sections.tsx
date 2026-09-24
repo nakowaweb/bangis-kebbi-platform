@@ -129,7 +129,7 @@ export function HeroSection({ content, location = "Kebbi State, Nigeria", global
         <div className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
           <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar at his BangisKebbi.com workspace" width={1254} height={1254} fetchPriority="high" className="aspect-square h-auto w-full rounded-md object-contain" />
           <div className="absolute bottom-4 right-4 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur">
-             <p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p>
+             <p className="font-bold">{/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p>
           </div>
         </div>
       </div>
