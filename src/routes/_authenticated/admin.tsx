@@ -22,6 +22,7 @@ import { AdminFoundationManager } from "@/components/foundation/admin-foundation
 import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
 import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, restoreContentEntry, restoreMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
+import { CurrentSiteImporter } from "@/components/admin/current-site-importer";
 import { getAdminOverview, listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -190,6 +191,7 @@ function AdminPage() {
           <TabsContent value="notifications"><AdminNotificationManager /></TabsContent>
 
           <TabsContent value="content">
+            {workspace.data ? <CurrentSiteImporter entries={workspace.data.entries} media={workspace.data.media} onDone={refresh} /> : null}
             <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
               <section className="min-w-0">
                 <div className="mb-4 flex flex-col gap-3 sm:flex-row">
