@@ -21,6 +21,8 @@ import { AdminTranslationManager } from "@/components/admin/translation-manager"
 import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
+import { MediaUploadField } from "@/components/admin/media-upload-field";
+import { SearchConfigTest } from "@/components/admin/search-config-test";
 import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, restoreContentEntry, restoreMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { CurrentSiteImporter } from "@/components/admin/current-site-importer";
 import { getAdminOverview, listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
@@ -253,15 +255,15 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
       <Field label="Completion date"><Input type="date" value={editor.completedOn} onChange={(event) => update("completedOn", event.target.value)} /></Field>
     </div>
     <Field label="Tags / tools (comma separated)"><Input value={editor.tags} onChange={(event) => update("tags", event.target.value)} /></Field>
-    <Field label="Main image path or link"><Input value={editor.imagePath} maxLength={500} onChange={(event) => update("imagePath", event.target.value)} /></Field>
-    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">For an additional carousel image, use address hero-slide-2 through hero-slide-5 and category hero_carousel. Upload its finished founder-referenced visual in Media, paste its path here, and publish. The original first image cannot be replaced here.</p> : null}
+    <MediaUploadField label="Main image" kind="image" value={editor.imagePath} onChange={(path) => update("imagePath", path)} />
+    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">For an additional carousel image, use address hero-slide-2 through hero-slide-5 and category hero_carousel. Upload its image below and publish. The original first image cannot be replaced here.</p> : null}
     <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
     <Field label="Gallery images (comma separated links)"><Textarea value={editor.gallery} onChange={(event) => update("gallery", event.target.value)} /></Field>
     <div className="rounded-lg border border-dashed border-border p-4"><p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Video</p><div className="grid gap-3">
       <Field label="Video link (YouTube, Vimeo or https video file)"><Input value={editor.videoUrl} maxLength={500} placeholder="https://" onChange={(event) => update("videoUrl", event.target.value)} /></Field>
-      <Field label="Uploaded video path (from Media library)"><Input value={editor.videoPath} maxLength={500} onChange={(event) => update("videoPath", event.target.value)} /></Field>
+      <MediaUploadField label="Uploaded video (up to 50 MB)" kind="video" value={editor.videoPath} onChange={(path) => update("videoPath", path)} />
       <Field label="Caption / information below the video"><Textarea value={editor.videoCaption} maxLength={2000} onChange={(event) => update("videoCaption", event.target.value)} /></Field>
-      <p className="text-xs text-muted-foreground">Clear both fields to remove the video. Replace by entering a new link or path.</p>
+      <p className="text-xs text-muted-foreground">Remove both to take the video off the page. Upload a new file to replace it.</p>
     </div></div>
     <Field label="Publication date (optional)"><Input type="datetime-local" value={editor.publishedAt} onChange={(event) => update("publishedAt", event.target.value)} /></Field>
     <Field label="Project link (optional)"><Input value={editor.projectUrl} maxLength={500} placeholder="https://" onChange={(event) => update("projectUrl", event.target.value)} /></Field>
@@ -273,7 +275,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
         <Field label="Canonical link (optional)"><Input value={editor.canonicalUrl} maxLength={500} placeholder="https://" onChange={(event) => update("canonicalUrl", event.target.value)} /></Field>
         <Field label="Social title (optional)"><Input value={editor.ogTitle} maxLength={180} onChange={(event) => update("ogTitle", event.target.value)} /></Field>
         <Field label="Social description (optional)"><Textarea value={editor.ogDescription} maxLength={400} onChange={(event) => update("ogDescription", event.target.value)} /></Field>
-        <Field label="Social image path or link (optional)"><Input value={editor.ogImagePath} maxLength={500} onChange={(event) => update("ogImagePath", event.target.value)} /></Field>
+        <MediaUploadField label="Social share image (optional)" kind="image" value={editor.ogImagePath} onChange={(path) => update("ogImagePath", path)} />
         <p className="text-xs text-muted-foreground">Left empty, the page title, short description and main image are used automatically.</p>
       </div>
     </div>
@@ -300,7 +302,7 @@ function SettingsEditor({ settings, onSave }: { settings: SettingsRow; saving: b
     <Field label="Location"><Input value={form.location} maxLength={160} onChange={(e) => setForm({ ...form, location: e.target.value })} /></Field><Field label="Global status"><Input value={form.globalStatus} maxLength={160} onChange={(e) => setForm({ ...form, globalStatus: e.target.value })} /></Field>
     <Field label="Contact email"><Input type="email" value={form.contactEmail} maxLength={254} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} /></Field><Field label="Phone"><Input value={form.phone} maxLength={40} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
     <Field label="WhatsApp"><Input value={form.whatsapp} maxLength={40} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} /></Field><Field label="Default language"><Select value={form.defaultLanguage} onValueChange={(value) => setForm({ ...form, defaultLanguage: value as "en" | "ha" | "ar" })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ha">Hausa</SelectItem><SelectItem value="ar">Arabic</SelectItem></SelectContent></Select></Field>
-  </div><Field label="Footer statement"><Textarea value={form.footerContent} maxLength={500} onChange={(e) => setForm({ ...form, footerContent: e.target.value })} /></Field><Field label="SEO title"><Input value={form.seoTitle} maxLength={180} onChange={(e) => setForm({ ...form, seoTitle: e.target.value })} /></Field><Field label="SEO description"><Textarea value={form.seoDescription} maxLength={500} onChange={(e) => setForm({ ...form, seoDescription: e.target.value })} /></Field><div className="rounded-lg border border-border p-4"><p className="text-xs font-bold uppercase text-primary">Search provider</p><p className="mt-1 text-sm font-semibold">Google Programmable Search Engine</p><div className="mt-3"><Field label="Search Engine ID / CX"><Input value={form.googleSearchCx} maxLength={200} placeholder="Leave empty until configured" onChange={(e) => setForm({ ...form, googleSearchCx: e.target.value })} /></Field></div><p className="mt-2 text-xs text-muted-foreground">This public configuration value enables Web Search. Site Search works independently.</p></div><Button type="submit" disabled={busy}><Save /> {busy ? "Saving…" : "Save settings"}</Button></form>;
+  </div><Field label="Footer statement"><Textarea value={form.footerContent} maxLength={500} onChange={(e) => setForm({ ...form, footerContent: e.target.value })} /></Field><Field label="SEO title"><Input value={form.seoTitle} maxLength={180} onChange={(e) => setForm({ ...form, seoTitle: e.target.value })} /></Field><Field label="SEO description"><Textarea value={form.seoDescription} maxLength={500} onChange={(e) => setForm({ ...form, seoDescription: e.target.value })} /></Field><div className="rounded-lg border border-border p-4"><p className="text-xs font-bold uppercase text-primary">Search provider</p><div className="mt-1 flex flex-wrap items-center justify-between gap-2"><p className="text-sm font-semibold">Google Programmable Search Engine (default web search)</p><Badge variant={form.googleSearchCx.trim() ? "default" : "secondary"}>{form.googleSearchCx.trim() ? "Configured" : "Not configured"}</Badge></div><div className="mt-3"><Field label="Search Engine ID / CX"><Input value={form.googleSearchCx} maxLength={200} placeholder="e.g. 0123456789abcdef0" onChange={(e) => setForm({ ...form, googleSearchCx: e.target.value })} /></Field></div><SearchConfigTest cx={form.googleSearchCx} /><p className="mt-2 text-xs text-muted-foreground">Create a search engine at programmablesearchengine.google.com, copy its Search engine ID here, test it, then save. Site Search works independently.</p></div><Button type="submit" disabled={busy}><Save /> {busy ? "Saving…" : "Save settings"}</Button></form>;
 }
 
 type RegisterMedia = ReturnType<typeof useServerFn<typeof registerMediaAsset>>;
