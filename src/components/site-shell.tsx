@@ -46,13 +46,21 @@ function ShellBody({ children }: { children: ReactNode }) {
 }
 
 function useSignedIn() {
-  const [signedIn, setSignedIn] = useState(false);
+  const [state, setState] = useState({ signedIn: false, isAdmin: false });
   useEffect(() => {
-    void supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
-    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => setSignedIn(Boolean(session)));
-    return () => subscription.subscription.unsubscribe();
+    let active = true;
+    async function resolve(userId: string | undefined) {
+      if (!userId) { if (active) setState({ signedIn: false, isAdmin: false }); return; }
+      if (active) setState((current) => ({ ...current, signedIn: true }));
+      // Display hint only — /admin is enforced by its route guard and server-side role checks.
+      const { data } = await supabase.rpc("is_platform_admin", { _user_id: userId });
+      if (active) setState({ signedIn: true, isAdmin: Boolean(data) });
+    }
+    void supabase.auth.getSession().then(({ data }) => resolve(data.session?.user.id));
+    const { data: subscription } = supabase.auth.onAuthStateChange((_event, session) => { void resolve(session?.user.id); });
+    return () => { active = false; subscription.subscription.unsubscribe(); };
   }, []);
-  return signedIn;
+  return state;
 }
 
 /** Enabled official links, loaded once and cached for the whole session. */
