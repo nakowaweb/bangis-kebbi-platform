@@ -41,3 +41,11 @@
 - [x] Pass TypeScript and production builds; pass public route, image, overflow, link and console checks at 360px and 1280px
 - [ ] Verify signed-in Super Admin changes and save production location/social/credential rows — blocked because this workspace has no production data connection
 - [ ] Push the generated commit to GitHub main — blocked because repository synchronization is platform-managed and main remains behind the workspace commit
+
+## Final functional polish
+- [x] Add a five-slide hero carousel with visible crossfade/slide motion, controls, indicators, pause, swipe and reduced-motion support
+- [x] Add public-only global Site Search with built-in and CMS content, credential matching, images and direct links
+- [x] Add optional Google Programmable Search Engine CX configuration with a graceful unconfigured state
+- [x] Update the initial CAC credential facts without fabricating the official certificate
+- [ ] Verify authenticated Super Admin changes against production — blocked because this workspace has no production data connection
+- [ ] Synchronize the final workspace commit to GitHub main — repository publishing remains platform-managed
