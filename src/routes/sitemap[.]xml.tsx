@@ -2,6 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { hreflangOrder } from "@/lib/i18n/dictionary";
 import { createPublicSupabase } from "@/lib/public-content.server";
+import { articles, projects, services } from "@/lib/portfolio-content";
 
 const STATIC_PATHS = [
   "/",
@@ -14,6 +15,7 @@ const STATIC_PATHS = [
   "/community",
   "/blog",
   "/contact",
+  "/cv",
   "/privacy",
   "/terms",
   "/refund-policy",
@@ -29,8 +31,8 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         const client = createPublicSupabase();
         const [{ data: entries }, { data: foundationProjects }] = await Promise.all([
-          client.from("content_entries").select("content_type,slug,updated_at").in("content_type", ["service", "project", "blog_post"]).limit(1000),
-          client.from("foundation_projects").select("slug,updated_at").limit(1000),
+           client.from("content_entries").select("content_type,slug,updated_at").in("content_type", ["service", "project", "blog_post"]).eq("status", "published").eq("is_enabled", true).is("deleted_at", null).limit(1000),
+           client.from("foundation_projects").select("slug,updated_at").eq("is_published", true).is("archived_at", null).limit(1000),
         ]);
 
         const dynamic = [
@@ -45,8 +47,11 @@ export const Route = createFileRoute("/sitemap.xml")({
         // member Umrah routes) are deliberately absent — only public pages are listed.
         const pages = [
           ...STATIC_PATHS.map((path) => ({ loc: path, lastmod: null as string | null })),
+          ...services.map((item) => ({ loc: `/services/${item.slug}`, lastmod: null as string | null })),
+          ...projects.map((item) => ({ loc: `/projects/${item.slug}`, lastmod: null as string | null })),
+          ...articles.map((item) => ({ loc: `/blog/${item.slug}`, lastmod: null as string | null })),
           ...dynamic,
-        ];
+        ].filter((page, index, all) => all.findIndex((candidate) => candidate.loc === page.loc) === index);
 
         const localized = (path: string, code: string) => `${origin}${path}${code === "en" ? "" : `${path.includes("?") ? "&" : "?"}lang=${code}`}`;
         const escape = (value: string) => value.replaceAll("&", "&amp;");

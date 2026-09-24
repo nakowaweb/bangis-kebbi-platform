@@ -303,6 +303,7 @@ function SiteFooter() {
                 {t(key)}
               </Link>
             ))}
+            <Link to="/cv" className="text-muted-foreground transition-colors hover:text-primary">CV</Link>
           </div>
         </div>
         <div>

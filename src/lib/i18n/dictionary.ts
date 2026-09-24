@@ -123,7 +123,7 @@ const en = {
   "home.umrah.action": "Explore Umrah Support",
   "home.foundation.eyebrow": "BK Foundations",
   "home.foundation.title": "Supporting people and communities.",
-  "home.foundation.description": "Community support initiatives designed for transparent help—not investment, profit sharing or promised returns.",
+  "home.foundation.description": "Community support initiatives designed for practical help, dignity and accountable public updates.",
   "home.foundation.action": "Support an Initiative",
   "home.activities.eyebrow": "Latest activities / video",
   "home.activities.title": "See what the platform is doing.",
@@ -192,7 +192,7 @@ const en = {
   // Business
   "business.eyebrow": "Business & Opportunities",
   "business.title": "Connection without borders.",
-  "business.description": "Digital services, business networking and legitimate opportunities—never investment returns or financial promises.",
+  "business.description": "Digital services, business networking and legitimate professional opportunities built on clear communication.",
   "business.cardDetail": "A practical pathway for trusted connection and progress.",
   "business.cat.digitalServices": "Digital Services",
   "business.cat.networking": "Business Networking",
@@ -251,7 +251,7 @@ const en = {
 
   // BK Foundations public page
   "foundation.heroTitle": "Community support, done openly.",
-  "foundation.heroSummary": "BK Foundations is the community and humanitarian side of BangisKebbi.com. It is not an investment programme and offers no financial returns.",
+  "foundation.heroSummary": "BK Foundations is the community and humanitarian side of BangisKebbi.com, focused on practical help and accountable updates.",
   "foundation.joinCommunity": "Join the community",
   "foundation.contactFoundation": "Contact BK Foundations",
   "foundation.mission": "Mission",
@@ -394,7 +394,7 @@ const en = {
   "umrah.previewAction": "Explore Umrah Support",
   "foundation.previewEyebrow": "BK Foundations",
   "foundation.previewTitle": "Supporting people and communities.",
-  "foundation.previewDescription": "Community contribution initiatives designed for transparent support—not investment, profit sharing or promised returns.",
+  "foundation.previewDescription": "Community initiatives designed for practical support, dignity and transparent updates.",
   "foundation.previewAction": "Support an Initiative",
 
 } as const;

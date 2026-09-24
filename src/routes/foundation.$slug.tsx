@@ -103,7 +103,7 @@ function FoundationProjectPage() {
         </section>
 
         <p className="mt-10 rounded-lg border border-border bg-secondary p-4 text-xs text-muted-foreground">
-          BK Foundations is a community support programme. It is not an investment, and it offers no financial returns.
+          BK Foundations is a community support programme focused on practical help, dignity and accountable updates.
         </p>
       </div>
     </main>

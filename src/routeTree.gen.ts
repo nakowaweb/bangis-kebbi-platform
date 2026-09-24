@@ -16,6 +16,7 @@ import { Route as BlogRouteImport } from './routes/blog'
 import { Route as BusinessRouteImport } from './routes/business'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ContactRouteImport } from './routes/contact'
+import { Route as CvRouteImport } from './routes/cv'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FoundationRouteImport } from './routes/foundation'
 import { Route as LoginRouteImport } from './routes/login'
@@ -36,7 +37,6 @@ import { Route as FoundationIndexRouteImport } from './routes/foundation.index'
 import { Route as FoundationSlugRouteImport } from './routes/foundation.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
 import { Route as ProjectsSlugRouteImport } from './routes/projects.$slug'
-import { Route as ProjectsBangiskebbiComRouteImport } from './routes/projects.bangiskebbi-com'
 import { Route as ServicesIndexRouteImport } from './routes/services.index'
 import { Route as ServicesSlugRouteImport } from './routes/services.$slug'
 
@@ -72,6 +72,11 @@ const CommunityRoute = CommunityRouteImport.update({
 const ContactRoute = ContactRouteImport.update({
   id: '/contact',
   path: '/contact',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CvRoute = CvRouteImport.update({
+  id: '/cv',
+  path: '/cv',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
@@ -174,11 +179,6 @@ const ProjectsSlugRoute = ProjectsSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => ProjectsRoute,
 } as any)
-const ProjectsBangiskebbiComRoute = ProjectsBangiskebbiComRouteImport.update({
-  id: '/bangiskebbi-com',
-  path: '/bangiskebbi-com',
-  getParentRoute: () => ProjectsRoute,
-} as any)
 const ServicesIndexRoute = ServicesIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -197,6 +197,7 @@ export interface FileRoutesByFullPath {
   '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
+  '/cv': typeof CvRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
@@ -214,7 +215,6 @@ export interface FileRoutesByFullPath {
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/foundation/': typeof FoundationIndexRoute
@@ -227,6 +227,7 @@ export interface FileRoutesByTo {
   '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
+  '/cv': typeof CvRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
   '/privacy': typeof PrivacyRoute
@@ -241,7 +242,6 @@ export interface FileRoutesByTo {
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog': typeof BlogIndexRoute
   '/foundation': typeof FoundationIndexRoute
@@ -257,6 +257,7 @@ export interface FileRoutesById {
   '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
+  '/cv': typeof CvRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
@@ -274,7 +275,6 @@ export interface FileRoutesById {
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
-  '/projects/bangiskebbi-com': typeof ProjectsBangiskebbiComRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
   '/foundation/': typeof FoundationIndexRoute
@@ -290,6 +290,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/community'
     | '/contact'
+    | '/cv'
     | '/forgot-password'
     | '/foundation'
     | '/login'
@@ -307,7 +308,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
-    | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog/'
     | '/foundation/'
@@ -320,6 +320,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/community'
     | '/contact'
+    | '/cv'
     | '/forgot-password'
     | '/login'
     | '/privacy'
@@ -334,7 +335,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
-    | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog'
     | '/foundation'
@@ -349,6 +349,7 @@ export interface FileRouteTypes {
     | '/business'
     | '/community'
     | '/contact'
+    | '/cv'
     | '/forgot-password'
     | '/foundation'
     | '/login'
@@ -366,7 +367,6 @@ export interface FileRouteTypes {
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
-    | '/projects/bangiskebbi-com'
     | '/services/$slug'
     | '/blog/'
     | '/foundation/'
@@ -382,6 +382,7 @@ export interface RootRouteChildren {
   BusinessRoute: typeof BusinessRoute
   CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
+  CvRoute: typeof CvRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   FoundationRoute: typeof FoundationRouteWithChildren
   LoginRoute: typeof LoginRoute
@@ -445,6 +446,13 @@ declare module '@tanstack/react-router' {
       path: '/contact'
       fullPath: '/contact'
       preLoaderRoute: typeof ContactRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cv': {
+      id: '/cv'
+      path: '/cv'
+      fullPath: '/cv'
+      preLoaderRoute: typeof CvRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/forgot-password': {
@@ -587,13 +595,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ProjectsSlugRouteImport
       parentRoute: typeof ProjectsRoute
     }
-    '/projects/bangiskebbi-com': {
-      id: '/projects/bangiskebbi-com'
-      path: '/bangiskebbi-com'
-      fullPath: '/projects/bangiskebbi-com'
-      preLoaderRoute: typeof ProjectsBangiskebbiComRouteImport
-      parentRoute: typeof ProjectsRoute
-    }
     '/services/': {
       id: '/services/'
       path: '/'
@@ -652,13 +653,11 @@ const FoundationRouteWithChildren = FoundationRoute._addFileChildren(
 
 interface ProjectsRouteChildren {
   ProjectsSlugRoute: typeof ProjectsSlugRoute
-  ProjectsBangiskebbiComRoute: typeof ProjectsBangiskebbiComRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
 }
 
 const ProjectsRouteChildren: ProjectsRouteChildren = {
   ProjectsSlugRoute: ProjectsSlugRoute,
-  ProjectsBangiskebbiComRoute: ProjectsBangiskebbiComRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
 }
 
@@ -688,6 +687,7 @@ const rootRouteChildren: RootRouteChildren = {
   BusinessRoute: BusinessRoute,
   CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,
+  CvRoute: CvRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   FoundationRoute: FoundationRouteWithChildren,
   LoginRoute: LoginRoute,

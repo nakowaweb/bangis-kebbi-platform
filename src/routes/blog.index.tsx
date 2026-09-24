@@ -40,7 +40,8 @@ export const Route = createFileRoute("/blog/")({
 function BlogPage() {
   const loadedPosts = Route.useLoaderData();
   const { language } = useLanguage();
-  const posts = loadedPosts.length ? loadedPosts : fallbackArticles.map((post) => ({ id: post.slug, slug: post.slug, title: text(post.title, language), category: text(post.category, language), summary: text(post.summary, language), imageUrl: post.image, image_alt: text(post.title, language), author: post.author, published_at: null }));
+  const cmsSlugs = new Set(loadedPosts.map((item) => item.slug));
+  const posts = [...loadedPosts, ...fallbackArticles.filter((item) => !cmsSlugs.has(item.slug)).map((post) => ({ id: post.slug, slug: post.slug, title: text(post.title, language), category: text(post.category, language), summary: text(post.summary, language), imageUrl: post.image, image_alt: text(post.title, language), author: post.author, published_at: null }))];
 
   return (
     <main>

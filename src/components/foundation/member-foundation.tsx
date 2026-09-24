@@ -33,7 +33,7 @@ export function MemberFoundationPanel() {
         <CardHeader className="pb-3">
           <div className="flex items-center gap-2 text-brand-green"><HandHeart className="h-5 w-5" /><CardTitle className="text-lg">BK Foundations</CardTitle></div>
           <CardDescription>
-            Community support projects and published updates. BK Foundations is a community programme, not an investment.
+            Community support projects and published updates focused on practical help and accountable delivery.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">

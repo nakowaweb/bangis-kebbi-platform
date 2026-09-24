@@ -135,7 +135,7 @@ export const getAdminWorkspace = createServerFn({ method: "GET" })
     const [{ data: settings }, { data: entries }, { data: media }, { data: audit }] = await Promise.all([
       context.supabase.from("site_settings").select("*").eq("setting_key", "primary").single(),
       context.supabase.from("content_entries").select("*").order("updated_at", { ascending: false }).limit(100),
-      context.supabase.from("media_assets").select("*").is("deleted_at", null).order("created_at", { ascending: false }).limit(60),
+       context.supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(60),
       context.supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(50),
     ]);
     return { settings, entries: entries ?? [], media: media ?? [], audit: audit ?? [], userId: context.userId };
@@ -192,6 +192,55 @@ export const archiveContentEntry = createServerFn({ method: "POST" })
     await requireContentAdmin(context);
     const { error } = await context.supabase.from("content_entries").update({ status: "archived", deleted_at: new Date().toISOString(), updated_by: context.userId }).eq("id", data.id);
     if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
+export const restoreContentEntry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: restored, error } = await context.supabase.from("content_entries").update({ status: "draft", deleted_at: null, published_at: null, updated_by: context.userId }).eq("id", data.id).select("id,title").single();
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "restored content", content_type: "content", content_id: restored.id, content_label: restored.title });
+    return restored;
+  });
+
+export const deleteContentEntry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: roles, error: roleError } = await context.supabase.from("user_roles").select("role").eq("user_id", context.userId).eq("role", "super_admin");
+    if (roleError || !roles?.length) throw new Error("Super Admin access is required to permanently delete content.");
+    const { data: row, error: readError } = await context.supabase.from("content_entries").select("id,title,status,deleted_at").eq("id", data.id).single();
+    if (readError) throw new Error(readError.message);
+    if (row.status !== "archived" || !row.deleted_at) throw new Error("Archive this item before permanently deleting it.");
+    const { error } = await context.supabase.from("content_entries").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "permanently deleted content", content_type: "content", content_id: row.id, content_label: row.title });
+    return { ok: true };
+  });
+
+export const archiveMediaAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: media, error } = await context.supabase.from("media_assets").update({ deleted_at: new Date().toISOString() }).eq("id", data.id).select("id,name").single();
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "archived media", content_type: "media", content_id: media.id, content_label: media.name });
+    return { ok: true };
+  });
+
+export const restoreMediaAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: media, error } = await context.supabase.from("media_assets").update({ deleted_at: null }).eq("id", data.id).select("id,name").single();
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "restored media", content_type: "media", content_id: media.id, content_label: media.name });
     return { ok: true };
   });
 
