@@ -166,7 +166,7 @@ function HeroCarousel({ location, globalStatus }: { location: string; globalStat
         <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-3 top-1/2 z-20 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground hover:bg-brand-ink" aria-label="Previous hero slide"><ChevronLeft /></Button>
         <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-3 top-1/2 z-20 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground hover:bg-brand-ink" aria-label="Next hero slide"><ChevronRight /></Button>
       </div>
-      <div className="mt-3 flex items-center justify-center gap-2" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <button key={slide.label} type="button" onClick={() => setActive(index)} className={`h-2.5 rounded-full transition-all ${active === index ? "w-7 bg-brand-cyan" : "w-2.5 bg-primary-foreground/35 hover:bg-primary-foreground/60"}`} aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined} />)}</div>
+      <div className="mt-2 flex items-center justify-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-2.5 rounded-full transition-all ${active === index ? "w-6 bg-brand-cyan" : "w-2.5 bg-primary-foreground/35"}`} /></Button>)}</div>
     </div>
   );
 }

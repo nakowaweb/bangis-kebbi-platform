@@ -12,7 +12,7 @@ export type SiteSearchResult = {
   imageUrl: string | null;
 };
 
-const routeFor = (type: string, slug: string) => {
+const routeFor = (type: string, slug: string, category: string | null) => {
   if (type === "service") return `/services/${slug}`;
   if (type === "project") return `/projects/${slug}`;
   if (type === "blog_post") return `/blog/${slug}`;
@@ -22,7 +22,7 @@ const routeFor = (type: string, slug: string) => {
   if (type === "contact") return "/contact";
   if (type === "about" && slug === "professional-cv") return "/cv";
   if (type === "about") return "/about";
-  if (type === "business" && slug.includes("credential")) return "/#company-credentials";
+  if (type === "business" && category === "company_credential") return "/#company-credentials";
   if (type === "business") return "/business";
   if (type === "footer" && slug === "privacy-policy") return "/privacy";
   if (type === "footer" && slug === "terms-of-use") return "/terms";
@@ -63,7 +63,7 @@ export const searchPublicSite = createServerFn({ method: "GET" })
           title: row.title,
           category: categoryFor(row.content_type, row.category),
           snippet: row.summary || credentialText || row.body?.slice(0, 180) || "Open this page on BangisKebbi.com.",
-          url: routeFor(row.content_type, row.slug),
+          url: routeFor(row.content_type, row.slug, row.category),
           imageUrl: mediaUrl(row.image_path, signed),
         };
       });
