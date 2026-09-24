@@ -45,7 +45,7 @@ const summaries: Record<string, LocalizedText> = {
 export const services: ServiceDefinition[] = serviceBase.map(([slug, en, ar, ha], index) => ({
   slug,
   title: { en, ar, ha },
-  summary: summaries[slug],
+  summary: summaries[slug] ?? summaries["web-development"] ?? { en: "Professional digital service.", ar: "خدمة رقمية احترافية.", ha: "Sabis na dijital na ƙwararru." },
   image: serviceVisuals[index] ?? businessImage,
   imageAlt: { en: `${en} service concept`, ar: `تصور لخدمة ${ar}`, ha: `Hoton tsarin sabis na ${ha}` },
   canDo: {
