@@ -56,16 +56,14 @@ function CredentialCard({ credential }: { credential: PublicCredential }) {
       </dl>
       {credential.description ? <p className="mt-4 flex-1 text-sm leading-6 text-muted-foreground">{credential.description}</p> : <span className="flex-1" />}
       <div className="mt-5 flex flex-wrap gap-2">
-        {credential.documentUrl ? (
-          <Dialog>
+        <Dialog>
             <DialogTrigger asChild><Button><FileBadge2 /> View Certificate</Button></DialogTrigger>
             <DialogContent className="h-[90vh] max-w-5xl grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
               <DialogHeader><DialogTitle>{credential.title}</DialogTitle><DialogDescription>{credential.organization}</DialogDescription></DialogHeader>
-              {image ? <img src={credential.documentUrl} alt={credential.title} className="h-full w-full object-contain" /> : <iframe title={credential.title} src={credential.documentUrl} className="h-full min-h-0 w-full border-0" />}
-              <a href={credential.documentUrl} target="_blank" rel="noopener noreferrer" className="absolute right-12 top-4 text-muted-foreground" aria-label="Open certificate in a new tab" title="Open in a new tab"><ExternalLink className="h-4 w-4" /></a>
+              {credential.documentUrl ? (image ? <img src={credential.documentUrl} alt={credential.title} className="h-full w-full object-contain" /> : <iframe title={credential.title} src={credential.documentUrl} className="h-full min-h-0 w-full border-0" />) : <div className="grid h-full place-items-center rounded-md border border-dashed border-border bg-secondary p-8 text-center"><div><FileBadge2 className="mx-auto h-10 w-10 text-primary" /><p className="mt-4 font-semibold">The official certificate document has not been uploaded yet.</p><p className="mt-2 text-sm text-muted-foreground">Use the independent CAC public search to check the registration information.</p></div></div>}
+              {credential.documentUrl ? <a href={credential.documentUrl} target="_blank" rel="noopener noreferrer" className="absolute right-12 top-4 text-muted-foreground" aria-label="Open certificate in a new tab" title="Open in a new tab"><ExternalLink className="h-4 w-4" /></a> : null}
             </DialogContent>
           </Dialog>
-        ) : <Button variant="outline" disabled><FileBadge2 /> Certificate not uploaded</Button>}
         {credential.verificationUrl ? <Button variant="outline" asChild><a href={credential.verificationUrl} target="_blank" rel="noopener noreferrer"><Search /> Verify</a></Button> : null}
       </div>
     </article>

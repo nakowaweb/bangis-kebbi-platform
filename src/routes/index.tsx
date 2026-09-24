@@ -14,6 +14,7 @@ import {
 } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
+import { CompanyCredentials } from "@/components/company-credentials";
 import { getPublicContent } from "@/lib/content.functions";
 import heroImageSrc from "@/assets/bangis-official-hero.webp";
 const heroImage = { url: heroImageSrc };
@@ -79,6 +80,7 @@ function Index() {
       <UmrahSection title={section("umrah")?.title} description={section("umrah")?.summary ?? undefined} />
       <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} />
       <LatestActivitiesSection />
+      <CompanyCredentials />
       <ContactSection />
     </main>
   );

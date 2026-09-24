@@ -1,7 +1,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Archive, ExternalLink, FileBadge2, Plus, RotateCcw, Save, Trash2, Upload } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
-import { useMemo, useState, type FormEvent } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
@@ -47,4 +47,4 @@ export function AdminCredentialManager({ entries, onChanged }: { entries: Entry[
   </div>;
 }
 
-function Field({ label, children }: { label: string; children: React.ReactNode }) { return <label className="grid gap-1.5"><Label asChild><span>{label}</span></Label>{children}</label>; }
+function Field({ label, children }: { label: string; children: ReactNode }) { return <label className="grid gap-1.5"><Label asChild><span>{label}</span></Label>{children}</label>; }

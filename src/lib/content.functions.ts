@@ -295,6 +295,6 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
       uploaded_by: context.userId,
     }).select("*").single();
     if (error) throw new Error(error.message);
-    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "uploaded image", content_type: "media", content_id: saved.id, content_label: saved.name });
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "uploaded media", content_type: "media", content_id: saved.id, content_label: saved.name });
     return saved;
   });

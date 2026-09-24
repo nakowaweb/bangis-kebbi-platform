@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, Bell, Eye, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, RotateCcw, Save, Settings, Share2, ShieldCheck, Trash2, Upload, Users } from "lucide-react";
+import { Archive, BadgeCheck, Bell, Eye, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, RotateCcw, Save, Settings, Share2, ShieldCheck, Trash2, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -16,6 +16,7 @@ import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
 import { AdminSocialManager } from "@/components/admin/social-manager";
+import { AdminCredentialManager } from "@/components/admin/credential-manager";
 import { AdminTranslationManager } from "@/components/admin/translation-manager";
 import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
@@ -176,6 +177,7 @@ function AdminPage() {
             <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
             <TabsTrigger value="languages"><Languages /> Languages</TabsTrigger>
             <TabsTrigger value="social"><Share2 /> Social links</TabsTrigger>
+            <TabsTrigger value="credentials"><BadgeCheck /> Credentials</TabsTrigger>
             <TabsTrigger value="members"><Users /> Members</TabsTrigger>
             <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
             <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
@@ -217,6 +219,7 @@ function AdminPage() {
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="languages"><AdminTranslationManager /></TabsContent>
           <TabsContent value="social"><AdminSocialManager /></TabsContent>
+          <TabsContent value="credentials"><AdminCredentialManager entries={(workspace.data?.entries ?? []).filter((entry) => entry.content_type === "business" && entry.category === "company_credential")} onChanged={refresh} /></TabsContent>
           <TabsContent value="umrah"><AdminUmrahManager /></TabsContent>
           <TabsContent value="foundations"><AdminFoundationManager /></TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
@@ -302,7 +305,7 @@ function MediaManager({ media, registerMedia, onChanged }: { media: Awaited<Retu
   const [uploading, setUploading] = useState(false);
   const archiveMedia = useServerFn(archiveMediaAsset);
   const restoreMedia = useServerFn(restoreMediaAsset);
-  async function upload(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const input = event.currentTarget.elements.namedItem("media") as HTMLInputElement | null; const file = input?.files?.[0]; if (!file) return; if (file.size > (file.type.startsWith("video/") ? 52428800 : 10485760) || !["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"].includes(file.type)) { toast.error("Choose a supported image (10 MB) or MP4/WebM/MOV video (50 MB)."); return; } setUploading(true); const safeName = file.name.toLowerCase().replace(/[^a-z0-9.-]/g, "-"); const path = `${crypto.randomUUID()}-${safeName}`; const { error } = await supabase.storage.from("site-media").upload(path, file, { contentType: file.type, upsert: false }); if (error) { toast.error(error.message); setUploading(false); return; } try { await registerMedia({ data: { name: file.name, storagePath: path, mimeType: file.type as "image/jpeg", altText: "", byteSize: file.size } }); toast.success("File uploaded to the media library — copy its path into the content editor"); onChanged(); } catch (errorValue) { await supabase.storage.from("site-media").remove([path]); toast.error(errorValue instanceof Error ? errorValue.message : "Upload could not be recorded"); } setUploading(false); }
+  async function upload(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const input = event.currentTarget.elements.namedItem("media") as HTMLInputElement | null; const file = input?.files?.[0]; if (!file) return; if (file.size > (file.type.startsWith("video/") ? 52428800 : 10485760) || !["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"].includes(file.type)) { toast.error("Choose a supported image (10 MB) or MP4/WebM/MOV video (50 MB)."); return; } setUploading(true); const safeName = file.name.toLowerCase().replace(/[^a-z0-9.-]/g, "-"); const path = `${crypto.randomUUID()}-${safeName}`; const { error } = await supabase.storage.from("site-media").upload(path, file, { contentType: file.type, upsert: false }); if (error) { toast.error(error.message); setUploading(false); return; } try { await registerMedia({ data: { name: file.name, storagePath: path, mimeType: file.type as "image/jpeg" | "image/png" | "image/webp" | "image/avif" | "image/svg+xml" | "video/mp4" | "video/webm" | "video/quicktime", altText: "", byteSize: file.size } }); toast.success("File uploaded to the media library — copy its path into the content editor"); onChanged(); } catch (errorValue) { await supabase.storage.from("site-media").remove([path]); toast.error(errorValue instanceof Error ? errorValue.message : "Upload could not be recorded"); } setUploading(false); }
   return <section><form onSubmit={upload} className="mb-5 flex flex-col gap-3 rounded-lg border border-border bg-card p-5 sm:flex-row sm:items-end"><Field label="Upload image or video"><Input name="media" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml,video/mp4,video/webm,video/quicktime" required /></Field><Button type="submit" disabled={uploading}><Upload /> {uploading ? "Uploading…" : "Upload"}</Button></form><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{media.length === 0 ? <EmptyState text="No dashboard media has been uploaded." /> : media.map((item) => <article key={item.id} className="rounded-lg border border-border bg-card p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><strong className="block truncate text-sm">{item.name}</strong><span className="text-xs text-muted-foreground">{Math.round(item.byte_size / 1024)} KB · Used {item.usage_count} times</span></div>{item.deleted_at ? <Badge variant="secondary">Archived</Badge> : item.is_protected ? <Badge><ShieldCheck /> Protected</Badge> : null}</div><p className="mt-3 truncate text-xs text-muted-foreground">{item.storage_path}</p><Button size="sm" variant="outline" className="mt-4" onClick={async () => { try { if (item.deleted_at) { await restoreMedia({ data: { id: item.id } }); toast.success("Media restored"); } else { await archiveMedia({ data: { id: item.id } }); toast.success("Media archived"); } onChanged(); } catch (error) { toast.error(error instanceof Error ? error.message : "Media could not be updated"); } }}>{item.deleted_at ? <><RotateCcw /> Restore</> : <><Archive /> Archive</>}</Button></article>)}</div></section>;
 }
 
