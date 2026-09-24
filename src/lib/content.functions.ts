@@ -179,7 +179,6 @@ export const saveContentEntry = createServerFn({ method: "POST" })
       scheduled_for: data.scheduledFor || null,
       published_at: data.status === "published" ? (data.publishedAt || data.scheduledFor || new Date().toISOString()) : (data.publishedAt || null),
       payload: data.payload as Json,
-      social_links: { googleSearchCx: data.googleSearchCx },
       updated_by: context.userId,
       deleted_at: data.status === "archived" ? new Date().toISOString() : null,
     };
@@ -267,6 +266,7 @@ export const saveSiteSettings = createServerFn({ method: "POST" })
       default_language: data.defaultLanguage,
       seo_title: data.seoTitle,
       seo_description: data.seoDescription,
+      social_links: { googleSearchCx: data.googleSearchCx },
       updated_by: context.userId,
     }).eq("id", data.id).select("*").single();
     if (error) throw new Error(error.message);
