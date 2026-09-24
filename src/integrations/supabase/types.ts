@@ -826,6 +826,7 @@ export type Database = {
           application_number: string
           city: string | null
           country_of_residence: string | null
+          state_region: string | null
           created_at: string
           date_of_birth: string | null
           email: string | null
@@ -855,6 +856,7 @@ export type Database = {
           application_number?: string
           city?: string | null
           country_of_residence?: string | null
+          state_region?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string | null
@@ -884,6 +886,7 @@ export type Database = {
           application_number?: string
           city?: string | null
           country_of_residence?: string | null
+          state_region?: string | null
           created_at?: string
           date_of_birth?: string | null
           email?: string | null

@@ -61,7 +61,7 @@ export function umrahFileExtension(name: string): string {
 
 /** Columns a member is allowed to read — internal_note is deliberately excluded. */
 const memberColumns =
-  "id,user_id,application_number,status,full_name,date_of_birth,phone,email,nationality,country_of_residence,city,passport_number,passport_issue_date,passport_expiry_date,passport_issuing_country,emergency_contact_name,emergency_contact_phone,emergency_contact_relationship,preferred_travel_period,travel_notes,member_notes,admin_message,submitted_at,created_at,updated_at";
+  "id,user_id,application_number,status,full_name,date_of_birth,phone,email,nationality,country_of_residence,state_region,city,passport_number,passport_issue_date,passport_expiry_date,passport_issuing_country,emergency_contact_name,emergency_contact_phone,emergency_contact_relationship,preferred_travel_period,travel_notes,member_notes,admin_message,submitted_at,created_at,updated_at";
 
 const optionalText = (max: number) => z.string().trim().max(max).optional().default("");
 const optionalDate = z
@@ -79,6 +79,7 @@ const applicationInput = z.object({
   email: z.string().trim().max(160).email().or(z.literal("")).default(""),
   nationality: optionalText(80),
   countryOfResidence: optionalText(80),
+  stateRegion: optionalText(120),
   city: optionalText(80),
   passportNumber: optionalText(40),
   passportIssueDate: optionalDate,
@@ -101,6 +102,7 @@ function toRow(data: z.infer<typeof applicationInput>) {
     email: nullable(data.email),
     nationality: nullable(data.nationality),
     country_of_residence: nullable(data.countryOfResidence),
+    state_region: nullable(data.stateRegion),
     city: nullable(data.city),
     passport_number: nullable(data.passportNumber),
     passport_issue_date: nullable(data.passportIssueDate ?? ""),

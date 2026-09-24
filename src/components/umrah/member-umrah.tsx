@@ -28,6 +28,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
+import { CountryRegionFields, CountrySelect } from "@/components/umrah/country-region-select";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -313,6 +314,7 @@ function ApplicationForm({
       email: value("email"),
       nationality: value("nationality"),
       countryOfResidence: value("countryOfResidence"),
+      stateRegion: value("stateRegion"),
       city: value("city"),
       passportNumber: value("passportNumber"),
       passportIssueDate: value("passportIssueDate"),
@@ -356,12 +358,16 @@ function ApplicationForm({
           <Field label="Email">
             <Input name="email" type="email" defaultValue={field("email")} maxLength={160} disabled={!canEdit} />
           </Field>
-          <Field label="Nationality">
-            <Input name="nationality" defaultValue={field("nationality")} maxLength={80} disabled={!canEdit} />
+          <Field label="Nationality (country)">
+            <CountrySelect name="nationality" defaultValue={field("nationality")} disabled={!canEdit} />
           </Field>
-          <Field label="Country of residence">
-            <Input name="countryOfResidence" defaultValue={field("country_of_residence")} maxLength={80} disabled={!canEdit} />
-          </Field>
+          <CountryRegionFields
+            countryName="countryOfResidence"
+            regionName="stateRegion"
+            defaultCountry={field("country_of_residence")}
+            defaultRegion={field("state_region")}
+            disabled={!canEdit}
+          />
           <Field label="City">
             <Input name="city" defaultValue={field("city")} maxLength={80} disabled={!canEdit} />
           </Field>
@@ -375,7 +381,7 @@ function ApplicationForm({
             <Input name="passportExpiryDate" type="date" defaultValue={field("passport_expiry_date")} disabled={!canEdit} />
           </Field>
           <Field label="Passport issuing country">
-            <Input name="passportIssuingCountry" defaultValue={field("passport_issuing_country")} maxLength={80} disabled={!canEdit} />
+            <CountrySelect name="passportIssuingCountry" defaultValue={field("passport_issuing_country")} disabled={!canEdit} />
           </Field>
           <Field label="Preferred travel period">
             <Input name="preferredTravelPeriod" defaultValue={field("preferred_travel_period")} maxLength={120} disabled={!canEdit} />
