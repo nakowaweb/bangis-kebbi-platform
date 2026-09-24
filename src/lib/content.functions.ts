@@ -43,6 +43,7 @@ const contentInput = z.object({
   isFeatured: z.boolean(),
   sortOrder: z.number().int().min(-100000).max(100000),
   scheduledFor: z.string().datetime().optional(),
+  publishedAt: z.string().datetime().optional(),
   payload: z.record(z.string(), z.union([z.string().max(2000), z.number(), z.boolean(), z.null()])),
 });
 
@@ -120,11 +121,14 @@ export const getPublicEntry = createServerFn({ method: "GET" })
     if (!found) return null;
     const [row] = await applyTranslations(client, [found], data.language);
     if (!row) return null;
-    const signed = await signSiteMedia([row.image_path, row.og_image_path]);
+    const payload = (row.payload && typeof row.payload === "object" && !Array.isArray(row.payload) ? row.payload : {}) as Record<string, unknown>;
+    const videoPath = typeof payload["videoPath"] === "string" ? (payload["videoPath"] as string) : null;
+    const signed = await signSiteMedia([row.image_path, row.og_image_path, videoPath]);
     return {
       ...row,
       imageUrl: mediaUrl(row.image_path, signed),
       ogImageUrl: mediaUrl(row.og_image_path ?? row.image_path, signed),
+      videoFileUrl: mediaUrl(videoPath, signed),
     };
   });
 
@@ -172,7 +176,7 @@ export const saveContentEntry = createServerFn({ method: "POST" })
       is_featured: data.isFeatured,
       sort_order: data.sortOrder,
       scheduled_for: data.scheduledFor || null,
-      published_at: data.status === "published" ? (data.scheduledFor || new Date().toISOString()) : null,
+      published_at: data.status === "published" ? (data.publishedAt || data.scheduledFor || new Date().toISOString()) : (data.publishedAt || null),
       payload: data.payload as Json,
       updated_by: context.userId,
       deleted_at: data.status === "archived" ? new Date().toISOString() : null,
@@ -272,9 +276,9 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
   .validator((input) => z.object({
     name: z.string().trim().min(1).max(200),
     storagePath: z.string().trim().min(1).max(500),
-    mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml"]),
+    mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"]),
     altText: z.string().trim().max(500),
-    byteSize: z.number().int().positive().max(10485760),
+    byteSize: z.number().int().positive().max(52428800),
     width: z.number().int().positive().optional(),
     height: z.number().int().positive().optional(),
   }).parse(input))

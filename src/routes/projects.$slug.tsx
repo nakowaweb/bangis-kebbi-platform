@@ -1,3 +1,4 @@
+import { EntryVideo } from "@/components/entry-video";
 import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
@@ -89,6 +90,7 @@ function ProjectPage() {
             {gallery.map((src) => <SafeImage key={src} src={src} alt={`${title} gallery image`} loading="lazy" className="w-full rounded-lg border border-border object-cover" />)}
           </div>
         )}
+        {project ? <EntryVideo payload={project.payload} fileUrl={project.videoFileUrl} title={title} /> : null}
         <ContactActions />
       </SectionShell>
     </main>

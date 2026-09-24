@@ -1,3 +1,4 @@
+import { EntryVideo } from "@/components/entry-video";
 import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
@@ -84,6 +85,7 @@ function ServiceDetailPage() {
           {(service?.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
         {fallback && <div className="mt-10 grid gap-8 lg:grid-cols-3"><ListBlock title={labels.capabilities} items={fallback.canDo[language]} /><ListBlock title={labels.audience} items={fallback.audience[language]} /><ListBlock title={labels.process} items={fallback.process[language]} numbered /></div>}
+        {service ? <EntryVideo payload={service.payload} fileUrl={service.videoFileUrl} title={title} /> : null}
         <ContactActions />
       </SectionShell>
     </main>

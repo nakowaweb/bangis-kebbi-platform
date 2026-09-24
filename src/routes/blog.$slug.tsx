@@ -1,3 +1,4 @@
+import { EntryVideo } from "@/components/entry-video";
 import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
@@ -104,6 +105,7 @@ function BlogPostPage() {
         )}
         <Button variant="outline" className="mt-7" onClick={() => void share()}><Share2 /> {labels.share}</Button>
         <section className="mt-12 border-t border-border pt-8"><h2 className="font-display text-2xl font-bold">{labels.related}</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{related.map((item) => <Link key={item.slug} to="/blog/$slug" params={{ slug: item.slug }} className="rounded-lg border border-border bg-card p-5 transition hover:border-primary"><p className="text-xs font-bold text-primary">{text(item.category, language)}</p><h3 className="mt-2 font-display text-lg font-bold">{text(item.title, language)}</h3></Link>)}</div></section>
+        {post ? <EntryVideo payload={post.payload} fileUrl={post.videoFileUrl} title={title} /> : null}
         <ContactActions />
       </SectionShell>
     </main>

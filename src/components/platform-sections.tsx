@@ -6,8 +6,10 @@ import {
   CheckCircle2,
   Code2,
   Globe2,
+  FileText,
   HandHeart,
   Home,
+  Linkedin,
   Mail,
   MessageCircle,
   Network,
@@ -25,6 +27,7 @@ import { useLanguage } from "@/lib/language";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
 import { articles as portfolioArticles, projects as portfolioProjects, services as portfolioServices, text } from "@/lib/portfolio-content";
 import { SafeImage } from "@/components/safe-image";
+import { useContactLinks } from "@/components/contact-actions";
 
 /** Recognizable Kaaba line icon for Umrah, drawn with the same geometry and stroke treatment as Lucide. */
 function KaabaIcon({ className }: { className?: string }) {
@@ -87,19 +90,20 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
 
 const quickActions: Array<{
   label: TranslationKey;
-  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community";
+  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community" | "/cv";
   icon: IconType;
 }> = [
   { label: "nav.home", href: "/", icon: Home },
   { label: "nav.services", href: "/services", icon: Wrench },
+  { label: "nav.umrah", href: "/umrah", icon: KaabaIcon },
   { label: "nav.projects", href: "/projects", icon: BriefcaseBusiness },
   { label: "nav.blog", href: "/blog", icon: Newspaper },
-  { label: "nav.umrah", href: "/umrah", icon: KaabaIcon },
   { label: "nav.foundation", href: "/foundation", icon: HandHeart },
   { label: "nav.community", href: "/community", icon: UsersRound },
+  { label: "nav.cv", href: "/cv", icon: FileText },
 ];
 
-export function HeroSection({ content, location = "Abuja, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
+export function HeroSection({ content, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
   const { t, language } = useLanguage();
   // Short payload labels (eyebrow and buttons) are not part of the translatable CMS fields,
   // so outside English the reviewed dictionary wording is used instead of the English payload.
@@ -138,7 +142,7 @@ export function QuickActionsSection() {
   return (
     <section className="border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
       <nav className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-5 lg:px-8" aria-label={t("nav.quickLinks")}>
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-7 sm:gap-3">
+        <div className="grid grid-cols-4 gap-2 sm:grid-cols-8 sm:gap-3">
           {quickActions.map((item) => (
             <Link
               key={item.href}
@@ -331,12 +335,13 @@ export function BlogPreview({ items }: { items?: Array<{ id: string; slug: strin
 
 export function ContactSection() {
   const { t } = useLanguage();
+  const links = useContactLinks();
   return (
     <section className="relative overflow-hidden bg-brand-ink py-12 text-primary-foreground">
       <div className="absolute inset-0 workspace-grid opacity-35" />
       <div className="relative mx-auto grid max-w-7xl gap-7 px-4 text-center sm:px-6 lg:px-8">
         <div><p className="text-xs font-bold uppercase text-brand-cyan">{t("home.contactEyebrow")}</p><h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">{t("home.contactTitle")}</h2><p className="mx-auto mt-3 max-w-2xl text-sm text-primary-foreground/75">{t("home.contactDescription")}</p></div>
-        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">{t("common.contactMe")} <ArrowRight /></Link></Button><Button className="bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild><Link to="/register"><UsersRound /> {t("home.joinCommunity")}</Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><MessageCircle /> {t("common.whatsapp")}</Link></Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/contact"><Mail /> {t("common.email")}</Link></Button></div>
+        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">{t("common.contactMe")} <ArrowRight /></Link></Button>{links.linkedin ? <Button className="bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild><a href={links.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin /> LinkedIn</a></Button> : null}<Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>{links.whatsapp ? <a href={links.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle /> {t("common.whatsapp")}</a> : <Link to="/contact"><MessageCircle /> {t("common.whatsapp")}</Link>}</Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>{links.email ? <a href={links.email}><Mail /> {t("common.email")}</a> : <Link to="/contact"><Mail /> {t("common.email")}</Link>}</Button></div>
       </div>
     </section>
   );
