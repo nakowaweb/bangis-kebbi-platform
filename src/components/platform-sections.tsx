@@ -109,7 +109,7 @@ const quickActions: Array<{
   { label: "nav.cv", href: "/cv", icon: FileText },
 ];
 
-type HeroSlideInput = { src: string; alt: string; label: string };
+type HeroSlideInput = { src: string; alt: string; label: string; slot?: number };
 
 export function HeroSection({ content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string }) {
   const { t, language } = useLanguage();
@@ -149,13 +149,14 @@ const fallbackHeroSlides: HeroSlideInput[] = [
 ];
 
 function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string }) {
-  const heroSlides = [originalHeroSlide, ...(slides?.length ? slides : fallbackHeroSlides)];
+  const additionalSlides = fallbackHeroSlides.map((fallback, index) => slides?.find((slide) => slide.slot === index) ?? fallback);
+  const heroSlides = [originalHeroSlide, ...additionalSlides];
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
   const reducedMotion = useRef(false);
   useEffect(() => { reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
-  const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), []);
+  const move = useCallback((step: number) => setActive((current) => (current + step + 5) % 5), []);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
     const timer = window.setInterval(() => move(1), 2700);

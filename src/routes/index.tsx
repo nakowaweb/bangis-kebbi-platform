@@ -79,8 +79,8 @@ function Index() {
     .filter((entry) => entry.content_type === "homepage" && (entry.category === "hero_carousel" || /^hero-slide-[2-5]$/.test(entry.slug)))
     .sort((a, b) => a.sort_order - b.sort_order)
     .slice(0, 4)
-    .map((entry) => ({ src: entry.imageUrl, alt: entry.image_alt ?? entry.title, label: entry.title }))
-    .filter((entry): entry is { src: string; alt: string; label: string } => Boolean(entry.src));
+    .map((entry) => ({ src: entry.imageUrl, alt: entry.image_alt ?? entry.title, label: entry.title, slot: Number(entry.slug.match(/([2-5])$/)?.[1] ?? 0) - 2 }))
+    .filter((entry): entry is { src: string; alt: string; label: string; slot: number } => Boolean(entry.src) && entry.slot >= 0 && entry.slot <= 3);
   return (
     <main>
       <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
