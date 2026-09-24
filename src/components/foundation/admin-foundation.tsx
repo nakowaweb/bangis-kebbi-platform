@@ -315,7 +315,7 @@ function ProjectEditor({ editor, setEditor, saving, onSave }: { editor: EditorSt
         <Button disabled={saving || uploading || !editor.title || !editor.slug} onClick={onSave}>
           {uploading ? <><Upload /> Uploading…</> : <><Save /> {saving ? "Saving…" : "Save project"}</>}
         </Button>
-        <p className="text-xs text-muted-foreground">BK Foundations content must stay community focused. Never describe a project as an investment or promise financial returns.</p>
+        <p className="text-xs text-muted-foreground">BK Foundations content must stay focused on verified community needs, practical support, dignity and accountable updates.</p>
       </div>
     </aside>
   );

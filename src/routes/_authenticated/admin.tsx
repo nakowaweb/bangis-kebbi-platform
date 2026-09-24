@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/admin")({
   component: AdminPage,
 });
 
-const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact", "footer"] as const;
+const contentTypes = ["homepage", "about", "service", "project", "blog_post", "blog_category", "business", "umrah", "umrah_step", "umrah_requirement", "umrah_faq", "umrah_notice", "umrah_information", "umrah_contact", "foundation", "foundation_mission", "foundation_vision", "foundation_what_we_do", "foundation_initiative", "foundation_update", "community", "contact", "footer", "privacy", "terms", "refund_policy", "cv"] as const;
 type ContentStatus = "draft" | "published" | "unpublished" | "archived";
 
 type EditorState = {

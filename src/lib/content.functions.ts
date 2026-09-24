@@ -10,7 +10,7 @@ const contentTypes = [
   "business", "umrah", "umrah_step", "umrah_faq", "umrah_notice", "umrah_requirement",
   "umrah_information", "umrah_contact", "foundation", "foundation_mission",
   "foundation_vision", "foundation_what_we_do",
-  "foundation_initiative", "foundation_update", "community", "contact", "footer",
+  "foundation_initiative", "foundation_update", "community", "contact", "footer", "privacy", "terms", "refund_policy", "cv",
 ] as const;
 const contentStatuses = ["draft", "published", "unpublished", "archived"] as const;
 

@@ -162,7 +162,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
             <div>
               <CardTitle className="text-lg">Umrah Support</CardTitle>
               <CardDescription>
-                An organised application and coordination process for members. This is a support service, not an investment.
+                An organised application and coordination process for members, with clear information and private document handling.
               </CardDescription>
             </div>
             {application ? <StatusBadge status={status} /> : null}

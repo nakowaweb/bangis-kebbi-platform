@@ -2,7 +2,7 @@ import { SafeImage } from "@/components/safe-image";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, CalendarDays, Compass, HandHeart, HeartHandshake, MapPin, Sparkles, Target } from "lucide-react";
+import { ArrowRight, CalendarDays, Compass, HandHeart, HeartHandshake, MapPin, ShieldCheck, Sparkles, Target, UsersRound } from "lucide-react";
 
 import { ContactSection } from "@/components/platform-sections";
 import { Badge } from "@/components/ui/badge";

@@ -81,6 +81,11 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
     ar: { title: "سياسة الاسترداد — بانجيس كيبي", description: "سياسة الاسترداد التي تسري على خدمات بانجيس كيبي." },
     ha: { title: "Manufar Mayar da Kuɗi — BangisKebbi.com", description: "Manufar mayar da kuɗi da ke aiki kan ayyukan BangisKebbi.com." },
   },
+  "/cv": {
+    en: { title: "Professional CV — Abubakar Alhaji Abubakar", description: "Professional profile, digital capabilities, selected work and availability in Abuja, Nigeria." },
+    ar: { title: "السيرة المهنية — أبوبكر الحاج أبوبكر", description: "الملف المهني والقدرات الرقمية والأعمال المختارة والتوفر في أبوجا، نيجيريا." },
+    ha: { title: "Tarihin Sana'a — Abubakar Alhaji Abubakar", description: "Bayanan sana'a, ƙwarewar dijital, zaɓaɓɓun ayyuka da samuwa a Abuja, Najeriya." },
+  },
 };
 
 /** Localized title/description for a fixed public page, falling back to English. */
