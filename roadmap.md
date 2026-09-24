@@ -19,6 +19,7 @@
 - [x] Add multilingual CV and production legal pages
 - [x] Extend CMS lifecycle controls with draft preview, archive/restore and Super Admin permanent delete
 - [x] Add controlled EN/AR/HA production fallbacks and update SEO/sitemap/internal links
-- [ ] Apply database content-type expansion and seed rows — blocked because the connected external production database is unreachable from this workspace
-- [ ] Verify authenticated Super Admin controls against production — blocked by the same unavailable external connection
+- [x] Keep legal pages and CV editable through existing CMS content types, avoiding a production database schema change
+- [x] Verify public interactions, languages, RTL, 360/390/430/desktop layouts, security boundaries, typecheck and production build
+- [ ] Verify authenticated Super Admin controls against production — blocked because the connected external production database is unreachable from this workspace
 - [ ] Confirm GitHub main synchronization — current workspace branch is not main and repository pushes are platform-managed
