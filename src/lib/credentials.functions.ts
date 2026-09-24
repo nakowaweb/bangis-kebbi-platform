@@ -8,6 +8,7 @@ import { createPublicSupabase, mediaUrl, signSiteMedia } from "@/lib/public-cont
 export type PublicCredential = {
   id: string;
   title: string;
+  companyName: string;
   organization: string;
   number: string;
   documentType: string;
@@ -22,6 +23,7 @@ export type PublicCredential = {
 const credentialInput = z.object({
   id: z.string().uuid().optional(),
   title: z.string().trim().min(1).max(200),
+  companyName: z.string().trim().min(1).max(200),
   organization: z.string().trim().min(1).max(200),
   number: z.string().trim().max(120),
   documentType: z.string().trim().min(1).max(120),
@@ -62,6 +64,7 @@ export const listPublicCredentials = createServerFn({ method: "GET" }).handler(a
     return rows.map((row): PublicCredential => ({
       id: row.id,
       title: row.title,
+      companyName: payloadValue(row.payload, "companyName") || "BANGISKEBBI GLOBAL LTD",
       organization: payloadValue(row.payload, "organization"),
       number: payloadValue(row.payload, "number"),
       documentType: payloadValue(row.payload, "documentType"),
@@ -91,6 +94,7 @@ export const saveCredential = createServerFn({ method: "POST" })
       category: "company_credential",
       payload: {
         organization: data.organization,
+        companyName: data.companyName,
         number: data.number,
         documentType: data.documentType,
         issueDate: data.issueDate,

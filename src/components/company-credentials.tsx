@@ -9,13 +9,14 @@ import { listPublicCredentials, type PublicCredential } from "@/lib/credentials.
 const CAC_SEARCH_URL = "https://search.cac.gov.ng/home";
 const launchCredential: PublicCredential = {
   id: "launch-company-registration",
-  title: "Company Certificate",
+  title: "CAC Certificate of Incorporation",
+  companyName: "BANGISKEBBI GLOBAL LTD",
   organization: "Corporate Affairs Commission (CAC), Nigeria",
   number: "9884960",
-  documentType: "Company registration",
-  issueDate: "",
+  documentType: "Certificate",
+  issueDate: "2026-09-24",
   expiryDate: "",
-  description: "Official registration information for BANGISKEBBI GLOBAL LIMITED.",
+  description: "Private Company Limited by Shares. Incorporated 24 September 2026.",
   verificationUrl: CAC_SEARCH_URL,
   documentUrl: null,
   documentMime: "",
@@ -27,7 +28,7 @@ export function CompanyCredentials() {
   const credentials = query.data?.length ? query.data : [launchCredential];
 
   return (
-    <section className="section-reveal border-b border-border bg-secondary py-12 sm:py-14">
+    <section id="company-credentials" className="section-reveal scroll-mt-24 border-b border-border bg-secondary py-12 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <p className="text-xs font-bold uppercase text-primary">Company Credentials</p>
         <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Official company registration and professional credentials.</h2>
@@ -47,7 +48,7 @@ function CredentialCard({ credential }: { credential: PublicCredential }) {
       <span className="grid h-11 w-11 place-items-center rounded-md bg-brand-cyan/10 text-primary"><FileBadge2 className="h-5 w-5" /></span>
       <h3 className="mt-4 font-display text-lg font-bold">{credential.title}</h3>
       <dl className="mt-4 grid gap-2 text-sm">
-        <div><dt className="text-xs font-bold uppercase text-muted-foreground">Company</dt><dd className="mt-0.5 font-semibold">BANGISKEBBI GLOBAL LIMITED</dd></div>
+        <div><dt className="text-xs font-bold uppercase text-muted-foreground">Company</dt><dd className="mt-0.5 font-semibold">{credential.companyName || "BANGISKEBBI GLOBAL LTD"}</dd></div>
         {credential.number ? <div><dt className="text-xs font-bold uppercase text-muted-foreground">RC / Certificate number</dt><dd className="mt-0.5">{credential.number}</dd></div> : null}
         <div><dt className="text-xs font-bold uppercase text-muted-foreground">Document type</dt><dd className="mt-0.5">{credential.documentType}</dd></div>
         <div><dt className="text-xs font-bold uppercase text-muted-foreground">Issuing organization</dt><dd className="mt-0.5">{credential.organization}</dd></div>

@@ -221,6 +221,10 @@
 @keyframes hero-float { 50% { transform: translateY(-7px); } }
 @keyframes badge-float { 50% { transform: translateY(-3px); } }
 @keyframes image-breathe { 50% { transform: scale(1.012); } }
+@keyframes hero-slide-pan { from { transform: scale(1.01) translateX(-0.5%); } to { transform: scale(1.055) translateX(0.75%); } }
+
+.hero-slide { opacity: 0; transform: translateX(18px) scale(0.985); pointer-events: none; transition: opacity 700ms ease, transform 850ms ease; }
+.hero-slide-active { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; z-index: 10; }
 
 @media (prefers-reduced-motion: no-preference) {
   .section-reveal { animation: section-reveal 520ms ease-out both; }
@@ -234,6 +238,7 @@
   .hero-cta-enter { animation: hero-copy-enter 560ms 320ms ease-out both; }
   .hero-visual-float { animation: hero-media-enter 720ms 90ms ease-out both, hero-float 8s 1s ease-in-out infinite; }
   .hero-image-shift { animation: image-breathe 11s 1s ease-in-out infinite; }
+  .hero-slide-active .hero-slide-image { animation: hero-slide-pan 7s ease-in-out alternate infinite; }
   .location-badge-motion { animation: badge-float 6s 1.2s ease-in-out infinite; }
   .workspace-grid { animation: hero-grid-drift 32s linear infinite; }
   .service-strip-track { animation: service-strip-move 42s linear infinite; }

@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Mail, Menu, Search, UserRound } from "lucide-react";
+import { Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -21,8 +21,8 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Input } from "@/components/ui/input";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
+import { GlobalSearch } from "@/components/global-search";
 import { LanguageProvider, languageMeta, languages, useLanguage, type LanguageCode, type TranslationKey } from "@/lib/language";
 import { listPublicSocialLinks } from "@/lib/social.functions";
 import { navItems } from "@/lib/site-data";
@@ -89,7 +89,7 @@ function SiteHeader() {
         </nav>
 
         <div className="hidden shrink-0 items-center gap-2 lg:flex">
-          <SearchMenu />
+          <GlobalSearch />
           {signedIn ? (
             <Button size="sm" className="bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
               <Link to="/dashboard">
@@ -119,27 +119,6 @@ function SiteHeader() {
         </div>
       </div>
     </header>
-  );
-}
-
-function SearchMenu() {
-  const { t } = useLanguage();
-  return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="ghost" size="icon" aria-label={t("common.search")}>
-          <Search />
-        </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-80 border-border bg-popover p-3 shadow-platform">
-        <DropdownMenuLabel>{t("common.search")}</DropdownMenuLabel>
-        <Input placeholder={t("common.searchPlaceholder")} className="mt-2 h-11" />
-        <DropdownMenuSeparator />
-        {(["nav.services", "nav.umrah", "nav.foundation", "nav.business"] as TranslationKey[]).map((key) => (
-          <DropdownMenuItem key={key}>{t(key)}</DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
   );
 }
 
@@ -200,6 +179,7 @@ function MobileMenu() {
             ))}
           </nav>
           <div className="grid gap-3 border-t border-border pt-5">
+            <GlobalSearch mobile />
             {signedIn ? (
               <SheetClose asChild>
                 <Button className="h-12 justify-start bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
