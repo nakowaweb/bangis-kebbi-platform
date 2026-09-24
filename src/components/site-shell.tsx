@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Menu, Search, UserRound } from "lucide-react";
+import { Mail, Menu, Search, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -11,6 +11,7 @@ const logoAsset = { url: logoAssetSrc };
 import iconAssetSrc from "@/assets/bangis-app-icon.png";
 const iconAsset = { url: iconAssetSrc };
 import { platformLabels, socialIcons } from "@/components/social-icons";
+import { useContactLinks } from "@/components/contact-actions";
 import { Button } from "@/components/ui/button";
 import {
   DropdownMenu,
@@ -234,8 +235,8 @@ function MobileMenu() {
 /** Official links configured by the Super Admin. Nothing renders until at least one is enabled. */
 function SocialRow() {
   const links = useSocialLinks();
+  const contact = useContactLinks();
   const items = links.data ?? [];
-  if (items.length === 0) return null;
   return (
     <div className="flex flex-wrap gap-2">
       {items.map((item) => {
@@ -255,6 +256,14 @@ function SocialRow() {
           </a>
         );
       })}
+      <a
+        href={contact.email}
+        aria-label="Email"
+        title="Email"
+        className="grid h-11 w-11 place-items-center rounded-md bg-primary text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan"
+      >
+        <Mail className="h-5 w-5" />
+      </a>
     </div>
   );
 }

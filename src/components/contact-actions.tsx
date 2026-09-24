@@ -4,6 +4,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Linkedin, Mail, MessageCircle, Phone } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { CONTACT_DETAILS } from "@/lib/contact-details";
 import { getPublicContent } from "@/lib/content.functions";
 import { listPublicSocialLinks } from "@/lib/social.functions";
 import { useLanguage } from "@/lib/language";
@@ -17,12 +18,13 @@ export function useContactLinks() {
   const social = useQuery({ queryKey: ["public-social-links"], queryFn: () => loadSocial(), staleTime: 1000 * 60 * 30 });
   const settings = query.data?.settings;
   const socialWhatsapp = social.data?.find((row) => row.platform === "whatsapp")?.url ?? null;
+  const socialLinkedin = social.data?.find((row) => row.platform === "linkedin")?.url ?? null;
   return {
     settings,
-    email: settings?.contact_email ? `mailto:${settings.contact_email}` : null,
+    email: `mailto:${settings?.contact_email || CONTACT_DETAILS.email}`,
     phone: phoneHref(settings?.phone),
-    whatsapp: whatsappHref(settings?.whatsapp) ?? socialWhatsapp,
-    linkedin: social.data?.find((row) => row.platform === "linkedin")?.url ?? null,
+    whatsapp: whatsappHref(settings?.whatsapp) ?? socialWhatsapp ?? CONTACT_DETAILS.whatsappUrl,
+    linkedin: socialLinkedin ?? CONTACT_DETAILS.linkedin,
   };
 }
 

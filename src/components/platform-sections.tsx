@@ -112,7 +112,7 @@ export function HeroSection({ content, location = "Kebbi State, Nigeria", global
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
       <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
       <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
-        <div>
+        <div className="hero-copy-enter">
           <p className="text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow, "home.heroEyebrow")}</p>
           <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
             {content?.title ?? <>{t("home.heroTitleLine1")}<br /><span className="text-brand-cyan">{t("home.heroTitleLine2")}</span></>}
@@ -126,7 +126,7 @@ export function HeroSection({ content, location = "Kebbi State, Nigeria", global
             <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{label(content?.secondaryCta, "common.exploreWork")}</Link></Button>
           </div>
         </div>
-        <div className="relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
+        <div className="hero-media-enter relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
           <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar at his BangisKebbi.com workspace" width={1254} height={1254} fetchPriority="high" className="aspect-square h-auto w-full rounded-md object-contain" />
           <div className="absolute bottom-4 right-4 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur">
              <p className="font-bold">{/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p>
@@ -224,6 +224,7 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
     : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} action={!full ? { label: t("common.viewAllServices"), href: "/services" } : undefined}>
+      {!full ? <div className="mb-6 overflow-hidden border-y border-border py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase text-muted-foreground">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span>{service.title}</span><span className="text-brand-cyan">•</span></span>)}</div></div> : null}
       <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {visibleServices.map((service) => <FeatureCard key={service.slug} icon={service.icon} title={service.title} description={service.description} action={t("common.learnMore")} href="/services/$slug" slug={service.slug} />)}
       </div>
