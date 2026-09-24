@@ -11,3 +11,13 @@
 
 ## Notes
 - Pre-existing security-linter warnings on `claim_first_super_admin` and `create_system_notification` (SECURITY DEFINER executable by signed-in users) were left untouched to avoid breaking auth and notifications.
+
+## Master production content, UX and CMS update
+- [ ] Complete six CMS-backed service detail experiences and links
+- [ ] Complete eight project case studies with concept/demo labels and visuals
+- [ ] Complete blog details, Umrah, BK Foundations, contact actions and media fallbacks
+- [ ] Add multilingual CV and production legal pages
+- [ ] Extend CMS lifecycle controls, content types, previews, restore and Super Admin delete
+- [ ] Seed EN/AR/HA production content and update SEO/sitemap/internal links
+- [ ] Verify all public/admin interactions, languages, RTL, viewports, security, typecheck and build
+- [ ] Confirm final GitHub main synchronization
