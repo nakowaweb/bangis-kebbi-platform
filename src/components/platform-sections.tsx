@@ -148,7 +148,7 @@ const fallbackHeroSlides: HeroSlideInput[] = [
   { src: umrahCommunityFounderImage, alt: "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting", label: "Umrah support" },
 ];
 
-function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[]; location: string; globalStatus: string }) {
+function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string }) {
   const heroSlides = [originalHeroSlide, ...(slides?.length ? slides : fallbackHeroSlides)];
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
