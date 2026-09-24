@@ -24,8 +24,9 @@
 - [ ] Verify authenticated Super Admin controls against production — blocked because the connected external production database is unreachable from this workspace
 - [ ] Confirm GitHub main synchronization — current workspace branch is not main and repository pushes are platform-managed
 ## Final production polish
-- [ ] Apply confirmed contact and social links across public fallbacks and managed data defaults
-- [ ] Change saved/default public location to Kebbi State, Nigeria
-- [ ] Confirm Super Admin CMS/social controls and 50 MB video storage configuration
-- [ ] Add restrained motion with reduced-motion support
+- [x] Apply confirmed WhatsApp, email and LinkedIn fallbacks across public contact actions
+- [ ] Save confirmed social links and location in production data — blocked by unavailable database connection
+- [ ] Raise the private site-media bucket and media record limits to 50 MB — blocked by unavailable database connection
+- [x] Confirm Super Admin CMS and social controls in source
+- [x] Add restrained motion with reduced-motion support
 - [ ] Verify social links, routes, mobile/desktop, TypeScript, production build, and repository status
