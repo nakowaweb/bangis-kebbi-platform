@@ -6,6 +6,7 @@ import { toast } from "sonner";
 import { SectionShell } from "@/components/platform-sections";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { CountryRegionFields } from "@/components/umrah/country-region-select";
 import { pageHead } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -32,6 +33,10 @@ function RegisterPage() {
     const password = String(form.get("password") ?? "");
     const confirmPassword = String(form.get("confirmPassword") ?? "");
     setError(null);
+    if (!String(form.get("country") ?? "").trim() || !String(form.get("city") ?? "").trim()) {
+      setError("Please select your country and city.");
+      return;
+    }
     if (!password || !confirmPassword) {
       setError("Please enter and confirm your password.");
       return;
