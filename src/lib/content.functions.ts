@@ -42,7 +42,7 @@ const contentInput = z.object({
   isEnabled: z.boolean(),
   isFeatured: z.boolean(),
   sortOrder: z.number().int().min(-100000).max(100000),
-  scheduledFor: z.string().datetime().optional(),
+  scheduledFor: z.union([z.literal(""), z.null(), z.string().datetime()]).optional().transform((value) => value || undefined),
   publishedAt: z.string().datetime().optional(),
   payload: z.record(z.string(), z.union([z.string().max(2000), z.number(), z.boolean(), z.null()])),
 });

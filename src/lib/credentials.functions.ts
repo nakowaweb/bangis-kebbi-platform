@@ -36,7 +36,7 @@ const credentialInput = z.object({
   status: z.enum(["draft", "published", "unpublished", "archived"]),
   isEnabled: z.boolean(),
   sortOrder: z.number().int().min(-100000).max(100000),
-  scheduledFor: z.string().datetime().optional(),
+  scheduledFor: z.union([z.literal(""), z.null(), z.string().datetime()]).optional().transform((value) => value || undefined),
 });
 
 async function requireContentAdmin(context: { supabase: { rpc: (fn: "is_content_admin", args: { _user_id: string }) => PromiseLike<{ data: unknown; error: unknown }> }; userId: string }) {

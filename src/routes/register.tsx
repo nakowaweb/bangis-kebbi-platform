@@ -56,6 +56,7 @@ function RegisterPage() {
           phone: String(form.get("phone")),
           country: String(form.get("country")),
           city: String(form.get("city")),
+          region: String(form.get("region") ?? ""),
           preferred_language: String(form.get("preferredLanguage") || "en"),
         },
       },
