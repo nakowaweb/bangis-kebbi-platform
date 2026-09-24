@@ -210,3 +210,9 @@
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; }
 }
+
+@media print {
+  header, footer, .print\:hidden { display: none !important; }
+  .cv-page { padding: 0 !important; }
+  body { background: white !important; color: black !important; }
+}
