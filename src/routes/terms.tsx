@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage } from "@/components/legal-page";
 import { pageHead } from "@/lib/seo";
 import { getPublicEntry } from "@/lib/content.functions";
-import type { LanguageCode } from "@/lib/i18n/dictionary";
+import { useLanguage } from "@/lib/language";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/terms")({
   head: ({ match }) =>
@@ -12,13 +14,14 @@ export const Route = createFileRoute("/terms")({
       description: "Terms governing use of BangisKebbi.com services, content, accounts, community and Umrah support information.",
       path: "/terms",
     }),
-  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
-  loader: ({ deps }) => getPublicEntry({ data: { contentType: "footer", slug: "terms-of-use", language: deps.lang } }),
   component: TermsPage,
 });
 
 function TermsPage() {
-  return <LegalPage copy={copy} managed={Route.useLoaderData()} />;
+  const { language } = useLanguage();
+  const load = useServerFn(getPublicEntry);
+  const managed = useQuery({ queryKey: ["legal", "terms-of-use", language], queryFn: () => load({ data: { contentType: "footer", slug: "terms-of-use", language } }), staleTime: 1_800_000 });
+  return <LegalPage copy={copy} managed={managed.data} />;
 }
 
 const shared = {

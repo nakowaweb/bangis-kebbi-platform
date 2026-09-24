@@ -3,7 +3,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import { LegalPage } from "@/components/legal-page";
 import { pageHead } from "@/lib/seo";
 import { getPublicEntry } from "@/lib/content.functions";
-import type { LanguageCode } from "@/lib/i18n/dictionary";
+import { useLanguage } from "@/lib/language";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/refund-policy")({
   head: ({ match }) =>
@@ -12,13 +14,14 @@ export const Route = createFileRoute("/refund-policy")({
       description: "Refund policy for separately agreed professional services and eligible third-party service arrangements.",
       path: "/refund-policy",
     }),
-  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
-  loader: ({ deps }) => getPublicEntry({ data: { contentType: "footer", slug: "refund-policy", language: deps.lang } }),
   component: RefundPage,
 });
 
 function RefundPage() {
-  return <LegalPage copy={copy} managed={Route.useLoaderData()} />;
+  const { language } = useLanguage();
+  const load = useServerFn(getPublicEntry);
+  const managed = useQuery({ queryKey: ["legal", "refund-policy", language], queryFn: () => load({ data: { contentType: "footer", slug: "refund-policy", language } }), staleTime: 1_800_000 });
+  return <LegalPage copy={copy} managed={managed.data} />;
 }
 
 const copy = {

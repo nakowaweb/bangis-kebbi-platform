@@ -4,7 +4,9 @@ import { SectionShell } from "@/components/platform-sections";
 import { pageHead } from "@/lib/seo";
 import { LegalPage } from "@/components/legal-page";
 import { getPublicEntry } from "@/lib/content.functions";
-import type { LanguageCode } from "@/lib/i18n/dictionary";
+import { useLanguage } from "@/lib/language";
+import { useServerFn } from "@tanstack/react-start";
+import { useQuery } from "@tanstack/react-query";
 
 export const Route = createFileRoute("/privacy")({
   head: ({ match }) =>
@@ -13,13 +15,14 @@ export const Route = createFileRoute("/privacy")({
       description: "Privacy principles for BangisKebbi.com member accounts, contact messages, applications and future private documents.",
       path: "/privacy",
     }),
-  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
-  loader: ({ deps }) => getPublicEntry({ data: { contentType: "footer", slug: "privacy-policy", language: deps.lang } }),
   component: PrivacyPage,
 });
 
 function PrivacyPage() {
-  return <LegalPage copy={copy} managed={Route.useLoaderData()} />;
+  const { language } = useLanguage();
+  const load = useServerFn(getPublicEntry);
+  const managed = useQuery({ queryKey: ["legal", "privacy-policy", language], queryFn: () => load({ data: { contentType: "footer", slug: "privacy-policy", language } }), staleTime: 1_800_000 });
+  return <LegalPage copy={copy} managed={managed.data} />;
 }
 
 const copy = {
