@@ -21,7 +21,7 @@ import { AdminTranslationManager } from "@/components/admin/translation-manager"
 import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
-import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, getAdminWorkspace, registerMediaAsset, restoreContentEntry, restoreMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
+import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, restoreContentEntry, restoreMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { getAdminOverview, listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
