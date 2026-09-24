@@ -65,7 +65,7 @@ const portraitAsset = { url: portraitAssetSrc };
 import aiWorkspaceImage from "@/assets/hero-ai-workspace.jpg";
 import businessSolutionsImage from "@/assets/hero-business-solutions.jpg";
 import communityConnectionImage from "@/assets/hero-community-connection.jpg";
-import umrahPreparationImage from "@/assets/hero-umrah-preparation.jpg";
+import umrahCommunityFounderImage from "@/assets/hero-umrah-community-founder.jpg";
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
@@ -143,7 +143,7 @@ const heroSlides = [
   { src: aiWorkspaceImage, alt: "AI-assisted web design and coding workspace", label: "AI-assisted web design" },
   { src: businessSolutionsImage, alt: "Professional team creating a digital business solution", label: "Digital business solutions" },
   { src: communityConnectionImage, alt: "Community members collaborating through digital technology", label: "People and collaboration" },
-  { src: umrahPreparationImage, alt: "Respectful Umrah travel preparation", label: "Umrah support" },
+  { src: umrahCommunityFounderImage, alt: "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting", label: "Umrah support" },
 ];
 
 function HeroCarousel({ location, globalStatus }: { location: string; globalStatus: string }) {
@@ -300,7 +300,7 @@ export function BusinessSection({ title, description }: { title?: string | undef
 export function UmrahSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   const { t } = useLanguage();
   return (
-    <CompactPlatform icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
+    <CompactPlatform image={umrahCommunityFounderImage} imageAlt="Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting" icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
   );
 }
 
@@ -405,7 +405,7 @@ function FeatureCard({ icon: Icon, title, description, action, href, slug }: { i
   return <article className="motion-card h-full rounded-lg border border-border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-platform"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-cyan/10 text-primary"><Icon className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>{action && href === "/services/$slug" && slug ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to="/services/$slug" params={{ slug }}>{action} <ArrowRight /></Link></Button> : action && href ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to={href}>{action} <ArrowRight /></Link></Button> : null}</article>;
 }
 
-function CompactPlatform({ icon: Icon, eyebrow, title, description, href, action, tone }: { icon: LucideIcon; eyebrow: string; title: string; description: string; href: "/umrah" | "/foundation" | "/register"; action: string; tone: "gold" | "green" | "blue" }) {
+function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, description, href, action, tone }: { image?: string; imageAlt?: string; icon: LucideIcon; eyebrow: string; title: string; description: string; href: "/umrah" | "/foundation" | "/register"; action: string; tone: "gold" | "green" | "blue" }) {
   const colors = tone === "gold" ? "bg-brand-gold/15 text-brand-gold" : tone === "green" ? "bg-brand-green/10 text-brand-green" : "bg-brand-cyan/10 text-primary";
-  return <section className="border-b border-border bg-background py-5"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className="grid gap-5 rounded-lg border border-border bg-card p-5 shadow-sm md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"><span className={`grid h-16 w-16 place-items-center rounded-full ${colors}`}><Icon className="h-8 w-8" /></span><div className="min-w-0"><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-1 font-display text-xl font-bold">{title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p></div><Button variant="outline" className="shrink-0" asChild><Link to={href}>{action} <ArrowRight /></Link></Button></div></div></section>;
+  return <section className="border-b border-border bg-background py-5"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className={`grid gap-5 overflow-hidden rounded-lg border border-border bg-card shadow-sm ${image ? "md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-center" : "p-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"}`}>{image ? <SafeImage src={image} alt={imageAlt ?? ""} loading="lazy" width={720} height={720} className="aspect-[16/10] h-full max-h-52 w-full object-cover object-top md:aspect-square md:max-h-none" /> : <span className={`m-5 grid h-16 w-16 place-items-center rounded-full ${colors}`}><Icon className="h-8 w-8" /></span>}<div className={`min-w-0 ${image ? "px-5 md:px-0" : ""}`}><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-1 font-display text-xl font-bold">{title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p></div><Button variant="outline" className={`shrink-0 ${image ? "mx-5 mb-5 md:my-5 md:ml-0" : ""}`} asChild><Link to={href}>{action} <ArrowRight /></Link></Button></div></div></section>;
 }

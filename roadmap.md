@@ -49,3 +49,5 @@
 - [x] Update the initial CAC credential facts without fabricating the official certificate
 - [ ] Verify authenticated Super Admin changes against production — blocked because this workspace has no production data connection
 - [ ] Synchronize the final workspace commit to GitHub main — repository publishing remains platform-managed
+
+- [x] Create and install the founder-referenced Umrah/community visual in the homepage carousel and Umrah section
