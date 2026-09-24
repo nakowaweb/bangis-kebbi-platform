@@ -38,8 +38,8 @@ export const listPublicSocialLinks = createServerFn({ method: "GET" }).handler(a
     .eq("is_enabled", true)
     .order("sort_order", { ascending: true })
     .limit(20);
-  if (error || !data?.length) return [...DEFAULT_SOCIAL_LINKS];
-  return data;
+  if (error) return [...DEFAULT_SOCIAL_LINKS];
+  return data ?? [];
 });
 
 /** Every link, including disabled ones, for the admin manager. */
