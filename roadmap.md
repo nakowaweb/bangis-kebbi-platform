@@ -31,3 +31,13 @@
 - [x] Add restrained motion with reduced-motion support
 - [x] Verify public routes and mobile/desktop rendering; all requested routes return 200 with no overflow or broken images
 - [ ] Verify all database-managed social rows, TypeScript, production build, and GitHub main push — blocked by unavailable production database and platform-managed repository publishing
+
+## Final company credentials and launch polish
+- [x] Add a public Company Credentials section with neutral CAC registration wording, RC 9884960, independent CAC search and a responsive document viewer
+- [x] Add a dedicated Super Admin credential workspace using existing content lifecycle controls, ordering, document replacement, archive/restore and confirmed deletion
+- [x] Add canonical seven-link public social display with responsive icon grid and centralized database-first fallbacks
+- [x] Add staged hero copy, CTA, portrait, location badge, grid and shared card motion with reduced-motion handling
+- [x] Confirm Kebbi State, Nigeria and the required public CV facts; no school or university claims added
+- [x] Pass TypeScript and production builds; pass public route, image, overflow, link and console checks at 360px and 1280px
+- [ ] Verify signed-in Super Admin changes and save production location/social/credential rows — blocked because this workspace has no production data connection
+- [ ] Push the generated commit to GitHub main — blocked because repository synchronization is platform-managed and main remains behind the workspace commit

@@ -113,22 +113,22 @@ export function HeroSection({ content, location = "Kebbi State, Nigeria", global
       <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
       <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
         <div className="hero-copy-enter">
-          <p className="text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow, "home.heroEyebrow")}</p>
-          <h1 className="mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
+          <p className="hero-line hero-line-1 text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow, "home.heroEyebrow")}</p>
+          <h1 className="hero-line hero-line-2 mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
             {content?.title ?? <>{t("home.heroTitleLine1")}<br /><span className="text-brand-cyan">{t("home.heroTitleLine2")}</span></>}
           </h1>
-          <p className="mt-5 max-w-xl font-display text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
+          <p className="hero-line hero-line-3 mt-5 max-w-xl font-display text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
             {content?.subtitle ?? t("home.heroSubtitle")}
           </p>
-          <p className="mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? t("home.heroDescription")}</p>
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
+          <p className="hero-line hero-line-4 mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? t("home.heroDescription")}</p>
+          <div className="hero-cta-enter mt-7 flex flex-col gap-3 sm:flex-row">
             <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{label(content?.primaryCta, "common.hireMe")} <ArrowRight /></Link></Button>
             <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{label(content?.secondaryCta, "common.exploreWork")}</Link></Button>
           </div>
         </div>
-        <div className="hero-media-enter relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
-          <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar at his BangisKebbi.com workspace" width={1254} height={1254} fetchPriority="high" className="aspect-square h-auto w-full rounded-md object-contain" />
-          <div className="absolute bottom-4 right-4 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur">
+        <div className="hero-media-enter hero-visual-float relative mx-auto w-full max-w-[560px] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
+          <img src={portraitAsset.url} alt="Abubakar Alhaji Abubakar at his BangisKebbi.com workspace" width={1254} height={1254} fetchPriority="high" className="hero-image-shift aspect-square h-auto w-full rounded-md object-contain" />
+          <div className="location-badge-motion absolute bottom-4 right-4 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur">
              <p className="font-bold">{/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p>
           </div>
         </div>
@@ -241,7 +241,7 @@ export function ProjectsSection({ full = false, items }: { full?: boolean; items
       {full && <div className="mb-5 flex flex-wrap gap-2">{projectCategories.map((category) => <Badge key={category} variant="outline">{category}</Badge>)}</div>}
       <div className="grid gap-4 md:grid-cols-3">
         {visibleProjects.map((project, index) => (
-          <article key={project.slug} className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-platform">
+          <article key={project.slug} className="motion-card group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-platform">
             <div className="relative aspect-[16/9] overflow-hidden bg-brand-ink">
                <SafeImage src={project.image} alt={project.name} loading="lazy" width={1200} height={750} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
               {index === 0 && <img src={appIconAsset.url} alt="BangisKebbi.com" loading="lazy" className="absolute left-5 top-5 h-14 w-14 rounded-lg" />}
@@ -329,7 +329,7 @@ export function BlogPreview({ items }: { items?: Array<{ id: string; slug: strin
   const visiblePosts = items?.length ? items.slice(0, 3).map((item, index) => ({ slug: item.slug, title: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("blog.updateLabel"), image: item.imageUrl ?? projectImages[index] ?? heroImage })) : portfolioArticles.map((item) => ({ slug: item.slug, title: text(item.title, language), category: text(item.category, language), image: item.image }));
   return (
     <SectionShell eyebrow={t("home.blogEyebrow")} title={t("home.blogTitle")} description={t("home.blogDescription")} action={{ label: t("common.viewAllPosts"), href: "/blog" }}>
-      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post) => <article key={post.slug} className="grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><SafeImage src={post.image} alt={post.title} loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog/$slug" params={{ slug: post.slug }}>{t("common.readMore")} <ArrowRight /></Link></Button></div></article>)}</div>
+      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post) => <article key={post.slug} className="motion-card grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><SafeImage src={post.image} alt={post.title} loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog/$slug" params={{ slug: post.slug }}>{t("common.readMore")} <ArrowRight /></Link></Button></div></article>)}</div>
     </SectionShell>
   );
 }
@@ -368,7 +368,7 @@ export function SectionShell({ eyebrow, title, description, action, children }: 
 }
 
 function FeatureCard({ icon: Icon, title, description, action, href, slug }: { icon: LucideIcon; title: string; description: string; action?: string; href?: "/services" | "/services/$slug"; slug?: string }) {
-  return <article className="h-full rounded-lg border border-border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-platform"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-cyan/10 text-primary"><Icon className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>{action && href === "/services/$slug" && slug ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to="/services/$slug" params={{ slug }}>{action} <ArrowRight /></Link></Button> : action && href ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to={href}>{action} <ArrowRight /></Link></Button> : null}</article>;
+  return <article className="motion-card h-full rounded-lg border border-border bg-card p-5 shadow-sm transition hover:-translate-y-1 hover:border-brand-cyan/40 hover:shadow-platform"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-cyan/10 text-primary"><Icon className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{description}</p>{action && href === "/services/$slug" && slug ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to="/services/$slug" params={{ slug }}>{action} <ArrowRight /></Link></Button> : action && href ? <Button variant="link" className="mt-3 h-auto px-0 text-xs" asChild><Link to={href}>{action} <ArrowRight /></Link></Button> : null}</article>;
 }
 
 function CompactPlatform({ icon: Icon, eyebrow, title, description, href, action, tone }: { icon: LucideIcon; eyebrow: string; title: string; description: string; href: "/umrah" | "/foundation" | "/register"; action: string; tone: "gold" | "green" | "blue" }) {
