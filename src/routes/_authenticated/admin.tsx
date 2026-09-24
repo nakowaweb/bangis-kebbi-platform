@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, Bell, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, Save, Settings, Share2, ShieldCheck, Upload, Users } from "lucide-react";
+import { Archive, Bell, Eye, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, RotateCcw, Save, Settings, Share2, ShieldCheck, Trash2, Upload, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -20,7 +20,7 @@ import { AdminTranslationManager } from "@/components/admin/translation-manager"
 import { AdminFoundationManager } from "@/components/foundation/admin-foundation";
 import { AdminNotificationManager } from "@/components/notifications/admin-notifications";
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
-import { archiveContentEntry, getAdminWorkspace, registerMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
+import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, getAdminWorkspace, registerMediaAsset, restoreContentEntry, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { getAdminOverview, listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -85,6 +85,8 @@ function AdminPage() {
   const getWorkspace = useServerFn(getAdminWorkspace);
   const saveEntry = useServerFn(saveContentEntry);
   const archiveEntry = useServerFn(archiveContentEntry);
+  const restoreEntry = useServerFn(restoreContentEntry);
+  const deleteEntry = useServerFn(deleteContentEntry);
   const saveSettings = useServerFn(saveSiteSettings);
   const registerMedia = useServerFn(registerMediaAsset);
   const [editor, setEditor] = useState<EditorState>(emptyEditor);
@@ -131,6 +133,8 @@ function AdminPage() {
     onSuccess: () => { toast.success("Content archived"); setEditor(emptyEditor); refresh(); },
     onError: (error) => toast.error(error.message),
   });
+  const restoreMutation = useMutation({ mutationFn: (id: string) => restoreEntry({ data: { id } }), onSuccess: () => { toast.success("Content restored as a draft"); setEditor(emptyEditor); refresh(); }, onError: (error) => toast.error(error.message) });
+  const deleteMutation = useMutation({ mutationFn: (id: string) => deleteEntry({ data: { id } }), onSuccess: () => { toast.success("Content permanently deleted"); setEditor(emptyEditor); refresh(); }, onError: (error) => toast.error(error.message) });
 
   const entries = useMemo(() => (workspace.data?.entries ?? []).filter((entry) => (area === "all" || entry.content_type === area) && `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())), [workspace.data?.entries, query, area]);
 
@@ -193,7 +197,7 @@ function AdminPage() {
                   ))}
                 </div>
               </section>
-              <ContentEditor editor={editor} setEditor={setEditor} saving={saveMutation.isPending} onSave={() => saveMutation.mutate()} onArchive={editor.id ? () => archiveMutation.mutate(editor.id as string) : undefined} />
+              <ContentEditor editor={editor} setEditor={setEditor} saving={saveMutation.isPending} onSave={() => saveMutation.mutate()} onArchive={editor.id && editor.status !== "archived" ? () => archiveMutation.mutate(editor.id as string) : undefined} onRestore={editor.id && editor.status === "archived" ? () => restoreMutation.mutate(editor.id as string) : undefined} onDelete={editor.id && editor.status === "archived" ? () => deleteMutation.mutate(editor.id as string) : undefined} />
             </div>
           </TabsContent>
           <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} saving={false} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
@@ -210,7 +214,7 @@ function AdminPage() {
   );
 }
 
-function ContentEditor({ editor, setEditor, saving, onSave, onArchive }: { editor: EditorState; setEditor: (value: EditorState) => void; saving: boolean; onSave: () => void; onArchive?: (() => void) | undefined }) {
+function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore, onDelete }: { editor: EditorState; setEditor: (value: EditorState) => void; saving: boolean; onSave: () => void; onArchive?: (() => void) | undefined; onRestore?: (() => void) | undefined; onDelete?: (() => void) | undefined }) {
   const update = <K extends keyof EditorState>(key: K, value: EditorState[K]) => setEditor({ ...editor, [key]: value });
   return <aside className="h-fit rounded-lg border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24"><div className="mb-5 flex items-center justify-between"><h2 className="font-display text-lg font-bold">{editor.id ? "Edit content" : "New content"}</h2><Badge variant="outline">{editor.status}</Badge></div><div className="grid gap-4">
     <Field label="Content area"><Select value={editor.contentType} onValueChange={(value) => update("contentType", value as EditorState["contentType"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{contentTypes.map((type) => <SelectItem key={type} value={type}>{type.replaceAll("_", " ")}</SelectItem>)}</SelectContent></Select></Field>
@@ -222,7 +226,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive }: { edito
     <Field label="Schedule (optional)"><Input type="datetime-local" value={editor.scheduledFor} onChange={(event) => update("scheduledFor", event.target.value)} /></Field>
     <div className="grid grid-cols-2 gap-3">
       <Field label="Category"><Input value={editor.category} maxLength={120} onChange={(event) => update("category", event.target.value)} /></Field>
-      <Field label="Language"><Select value={editor.language} onValueChange={(value) => update("language", value as EditorState["language"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ha">Hausa</SelectItem><SelectItem value="ar">Arabic</SelectItem></SelectContent></Select></Field>
+      <Field label="Language"><Select value={editor.language} onValueChange={(value) => update("language", value as EditorState["language"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ar">العربية</SelectItem><SelectItem value="ha">Hausa</SelectItem></SelectContent></Select></Field>
     </div>
     <div className="grid grid-cols-2 gap-3">
       <Field label="Author"><Input value={editor.author} maxLength={120} onChange={(event) => update("author", event.target.value)} /></Field>
@@ -247,9 +251,11 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive }: { edito
     </div>
     <label className="flex items-center justify-between text-sm"><span>Visible when published</span><Switch checked={editor.isEnabled} onCheckedChange={(checked) => update("isEnabled", checked)} /></label>
     <label className="flex items-center justify-between text-sm"><span>Featured content</span><Switch checked={editor.isFeatured} onCheckedChange={(checked) => update("isFeatured", checked)} /></label>
-    {editor.slug && previewPath(editor) && <a href={previewPath(editor) as string} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary hover:underline">Preview this page in a new tab</a>}
+    {editor.slug && previewPath(editor) && <Button variant="outline" asChild><a href={previewPath(editor) as string} target="_blank" rel="noopener noreferrer"><Eye /> Preview published page</a></Button>}
     <Button disabled={saving || !editor.title || !editor.slug} onClick={onSave}><Save /> {saving ? "Saving…" : "Save content"}</Button>
     {onArchive && <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive"><Archive /> Archive item</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to archive this?</AlertDialogTitle><AlertDialogDescription>The item will leave the public website. Its history remains available for restoration.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={onArchive}>Archive</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
+    {onRestore && <Button variant="outline" onClick={onRestore}><RotateCcw /> Restore as draft</Button>}
+    {onDelete && <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive"><Trash2 /> Permanently delete</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Permanently delete this archived item?</AlertDialogTitle><AlertDialogDescription>This Super Admin action cannot be undone. Use restore if the content may be needed later.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={onDelete}>Delete permanently</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
   </div></aside>;
 }
 
@@ -269,8 +275,9 @@ function SettingsEditor({ settings, onSave }: { settings: SettingsRow; saving: b
 type RegisterMedia = ReturnType<typeof useServerFn<typeof registerMediaAsset>>;
 function MediaManager({ media, registerMedia, onChanged }: { media: Awaited<ReturnType<typeof getAdminWorkspace>>["media"]; registerMedia: RegisterMedia; onChanged: () => void }) {
   const [uploading, setUploading] = useState(false);
+  const archiveMedia = useServerFn(archiveMediaAsset);
   async function upload(event: FormEvent<HTMLFormElement>) { event.preventDefault(); const input = event.currentTarget.elements.namedItem("media") as HTMLInputElement | null; const file = input?.files?.[0]; if (!file) return; if (file.size > 10485760 || !["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml"].includes(file.type)) { toast.error("Choose a supported image up to 10 MB."); return; } setUploading(true); const safeName = file.name.toLowerCase().replace(/[^a-z0-9.-]/g, "-"); const path = `${crypto.randomUUID()}-${safeName}`; const { error } = await supabase.storage.from("site-media").upload(path, file, { contentType: file.type, upsert: false }); if (error) { toast.error(error.message); setUploading(false); return; } try { await registerMedia({ data: { name: file.name, storagePath: path, mimeType: file.type as "image/jpeg", altText: "", byteSize: file.size } }); toast.success("Image uploaded to the private media library"); onChanged(); } catch (errorValue) { await supabase.storage.from("site-media").remove([path]); toast.error(errorValue instanceof Error ? errorValue.message : "Upload could not be recorded"); } setUploading(false); }
-  return <section><form onSubmit={upload} className="mb-5 flex flex-col gap-3 rounded-lg border border-border bg-card p-5 sm:flex-row sm:items-end"><Field label="Upload image"><Input name="media" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" required /></Field><Button type="submit" disabled={uploading}><Upload /> {uploading ? "Uploading…" : "Upload"}</Button></form><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{media.length === 0 ? <EmptyState text="No dashboard media has been uploaded." /> : media.map((item) => <article key={item.id} className="rounded-lg border border-border bg-card p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><strong className="block truncate text-sm">{item.name}</strong><span className="text-xs text-muted-foreground">{Math.round(item.byte_size / 1024)} KB · Used {item.usage_count} times</span></div>{item.is_protected && <Badge><ShieldCheck /> Protected</Badge>}</div><p className="mt-3 truncate text-xs text-muted-foreground">{item.storage_path}</p></article>)}</div></section>;
+  return <section><form onSubmit={upload} className="mb-5 flex flex-col gap-3 rounded-lg border border-border bg-card p-5 sm:flex-row sm:items-end"><Field label="Upload image"><Input name="media" type="file" accept="image/jpeg,image/png,image/webp,image/avif,image/svg+xml" required /></Field><Button type="submit" disabled={uploading}><Upload /> {uploading ? "Uploading…" : "Upload"}</Button></form><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{media.length === 0 ? <EmptyState text="No dashboard media has been uploaded." /> : media.map((item) => <article key={item.id} className="rounded-lg border border-border bg-card p-4"><div className="flex items-start justify-between gap-3"><div className="min-w-0"><strong className="block truncate text-sm">{item.name}</strong><span className="text-xs text-muted-foreground">{Math.round(item.byte_size / 1024)} KB · Used {item.usage_count} times</span></div>{item.is_protected && <Badge><ShieldCheck /> Protected</Badge>}</div><p className="mt-3 truncate text-xs text-muted-foreground">{item.storage_path}</p><Button size="sm" variant="outline" className="mt-4" onClick={async () => { try { await archiveMedia({ data: { id: item.id } }); toast.success("Media archived"); onChanged(); } catch (error) { toast.error(error instanceof Error ? error.message : "Media could not be archived"); } }}><Archive /> Archive</Button></article>)}</div></section>;
 }
 
 function AuditLog({ rows }: { rows: Awaited<ReturnType<typeof getAdminWorkspace>>["audit"] }) { return <div className="overflow-hidden rounded-lg border border-border bg-card">{rows.length === 0 ? <EmptyState text="No administrator actions recorded yet." /> : rows.map((row) => <div key={row.id} className="grid gap-2 border-b border-border p-4 last:border-b-0 sm:grid-cols-[minmax(0,1fr)_auto]"><div><strong className="text-sm capitalize">{row.action}</strong><p className="mt-1 text-xs text-muted-foreground">{row.content_type.replaceAll("_", " ")}{row.content_label ? ` · ${row.content_label}` : ""}</p></div><time className="text-xs text-muted-foreground">{new Date(row.created_at).toLocaleString()}</time></div>)}</div>; }

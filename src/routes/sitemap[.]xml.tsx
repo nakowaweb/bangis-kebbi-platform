@@ -14,6 +14,7 @@ const STATIC_PATHS = [
   "/community",
   "/blog",
   "/contact",
+  "/cv",
   "/privacy",
   "/terms",
   "/refund-policy",
@@ -29,8 +30,8 @@ export const Route = createFileRoute("/sitemap.xml")({
 
         const client = createPublicSupabase();
         const [{ data: entries }, { data: foundationProjects }] = await Promise.all([
-          client.from("content_entries").select("content_type,slug,updated_at").in("content_type", ["service", "project", "blog_post"]).limit(1000),
-          client.from("foundation_projects").select("slug,updated_at").limit(1000),
+           client.from("content_entries").select("content_type,slug,updated_at").in("content_type", ["service", "project", "blog_post"]).eq("status", "published").eq("is_enabled", true).is("deleted_at", null).limit(1000),
+           client.from("foundation_projects").select("slug,updated_at").eq("is_published", true).is("archived_at", null).limit(1000),
         ]);
 
         const dynamic = [

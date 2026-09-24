@@ -195,6 +195,43 @@ export const archiveContentEntry = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const restoreContentEntry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: restored, error } = await context.supabase.from("content_entries").update({ status: "draft", deleted_at: null, published_at: null, updated_by: context.userId }).eq("id", data.id).select("id,title").single();
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "restored content", content_type: "content", content_id: restored.id, content_label: restored.title });
+    return restored;
+  });
+
+export const deleteContentEntry = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: roles, error: roleError } = await context.supabase.from("user_roles").select("role").eq("user_id", context.userId).eq("role", "super_admin");
+    if (roleError || !roles?.length) throw new Error("Super Admin access is required to permanently delete content.");
+    const { data: row, error: readError } = await context.supabase.from("content_entries").select("id,title,status,deleted_at").eq("id", data.id).single();
+    if (readError) throw new Error(readError.message);
+    if (row.status !== "archived" || !row.deleted_at) throw new Error("Archive this item before permanently deleting it.");
+    const { error } = await context.supabase.from("content_entries").delete().eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "permanently deleted content", content_type: "content", content_id: row.id, content_label: row.title });
+    return { ok: true };
+  });
+
+export const archiveMediaAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid() }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { error } = await context.supabase.from("media_assets").update({ deleted_at: new Date().toISOString() }).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const saveSiteSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input) => settingsInput.parse(input))
