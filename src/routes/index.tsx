@@ -75,14 +75,20 @@ function Index() {
   const services = publicContent.entries.filter((entry) => entry.content_type === "service");
   const payload = hero?.payload && typeof hero.payload === "object" && !Array.isArray(hero.payload) ? hero.payload : {};
   const value = (key: string) => typeof payload[key] === "string" ? payload[key] : undefined;
+  const heroSlides = publicContent.entries
+    .filter((entry) => entry.content_type === "homepage" && (entry.category === "hero_carousel" || /^hero-slide-[2-5]$/.test(entry.slug)))
+    .sort((a, b) => a.sort_order - b.sort_order)
+    .slice(0, 4)
+    .map((entry) => ({ src: entry.imageUrl, alt: entry.image_alt ?? entry.title, label: entry.title }))
+    .filter((entry): entry is { src: string; alt: string; label: string } => Boolean(entry.src));
   return (
     <main>
-      <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
+      <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
       <QuickActionsSection />
       <PlatformIntroduction title={about?.title} description={about?.summary ?? undefined} />
       <ServicesSection items={services} />
       <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
-      <UmrahSection title={section("umrah")?.title} description={section("umrah")?.summary ?? undefined} />
+      <UmrahSection title={section("umrah")?.title} description={section("umrah")?.summary ?? undefined} image={heroSlides[3]?.src} imageAlt={heroSlides[3]?.alt} />
       <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} />
       <LatestActivitiesSection />
       <CompanyCredentials />

@@ -223,7 +223,7 @@
 @keyframes image-breathe { 50% { transform: scale(1.012); } }
 @keyframes hero-slide-pan { from { transform: scale(1.01) translateX(-0.5%); } to { transform: scale(1.055) translateX(0.75%); } }
 
-.hero-slide { opacity: 0; transform: translateX(18px) scale(0.985); pointer-events: none; transition: opacity 700ms ease, transform 850ms ease; }
+.hero-slide { opacity: 0; transform: translateX(18px) scale(0.985); pointer-events: none; transition: opacity 620ms ease, transform 760ms ease; }
 .hero-slide-active { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; z-index: 10; }
 
 @media (prefers-reduced-motion: no-preference) {

@@ -51,3 +51,5 @@
 - [ ] Synchronize the final workspace commit to GitHub main — repository publishing remains platform-managed
 
 - [x] Create and install the founder-referenced Umrah/community visual in the homepage carousel and Umrah section
+- [x] Preserve the original first hero image, update all four supporting visuals from the founder reference, and make their CMS slots replaceable
+- [x] Increase hero autoplay to 2.7 seconds with smooth transitions and reduced-motion support

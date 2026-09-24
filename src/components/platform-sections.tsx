@@ -109,7 +109,9 @@ const quickActions: Array<{
   { label: "nav.cv", href: "/cv", icon: FileText },
 ];
 
-export function HeroSection({ content, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; location?: string; globalStatus?: string }) {
+type HeroSlideInput = { src: string; alt: string; label: string };
+
+export function HeroSection({ content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string }) {
   const { t, language } = useLanguage();
   // Short payload labels (eyebrow and buttons) are not part of the translatable CMS fields,
   // so outside English the reviewed dictionary wording is used instead of the English payload.
@@ -132,21 +134,22 @@ export function HeroSection({ content, location = "Kebbi State, Nigeria", global
             <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{label(content?.secondaryCta, "common.exploreWork")}</Link></Button>
           </div>
         </div>
-        <HeroCarousel location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location} globalStatus={globalStatus} />
+        <HeroCarousel slides={slides} location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location} globalStatus={globalStatus} />
       </div>
     </section>
   );
 }
 
-const heroSlides = [
-  { src: portraitAsset.url, alt: "Abubakar Alhaji Abubakar at his BangisKebbi.com workspace", label: "BangisKebbi.com" },
+const originalHeroSlide: HeroSlideInput = { src: portraitAsset.url, alt: "Abubakar Alhaji Abubakar at his BangisKebbi.com workspace", label: "BangisKebbi.com" };
+const fallbackHeroSlides: HeroSlideInput[] = [
   { src: aiWorkspaceImage, alt: "AI-assisted web design and coding workspace", label: "AI-assisted web design" },
   { src: businessSolutionsImage, alt: "Professional team creating a digital business solution", label: "Digital business solutions" },
   { src: communityConnectionImage, alt: "Community members collaborating through digital technology", label: "People and collaboration" },
   { src: umrahCommunityFounderImage, alt: "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting", label: "Umrah support" },
 ];
 
-function HeroCarousel({ location, globalStatus }: { location: string; globalStatus: string }) {
+function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[]; location: string; globalStatus: string }) {
+  const heroSlides = [originalHeroSlide, ...(slides?.length ? slides : fallbackHeroSlides)];
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
@@ -155,7 +158,7 @@ function HeroCarousel({ location, globalStatus }: { location: string; globalStat
   const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), []);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
-    const timer = window.setInterval(() => move(1), 4500);
+    const timer = window.setInterval(() => move(1), 2700);
     return () => window.clearInterval(timer);
   }, [move, paused]);
   return (
@@ -297,10 +300,10 @@ export function BusinessSection({ title, description }: { title?: string | undef
   );
 }
 
-export function UmrahSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
+export function UmrahSection({ title, description, image, imageAlt }: { title?: string | undefined; description?: string | undefined; image?: string | undefined; imageAlt?: string | undefined } = {}) {
   const { t } = useLanguage();
   return (
-    <CompactPlatform image={umrahCommunityFounderImage} imageAlt="Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting" icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
+    <CompactPlatform image={image ?? umrahCommunityFounderImage} imageAlt={imageAlt ?? "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting"} icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
   );
 }
 

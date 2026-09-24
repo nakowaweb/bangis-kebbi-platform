@@ -253,6 +253,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
     </div>
     <Field label="Tags / tools (comma separated)"><Input value={editor.tags} onChange={(event) => update("tags", event.target.value)} /></Field>
     <Field label="Main image path or link"><Input value={editor.imagePath} maxLength={500} onChange={(event) => update("imagePath", event.target.value)} /></Field>
+    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">For an additional carousel image, use address hero-slide-2 through hero-slide-5 and category hero_carousel. Upload its finished founder-referenced visual in Media, paste its path here, and publish. The original first image cannot be replaced here.</p> : null}
     <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
     <Field label="Gallery images (comma separated links)"><Textarea value={editor.gallery} onChange={(event) => update("gallery", event.target.value)} /></Field>
     <div className="rounded-lg border border-dashed border-border p-4"><p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Video</p><div className="grid gap-3">
