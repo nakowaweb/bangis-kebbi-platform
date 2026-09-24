@@ -55,7 +55,6 @@ export function AdminNotificationManager() {
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string; published: boolean } | null>(null);
-  const editingPublished = Boolean(draft.id && messages.data?.messages.find((m) => m.id === draft.id)?.status === "published");
 
   const messages = useQuery({ queryKey: ["admin-notifications"], queryFn: () => loadMessages() });
   const members = useQuery({
@@ -63,6 +62,7 @@ export function AdminNotificationManager() {
     queryFn: () => loadMembers({ data: { search } }),
     enabled: audience === "selected",
   });
+  const editingPublished = Boolean(draft.id && messages.data?.messages.find((m) => m.id === draft.id)?.status === "published");
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-notifications"] });
 
   const saveMutation = useMutation({
