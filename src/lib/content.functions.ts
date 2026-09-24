@@ -254,6 +254,10 @@ export const saveSiteSettings = createServerFn({ method: "POST" })
   .validator((input) => settingsInput.parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
+    const { data: current } = await context.supabase.from("site_settings").select("social_links").eq("id", data.id).single();
+    const currentConfig = current?.social_links && typeof current.social_links === "object" && !Array.isArray(current.social_links)
+      ? current.social_links as Record<string, Json | undefined>
+      : {};
     const { data: saved, error } = await context.supabase.from("site_settings").update({
       website_name: data.websiteName,
       company_name: data.companyName,
@@ -266,7 +270,7 @@ export const saveSiteSettings = createServerFn({ method: "POST" })
       default_language: data.defaultLanguage,
       seo_title: data.seoTitle,
       seo_description: data.seoDescription,
-      social_links: { googleSearchCx: data.googleSearchCx },
+      social_links: { ...currentConfig, googleSearchCx: data.googleSearchCx },
       updated_by: context.userId,
     }).eq("id", data.id).select("*").single();
     if (error) throw new Error(error.message);
