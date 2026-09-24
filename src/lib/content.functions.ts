@@ -82,7 +82,16 @@ export const getPublicContent = createServerFn({ method: "GET" })
       client.from("site_settings").select("website_name,company_name,location,global_status,contact_email,phone,whatsapp,footer_content,default_language,seo_title,seo_description,logo_path,favicon_path,profile_image_path,open_graph_image_path").eq("is_active", true).limit(1).maybeSingle(),
       client.from("content_entries").select(PUBLIC_ENTRY_FIELDS).order("sort_order", { ascending: true }).limit(200),
     ]);
-    return { settings, entries: await applyTranslations(client, entries ?? [], data.language) };
+    const translated = await applyTranslations(client, entries ?? [], data.language);
+    const signed = await signSiteMedia(translated.flatMap((row) => [row.image_path, row.og_image_path]));
+    return {
+      settings,
+      entries: translated.map((row) => ({
+        ...row,
+        imageUrl: mediaUrl(row.image_path, signed),
+        ogImageUrl: mediaUrl(row.og_image_path ?? row.image_path, signed),
+      })),
+    };
   });
 
 const publicListInput = z.object({ contentType: z.enum(contentTypes), language: languageInput });
