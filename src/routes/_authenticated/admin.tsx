@@ -32,9 +32,8 @@ export const Route = createFileRoute("/_authenticated/admin")({
   beforeLoad: async ({ context }) => {
     const userId = (context as { user?: { id?: string } }).user?.id;
     if (!userId) throw redirect({ to: "/login" });
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-    const roles = (data ?? []).map((row) => row.role as string);
-    if (!roles.includes("admin") && !roles.includes("super_admin")) throw redirect({ to: "/dashboard" });
+    const { data: allowed, error } = await supabase.rpc("is_platform_admin", { _user_id: userId });
+    if (error || !allowed) throw redirect({ to: "/dashboard" });
   },
   component: AdminPage,
 });

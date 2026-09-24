@@ -31,7 +31,7 @@ import { MemberActivitiesPanel, MemberNotificationsPanel } from "@/components/no
 import { MemberUmrahPanel } from "@/components/umrah/member-umrah";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/lib/language";
-import { claimFirstSuperAdmin, getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
+import { getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
@@ -54,7 +54,6 @@ function DashboardPage() {
   const loadAccount = useServerFn(getMyAccount);
   const saveProfile = useServerFn(updateMyProfile);
   const markRead = useServerFn(markNotificationRead);
-  const claimAdmin = useServerFn(claimFirstSuperAdmin);
   const [tab, setTab] = useState<TabKey>("overview");
 
   const account = useQuery({ queryKey: ["member-account"], queryFn: () => loadAccount() });
@@ -104,7 +103,7 @@ function DashboardPage() {
               <Badge key={role} variant="secondary" className="uppercase">{role.replaceAll("_", " ")}</Badge>
             ))}
             {data.isAdmin ? (
-              <Button asChild variant="secondary" size="sm"><Link to="/admin"><ShieldCheck /> Admin</Link></Button>
+              <Button asChild variant="secondary" size="sm"><Link to="/admin"><ShieldCheck /> Admin Dashboard</Link></Button>
             ) : null}
             <Button variant="outline" size="sm" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" onClick={signOut}>
               <LogOut /> {t("member.signOut")}
@@ -166,15 +165,6 @@ function DashboardPage() {
                 )}
               </SummaryCard>
             </div>
-            {!data.isSuperAdmin && !data.superAdminExists ? (
-              <BootstrapCard onClaim={async () => {
-                try {
-                  const result = await claimAdmin({});
-                  if (result.claimed) { toast.success("Super Admin access granted to this account."); refresh(); }
-                  else toast.info("A Super Admin already exists. Ask them to grant you access.");
-                } catch (error) { toast.error(error instanceof Error ? error.message : "Request failed"); }
-              }} />
-            ) : null}
           </TabsContent>
 
           <TabsContent value="profile">
@@ -298,18 +288,6 @@ function PlaceholderPanel({ title, text, href, linkLabel }: { title: string; tex
 
 function EmptyPanel({ text }: { text: string }) {
   return <div className="rounded-lg border border-dashed border-border bg-card p-12 text-center text-sm text-muted-foreground">{text}</div>;
-}
-
-function BootstrapCard({ onClaim }: { onClaim: () => void }) {
-  return (
-    <Card className="mt-6 max-w-2xl border-dashed">
-      <CardHeader>
-        <CardTitle className="text-base">Platform owner setup</CardTitle>
-        <CardDescription>If no Super Admin exists yet, the owner account can claim it once. This works only while the platform has no Super Admin.</CardDescription>
-      </CardHeader>
-      <CardContent><Button variant="outline" onClick={onClaim}><ShieldCheck /> Claim Super Admin access</Button></CardContent>
-    </Card>
-  );
 }
 
 function DashboardSkeleton() {
