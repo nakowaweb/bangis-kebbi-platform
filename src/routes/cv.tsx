@@ -1,5 +1,5 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { Download, MapPin, Printer } from "lucide-react";
+import { MapPin, Printer } from "lucide-react";
 
 import portrait from "@/assets/bangis-official-hero.webp";
 import { ContactActions } from "@/components/contact-actions";

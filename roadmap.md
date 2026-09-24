@@ -13,11 +13,12 @@
 - Pre-existing security-linter warnings on `claim_first_super_admin` and `create_system_notification` (SECURITY DEFINER executable by signed-in users) were left untouched to avoid breaking auth and notifications.
 
 ## Master production content, UX and CMS update
-- [ ] Complete six CMS-backed service detail experiences and links
-- [ ] Complete eight project case studies with concept/demo labels and visuals
-- [ ] Complete blog details, Umrah, BK Foundations, contact actions and media fallbacks
-- [ ] Add multilingual CV and production legal pages
-- [ ] Extend CMS lifecycle controls, content types, previews, restore and Super Admin delete
-- [ ] Seed EN/AR/HA production content and update SEO/sitemap/internal links
-- [ ] Verify all public/admin interactions, languages, RTL, viewports, security, typecheck and build
-- [ ] Confirm final GitHub main synchronization
+- [x] Complete six CMS-backed service detail experiences and links
+- [x] Complete eight project case studies with concept/demo labels and visuals
+- [x] Complete blog details, Umrah, BK Foundations, contact actions and media fallbacks
+- [x] Add multilingual CV and production legal pages
+- [x] Extend CMS lifecycle controls with draft preview, archive/restore and Super Admin permanent delete
+- [x] Add controlled EN/AR/HA production fallbacks and update SEO/sitemap/internal links
+- [ ] Apply database content-type expansion and seed rows — blocked because the connected external production database is unreachable from this workspace
+- [ ] Verify authenticated Super Admin controls against production — blocked by the same unavailable external connection
+- [ ] Confirm GitHub main synchronization — current workspace branch is not main and repository pushes are platform-managed
