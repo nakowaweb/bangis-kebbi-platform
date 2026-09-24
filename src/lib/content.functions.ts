@@ -249,6 +249,52 @@ export const restoreMediaAsset = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const deleteMediaAssetPermanently = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid(), confirmName: z.string().max(200), removeDependencies: z.boolean().default(false) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: roles, error: roleError } = await context.supabase.from("user_roles").select("role").eq("user_id", context.userId).eq("role", "super_admin");
+    if (roleError || !roles?.length) throw new Error("Super Admin access is required to permanently delete media.");
+    const { data: media, error: readError } = await context.supabase.from("media_assets").select("id,name,storage_path,deleted_at,is_protected,usage_count").eq("id", data.id).single();
+    if (readError) throw new Error(readError.message);
+    if (!media.deleted_at) throw new Error("Archive this media before permanently deleting it.");
+    if (media.is_protected) throw new Error("Protected brand media cannot be permanently deleted.");
+    if (data.confirmName.trim() !== media.name) throw new Error("Type the exact file name to confirm permanent deletion.");
+
+    const path = media.storage_path;
+    const { data: entries, error: refError } = await context.supabase.from("content_entries").select("id,title,image_path,og_image_path,gallery,payload");
+    if (refError) throw new Error(refError.message);
+    const refs = (entries ?? []).filter((entry) => entry.image_path === path || entry.og_image_path === path || JSON.stringify(entry.gallery ?? []).includes(path) || JSON.stringify(entry.payload ?? {}).includes(path));
+    if ((refs.length > 0 || media.usage_count > 0) && !data.removeDependencies) {
+      return { ok: false as const, dependencies: refs.map((entry) => entry.title), usageCount: media.usage_count };
+    }
+
+    for (const entry of refs) {
+      const gallery = Array.isArray(entry.gallery) ? entry.gallery.filter((item) => item !== path) : entry.gallery;
+      const payload = entry.payload && typeof entry.payload === "object" && !Array.isArray(entry.payload)
+        ? Object.fromEntries(Object.entries(entry.payload as Record<string, Json>).map(([key, value]) => [key, value === path ? null : value]))
+        : entry.payload;
+      const { error } = await context.supabase.from("content_entries").update({
+        image_path: entry.image_path === path ? null : entry.image_path,
+        og_image_path: entry.og_image_path === path ? null : entry.og_image_path,
+        gallery, payload, updated_by: context.userId,
+      }).eq("id", entry.id);
+      if (error) throw new Error(error.message);
+    }
+    if (media.usage_count > 0) {
+      const { error } = await context.supabase.from("media_assets").update({ usage_count: 0 }).eq("id", media.id);
+      if (error) throw new Error(error.message);
+    }
+
+    const { error: storageError } = await context.supabase.storage.from("site-media").remove([path]);
+    if (storageError) throw new Error(`Storage file could not be deleted: ${storageError.message}`);
+    const { error: deleteError } = await context.supabase.from("media_assets").delete().eq("id", media.id);
+    if (deleteError) throw new Error(deleteError.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: refs.length || media.usage_count ? `permanently deleted media and removed ${refs.length} reference(s)` : "permanently deleted media", content_type: "media", content_id: media.id, content_label: media.name });
+    return { ok: true as const, removedReferences: refs.length };
+  });
+
 export const saveSiteSettings = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input) => settingsInput.parse(input))
