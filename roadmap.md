@@ -29,4 +29,5 @@
 - [ ] Raise the private site-media bucket and media record limits to 50 MB — blocked by unavailable database connection
 - [x] Confirm Super Admin CMS and social controls in source
 - [x] Add restrained motion with reduced-motion support
-- [ ] Verify social links, routes, mobile/desktop, TypeScript, production build, and repository status
+- [x] Verify public routes and mobile/desktop rendering; all requested routes return 200 with no overflow or broken images
+- [ ] Verify all database-managed social rows, TypeScript, production build, and GitHub main push — blocked by unavailable production database and platform-managed repository publishing
