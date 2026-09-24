@@ -2,6 +2,7 @@ import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
+import { DEFAULT_SOCIAL_LINKS } from "@/lib/contact-details";
 import { createPublicSupabase } from "@/lib/public-content.server";
 
 export const socialPlatforms = ["linkedin", "whatsapp", "facebook", "tiktok", "youtube", "instagram", "x", "telegram"] as const;
@@ -31,13 +32,14 @@ async function requireContentAdmin(context: { supabase: { rpc: (fn: "is_content_
 
 /** Enabled official links for the public website. */
 export const listPublicSocialLinks = createServerFn({ method: "GET" }).handler(async () => {
-  const { data } = await createPublicSupabase()
+  const { data, error } = await createPublicSupabase()
     .from("site_social_links")
     .select("id,platform,url,display_label,icon_key,sort_order")
     .eq("is_enabled", true)
     .order("sort_order", { ascending: true })
     .limit(20);
-  return data ?? [];
+  if (error || !data?.length) return [...DEFAULT_SOCIAL_LINKS];
+  return data;
 });
 
 /** Every link, including disabled ones, for the admin manager. */

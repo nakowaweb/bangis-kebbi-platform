@@ -25,6 +25,7 @@
 - [ ] Confirm GitHub main synchronization — current workspace branch is not main and repository pushes are platform-managed
 ## Final production polish
 - [x] Apply confirmed WhatsApp, email and LinkedIn fallbacks across public contact actions
+- [x] Add confirmed social links as safe public defaults while preserving database-managed overrides
 - [ ] Save confirmed social links and location in production data — blocked by unavailable database connection
 - [ ] Raise the private site-media bucket and media record limits to 50 MB — blocked by unavailable database connection
 - [x] Confirm Super Admin CMS and social controls in source
