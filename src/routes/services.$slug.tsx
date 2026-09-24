@@ -19,7 +19,7 @@ export const Route = createFileRoute("/services/$slug")({
     if (!service && !fallback) throw notFound();
     return { service, fallback };
   },
-  head: ({ params, loaderData, match }: { params: { slug: string }; loaderData?: Awaited<ReturnType<typeof getPublicEntry>> | undefined; match: { search: { lang?: LanguageCode } } }) => {
+  head: ({ params, loaderData, match }) => {
     if (!loaderData) {
       return { meta: [{ title: "Service not found — BangisKebbi.com" }, { name: "robots", content: "noindex" }] };
     }
@@ -81,7 +81,7 @@ function ServiceDetailPage() {
         </nav>
         {(service?.imageUrl || fallback?.image) && <SafeImage src={service?.imageUrl ?? fallback?.image ?? ""} alt={service?.image_alt ?? (fallback ? text(fallback.imageAlt, language) : title)} className="mb-8 aspect-[16/7] w-full rounded-lg border border-border object-cover" />}
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
-          {(service?.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph, index) => <p key={index}>{paragraph}</p>)}
+          {(service?.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
         {fallback && <div className="mt-10 grid gap-8 lg:grid-cols-3"><ListBlock title={labels.capabilities} items={fallback.canDo[language]} /><ListBlock title={labels.audience} items={fallback.audience[language]} /><ListBlock title={labels.process} items={fallback.process[language]} numbered /></div>}
         <ContactActions />
