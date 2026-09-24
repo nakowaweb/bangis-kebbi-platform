@@ -60,6 +60,7 @@ const settingsInput = z.object({
   defaultLanguage: z.enum(["en", "ha", "ar"]),
   seoTitle: z.string().trim().min(1).max(180),
   seoDescription: z.string().trim().min(1).max(500),
+  googleSearchCx: z.string().trim().max(200),
 });
 
 function publicClient() {
@@ -178,6 +179,7 @@ export const saveContentEntry = createServerFn({ method: "POST" })
       scheduled_for: data.scheduledFor || null,
       published_at: data.status === "published" ? (data.publishedAt || data.scheduledFor || new Date().toISOString()) : (data.publishedAt || null),
       payload: data.payload as Json,
+      social_links: { googleSearchCx: data.googleSearchCx },
       updated_by: context.userId,
       deleted_at: data.status === "archived" ? new Date().toISOString() : null,
     };

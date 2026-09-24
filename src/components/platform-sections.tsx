@@ -119,9 +119,9 @@ export function HeroSection({ content, location = "Kebbi State, Nigeria", global
       <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
       <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
         <div className="hero-copy-enter">
-          <p className="hero-line hero-line-1 text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow, "home.heroEyebrow")}</p>
+          <p className="hero-line hero-line-1 text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow?.toLowerCase() === "more than a website" ? undefined : content?.eyebrow, "home.heroEyebrow")}</p>
           <h1 className="hero-line hero-line-2 mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
-            {content?.title ?? <>{t("home.heroTitleLine1")}<br /><span className="text-brand-cyan">{t("home.heroTitleLine2")}</span></>}
+            {content?.title && content.title.toUpperCase() !== "A GLOBAL PLATFORM" ? content.title : <>{t("home.heroTitleLine1")}<br /><span className="text-brand-cyan">{t("home.heroTitleLine2")}</span></>}
           </h1>
           <p className="hero-line hero-line-3 mt-5 max-w-xl font-display text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
             {content?.subtitle ?? t("home.heroSubtitle")}

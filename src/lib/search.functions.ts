@@ -40,18 +40,20 @@ export const searchPublicSite = createServerFn({ method: "GET" })
   .handler(async ({ data }) => {
     try {
       const client = createPublicSupabase();
-      const term = data.query.replace(/[%,]/g, " ").trim();
+      const term = data.query.toLowerCase();
       const [{ data: rows }, { data: settings }] = await Promise.all([
         client
           .from("content_entries")
           .select("id,content_type,slug,title,summary,body,category,payload,image_path")
-          .or(`title.ilike.%${term}%,summary.ilike.%${term}%,body.ilike.%${term}%,slug.ilike.%${term}%`)
           .order("sort_order", { ascending: true })
-          .limit(30),
+          .limit(200),
         client.from("site_settings").select("social_links").eq("is_active", true).limit(1).maybeSingle(),
       ]);
       const signed = await signSiteMedia((rows ?? []).map((row) => row.image_path));
-      const results = (rows ?? []).map((row): SiteSearchResult => {
+      const results = (rows ?? []).filter((row) => {
+        const payloadText = row.payload && typeof row.payload === "object" ? JSON.stringify(row.payload) : "";
+        return `${row.title} ${row.summary ?? ""} ${row.body ?? ""} ${row.slug} ${row.category ?? ""} ${payloadText}`.toLowerCase().includes(term);
+      }).slice(0, 30).map((row): SiteSearchResult => {
         const payload = row.payload && typeof row.payload === "object" && !Array.isArray(row.payload) ? row.payload : {};
         const credentialText = row.category === "company_credential"
           ? [payload["organization"], payload["number"], payload["documentType"]].filter((value) => typeof value === "string").join(" · ")
