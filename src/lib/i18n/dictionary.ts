@@ -163,8 +163,8 @@ const en = {
 
   // About page
   "about.eyebrow": "About Me",
-  "about.title": "Technology, People & Meaningful Impact",
-  "about.description": "I’m Abubakar Alhaji Abubakar, an AI Web Designer & Web Developer focused on building practical digital solutions and turning ideas into useful platforms. My work combines technology, business, community connection and opportunities, with a strong interest in using digital skills to create meaningful impact.",
+  "about.title": "A passion for technology, people and impact.",
+  "about.description": "I’m Abubakar Alhaji Abubakar, an AI Web Designer & Web Developer focused on building practical digital solutions and turning ideas into useful platforms. My work connects technology, business, people and opportunities, with a commitment to creating positive community impact.",
   "about.quote": "“Technology gives you tools, but people give you opportunities.”",
   "about.card1Title": "Creative Digital Solutions",
   "about.card1Text": "I design modern websites and digital solutions that turn ideas into practical, accessible experiences.",
@@ -543,8 +543,8 @@ const ha: Record<TranslationKey, string> = {
   "word.grow": "Girma",
 
   "about.eyebrow": "Game da ni",
-  "about.title": "Fasaha, Mutane da Tasiri Mai Girma",
-  "about.description": "Ina Abubakar Alhaji Abubakar, Mai Tsara Gidan Yanar Gizo ta AI & Mai Haɓaka Gidan Yanar Gizo, wanda ke mai da hankali kan gina hanyoyin dijital masu amfani da kuma mayar da ra'ayoyi zuwa dandamali masu amfani. Aikina na haɗa fasaha, kasuwanci, haɗin al’umma da damarmaki, tare da sha’awar yin amfani da ƙwarewar dijital wajen ƙirƙirar tasiri mai girma.",
+  "about.title": "Sha’awar fasaha, mutane da tasiri.",
+  "about.description": "Ni Abubakar Alhaji Abubakar, Mai Tsara Gidan Yanar Gizo ta AI & Mai Haɓaka Gidan Yanar Gizo, wanda ke mai da hankali kan gina hanyoyin dijital masu amfani da kuma mayar da ra’ayoyi zuwa dandamali masu amfani. Aikina na haɗa fasaha, kasuwanci, mutane da damarmaki, tare da alkawarin ƙirƙirar tasiri mai kyau a cikin al’umma.",
   "about.quote": "“Fasaha tana ba ka kayan aiki, amma mutane su ne suke ba ka dama.”",
   "about.card1Title": "Hanyoyin Dijital Masu Ƙirƙira",
   "about.card1Text": "Ina tsara gidajen yanar gizo na zamani da hanyoyin dijital waɗanda ke mayar da ra'ayoyi zuwa ƙwarewa masu amfani da sauƙin isa.",
@@ -910,8 +910,8 @@ const ar: Record<TranslationKey, string> = {
   "word.grow": "انمُ",
 
   "about.eyebrow": "نبذة عني",
-  "about.title": "التقنية والناس والأثر ذو المغزى",
-  "about.description": "أنا أبوبكر الحاج أبوبكر، مصمم مواقع بالذكاء الاصطناعي ومطوّر مواقع، أركّز على بناء حلول رقمية عملية وتحويل الأفكار إلى منصات مفيدة. يجمع عملي بين التقنية والأعمال والتواصل المجتمعي والفرص، مع اهتمام كبير باستخدام المهارات الرقمية لخلق أثر ذي مغزى.",
+  "about.title": "شغف بالتقنية والناس والأثر.",
+  "about.description": "أنا أبوبكر الحاج أبوبكر، مصمم مواقع بالذكاء الاصطناعي ومطوّر مواقع، أركّز على بناء حلول رقمية عملية وتحويل الأفكار إلى منصات مفيدة. يربط عملي بين التقنية والأعمال والناس والفرص، مع التزام بخلق أثر مجتمعي إيجابي.",
   "about.quote": "«التقنية تمنحك الأدوات، أما الناس فيمنحونك الفرص.»",
   "about.card1Title": "حلول رقمية مبتكرة",
   "about.card1Text": "أصمّم مواقع إلكترونية حديثة وحلولًا رقمية تُحوّل الأفكار إلى تجارب عملية يسهل الوصول إليها.",
