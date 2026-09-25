@@ -28,7 +28,7 @@ import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
 import supportMission from "@/assets/support-mission.jpg";
 import supportVision from "@/assets/support-vision.jpg";
 
-type Entry = { content_type: string; slug: string };
+type Entry = { id: string; content_type: string; slug: string; image_path: string | null };
 type Media = { storage_path: string; name: string };
 
 type Item = {
@@ -42,6 +42,7 @@ type Item = {
   image: string;
   imageAlt: string;
   sortOrder: number;
+  publishedAt?: string;
 };
 
 /** The content and pictures the public website already shows (built into the site), so they can be managed in the CMS. */
@@ -49,7 +50,7 @@ function currentSiteItems(): Item[] {
   return [
     ...services.map((s, i) => ({ contentType: "service" as const, slug: s.slug, title: s.title.en, summary: s.summary.en, body: [...s.canDo.en].join("\n"), image: s.image, imageAlt: s.imageAlt.en, sortOrder: i })),
     ...projects.map((p, i) => ({ contentType: "project" as const, slug: p.slug, title: p.title.en, summary: p.summary.en, body: p.sections.en.map((x) => `${x.title}\n${x.body}`).join("\n\n"), category: p.category.en, image: p.image, imageAlt: p.imageAlt.en, sortOrder: i })),
-    ...articles.map((a, i) => ({ contentType: "blog_post" as const, slug: a.slug, title: a.title.en, summary: a.summary.en, body: a.body.en.join("\n\n"), category: a.category.en, author: a.author, image: a.image, imageAlt: a.title.en, sortOrder: i })),
+    ...articles.map((a, i) => ({ contentType: "blog_post" as const, slug: a.slug, title: a.title.en, summary: a.summary.en, body: a.body.en.join("\n\n"), category: a.category.en, author: a.author, image: a.image, imageAlt: a.title.en, sortOrder: i, publishedAt: a.publishedAt })),
     ...[
       { src: heroDigitalSolutions, label: "Digital Solutions / Web Development", alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team" },
       { src: heroCommunitySupport, label: "BK Community Support Initiative", alt: "Abubakar Alhaji Abubakar participating in dignified community support" },
@@ -89,8 +90,12 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
   const [progress, setProgress] = useState("");
 
   const items = currentSiteItems();
-  const existing = new Set(entries.map((e) => `${e.content_type}:${e.slug}`));
-  const missing = items.filter((item) => !existing.has(`${item.contentType}:${item.slug}`));
+  const existing = new Map(entries.map((entry) => [`${entry.content_type}:${entry.slug}`, entry]));
+  const oldBlogImages = /(?:corporate-concept|ecommerce-concept|business-website)\.(?:webp|png|jpe?g)$/i;
+  const missing = items.filter((item) => {
+    const entry = existing.get(`${item.contentType}:${item.slug}`);
+    return !entry || (item.contentType === "blog_post" && (!entry.image_path || oldBlogImages.test(entry.image_path)));
+  });
 
   async function run() {
     setRunning(true);
@@ -100,6 +105,7 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
     for (const item of missing) {
       setProgress(`${++done} / ${missing.length}: ${item.title}`);
       try {
+        const existingEntry = existing.get(`${item.contentType}:${item.slug}`);
         const name = fileName(item.image);
         let path = uploaded.get(`imported/${name}`);
         if (!path) {
@@ -112,9 +118,10 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
           uploaded.set(`imported/${name}`, path);
         }
         await saveEntry({ data: {
+          ...(existingEntry ? { id: existingEntry.id } : {}),
           contentType: item.contentType, slug: item.slug, title: item.title, summary: item.summary.slice(0, 1000) || undefined,
           body: item.body, category: item.category, author: item.author, imagePath: path, imageAlt: item.imageAlt,
-          status: "published", isEnabled: true, isFeatured: false, sortOrder: item.sortOrder, payload: {},
+          status: "published", isEnabled: true, isFeatured: false, sortOrder: item.sortOrder, payload: {}, publishedAt: item.publishedAt,
         } });
       } catch (error) {
         failures.push(`${item.title}: ${error instanceof Error ? error.message : "failed"}`);

@@ -62,6 +62,7 @@ const settingsInput = z.object({
   seoTitle: z.string().trim().min(1).max(180),
   seoDescription: z.string().trim().min(1).max(500),
   googleSearchCx: z.union([z.literal(""), z.string().trim().regex(/^[A-Za-z0-9:_-]{5,100}$/, "The Search Engine ID contains invalid characters.")]),
+  profileImagePath: z.string().trim().max(500),
 });
 
 function publicClient() {
@@ -85,9 +86,9 @@ export const getPublicContent = createServerFn({ method: "GET" })
       client.from("content_entries").select(PUBLIC_ENTRY_FIELDS).order("sort_order", { ascending: true }).limit(200),
     ]);
     const translated = await applyTranslations(client, entries ?? [], data.language);
-    const signed = await signSiteMedia(translated.flatMap((row) => [row.image_path, row.og_image_path]));
+    const signed = await signSiteMedia([...translated.flatMap((row) => [row.image_path, row.og_image_path]), settings?.profile_image_path]);
     return {
-      settings,
+      settings: settings ? { ...settings, profileImageUrl: mediaUrl(settings.profile_image_path, signed) } : settings,
       entries: translated.map((row) => ({
         ...row,
         imageUrl: mediaUrl(row.image_path, signed),
@@ -393,6 +394,7 @@ export const saveSiteSettings = createServerFn({ method: "POST" })
       seo_title: data.seoTitle,
       seo_description: data.seoDescription,
       social_links: { ...currentConfig, googleSearchCx: data.googleSearchCx },
+      profile_image_path: data.profileImagePath || null,
       updated_by: context.userId,
     }).eq("id", data.id).select("*").single();
     if (error) throw new Error(error.message);

@@ -88,3 +88,9 @@
 - [x] Connect each visual to a distinct CMS entry for Media Library preview, replacement and removal
 - [x] Verify the Business cards on desktop and mobile without changing other sections
 - [ ] Register the five images in the production Media Library — blocked when no production admin session is available
+
+## Blog reference-card update
+- [x] Split the supplied three-panel artwork into three exact, unmodified photographic crops
+- [x] Replace the three fallback article images and match the reference card content and actions
+- [x] Add the CMS-managed blog author profile photo to Website Settings
+- [ ] Register the three images and author profile photo in the production Media Library — blocked when no production admin session is available
