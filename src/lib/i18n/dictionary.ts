@@ -250,11 +250,11 @@ const en = {
   "umrah.unavailableTitle": "Umrah information is unavailable right now",
   "umrah.unavailableBody": "Please try again in a moment.",
 
-  // BK Foundations public page
+  // BK Community Support Initiative public page
   "foundation.heroTitle": "Community support, done openly.",
-  "foundation.heroSummary": "BK Foundations is the community and humanitarian side of BangisKebbi.com, focused on practical help and accountable updates.",
+  "foundation.heroSummary": "BK Community Support Initiative is the community and humanitarian side of BangisKebbi.com, focused on practical help and accountable updates.",
   "foundation.joinCommunity": "Join the community",
-  "foundation.contactFoundation": "Contact BK Foundations",
+  "foundation.contactFoundation": "Contact the Initiative",
   "foundation.mission": "Mission",
   "foundation.missionTitle": "Support people with practical help.",
   "foundation.missionFallback": "Our mission text will appear here once it is published from the admin area.",
@@ -618,9 +618,9 @@ const ha: Record<TranslationKey, string> = {
   "umrah.unavailableBody": "Da fatan a sake gwadawa nan da ɗan lokaci.",
 
   "foundation.heroTitle": "Tallafin al’umma, a bayyane.",
-  "foundation.heroSummary": "Gidauniyar BK ita ce ɓangaren al’umma da jin ƙai na BangisKebbi.com. Ba shiri ne na zuba jari ba kuma ba ta ba da ribar kuɗi.",
+  "foundation.heroSummary": "BK Community Support Initiative ita ce ɓangaren al’umma da jin ƙai na BangisKebbi.com, mai mayar da hankali kan taimako mai amfani da bayanai masu gaskiya.",
   "foundation.joinCommunity": "Shiga al’umma",
-  "foundation.contactFoundation": "Tuntuɓi Gidauniyar BK",
+  "foundation.contactFoundation": "Tuntuɓi shirin",
   "foundation.mission": "Manufa",
   "foundation.missionTitle": "Tallafa wa mutane da taimako mai amfani.",
   "foundation.missionFallback": "Rubutun manufarmu zai bayyana a nan bayan an buga shi daga sashen gudanarwa.",
@@ -977,9 +977,9 @@ const ar: Record<TranslationKey, string> = {
   "umrah.unavailableBody": "يرجى المحاولة بعد قليل.",
 
   "foundation.heroTitle": "دعم مجتمعي بشفافية.",
-  "foundation.heroSummary": "مؤسسة BK هي الجانب المجتمعي والإنساني من BangisKebbi.com. ليست برنامجًا استثماريًا ولا تقدم أي عوائد مالية.",
+  "foundation.heroSummary": "مبادرة BK لدعم المجتمع هي الجانب المجتمعي والإنساني من BangisKebbi.com، وتركز على المساعدة العملية والتحديثات المسؤولة.",
   "foundation.joinCommunity": "انضم إلى المجتمع",
-  "foundation.contactFoundation": "تواصل مع مؤسسة BK",
+  "foundation.contactFoundation": "تواصل مع المبادرة",
   "foundation.mission": "الرسالة",
   "foundation.missionTitle": "دعم الناس بمساعدة عملية.",
   "foundation.missionFallback": "سيظهر نص رسالتنا هنا بعد نشره من لوحة الإدارة.",
