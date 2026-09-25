@@ -6,7 +6,6 @@ import {
   ChevronRight,
   BriefcaseBusiness,
   Building2,
-  CheckCircle2,
   Code2,
   Globe2,
   FileText,
@@ -256,18 +255,29 @@ type AboutManagedItem = {
   sort_order: number;
 };
 
+type AboutCardDisplay = {
+  slug: string;
+  title: string;
+  text: string;
+  icon: LucideIcon;
+  tone: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
+};
+
 export function AboutPreview({ title, description, items }: { title?: string | undefined; description?: string | undefined; items?: AboutManagedItem[] | undefined } = {}) {
   const { t } = useLanguage();
-  const fallbackCards: Array<{ slug: string; title: string; text: string; icon: LucideIcon; tone: string }> = [
+  const fallbackCards: AboutCardDisplay[] = [
     { slug: "about-card-1", title: t("about.card1Title"), text: t("about.card1Text"), icon: Blocks, tone: "bg-brand-cyan/10 text-primary" },
     { slug: "about-card-2", title: t("about.card2Title"), text: t("about.card2Text"), icon: Handshake, tone: "bg-brand-green/10 text-brand-green" },
     { slug: "about-card-3", title: t("about.card3Title"), text: t("about.card3Text"), icon: Globe2, tone: "bg-brand-gold/15 text-brand-gold" },
     { slug: "about-card-4", title: t("about.card4Title"), text: t("about.card4Text"), icon: TrendingUp, tone: "bg-primary/10 text-primary" },
   ];
+  const defaultCard = fallbackCards[0] ?? { slug: "about-card-1", title: t("about.card1Title"), text: t("about.card1Text"), icon: Blocks, tone: "bg-brand-cyan/10 text-primary" };
   const managedCards = items?.filter((item) => /^about-card-[1-4]$/.test(item.slug)).sort((a, b) => a.sort_order - b.sort_order) ?? [];
   const cards = managedCards.length
     ? managedCards.map((item) => {
-      const fallback = fallbackCards.find((card) => card.slug === item.slug) ?? fallbackCards[0];
+      const fallback = fallbackCards.find((card) => card.slug === item.slug) ?? defaultCard;
       return { ...fallback, title: item.title, text: item.summary ?? fallback.text, imageUrl: item.imageUrl, imageAlt: item.image_alt ?? item.title };
     })
     : fallbackCards;

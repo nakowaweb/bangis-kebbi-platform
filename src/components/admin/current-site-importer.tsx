@@ -34,7 +34,7 @@ type Entry = { id: string; content_type: string; slug: string; image_path: strin
 type Media = { storage_path: string; name: string };
 
 type Item = {
-  contentType: "service" | "project" | "blog_post" | "homepage" | "business" | "umrah_step" | "umrah_information" | "foundation" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
+  contentType: "service" | "project" | "blog_post" | "homepage" | "about" | "business" | "umrah_step" | "umrah_information" | "foundation" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
   slug: string;
   title: string;
   summary: string;
@@ -132,8 +132,8 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
         await saveEntry({ data: {
           ...(existingEntry ? { id: existingEntry.id } : {}),
           contentType: item.contentType, slug: item.slug, title: item.title, summary: item.summary.slice(0, 1000) || undefined,
-          body: item.body, category: item.category, author: item.author, imagePath: path, imageAlt: item.imageAlt,
-          status: "published", isEnabled: true, isFeatured: false, sortOrder: item.sortOrder, payload: {}, publishedAt: item.publishedAt,
+          ...(item.body ? { body: item.body } : {}), ...(item.category ? { category: item.category } : {}), ...(item.author ? { author: item.author } : {}), ...(path ? { imagePath: path } : {}), ...(item.imageAlt ? { imageAlt: item.imageAlt } : {}),
+          status: "published", isEnabled: true, isFeatured: false, sortOrder: item.sortOrder, payload: {}, ...(item.publishedAt ? { publishedAt: item.publishedAt } : {}),
         } });
       } catch (error) {
         failures.push(`${item.title}: ${error instanceof Error ? error.message : "failed"}`);
