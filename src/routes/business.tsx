@@ -7,6 +7,7 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/business")({
+  validateSearch: (search: Record<string, unknown>) => ({ lang: typeof search.lang === "string" ? search.lang as LanguageCode : undefined }),
   head: ({ match }) =>
     pageHead({ search: match.search,
       title: "Business & Opportunities — Bangis Kebbi",

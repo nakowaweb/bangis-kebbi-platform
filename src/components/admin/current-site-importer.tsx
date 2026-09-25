@@ -32,7 +32,7 @@ type Entry = { content_type: string; slug: string };
 type Media = { storage_path: string; name: string };
 
 type Item = {
-  contentType: "service" | "project" | "blog_post" | "homepage" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
+  contentType: "service" | "project" | "blog_post" | "homepage" | "business" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
   slug: string;
   title: string;
   summary: string;
