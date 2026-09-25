@@ -14,7 +14,7 @@ export const Route = createFileRoute("/about")({
       path: "/about",
     }),
   loaderDeps: (opts): { lang: LanguageCode } => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
-  loader: ({ deps }) => listPublicEntries({ data: { contentType: "about", language: deps.lang } }),
+  loader: async ({ deps }: { deps: { lang: LanguageCode } }) => listPublicEntries({ data: { contentType: "about", language: deps.lang } }),
   component: AboutPage,
 });
 
