@@ -1,3 +1,4 @@
+import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { createClient } from "@supabase/supabase-js";
 import { z } from "zod";
@@ -120,6 +121,7 @@ function toRow(data: z.infer<typeof applicationInput>) {
 async function requireAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("is_platform_admin", { _user_id: context.userId });
   if (error || !data) throw new Error("Administrator access is required.");
+  await requireModule(context as never, "umrah");
 }
 
 // Member notifications for submissions, status changes and administrator messages

@@ -1,3 +1,4 @@
+import { requireModule } from "@/lib/admin-access";
 import { createClient } from "@supabase/supabase-js";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -207,6 +208,7 @@ export const getMemberFoundation = createServerFn({ method: "GET" })
 async function requireFoundationAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("is_content_admin", { _user_id: context.userId });
   if (error || !data) throw new Error("Administrator access is required.");
+  await requireModule(context as never, "foundations");
 }
 
 const projectInput = z.object({

@@ -1,3 +1,4 @@
+import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -21,6 +22,7 @@ type AdminContext = {
 async function requireContentAdmin(context: AdminContext) {
   const { data, error } = await context.supabase.rpc("is_content_admin", { _user_id: context.userId });
   if (error || !data) throw new Error("Administrator access is required.");
+  await requireModule(context as never, "translations");
 }
 
 /** Every English entry plus its Hausa/Arabic versions, for the admin translation workspace. */

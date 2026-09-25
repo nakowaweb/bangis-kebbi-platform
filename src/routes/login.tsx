@@ -39,6 +39,8 @@ function LoginPage() {
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
 
   async function destinationFor(userId: string) {
+    const { data: profile } = await supabase.from("profiles").select("must_change_password").eq("id", userId).maybeSingle();
+    if ((profile as { must_change_password?: boolean } | null)?.must_change_password) return "/reset-password";
     const target = safePath(search.redirect);
     if (target) return target;
     const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);

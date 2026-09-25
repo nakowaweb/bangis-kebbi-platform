@@ -42,6 +42,8 @@ function ResetPasswordPage() {
     );
     setBusy(false);
     if (error) { toast.error(error.message); return; }
+    const { data: who } = await supabase.auth.getUser();
+    if (who.user) await supabase.from("profiles").update({ must_change_password: false } as never).eq("id", who.user.id);
     toast.success("Password updated.");
     await navigate({ to: "/dashboard" });
   }

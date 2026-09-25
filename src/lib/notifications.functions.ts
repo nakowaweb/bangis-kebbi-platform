@@ -1,3 +1,4 @@
+import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -11,6 +12,7 @@ const messageColumns = "id,title,body,category,link_path,status,audience,publish
 async function requireAdmin(context: { supabase: any; userId: string }) {
   const { data, error } = await context.supabase.rpc("is_platform_admin", { _user_id: context.userId });
   if (error || !data) throw new Error("Administrator access is required.");
+  await requireModule(context as never, "notifications");
 }
 
 async function audit(context: { supabase: any; userId: string }, action: string, id: string | null, label: string) {

@@ -1,3 +1,4 @@
+import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -42,6 +43,7 @@ const credentialInput = z.object({
 async function requireContentAdmin(context: { supabase: { rpc: (fn: "is_content_admin", args: { _user_id: string }) => PromiseLike<{ data: unknown; error: unknown }> }; userId: string }) {
   const { data, error } = await context.supabase.rpc("is_content_admin", { _user_id: context.userId });
   if (error || !data) throw new Error("Content administrator access is required.");
+  await requireModule(context as never, "credentials");
 }
 
 const payloadValue = (payload: Json | null, key: string) => {
