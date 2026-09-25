@@ -13,7 +13,7 @@ export const Route = createFileRoute("/about")({
         "Learn about Abubakar Alhaji Abubakar, Bangis Kebbi Nakowa, an AI-assisted web designer, web developer, digital entrepreneur and community builder.",
       path: "/about",
     }),
-  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loaderDeps: (opts): { lang: LanguageCode } => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
   loader: ({ deps }) => listPublicEntries({ data: { contentType: "about", language: deps.lang } }),
   component: AboutPage,
 });
