@@ -93,7 +93,7 @@ function BlogPostPage() {
         </nav>
         {(post?.imageUrl || fallback?.image) && <SafeImage src={post?.imageUrl ?? fallback?.image ?? ""} alt={post?.image_alt ?? title} className="mb-6 aspect-[16/7] w-full rounded-lg border border-border object-cover" />}
         <p className="mb-5 text-xs text-muted-foreground">
-          {post?.author ?? fallback?.author ?? ""}{post?.published_at ? ` · ${new Date(post.published_at).toLocaleDateString()}` : ""}
+          {post?.author ?? fallback?.author ?? ""}{post?.published_at || fallback?.publishedAt ? ` · ${new Date(post?.published_at ?? fallback?.publishedAt ?? "").toLocaleDateString()}` : ""}
         </p>
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(post?.body ? post.body.split(/\n{2,}/).filter(Boolean) : fallback?.body[language] ?? []).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
