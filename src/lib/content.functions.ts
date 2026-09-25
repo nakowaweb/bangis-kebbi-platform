@@ -1,3 +1,4 @@
+import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -70,6 +71,7 @@ function publicClient() {
 async function requireContentAdmin(context: { supabase: ReturnType<typeof publicClient>; userId: string }) {
   const { data, error } = await context.supabase.rpc("is_content_admin", { _user_id: context.userId });
   if (error || !data) throw new Error("Content administrator access is required.");
+  await requireModule(context as never, "content");
 }
 
 const languageInput = z.enum(["en", "ha", "ar"]).default("en");
