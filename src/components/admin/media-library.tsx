@@ -10,14 +10,14 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { supabase } from "@/integrations/supabase/client";
-import { archiveMediaAsset, deleteMediaAssetPermanently, getAdminWorkspace, removeMediaFromContent, replaceMediaAsset, restoreMediaAsset } from "@/lib/content.functions";
+import { archiveMediaAsset, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, removeMediaFromContent, replaceMediaAsset, restoreMediaAsset } from "@/lib/content.functions";
 
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"] as const;
 const IMAGE_MAX = 10 * 1024 * 1024;
 const VIDEO_MAX = 50 * 1024 * 1024;
 
 type MediaItem = Awaited<ReturnType<typeof getAdminWorkspace>>["media"][number];
-type RegisterMedia = (options: { data: { name: string; storagePath: string; mimeType: (typeof ACCEPTED)[number]; altText: string; byteSize: number; width?: number; height?: number } }) => Promise<unknown>;
+type RegisterMedia = ReturnType<typeof useServerFn<typeof registerMediaAsset>>;
 
 function mediaKind(type: string) { return type.startsWith("video/") ? "video" : "image"; }
 function validateFile(file: File, expected?: "image" | "video") {
@@ -31,7 +31,7 @@ function storedPath(value: string) { return value.replace(/^.*\/storage\/v1\/obj
 
 function useMediaPreviews(media: MediaItem[]) {
   const [urls, setUrls] = useState<Record<string, string>>({});
-  const key = media.map((item) => item.storage_path).join("|");
+  const key = media.map((item) => `${item.storage_path}:${item.byte_size}:${item.name}`).join("|");
   useEffect(() => {
     let active = true;
     const paths = [...new Set(media.map((item) => storedPath(item.storage_path)))];

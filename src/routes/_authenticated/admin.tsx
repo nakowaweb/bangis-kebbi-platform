@@ -2,7 +2,7 @@ import { GalleryPicker } from "@/components/admin/gallery-picker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, BadgeCheck, Bell, Eye, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, RotateCcw, Save, Settings, Share2, ShieldCheck, Trash2, Upload, Users } from "lucide-react";
+import { Archive, BadgeCheck, Bell, Eye, FileText, HandHeart, History, Image, Languages, LayoutDashboard, LogOut, Plane, Plus, RotateCcw, Save, Settings, Share2, ShieldCheck, Trash2, Users } from "lucide-react";
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast } from "sonner";
 
@@ -24,7 +24,7 @@ import { AdminNotificationManager } from "@/components/notifications/admin-notif
 import { AdminUmrahManager } from "@/components/umrah/admin-umrah";
 import { MediaUploadField } from "@/components/admin/media-upload-field";
 import { SearchConfigTest } from "@/components/admin/search-config-test";
-import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, restoreContentEntry, restoreMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
+import { archiveContentEntry, deleteContentEntry, getAdminWorkspace, registerMediaAsset, restoreContentEntry, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { CurrentSiteImporter } from "@/components/admin/current-site-importer";
 import { MediaLibrary } from "@/components/admin/media-library";
 import { getAdminOverview, getMyAdminAccess } from "@/lib/members.functions";
