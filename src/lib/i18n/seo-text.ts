@@ -52,9 +52,9 @@ const seoText: Record<string, Record<LanguageCode, Entry>> = {
     ha: { title: "Bayanin Umrah — BangisKebbi.com", description: "Bayanin Umrah na jama'a, matakai, buƙatu da tambayoyin da ake yawan yi daga BangisKebbi.com." },
   },
   "/foundation": {
-    en: { title: "BK Foundations — Humanitarian Work", description: "BK Foundations is the humanitarian side of BangisKebbi.com, focused on practical help and accountable community updates." },
-    ar: { title: "مؤسسات BK — العمل الإنساني", description: "مؤسسات BK هي الجانب الإنساني من بانجيس كيبي. وهي ليست برنامجًا استثماريًا أو ماليًا." },
-    ha: { title: "BK Foundations — Aikin Jin Kai", description: "BK Foundations shi ne ɓangaren jin kai na BangisKebbi.com. Ba shiri ne na zuba jari ko na kuɗi ba." },
+    en: { title: "BK Community Support Initiative — Humanitarian Work", description: "BK Community Support Initiative focuses on practical help, dignity and accountable community updates." },
+    ar: { title: "مبادرة BK لدعم المجتمع — العمل الإنساني", description: "تركز مبادرة BK لدعم المجتمع على المساعدة العملية والكرامة والتحديثات المجتمعية المسؤولة." },
+    ha: { title: "BK Community Support Initiative — Aikin Jin Kai", description: "BK Community Support Initiative na mayar da hankali kan taimako mai amfani, mutunci da bayanan al’umma masu gaskiya." },
   },
   "/community": {
     en: { title: "Community — BangisKebbi.com", description: "The BangisKebbi.com community for people who build with ideas, technology and business." },

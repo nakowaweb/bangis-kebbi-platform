@@ -38,7 +38,7 @@ export const Route = createFileRoute("/_authenticated/dashboard")({
   head: ({ match }) =>
     pageHead({ search: match.search,
       title: "Member Dashboard — BangisKebbi.com",
-      description: "Secure member space for BangisKebbi.com updates, profile, services, Umrah support and BK Foundations.",
+      description: "Secure member space for BangisKebbi.com updates, profile, services, Umrah support and BK Community Support Initiative.",
       path: "/dashboard",
       noindex: true,
     }),

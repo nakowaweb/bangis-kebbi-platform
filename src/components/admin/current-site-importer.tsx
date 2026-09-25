@@ -10,12 +10,22 @@ import heroAi from "@/assets/hero-ai-workspace.jpg";
 import heroBusiness from "@/assets/hero-business-solutions.jpg";
 import heroCommunity from "@/assets/hero-community-connection.jpg";
 import heroUmrah from "@/assets/hero-umrah-community-founder.jpg";
+import supportCommunityRelief from "@/assets/support-community-relief.jpg";
+import supportEmergencyRelief from "@/assets/support-emergency-relief.jpg";
+import supportEssentialEducation from "@/assets/support-essential-education.jpg";
+import supportFoodAssistance from "@/assets/support-food-assistance.jpg";
+import supportHardship from "@/assets/support-hardship.jpg";
+import supportInKind from "@/assets/support-in-kind.jpg";
+import supportLowIncomeFamilies from "@/assets/support-low-income-families.jpg";
+import supportMedicalCoordination from "@/assets/support-medical-coordination.jpg";
+import supportOrphans from "@/assets/support-orphans.jpg";
+import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
 
 type Entry = { content_type: string; slug: string };
 type Media = { storage_path: string; name: string };
 
 type Item = {
-  contentType: "service" | "project" | "blog_post" | "homepage";
+  contentType: "service" | "project" | "blog_post" | "homepage" | "foundation_what_we_do";
   slug: string;
   title: string;
   summary: string;
@@ -39,6 +49,18 @@ function currentSiteItems(): Item[] {
       { src: heroCommunity, label: "Community and collaboration" },
       { src: heroUmrah, label: "Umrah support community" },
     ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-slide-${i + 2}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.label, sortOrder: i + 2 })),
+    ...[
+      { slug: "food-assistance", title: "Food Assistance", summary: "Providing nutritious food items to individuals and families in need.", image: supportFoodAssistance },
+      { slug: "orphan-support", title: "Orphan Support", summary: "Supporting orphans through care, education and essential needs.", image: supportOrphans },
+      { slug: "low-income-families", title: "Support for Low-Income Families", summary: "Helping vulnerable families with essential needs and practical opportunities.", image: supportLowIncomeFamilies },
+      { slug: "emergency-relief", title: "Emergency Relief", summary: "Providing coordinated support during crises and emergencies.", image: supportEmergencyRelief },
+      { slug: "essential-supplies-education", title: "Essential Supplies / Education Support", summary: "Supplying school items, learning materials and other basic necessities.", image: supportEssentialEducation },
+      { slug: "community-relief", title: "Community Relief", summary: "Supporting communities through targeted assistance and outreach.", image: supportCommunityRelief },
+      { slug: "people-facing-hardship", title: "Support for People Facing Hardship", summary: "Helping people through difficult personal and social circumstances.", image: supportHardship },
+      { slug: "medical-treatment-coordination", title: "Medical/Treatment Support Coordination", summary: "Helping coordinate practical support during serious treatment and illness.", image: supportMedicalCoordination },
+      { slug: "zakat-sadaqah-support", title: "Zakat/Sadaqah Support", summary: "Coordinating eligible Zakat and Sadaqah support with care and responsibility.", image: supportZakatSadaqah },
+      { slug: "in-kind-support", title: "In-Kind Support", summary: "Providing clothing, household items and other non-cash assistance.", image: supportInKind },
+    ].map((program, index) => ({ contentType: "foundation_what_we_do" as const, ...program, imageAlt: `${program.title} community support`, sortOrder: index })),
   ];
 }
 
@@ -94,7 +116,7 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
     <div className="mb-6 rounded-lg border border-border bg-card p-4">
       <strong className="text-sm">Bring the current website into the CMS</strong>
       <p className="mt-1 text-sm text-muted-foreground">
-        {missing.length} services, projects, blog posts and hero slides are shown on the website but are not yet in the CMS. This copies them (with their images) so you can edit, replace or remove them here. Nothing already in the CMS is changed.
+        {missing.length} services, projects, blog posts, hero slides and support programs are shown on the website but are not yet in the CMS. This copies them (with their images) so you can edit, replace or remove them here. Nothing already in the CMS is changed.
       </p>
       <Button className="mt-3" onClick={run} disabled={running}>{running ? `Importing ${progress}` : "Import current website content"}</Button>
     </div>

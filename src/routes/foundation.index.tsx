@@ -3,7 +3,7 @@ import { SafeImage } from "@/components/safe-image";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, CalendarDays, Compass, HandHeart, HeartHandshake, MapPin, ShieldCheck, Sparkles, Target, UsersRound } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Compass, Gift, HandHeart, HeartHandshake, HeartPulse, Home, MapPin, PackageCheck, ShieldCheck, Siren, Target, Utensils, UsersRound } from "lucide-react";
 
 import { ContactSection } from "@/components/platform-sections";
 import { Badge } from "@/components/ui/badge";
@@ -11,25 +11,48 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { foundationCategoryLabels, foundationStatusLabels, getFoundationOverview, type FoundationProject } from "@/lib/foundation.functions";
 import { pageHead } from "@/lib/seo";
+import supportCommunityRelief from "@/assets/support-community-relief.jpg";
+import supportEmergencyRelief from "@/assets/support-emergency-relief.jpg";
+import supportEssentialEducation from "@/assets/support-essential-education.jpg";
+import supportFoodAssistance from "@/assets/support-food-assistance.jpg";
+import supportHardship from "@/assets/support-hardship.jpg";
+import supportInKind from "@/assets/support-in-kind.jpg";
+import supportLowIncomeFamilies from "@/assets/support-low-income-families.jpg";
+import supportMedicalCoordination from "@/assets/support-medical-coordination.jpg";
+import supportOrphans from "@/assets/support-orphans.jpg";
+import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
 
 export const Route = createFileRoute("/foundation/")({
   head: ({ match }) =>
     pageHead({ search: match.search,
-      title: "BK Foundations — Community Support Projects",
+      title: "BK Community Support Initiative — Community Support",
       description:
-        "BK Foundations is the humanitarian arm of BangisKebbi.com, sharing practical support areas, honest updates and completed community work.",
+        "BK Community Support Initiative shares practical support areas, accountable updates and completed community work from BangisKebbi.com.",
       path: "/foundation",
     }),
   component: FoundationPage,
 });
 
 const foundationCopy = {
-  en: { headline: "Community support, done with purpose.", description: "BK Foundations is the community and humanitarian side of BangisKebbi.com, focused on practical support for people and families facing genuine hardship.", join: "Join the Community", contact: "Contact BK Foundations", missionLabel: "Mission", mission: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", visionLabel: "Vision", vision: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", areasLabel: "Support areas", areasTitle: "Where support is focused.", areas: ["Food assistance", "Orphan support", "Support for low-income families", "Emergency relief", "Essential supplies", "Community relief", "Support for people facing hardship", "Support coordination for people receiving serious treatment or facing difficult circumstances", "Zakat/Sadaqah support where properly handled", "In-kind support"], processLabel: "Process", processTitle: "How support is delivered.", steps: ["Identify a genuine need", "Review and verify the request", "Coordinate appropriate support", "Deliver the support", "Record the activity", "Publish appropriate impact updates without exposing private beneficiary information"] },
-  ar: { headline: "دعم مجتمعي بهدف واضح.", description: "مؤسسات BK هي الجانب المجتمعي والإنساني من BangisKebbi.com، وتركز على الدعم العملي للأفراد والأسر الذين يواجهون صعوبات حقيقية.", join: "انضم إلى المجتمع", contact: "تواصل مع مؤسسات BK", missionLabel: "الرسالة", mission: "تقديم دعم عملي وكريم وموجّه للأفراد والأسر الذين يواجهون صعوبات حقيقية، مع إعطاء الأولوية للاحتياجات المجتمعية الموثقة.", visionLabel: "الرؤية", vision: "مجتمعات أقوى وأكثر ترابطاً يستطيع فيها من يواجهون الصعوبات الحصول على دعم مفيد وفي الوقت المناسب.", areasLabel: "مجالات الدعم", areasTitle: "أين يتركز الدعم.", areas: ["المساعدات الغذائية", "دعم الأيتام", "دعم الأسر محدودة الدخل", "الإغاثة الطارئة", "المستلزمات الأساسية", "الإغاثة المجتمعية", "دعم من يواجهون الصعوبات", "تنسيق الدعم لمن يتلقون علاجاً صعباً أو يمرون بظروف قاسية", "دعم الزكاة والصدقة عند التعامل الصحيح", "الدعم العيني"], processLabel: "المنهجية", processTitle: "كيف يُقدَّم الدعم.", steps: ["تحديد حاجة حقيقية", "مراجعة الطلب والتحقق منه", "تنسيق الدعم المناسب", "تقديم الدعم", "تسجيل النشاط", "نشر تحديثات أثر مناسبة دون كشف معلومات المستفيدين الخاصة"] },
-  ha: { headline: "Tallafin al'umma, da manufa.", description: "BK Foundations ɓangaren al'umma da jin ƙai ne na BangisKebbi.com, wanda ya mai da hankali kan tallafi mai amfani ga mutane da iyalan da ke fuskantar wahala ta gaske.", join: "Shiga Al'umma", contact: "Tuntuɓi BK Foundations", missionLabel: "Manufa", mission: "Samar da tallafi mai amfani, mai mutunci kuma da aka nufa ga mutane da iyalan da ke fuskantar wahala ta gaske, tare da fifita bukatun al'umma da aka tabbatar.", visionLabel: "Hangen nesa", vision: "Al'ummomi masu ƙarfi da haɗin kai inda masu fuskantar wahala za su sami tallafi mai ma'ana a lokacin da ya dace.", areasLabel: "Fannonin tallafi", areasTitle: "Inda tallafi ya fi mai da hankali.", areas: ["Taimakon abinci", "Tallafin marayu", "Tallafin iyalai masu ƙaramin kuɗi", "Agajin gaggawa", "Kayan buƙatu na yau da kullum", "Agajin al'umma", "Tallafi ga masu fuskantar wahala", "Haɗa tallafi ga masu jinya mai tsanani ko cikin mawuyacin hali", "Tallafin Zakka/Sadaka idan an sarrafa shi yadda ya kamata", "Tallafin kayayyaki"], processLabel: "Tsari", processTitle: "Yadda ake ba da tallafi.", steps: ["Gano buƙata ta gaske", "Duba da tabbatar da buƙatar", "Haɗa tallafin da ya dace", "Isar da tallafin", "Rubuta aikin", "Wallafa bayanan tasiri ba tare da fallasa bayanan sirri na masu amfana ba"] },
+  en: { headline: "People. Compassion. Stronger communities.", description: "BK Community Support Initiative is the community and humanitarian side of BangisKebbi.com, focused on practical support for people and families facing genuine hardship.", join: "Join the Community", contact: "Contact the Initiative", missionLabel: "Mission", mission: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", visionLabel: "Vision", vision: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", areasLabel: "Our support programs", areasTitle: "Practical care where it matters most.", areas: ["Food Assistance", "Orphan Support", "Support for Low-Income Families", "Emergency Relief", "Essential Supplies / Education Support", "Community Relief", "Support for People Facing Hardship", "Medical/Treatment Support Coordination", "Zakat/Sadaqah Support", "In-Kind Support"], processLabel: "Process", processTitle: "How support is delivered.", steps: ["Identify a genuine need", "Review and verify the request", "Coordinate appropriate support", "Deliver the support", "Record the activity", "Publish appropriate impact updates without exposing private beneficiary information"] },
+  ar: { headline: "الناس. الرحمة. مجتمعات أقوى.", description: "BK Community Support Initiative هي الجانب المجتمعي والإنساني من BangisKebbi.com، وتركز على الدعم العملي للأفراد والأسر الذين يواجهون صعوبات حقيقية.", join: "انضم إلى المجتمع", contact: "تواصل مع المبادرة", missionLabel: "الرسالة", mission: "تقديم دعم عملي وكريم وموجّه للأفراد والأسر الذين يواجهون صعوبات حقيقية، مع إعطاء الأولوية للاحتياجات المجتمعية الموثقة.", visionLabel: "الرؤية", vision: "مجتمعات أقوى وأكثر ترابطاً يستطيع فيها من يواجهون الصعوبات الحصول على دعم مفيد وفي الوقت المناسب.", areasLabel: "برامج الدعم", areasTitle: "رعاية عملية حيث تكون الحاجة أكبر.", areas: ["المساعدات الغذائية", "دعم الأيتام", "دعم الأسر محدودة الدخل", "الإغاثة الطارئة", "المستلزمات الأساسية ودعم التعليم", "الإغاثة المجتمعية", "دعم من يواجهون الصعوبات", "تنسيق الدعم الطبي والعلاجي", "دعم الزكاة والصدقة", "الدعم العيني"], processLabel: "المنهجية", processTitle: "كيف يُقدَّم الدعم.", steps: ["تحديد حاجة حقيقية", "مراجعة الطلب والتحقق منه", "تنسيق الدعم المناسب", "تقديم الدعم", "تسجيل النشاط", "نشر تحديثات أثر مناسبة دون كشف معلومات المستفيدين الخاصة"] },
+  ha: { headline: "Mutane. Tausayi. Al’umma masu ƙarfi.", description: "BK Community Support Initiative ɓangaren al'umma da jin ƙai ne na BangisKebbi.com, wanda ya mai da hankali kan tallafi mai amfani ga mutane da iyalan da ke fuskantar wahala ta gaske.", join: "Shiga Al'umma", contact: "Tuntuɓi shirin", missionLabel: "Manufa", mission: "Samar da tallafi mai amfani, mai mutunci kuma da aka nufa ga mutane da iyalan da ke fuskantar wahala ta gaske, tare da fifita bukatun al'umma da aka tabbatar.", visionLabel: "Hangen nesa", vision: "Al'ummomi masu ƙarfi da haɗin kai inda masu fuskantar wahala za su sami tallafi mai ma'ana a lokacin da ya dace.", areasLabel: "Shirye-shiryen tallafi", areasTitle: "Taimako mai amfani inda ake buƙatarsa sosai.", areas: ["Taimakon abinci", "Tallafin marayu", "Tallafin iyalai masu ƙaramin kuɗi", "Agajin gaggawa", "Kayan buƙatu da tallafin ilimi", "Agajin al'umma", "Tallafi ga masu fuskantar wahala", "Haɗa tallafin jinya", "Tallafin Zakka/Sadaka", "Tallafin kayayyaki"], processLabel: "Tsari", processTitle: "Yadda ake ba da tallafi.", steps: ["Gano buƙata ta gaske", "Duba da tabbatar da buƙatar", "Haɗa tallafin da ya dace", "Isar da tallafin", "Rubuta aikin", "Wallafa bayanan tasiri ba tare da fallasa bayanan sirri na masu amfana ba"] },
 };
 
-type ContentEntry = { id: string; content_type: string; title: string; summary: string | null; body: string | null };
+type ContentEntry = { id: string; content_type: string; slug: string; title: string; summary: string | null; body: string | null; imageUrl: string | null; image_alt: string | null };
+
+const supportPrograms = [
+  { slug: "food-assistance", image: supportFoodAssistance, icon: Utensils, description: ["Providing nutritious food items to individuals and families in need.", "توفير مواد غذائية مغذية للأفراد والأسر المحتاجة.", "Samar da abinci mai gina jiki ga mutane da iyalai masu buƙata."] },
+  { slug: "orphan-support", image: supportOrphans, icon: UsersRound, description: ["Supporting orphans through care, education and essential needs.", "دعم الأيتام بالرعاية والتعليم والاحتياجات الأساسية.", "Tallafa wa marayu ta hanyar kulawa, ilimi da buƙatu na yau da kullum."] },
+  { slug: "low-income-families", image: supportLowIncomeFamilies, icon: Home, description: ["Helping vulnerable families with essential needs and practical opportunities.", "مساعدة الأسر محدودة الدخل في الاحتياجات الأساسية والفرص العملية.", "Taimaka wa iyalai masu ƙaramin kuɗi da muhimman buƙatu da damarmaki."] },
+  { slug: "emergency-relief", image: supportEmergencyRelief, icon: Siren, description: ["Providing coordinated support during crises and emergencies.", "تقديم دعم منسق أثناء الأزمات والطوارئ.", "Samar da tallafi mai tsari yayin rikici da gaggawa."] },
+  { slug: "essential-supplies-education", image: supportEssentialEducation, icon: BookOpen, description: ["Supplying school items, learning materials and other basic necessities.", "توفير المستلزمات المدرسية ومواد التعلم والاحتياجات الأساسية.", "Samar da kayan makaranta, kayan koyo da sauran muhimman buƙatu."] },
+  { slug: "community-relief", image: supportCommunityRelief, icon: PackageCheck, description: ["Supporting communities through targeted assistance and outreach.", "دعم المجتمعات من خلال المساعدة الموجّهة والتواصل.", "Tallafa wa al’umma ta hanyar taimako da ya dace da kai ziyara."] },
+  { slug: "people-facing-hardship", image: supportHardship, icon: HandHeart, description: ["Helping people through difficult personal and social circumstances.", "مساعدة الأفراد خلال الظروف الشخصية والاجتماعية الصعبة.", "Taimaka wa mutane a cikin mawuyacin yanayi na kai da na zamantakewa."] },
+  { slug: "medical-treatment-coordination", image: supportMedicalCoordination, icon: HeartPulse, description: ["Helping coordinate practical support during serious treatment and illness.", "المساعدة في تنسيق الدعم العملي أثناء العلاج والمرض الشديد.", "Taimakawa wajen haɗa tallafi mai amfani yayin jinya mai tsanani."] },
+  { slug: "zakat-sadaqah-support", image: supportZakatSadaqah, icon: HeartHandshake, description: ["Coordinating eligible Zakat and Sadaqah support with care and responsibility.", "تنسيق دعم الزكاة والصدقة للمستحقين بعناية ومسؤولية.", "Haɗa tallafin Zakka da Sadaka ga masu cancanta cikin kulawa."] },
+  { slug: "in-kind-support", image: supportInKind, icon: Gift, description: ["Providing clothing, household items and other non-cash assistance.", "توفير الملابس والأدوات المنزلية وغيرها من المساعدات العينية.", "Samar da tufafi, kayan gida da sauran tallafin da ba na kuɗi ba."] },
+] as const;
 
 function FoundationPage() {
   const { language } = useLanguage();
@@ -43,6 +66,7 @@ function FoundationPage() {
   const mission = pick("foundation_mission");
   const vision = pick("foundation_vision");
   const whatWeDo = content.filter((entry) => entry.content_type === "foundation_what_we_do");
+  const programs = supportPrograms.map((program, index) => ({ program, entry: whatWeDo.find((item) => item.slug === program.slug) ?? whatWeDo[index] }));
 
   const projects = (overview.data?.projects ?? []) as FoundationProject[];
   const active = projects.filter((project) => project.status === "planned" || project.status === "active");
@@ -54,7 +78,7 @@ function FoundationPage() {
       <section className="border-b border-border bg-brand-ink py-12 text-primary-foreground sm:py-16">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <span className="inline-flex items-center gap-2 rounded-full bg-brand-green/20 px-3 py-1 text-xs font-bold uppercase tracking-[0.16em] text-brand-cyan">
-            <HandHeart className="h-4 w-4" /> BK Foundations
+             <HandHeart className="h-4 w-4" /> BK Community Support Initiative
           </span>
           <h1 className="mt-4 max-w-3xl font-display text-3xl font-bold leading-tight sm:text-4xl">
             {intro?.title ?? fcopy.headline}
@@ -85,34 +109,42 @@ function FoundationPage() {
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <p className="text-xs font-bold uppercase text-primary">{fcopy.areasLabel}</p>
           <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{fcopy.areasTitle}</h2>
-          <div className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-            {whatWeDo.length === 0 ? (
-              fcopy.areas.map((title) => <article key={title} className="rounded-lg border border-border bg-card p-5"><span className="grid h-10 w-10 place-items-center rounded-md bg-brand-green/10 text-brand-green"><HeartHandshake className="h-5 w-5" /></span><h3 className="mt-4 font-display text-base font-bold">{title}</h3></article>)
-            ) : (
-              whatWeDo.map((entry) => (
-                <article key={entry.id} className="rounded-lg border border-border bg-card p-5">
-                  <span className="grid h-10 w-10 place-items-center rounded-md bg-brand-green/10 text-brand-green"><HeartHandshake className="h-5 w-5" /></span>
-                  <h3 className="mt-4 font-display text-base font-bold">{entry.title}</h3>
-                  <p className="mt-2 text-sm leading-6 text-muted-foreground">{entry.summary ?? entry.body}</p>
-                </article>
-              ))
-            )}
+           <div className="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+             {programs.map(({ program, entry }, index) => {
+               const Icon = program.icon;
+               const title = entry?.title ?? fcopy.areas[index];
+               const description = entry?.summary ?? entry?.body ?? program.description[language === "en" ? 0 : language === "ar" ? 1 : 2];
+               return (
+                 <article key={program.slug} className="motion-card group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:shadow-platform">
+                   <div className="aspect-[16/8.5] overflow-hidden bg-muted">
+                     <SafeImage src={entry?.imageUrl ?? program.image} alt={entry?.image_alt ?? title} loading="lazy" width={1280} height={768} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />
+                   </div>
+                   <div className="grid grid-cols-[auto_minmax(0,1fr)] gap-3 p-4 sm:p-5">
+                     <span className="grid h-11 w-11 shrink-0 place-items-center rounded-md bg-brand-green/10 text-brand-green"><Icon className="h-5 w-5" /></span>
+                     <div className="min-w-0">
+                       <h3 className="font-display text-base font-bold leading-tight text-card-foreground sm:text-lg">{title}</h3>
+                       <p className="mt-1.5 text-sm leading-5 text-muted-foreground">{description}</p>
+                     </div>
+                   </div>
+                 </article>
+               );
+             })}
           </div>
         </div>
       </section>
 
       <ProjectGrid
-        eyebrow="Foundation projects"
+        eyebrow="Community support projects"
         title="Current and planned community projects."
         description="Only published projects appear here."
         loading={overview.isPending}
         projects={active}
-        emptyText="No foundation projects have been published yet."
+        emptyText="No community support projects have been published yet."
       />
 
       <section className="border-b border-border bg-background py-10"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><p className="text-xs font-bold uppercase text-primary">{fcopy.processLabel}</p><h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{fcopy.processTitle}</h2><ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{fcopy.steps.map((step, index) => <li key={step} className="flex gap-3 rounded-lg border border-border bg-card p-5 text-sm leading-6"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary font-bold text-primary-foreground">{index + 1}</span>{step}</li>)}</ol></div></section>
 
-      <section className="border-b border-border bg-secondary py-10"><div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-3 lg:px-8"><Panel icon={HeartHandshake} eyebrow="Process" title="Need, review, coordinate, update." text="Requests and opportunities are reviewed, appropriate partners are identified, delivery is coordinated and verified updates are published when suitable." /><Panel icon={ShieldCheck} eyebrow="Impact and privacy" title="Dignity comes before publicity." text="Updates focus on the work delivered. Personal stories, identities and sensitive circumstances are not published without a clear, appropriate basis." /><Panel icon={UsersRound} eyebrow="Partners" title="Work with BK Foundations." text="Organizations and professionals with relevant capacity can contact the team to discuss a responsible partnership." /></div></section>
+      <section className="border-b border-border bg-secondary py-10"><div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-3 lg:px-8"><Panel icon={HeartHandshake} eyebrow="Process" title="Need, review, coordinate, update." text="Requests and opportunities are reviewed, appropriate partners are identified, delivery is coordinated and verified updates are published when suitable." /><Panel icon={ShieldCheck} eyebrow="Impact and privacy" title="Dignity comes before publicity." text="Updates focus on the work delivered. Personal stories, identities and sensitive circumstances are not published without a clear, appropriate basis." /><Panel icon={UsersRound} eyebrow="Partners" title="Work with BK Community Support Initiative." text="Organizations and professionals with relevant capacity can contact the team to discuss a responsible partnership." /></div></section>
 
       <section className="border-b border-border bg-secondary py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -203,7 +235,7 @@ export function ProjectCard({ project, href = true }: { project: FoundationProje
         {project.image_url ? (
           <SafeImage src={project.image_url} alt={project.title} loading="lazy" className="h-full w-full object-cover" />
         ) : (
-          <div className="grid h-full w-full place-items-center text-muted-foreground"><Sparkles className="h-7 w-7" /></div>
+          <div className="grid h-full w-full place-items-center text-muted-foreground"><HandHeart className="h-7 w-7" /></div>
         )}
       </div>
       <div className="flex flex-1 flex-col p-5">

@@ -64,3 +64,9 @@
 - [x] Rebuild only the Services section as six responsive image-led cards matching the supplied reference
 - [x] Create six distinct service visuals and keep CMS-managed images as the public-card priority
 - [ ] Register the six built-in visuals in the production Media Library — blocked when no production admin session is available
+
+## BK Community Support Initiative reference-card update
+- [x] Rename public BK Foundations references to BK Community Support Initiative
+- [x] Rebuild the public support-program area as ten responsive image-led cards
+- [x] Prioritize secure CMS media paths with distinct bundled image fallbacks
+- [ ] Register the ten built-in visuals in the production Media Library — blocked when no production admin session is available

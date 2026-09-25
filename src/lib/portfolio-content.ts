@@ -116,7 +116,7 @@ export const projects: ProjectDefinition[] = projectRows.map((row) => ({
       { title: "Design reasoning", body: "Strong hierarchy, useful spacing and mobile-first decisions keep important actions visible without overwhelming the visitor." },
     ] : [
       { title: "Purpose and direction", body: "BangisKebbi.com presents Abubakar Alhaji Abubakar’s professional work, ideas and community initiatives through one coherent global platform." },
-      { title: "Platform capabilities", body: "Premium responsive design, a CMS with full admin control, secure authentication, a member dashboard, English/Arabic/Hausa multilingual support, SEO foundations, community pages, Umrah support and the BK Foundations community system." },
+      { title: "Platform capabilities", body: "Premium responsive design, a CMS with full admin control, secure authentication, a member dashboard, English/Arabic/Hausa multilingual support, SEO foundations, community pages, Umrah support and the BK Community Support Initiative." },
       { title: "Technology and workflow", body: "The project uses a modern full-stack web architecture, database-backed publishing, private media access and role-based administration." },
     ],
     ar: row.concept ? [
