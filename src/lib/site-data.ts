@@ -30,7 +30,7 @@ export const navItems = [
   { labelKey: "projects", label: "Projects", href: "/projects" },
   { labelKey: "business", label: "Business", href: "/business" },
   { labelKey: "umrah", label: "Umrah", href: "/umrah" },
-  { labelKey: "foundation", label: "Foundation", href: "/foundation" },
+  { labelKey: "foundation", label: "Community Support", href: "/foundation" },
   { labelKey: "blog", label: "Blog", href: "/blog" },
   { labelKey: "contact", label: "Contact", href: "/contact" },
 ] as const;

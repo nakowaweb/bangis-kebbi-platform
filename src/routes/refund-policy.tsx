@@ -31,7 +31,7 @@ const copy = {
     { title: "Umrah support: third-party costs", body: "Where a non-refundable third-party cost (for example a confirmed booking or provider fee) has already been incurred, only the remaining refundable amount can be returned. The member will be shown which costs were committed." },
     { title: "How to request an Umrah refund", body: "Submit the request through the member dashboard support channel or the Contact page, including your name and application reference. The request is reviewed and the member receives a clear status update at each stage, including the final outcome." },
     { title: "Digital and web services", body: "Refunds for website design, development, maintenance and related services follow the written service or project agreement and the work already completed. Any non-refundable third-party costs (such as domains, hosting, licences or plugins) are disclosed before payment." },
-    { title: "BK Foundations", body: "The public Foundation pages do not process contributions. If a support arrangement is introduced, its specific terms will be presented before any transaction." },
+    { title: "BK Community Support Initiative", body: "The public initiative pages do not process contributions. If a support arrangement is introduced, its specific terms will be presented before any transaction." },
     { title: "Your rights", body: "This policy explains our process in plain terms. It does not limit any rights that cannot lawfully be excluded, and it does not create guarantees beyond what is written here." },
   ]},
   ar: { eyebrow: "السياسة", title: "سياسة الاسترداد", description: "كيفية التعامل مع طلبات استرداد رصيد دعم العمرة والخدمات الرقمية وخدمات المواقع.", updated: "سارية من: 2026", sections: [
@@ -40,7 +40,7 @@ const copy = {
     { title: "دعم العمرة: تكاليف الأطراف الأخرى", body: "إذا تم تحمل تكلفة غير قابلة للاسترداد لدى طرف آخر، فلا يمكن رد إلا المبلغ المتبقي القابل للاسترداد، مع توضيح التكاليف الملتزم بها للعضو." },
     { title: "طريقة طلب استرداد العمرة", body: "قدّم الطلب عبر قناة الدعم في لوحة العضو أو صفحة التواصل مع اسمك ورقم الطلب. تتم مراجعة الطلب ويتلقى العضو تحديثاً واضحاً للحالة في كل مرحلة بما فيها النتيجة النهائية." },
     { title: "الخدمات الرقمية وخدمات المواقع", body: "يتبع الاسترداد لخدمات التصميم والتطوير والصيانة الاتفاق المكتوب للخدمة أو المشروع والعمل المنجز. ويتم الإفصاح عن أي تكاليف غير قابلة للاسترداد لأطراف أخرى قبل الدفع." },
-    { title: "BK Foundations", body: "لا تعالج صفحات المؤسسة العامة أي مساهمات. وإذا أضيف ترتيب دعم فستظهر شروطه قبل أي معاملة." },
+    { title: "مبادرة BK لدعم المجتمع", body: "لا تعالج صفحات المبادرة العامة أي مساهمات. وإذا أضيف ترتيب دعم فستظهر شروطه قبل أي معاملة." },
     { title: "حقوقك", body: "توضح هذه السياسة إجراءاتنا بلغة واضحة، ولا تحد من الحقوق التي لا يجوز استبعادها قانوناً، ولا تنشئ ضمانات تتجاوز ما هو مكتوب هنا." },
   ]},
   ha: { eyebrow: "Manufa", title: "Manufar Mayar da Kuɗi", description: "Yadda ake sarrafa buƙatar mayar da kuɗin tallafin Umrah da na ayyukan dijital/yanar gizo.", updated: "Ta fara aiki: 2026", sections: [
@@ -49,7 +49,7 @@ const copy = {
     { title: "Tallafin Umrah: kuɗin wasu", body: "Idan an riga an biya kuɗin wani sabis da ba a mayarwa ba, ragowar da za a iya mayarwa kawai za a dawo, kuma za a nuna wa mamba kuɗin da aka kashe." },
     { title: "Yadda ake neman mayar da kuɗin Umrah", body: "Aika buƙata ta hanyar tallafi a dashboard na mamba ko shafin Tuntuɓa, tare da sunanka da lambar aikace-aikace. Za a duba buƙatar kuma mamba zai sami bayanin matsayi a kowane mataki har zuwa sakamako." },
     { title: "Ayyukan dijital da yanar gizo", body: "Mayar da kuɗin ƙira, haɓakawa, kulawa da sauran ayyuka yana bin rubutacciyar yarjejeniyar aiki da aikin da aka riga aka yi. Za a bayyana duk kuɗin wasu da ba a mayarwa kafin biya." },
-    { title: "BK Foundations", body: "Shafukan Gidauniyar ba sa sarrafa gudummawa. Idan aka samar da tsarin tallafi, za a nuna sharuɗɗansa kafin wata mu'amala." },
+    { title: "BK Community Support Initiative", body: "Shafukan shirin ba sa sarrafa gudummawa. Idan aka samar da tsarin tallafi, za a nuna sharuɗɗansa kafin wata mu'amala." },
     { title: "Haƙƙoƙinka", body: "Wannan manufa tana bayyana tsarinmu a sauƙaƙe. Ba ta rage haƙƙin da doka ba ta yarda a cire ba, kuma ba ta ba da tabbaci fiye da abin da aka rubuta." },
   ]},
 };
