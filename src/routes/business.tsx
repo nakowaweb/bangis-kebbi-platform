@@ -7,7 +7,7 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 
 export const Route = createFileRoute("/business")({
-  validateSearch: (search: Record<string, unknown>) => ({ lang: typeof search.lang === "string" ? search.lang as LanguageCode : undefined }),
+  validateSearch: (search: Record<string, unknown>) => ({ lang: typeof search["lang"] === "string" ? search["lang"] as LanguageCode : undefined }),
   head: ({ match }) =>
     pageHead({ search: match.search,
       title: "Business & Opportunities — Bangis Kebbi",
@@ -16,7 +16,10 @@ export const Route = createFileRoute("/business")({
       path: "/business",
     }),
   errorComponent: RouteError,
-  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
+  loaderDeps: ({ search }) => {
+    const languageSearch = search as unknown as { lang?: LanguageCode };
+    return { lang: languageSearch.lang ?? "en" };
+  },
   loader: ({ deps }) => listPublicEntries({ data: { contentType: "business", language: deps.lang } }),
   component: BusinessPage,
 });
