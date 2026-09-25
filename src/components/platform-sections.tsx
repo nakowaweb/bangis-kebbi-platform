@@ -62,10 +62,10 @@ import communityImageAssetSrc from "@/assets/bangis-official-community.webp";
 const communityImageAsset = { url: communityImageAssetSrc };
 import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
 const portraitAsset = { url: portraitAssetSrc };
-import aiWorkspaceImage from "@/assets/hero-ai-workspace.jpg";
-import businessSolutionsImage from "@/assets/hero-business-solutions.jpg";
-import communityConnectionImage from "@/assets/hero-community-connection.jpg";
-import umrahCommunityFounderImage from "@/assets/hero-umrah-community-founder.jpg";
+import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
+import communitySupportHero from "@/assets/hero-community-support.jpg";
+import umrahSupportHero from "@/assets/hero-umrah-support.jpg";
+import globalPlatformHero from "@/assets/hero-global-platform.jpg";
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
@@ -140,23 +140,21 @@ export function HeroSection({ content, slides, location = "Kebbi State, Nigeria"
   );
 }
 
-const originalHeroSlide: HeroSlideInput = { src: portraitAsset.url, alt: "Abubakar Alhaji Abubakar at his BangisKebbi.com workspace", label: "BangisKebbi.com" };
 const fallbackHeroSlides: HeroSlideInput[] = [
-  { src: aiWorkspaceImage, alt: "AI-assisted web design and coding workspace", label: "AI-assisted web design" },
-  { src: businessSolutionsImage, alt: "Professional team creating a digital business solution", label: "Digital business solutions" },
-  { src: communityConnectionImage, alt: "Community members collaborating through digital technology", label: "People and collaboration" },
-  { src: umrahCommunityFounderImage, alt: "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting", label: "Umrah support" },
+  { src: digitalSolutionsHero, alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team", label: "Digital Solutions / Web Development" },
+  { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Community Support Initiative" },
+  { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
+  { src: globalPlatformHero, alt: "Abubakar Alhaji Abubakar at a global digital platform workspace", label: "Global Platform / Opportunities" },
 ];
 
 function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string }) {
-  const additionalSlides = fallbackHeroSlides.map((fallback, index) => slides?.find((slide) => slide.slot === index) ?? fallback);
-  const heroSlides = [originalHeroSlide, ...additionalSlides];
+  const heroSlides = slides?.length ? slides.slice(0, 4) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
   const reducedMotion = useRef(false);
   useEffect(() => { reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
-  const move = useCallback((step: number) => setActive((current) => (current + step + 5) % 5), []);
+  const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), [heroSlides.length]);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
     const timer = window.setInterval(() => move(1), 2700);
