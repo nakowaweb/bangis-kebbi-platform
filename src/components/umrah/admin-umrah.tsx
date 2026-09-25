@@ -1,6 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowLeft, Building2, Download, Eye, FileText, Image as ImageIcon, Save, Search, Trash2 } from "lucide-react";
+import { ArrowLeft, Building2, Download, Eye, FileText, Image as ImageIcon, Pencil, Plus, Power, Save, Search, ShieldCheck, Trash2 } from "lucide-react";
+import { MediaUploadField } from "@/components/admin/media-upload-field";
+import { CountryRegionFields } from "@/components/umrah/country-region-select";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -35,6 +37,7 @@ import {
   listUmrahPartners,
   reviewUmrahDocument,
   saveUmrahPartner,
+  setUmrahPartnerFlags,
   updateUmrahApplication,
   umrahStatuses,
   umrahDocumentLabels,
@@ -422,20 +425,35 @@ function PartnersManager() {
   const list = useServerFn(listUmrahPartners);
   const save = useServerFn(saveUmrahPartner);
   const remove = useServerFn(deleteUmrahPartner);
+  const setFlags = useServerFn(setUmrahPartnerFlags);
   const query = useQuery({ queryKey: ["umrah-partners"], queryFn: () => list() });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["umrah-partners"] });
   const [editing, setEditing] = useState<Record<string, any> | null>(null);
+  const [formKey, setFormKey] = useState(0);
+  const [logoPath, setLogoPath] = useState("");
+  const [saving, setSaving] = useState(false);
+
+  function startEdit(partner: Record<string, any> | null) {
+    setEditing(partner);
+    setLogoPath(partner?.["logo_path"] ?? "");
+    setFormKey((k) => k + 1);
+  }
 
   async function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
     const value = (key: string) => String(form.get(key) ?? "");
+    setSaving(true);
     try {
       await save({
         data: {
           ...(editing?.["id"] ? { id: editing["id"] } : {}),
           name: value("name"),
           country: value("country"),
+          stateRegion: value("stateRegion"),
+          city: value("city"),
+          logoPath,
+          sortOrder: Number(value("sortOrder") || 0),
           contactEmail: value("contactEmail"),
           contactPhone: value("contactPhone"),
           websiteUrl: value("websiteUrl"),
@@ -446,10 +464,21 @@ function PartnersManager() {
         },
       });
       toast.success("Partner saved");
-      setEditing(null);
+      startEdit(null);
       refresh();
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "The partner could not be saved.");
+    }
+    setSaving(false);
+  }
+
+  async function flag(id: string, patch: { verificationStatus?: "verified" | "unverified"; isVisible?: boolean }) {
+    try {
+      await setFlags({ data: { id, ...patch } });
+      toast.success("Partner updated");
+      refresh();
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Update failed");
     }
   }
 
@@ -459,91 +488,133 @@ function PartnersManager() {
   const partners = query.data.partners as any[];
 
   return (
-    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,420px)]">
-      <div className="overflow-hidden rounded-lg border border-border bg-card">
-        {partners.length === 0 ? (
-          <EmptyState text="No partners added yet. Nothing is shown publicly until a partner is added and verified." />
-        ) : (
-          partners.map((partner) => (
-            <div key={partner.id} className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 last:border-b-0">
-              <button type="button" className="min-w-0 text-left" onClick={() => setEditing(partner)}>
-                <strong className="block truncate text-sm">{partner.name}</strong>
-                <span className="text-xs text-muted-foreground">
-                  {partner.country ?? "No country"} · {partner.verification_status}
-                  {partner.is_visible ? " · visible publicly" : " · hidden"}
-                </span>
-              </button>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button size="sm" variant="outline" aria-label={`Remove ${partner.name}`}>
-                    <Trash2 />
-                  </Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Remove {partner.name}?</AlertDialogTitle>
-                    <AlertDialogDescription>This partner will be permanently deleted.</AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction
-                      onClick={async () => {
-                        try {
-                          await remove({ data: { id: partner.id } });
-                          toast.success("Partner removed");
-                          refresh();
-                        } catch (error) {
-                          toast.error(error instanceof Error ? error.message : "Removal failed");
-                        }
-                      }}
-                    >
-                      Remove
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          ))
-        )}
+    <div className="grid gap-4 lg:grid-cols-[minmax(0,1fr)_minmax(0,440px)]">
+      <div className="grid content-start gap-3">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="text-sm text-muted-foreground">{partners.length} partner{partners.length === 1 ? "" : "s"}</p>
+          <Button type="button" onClick={() => startEdit(null)}>
+            <Plus /> Add New Partner
+          </Button>
+        </div>
+        <div className="overflow-hidden rounded-lg border border-border bg-card">
+          {partners.length === 0 ? (
+            <EmptyState text="No partners added yet. Nothing is shown publicly until a partner is added and verified." />
+          ) : (
+            partners.map((partner) => {
+              const verified = partner.verification_status === "verified";
+              const location = [partner.city, partner.state_region, partner.country].filter(Boolean).join(", ");
+              return (
+                <div key={partner.id} className={`grid gap-3 border-b border-border p-4 last:border-b-0 ${editing?.["id"] === partner.id ? "bg-secondary/60" : ""}`}>
+                  <div className="min-w-0">
+                    <strong className="block truncate text-sm">{partner.name}</strong>
+                    <span className="text-xs text-muted-foreground">{location || "No location"} · order {partner.sort_order ?? 0}</span>
+                    <div className="mt-1 flex flex-wrap gap-1">
+                      <Badge variant={verified ? "default" : "secondary"}>{partner.verification_status}</Badge>
+                      <Badge variant={partner.is_visible ? "default" : "outline"}>{partner.is_visible ? "Active on website" : "Inactive"}</Badge>
+                    </div>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    <Button size="sm" variant="outline" onClick={() => startEdit(partner)}>
+                      <Pencil /> Edit
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => flag(partner.id, { verificationStatus: verified ? "unverified" : "verified" })}>
+                      <ShieldCheck /> {verified ? "Unverify" : "Verify"}
+                    </Button>
+                    <Button size="sm" variant="outline" disabled={!verified && !partner.is_visible} title={!verified ? "Verify the partner first" : undefined} onClick={() => flag(partner.id, { isVisible: !partner.is_visible })}>
+                      <Power /> {partner.is_visible ? "Deactivate" : "Activate"}
+                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button size="sm" variant="outline" aria-label={`Delete ${partner.name}`}>
+                          <Trash2 /> Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Delete {partner.name}?</AlertDialogTitle>
+                          <AlertDialogDescription>This partner will be permanently deleted. Only a Super Admin can do this.</AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={async () => {
+                              try {
+                                await remove({ data: { id: partner.id } });
+                                toast.success("Partner deleted");
+                                if (editing?.["id"] === partner.id) startEdit(null);
+                                refresh();
+                              } catch (error) {
+                                toast.error(error instanceof Error ? error.message : "Delete failed");
+                              }
+                            }}
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
+                  </div>
+                </div>
+              );
+            })
+          )}
+        </div>
       </div>
 
-      <Card>
+      <Card className="h-fit">
         <CardHeader className="pb-3">
-          <CardTitle className="text-base">{editing ? "Edit partner" : "Add partner"}</CardTitle>
+          <CardTitle className="text-base">{editing ? `Edit partner: ${editing["name"]}` : "Add new partner"}</CardTitle>
           <CardDescription>A partner appears publicly only when it is verified and set to visible.</CardDescription>
         </CardHeader>
         <CardContent>
-          <form key={editing?.["id"] ?? "new"} onSubmit={submit} className="grid gap-3">
-            <Input name="name" placeholder="Partner name" defaultValue={editing?.["name"] ?? ""} required maxLength={160} />
-            <Input name="country" placeholder="Country" defaultValue={editing?.["country"] ?? ""} maxLength={80} />
-            <Input name="contactEmail" type="email" placeholder="Contact email" defaultValue={editing?.["contact_email"] ?? ""} maxLength={160} />
-            <Input name="contactPhone" placeholder="Contact phone" defaultValue={editing?.["contact_phone"] ?? ""} maxLength={40} />
-            <Input name="websiteUrl" placeholder="https://example.com" defaultValue={editing?.["website_url"] ?? ""} />
-            <Textarea name="services" placeholder="Services offered" defaultValue={editing?.["services"] ?? ""} rows={2} maxLength={1000} />
-            <div className="grid gap-2">
-              <Label>Verification status</Label>
-              <Select name="verificationStatus" defaultValue={editing?.["verification_status"] ?? "unverified"}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="unverified">Unverified</SelectItem>
-                  <SelectItem value="pending">Pending verification</SelectItem>
-                  <SelectItem value="verified">Verified</SelectItem>
-                </SelectContent>
-              </Select>
+          <form key={`${editing?.["id"] ?? "new"}-${formKey}`} onSubmit={submit} className="grid gap-3">
+            <div className="grid gap-2"><Label>Partner name</Label>
+              <Input name="name" placeholder="Partner name" defaultValue={editing?.["name"] ?? ""} required maxLength={160} /></div>
+            <MediaUploadField label="Logo / office image" value={logoPath} onChange={setLogoPath} kind="image" hint="Stored privately and shown through secure links. Click Save partner to apply." />
+            <CountryRegionFields
+              countryName="country"
+              regionName="stateRegion"
+              cityName="city"
+              countryLabel="Country"
+              defaultCountry={editing?.["country"] ?? ""}
+              defaultRegion={editing?.["state_region"] ?? ""}
+              defaultCity={editing?.["city"] ?? ""}
+            />
+            <div className="grid gap-2"><Label>Contact email</Label>
+              <Input name="contactEmail" type="email" placeholder="name@example.com" defaultValue={editing?.["contact_email"] ?? ""} maxLength={160} /></div>
+            <div className="grid gap-2"><Label>Contact phone</Label>
+              <Input name="contactPhone" placeholder="+234…" defaultValue={editing?.["contact_phone"] ?? ""} maxLength={40} /></div>
+            <div className="grid gap-2"><Label>Website</Label>
+              <Input name="websiteUrl" type="url" placeholder="https://example.com" defaultValue={editing?.["website_url"] ?? ""} /></div>
+            <div className="grid gap-2"><Label>Services offered</Label>
+              <Textarea name="services" placeholder="Services offered" defaultValue={editing?.["services"] ?? ""} rows={2} maxLength={1000} /></div>
+            <div className="grid gap-3 sm:grid-cols-2">
+              <div className="grid gap-2">
+                <Label>Verification status</Label>
+                <Select name="verificationStatus" defaultValue={editing?.["verification_status"] ?? "unverified"}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="unverified">Unverified</SelectItem>
+                    <SelectItem value="pending">Pending verification</SelectItem>
+                    <SelectItem value="verified">Verified</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="grid gap-2"><Label>Display order</Label>
+                <Input name="sortOrder" type="number" min={0} max={100000} defaultValue={editing?.["sort_order"] ?? 0} /></div>
             </div>
             <label className="flex items-center gap-3 text-sm">
               <input type="checkbox" name="isVisible" defaultChecked={editing?.["is_visible"] ?? false} className="size-4" />
-              Show publicly (verified partners only)
+              Visible on website (verified partners only)
             </label>
-            <Textarea name="notes" placeholder="Internal notes" defaultValue={editing?.["notes"] ?? ""} rows={2} maxLength={1000} />
+            <div className="grid gap-2"><Label>Internal notes</Label>
+              <Textarea name="notes" placeholder="Not shown publicly" defaultValue={editing?.["notes"] ?? ""} rows={2} maxLength={1000} /></div>
             <div className="flex gap-2">
-              <Button type="submit">
-                <Save /> Save partner
+              <Button type="submit" disabled={saving}>
+                <Save /> {saving ? "Saving…" : "Save partner"}
               </Button>
               {editing ? (
-                <Button type="button" variant="outline" onClick={() => setEditing(null)}>
+                <Button type="button" variant="outline" onClick={() => startEdit(null)}>
                   Cancel
                 </Button>
               ) : null}

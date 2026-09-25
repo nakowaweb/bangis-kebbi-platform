@@ -8,6 +8,7 @@ import { getPublicUmrahInfo } from "@/lib/umrah.functions";
 import { pageHead } from "@/lib/seo";
 import { useLanguage } from "@/lib/language";
 import { ContactActions } from "@/components/contact-actions";
+import { SafeImage } from "@/components/safe-image";
 
 export const Route = createFileRoute("/umrah")({
   head: ({ match }: { match: { search: { lang?: LanguageCode } } }) =>
@@ -69,22 +70,30 @@ function UmrahPage() {
             <div>
               <h2 className="font-display text-xl font-bold sm:text-2xl">Verified partners</h2>
               <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {partners.map((partner: { id: string; name: string; country: string | null; website_url: string | null; services: string | null }) => (
-                  <Card key={partner.id}>
-                    <CardHeader className="pb-2">
-                      <CardTitle className="text-base">{partner.name}</CardTitle>
-                      <CardDescription>{partner.country ?? ""}</CardDescription>
-                    </CardHeader>
-                    <CardContent className="grid gap-2">
-                      {partner.services ? <p className="text-sm text-muted-foreground">{partner.services}</p> : null}
-                      {partner.website_url ? (
-                        <a className="text-sm font-medium text-brand-cyan underline" href={partner.website_url} target="_blank" rel="noopener noreferrer">
-                          Visit website
-                        </a>
+                {partners.map((partner) => {
+                  const location = [partner.city, partner.state_region, partner.country].filter(Boolean).join(", ");
+                  return (
+                    <Card key={partner.id} className="overflow-hidden">
+                      {partner.logoUrl ? (
+                        <div className="flex h-36 items-center justify-center bg-secondary/40 p-4">
+                          <SafeImage src={partner.logoUrl} alt={`${partner.name} logo`} loading="lazy" className="max-h-full max-w-full object-contain" />
+                        </div>
                       ) : null}
-                    </CardContent>
-                  </Card>
-                ))}
+                      <CardHeader className="pb-2">
+                        <CardTitle className="text-base">{partner.name}</CardTitle>
+                        {location ? <CardDescription>{location}</CardDescription> : null}
+                      </CardHeader>
+                      <CardContent className="grid gap-2">
+                        {partner.services ? <p className="text-sm text-muted-foreground">{partner.services}</p> : null}
+                        {partner.website_url ? (
+                          <a className="text-sm font-medium text-brand-cyan underline" href={partner.website_url} target="_blank" rel="noopener noreferrer">
+                            Visit website
+                          </a>
+                        ) : null}
+                      </CardContent>
+                    </Card>
+                  );
+                })}
               </div>
             </div>
           ) : null}

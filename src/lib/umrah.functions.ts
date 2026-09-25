@@ -560,6 +560,10 @@ const partnerInput = z.object({
   id: z.string().uuid().optional(),
   name: z.string().trim().min(2).max(160),
   country: z.string().trim().max(80).default(""),
+  stateRegion: z.string().trim().max(120).default(""),
+  city: z.string().trim().max(120).default(""),
+  logoPath: z.string().trim().max(500).refine((v) => !v.includes("..") && !/^https?:/i.test(v), "Invalid logo").default(""),
+  sortOrder: z.coerce.number().int().min(0).max(100000).default(0),
   contactEmail: z.string().trim().max(160).email().or(z.literal("")).default(""),
   contactPhone: z.string().trim().max(40).default(""),
   websiteUrl: z.string().trim().url().or(z.literal("")).default(""),
@@ -576,9 +580,34 @@ export const listUmrahPartners = createServerFn({ method: "GET" })
     const { data, error } = await context.supabase
       .from("umrah_partners")
       .select("*")
+      .order("sort_order" as never, { ascending: true })
       .order("created_at", { ascending: false });
     if (error) throw new Error(error.message);
     return { partners: data ?? [] };
+  });
+
+/** Quick status changes: verify / unverify, show / hide. */
+export const setUmrahPartnerFlags = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) =>
+    z.object({ id: z.string().uuid(), verificationStatus: z.enum(["unverified", "pending", "verified"]).optional(), isVisible: z.boolean().optional() }).parse(input),
+  )
+  .handler(async ({ data, context }) => {
+    await requireAdmin(context as never);
+    const patch: Record<string, unknown> = {};
+    if (data.verificationStatus) patch["verification_status"] = data.verificationStatus;
+    if (data.isVisible !== undefined) patch["is_visible"] = data.isVisible;
+    if (data.verificationStatus && data.verificationStatus !== "verified") patch["is_visible"] = false;
+    const { error } = await context.supabase.from("umrah_partners").update(patch as never).eq("id", data.id);
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({
+      admin_id: context.userId,
+      action: "changed umrah partner status",
+      content_type: "umrah_partner",
+      content_id: data.id,
+      content_label: JSON.stringify(patch),
+    });
+    return { ok: true };
   });
 
 export const saveUmrahPartner = createServerFn({ method: "POST" })
@@ -589,6 +618,10 @@ export const saveUmrahPartner = createServerFn({ method: "POST" })
     const row = {
       name: data.name,
       country: data.country || null,
+      state_region: data.stateRegion || null,
+      city: data.city || null,
+      logo_path: data.logoPath || null,
+      sort_order: data.sortOrder,
       contact_email: data.contactEmail || null,
       contact_phone: data.contactPhone || null,
       website_url: data.websiteUrl || null,
@@ -596,11 +629,11 @@ export const saveUmrahPartner = createServerFn({ method: "POST" })
       verification_status: data.verificationStatus,
       is_visible: data.isVisible && data.verificationStatus === "verified",
       notes: data.notes || null,
-    };
+    } as never;
 
     const { error } = data.id
       ? await context.supabase.from("umrah_partners").update(row).eq("id", data.id)
-      : await context.supabase.from("umrah_partners").insert({ ...row, created_by: context.userId });
+      : await context.supabase.from("umrah_partners").insert({ ...(row as object), created_by: context.userId } as never);
     if (error) throw new Error(error.message);
 
     await context.supabase.from("admin_audit_logs").insert({
@@ -659,12 +692,19 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" })
       .limit(60),
     client
       .from("umrah_partners")
-      .select("id,name,country,website_url,services")
+      .select("id,name,country,state_region,city,logo_path,website_url,services,sort_order" as "*")
       .eq("verification_status", "verified")
       .eq("is_visible", true)
+      .order("sort_order" as never, { ascending: true })
       .order("name", { ascending: true })
-      .limit(20),
+      .limit(100),
   ]);
 
-  return { entries: await applyTranslations(client as never, entries ?? [], data.language), partners: partners ?? [] };
+  const rows = (partners ?? []) as unknown as Array<{ id: string; name: string; country: string | null; state_region: string | null; city: string | null; logo_path: string | null; website_url: string | null; services: string | null }>;
+  const { signSiteMedia, mediaUrl } = await import("@/lib/public-content.server");
+  const signed = await signSiteMedia(rows.map((row) => row.logo_path));
+  return {
+    entries: await applyTranslations(client as never, entries ?? [], data.language),
+    partners: rows.map(({ logo_path, ...row }) => ({ ...row, logoUrl: mediaUrl(logo_path, signed) })),
+  };
 });
