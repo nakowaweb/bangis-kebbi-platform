@@ -89,7 +89,7 @@ function Index() {
       <ServicesSection items={services} />
       <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
       <UmrahSection title={section("umrah")?.title} description={section("umrah")?.summary ?? undefined} image={heroSlides[2]?.src} imageAlt={heroSlides[2]?.alt} />
-      <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} />
+      <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} image={section("foundation")?.imageUrl} imageAlt={section("foundation")?.image_alt} />
       <LatestActivitiesSection />
       <CompanyCredentials />
       <ContactSection />

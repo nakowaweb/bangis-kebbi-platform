@@ -110,3 +110,9 @@
 - [x] Preserve CMS and Media Library replacement controls, security and unrelated page design
 - [x] Verify eight cards and all detail links on desktop and mobile
 - [ ] Register new project visuals in the production Media Library — blocked when no production admin session is available
+
+## Homepage community-support banner
+- [x] Upgrade only the homepage BK Community Support Initiative section to the supplied premium banner direction
+- [x] Preserve the supplied image unchanged as the fallback visual and connect the section to its existing CMS image field
+- [x] Add the four requested visual points and keep the existing initiative CTA and route
+- [ ] Register the supplied banner in the production Media Library — blocked when no production admin session is available

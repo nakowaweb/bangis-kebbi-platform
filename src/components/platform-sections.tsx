@@ -18,6 +18,9 @@ import {
   Newspaper,
   Plane,
   Play,
+  ShieldCheck,
+  Sprout,
+  HeartHandshake,
   type LucideIcon,
   UsersRound,
   Video,
@@ -64,6 +67,7 @@ import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
 const portraitAsset = { url: portraitAssetSrc };
 import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
 import communitySupportHero from "@/assets/hero-community-support.jpg";
+import communitySupportBannerAsset from "@/assets/homepage-community-support-banner.png.asset.json";
 import umrahSupportHero from "@/assets/hero-umrah-support.jpg";
 import globalPlatformHero from "@/assets/hero-global-platform.jpg";
 import businessDigitalServices from "@/assets/business-digital-services.webp";
@@ -360,10 +364,37 @@ export function UmrahSection({ title, description, image, imageAlt }: { title?: 
   );
 }
 
-export function FoundationSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
+export function FoundationSection({ title, description, image, imageAlt }: { title?: string | undefined; description?: string | undefined; image?: string | null | undefined; imageAlt?: string | null | undefined } = {}) {
   const { t } = useLanguage();
+  const points = [
+    { label: t("foundation.previewPeople"), icon: UsersRound, tone: "bg-brand-cyan/10 text-primary" },
+    { label: t("foundation.previewDevelopment"), icon: Sprout, tone: "bg-brand-green/10 text-brand-green" },
+    { label: t("foundation.previewTransparency"), icon: ShieldCheck, tone: "bg-brand-gold/15 text-brand-gold" },
+    { label: t("foundation.previewDignity"), icon: HeartHandshake, tone: "bg-secondary text-primary" },
+  ];
   return (
-    <CompactPlatform icon={HandHeart} eyebrow={t("foundation.previewEyebrow")} title={title ?? t("foundation.previewTitle")} description={description ?? t("foundation.previewDescription")} href="/foundation" action={t("foundation.previewAction")} tone="green" />
+    <section className="section-reveal border-b border-border bg-secondary/50 py-10 sm:py-14">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="group grid overflow-hidden rounded-lg border border-border bg-card shadow-platform transition duration-300 hover:-translate-y-0.5 hover:shadow-glow lg:grid-cols-[minmax(0,1.08fr)_minmax(420px,.92fr)]">
+          <div className="flex min-w-0 flex-col justify-center p-6 sm:p-9 lg:p-12">
+            <div className="flex items-center gap-3">
+              <span className="grid size-12 shrink-0 place-items-center rounded-full bg-brand-green/10 text-brand-green"><HandHeart className="size-6" /></span>
+              <p className="text-xs font-bold uppercase text-primary">{t("foundation.previewEyebrow")}</p>
+            </div>
+            <h2 className="mt-5 max-w-xl font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">{title ?? t("foundation.previewTitle")}</h2>
+            <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">{description ?? t("foundation.previewDescription")}</p>
+            <div className="mt-6 grid gap-3 sm:grid-cols-2">
+              {points.map((point) => <div key={point.label} className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-background p-3 transition duration-300 group-hover:border-primary/20"><span className={`grid size-10 shrink-0 place-items-center rounded-full ${point.tone}`}><point.icon className="size-5" /></span><span className="text-sm font-semibold leading-5 text-foreground">{point.label}</span></div>)}
+            </div>
+            <Button className="mt-7 h-12 w-full font-bold sm:w-fit sm:px-7" asChild><Link to="/foundation">{t("foundation.previewAction")} <ArrowRight /></Link></Button>
+          </div>
+          <div className="relative min-h-64 overflow-hidden bg-secondary sm:min-h-80 lg:min-h-[520px]">
+            <SafeImage src={image ?? communitySupportBannerAsset.url} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="lazy" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center] transition duration-700 group-hover:scale-[1.015]" />
+            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card/35 to-transparent lg:hidden" />
+          </div>
+        </div>
+      </div>
+    </section>
   );
 }
 
