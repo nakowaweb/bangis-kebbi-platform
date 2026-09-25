@@ -20,7 +20,7 @@ export const Route = createFileRoute("/business")({
     const languageSearch = search as unknown as { lang?: LanguageCode };
     return { lang: languageSearch.lang ?? "en" };
   },
-  loader: ({ deps }) => listPublicEntries({ data: { contentType: "business", language: deps.lang } }),
+  loader: ({ deps }: { deps: { lang: LanguageCode } }) => listPublicEntries({ data: { contentType: "business", language: deps.lang } }),
   component: BusinessPage,
 });
 

@@ -86,5 +86,5 @@
 ## Business card small visuals
 - [x] Add five small, proportional visuals matching the supplied reference to the existing Business cards
 - [x] Connect each visual to a distinct CMS entry for Media Library preview, replacement and removal
-- [ ] Verify the Business cards on desktop and mobile without changing other sections
+- [x] Verify the Business cards on desktop and mobile without changing other sections
 - [ ] Register the five images in the production Media Library — blocked when no production admin session is available
