@@ -401,6 +401,10 @@ const en = {
   "foundation.previewTitle": "Supporting people and communities.",
   "foundation.previewDescription": "Community initiatives designed for practical support, dignity and transparent updates.",
   "foundation.previewAction": "Support an Initiative",
+  "foundation.previewPeople": "People Support",
+  "foundation.previewDevelopment": "Community Development",
+  "foundation.previewTransparency": "Transparency & Updates",
+  "foundation.previewDignity": "Dignity & Impact",
 
 } as const;
 
@@ -766,6 +770,10 @@ const ha: Record<TranslationKey, string> = {
   "foundation.previewTitle": "Tallafa wa mutane da al’ummomi.",
   "foundation.previewDescription": "Shirye-shiryen taimakon al’umma da aka tsara don tallafi a bayyane—ba zuba jari, raba riba ko alkawarin riba ba.",
   "foundation.previewAction": "Tallafa wa Shiri",
+  "foundation.previewPeople": "Tallafin Mutane",
+  "foundation.previewDevelopment": "Ci Gaban Al’umma",
+  "foundation.previewTransparency": "Bayyanawa da Sabuntawa",
+  "foundation.previewDignity": "Mutunci da Tasiri",
 
 };
 
@@ -1129,6 +1137,10 @@ const ar: Record<TranslationKey, string> = {
   "foundation.previewTitle": "دعم الناس والمجتمعات.",
   "foundation.previewDescription": "مبادرات مساهمة مجتمعية مصممة للدعم الشفاف—وليست استثمارًا أو تقاسم أرباح أو عوائد موعودة.",
   "foundation.previewAction": "ادعم مبادرة",
+  "foundation.previewPeople": "دعم الناس",
+  "foundation.previewDevelopment": "تنمية المجتمع",
+  "foundation.previewTransparency": "الشفافية والتحديثات",
+  "foundation.previewDignity": "الكرامة والأثر",
 
 };
 
