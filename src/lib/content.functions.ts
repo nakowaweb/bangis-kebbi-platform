@@ -133,12 +133,14 @@ export const getPublicEntry = createServerFn({ method: "GET" })
     if (!row) return null;
     const payload = (row.payload && typeof row.payload === "object" && !Array.isArray(row.payload) ? row.payload : {}) as Record<string, unknown>;
     const videoPath = typeof payload["videoPath"] === "string" ? (payload["videoPath"] as string) : null;
-    const signed = await signSiteMedia([row.image_path, row.og_image_path, videoPath]);
+    const galleryPaths = Array.isArray(row.gallery) ? (row.gallery as unknown[]).filter((item): item is string => typeof item === "string") : [];
+    const signed = await signSiteMedia([row.image_path, row.og_image_path, videoPath, ...galleryPaths]);
     return {
       ...row,
       imageUrl: mediaUrl(row.image_path, signed),
       ogImageUrl: mediaUrl(row.og_image_path ?? row.image_path, signed),
       videoFileUrl: mediaUrl(videoPath, signed),
+      galleryUrls: galleryPaths.map((path) => mediaUrl(path, signed)).filter((url): url is string => !!url),
     };
   });
 

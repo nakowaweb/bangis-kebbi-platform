@@ -1,3 +1,4 @@
+import { GalleryPicker } from "@/components/admin/gallery-picker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
@@ -258,7 +259,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
     <MediaUploadField label="Main image" kind="image" value={editor.imagePath} onChange={(path) => update("imagePath", path)} />
     {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">For an additional carousel image, use address hero-slide-2 through hero-slide-5 and category hero_carousel. Upload its image below and publish. The original first image cannot be replaced here.</p> : null}
     <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
-    <Field label="Gallery images (comma separated links)"><Textarea value={editor.gallery} onChange={(event) => update("gallery", event.target.value)} /></Field>
+    <GalleryPicker value={editor.gallery} onChange={(value) => update("gallery", value)} />
     <div className="rounded-lg border border-dashed border-border p-4"><p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Video</p><div className="grid gap-3">
       <Field label="Video link (YouTube, Vimeo or https video file)"><Input value={editor.videoUrl} maxLength={500} placeholder="https://" onChange={(event) => update("videoUrl", event.target.value)} /></Field>
       <MediaUploadField label="Uploaded video (up to 50 MB)" kind="video" value={editor.videoPath} onChange={(path) => update("videoPath", path)} />
