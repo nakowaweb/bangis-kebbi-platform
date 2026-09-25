@@ -153,7 +153,7 @@ export const getAdminWorkspace = createServerFn({ method: "GET" })
     const [{ data: settings }, { data: entries }, { data: media }, { data: audit }] = await Promise.all([
       context.supabase.from("site_settings").select("*").eq("setting_key", "primary").single(),
       context.supabase.from("content_entries").select("*").order("updated_at", { ascending: false }).limit(100),
-       context.supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(300),
+       context.supabase.from("media_assets").select("*").order("created_at", { ascending: false }),
       context.supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(50),
     ]);
     return { settings, entries: entries ?? [], media: media ?? [], audit: audit ?? [], userId: context.userId };
