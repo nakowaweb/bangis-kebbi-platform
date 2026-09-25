@@ -18,8 +18,8 @@ import { pageHead } from "@/lib/seo";
 export const Route = createFileRoute("/foundation/$slug")({
   head: ({ params, match }) =>
     pageHead({ search: match.search,
-      title: "BK Foundations Project — BangisKebbi.com",
-      description: `Details and published updates for the BK Foundations community project "${params.slug.replaceAll("-", " ")}".`,
+      title: "BK Community Support Initiative Project — BangisKebbi.com",
+      description: `Details and published updates for the BK Community Support Initiative project "${params.slug.replaceAll("-", " ")}".`,
       path: `/foundation/${params.slug}`,
     }),
   component: FoundationProjectPage,
@@ -40,7 +40,7 @@ function FoundationProjectPage() {
       <main className="mx-auto max-w-2xl px-4 py-20 text-center">
         <h1 className="font-display text-2xl font-bold">This project is not available</h1>
         <p className="mt-3 text-sm text-muted-foreground">It may not be published yet.</p>
-        <Button className="mt-6" asChild><Link to="/foundation"><ArrowLeft /> Back to BK Foundations</Link></Button>
+        <Button className="mt-6" asChild><Link to="/foundation"><ArrowLeft /> Back to BK Community Support Initiative</Link></Button>
       </main>
     );
   }
@@ -50,7 +50,7 @@ function FoundationProjectPage() {
   return (
     <main className="bg-background">
       <div className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-        <Button variant="link" className="mb-4 h-auto px-0" asChild><Link to="/foundation"><ArrowLeft /> BK Foundations</Link></Button>
+        <Button variant="link" className="mb-4 h-auto px-0" asChild><Link to="/foundation"><ArrowLeft /> BK Community Support Initiative</Link></Button>
         <div className="flex flex-wrap items-center gap-2">
           <Badge>{foundationStatusLabels[project.status]}</Badge>
           <Badge variant="outline">{foundationCategoryLabels[project.category] ?? project.category}</Badge>
@@ -103,7 +103,7 @@ function FoundationProjectPage() {
         </section>
 
         <p className="mt-10 rounded-lg border border-border bg-secondary p-4 text-xs text-muted-foreground">
-          BK Foundations is a community support programme focused on practical help, dignity and accountable updates.
+          BK Community Support Initiative focuses on practical help, dignity and accountable updates.
         </p>
       </div>
     </main>

@@ -5,7 +5,7 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Database } from "@/integrations/supabase/types";
-import { applyTranslations } from "@/lib/public-content.server";
+import { applyTranslations, mediaUrl, signSiteMedia } from "@/lib/public-content.server";
 
 export const foundationStatuses = ["planned", "active", "completed", "archived"] as const;
 export type FoundationStatus = (typeof foundationStatuses)[number];
@@ -132,7 +132,7 @@ export const getFoundationOverview = createServerFn({ method: "GET" })
   const [{ data: entries }, { data: projects }] = await Promise.all([
     client
       .from("content_entries")
-      .select("id,content_type,slug,title,summary,body,sort_order")
+      .select("id,content_type,slug,title,summary,body,image_path,image_alt,sort_order")
       .in("content_type", [
         "foundation",
         "foundation_mission",
@@ -157,7 +157,16 @@ export const getFoundationOverview = createServerFn({ method: "GET" })
         .limit(12)
     : { data: [] };
 
-  return { content: await applyTranslations(client, entries ?? [], data.language), projects: decorated, updates: updates ?? [] };
+  const content = await applyTranslations(client, entries ?? [], data.language);
+  const signedContentMedia = await signSiteMedia(content.map((entry) => entry.image_path));
+  return {
+    content: content.map((entry) => ({
+      ...entry,
+      imageUrl: mediaUrl(entry.image_path, signedContentMedia),
+    })),
+    projects: decorated,
+    updates: updates ?? [],
+  };
 });
 
 export const getFoundationProject = createServerFn({ method: "GET" })
