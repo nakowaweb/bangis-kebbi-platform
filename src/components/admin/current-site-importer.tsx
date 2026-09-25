@@ -6,10 +6,15 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { registerMediaAsset, saveContentEntry } from "@/lib/content.functions";
 import { articles, projects, services } from "@/lib/portfolio-content";
-import heroAi from "@/assets/hero-ai-workspace.jpg";
-import heroBusiness from "@/assets/hero-business-solutions.jpg";
-import heroCommunity from "@/assets/hero-community-connection.jpg";
-import heroUmrah from "@/assets/hero-umrah-community-founder.jpg";
+import heroDigitalSolutions from "@/assets/hero-digital-solutions.jpg";
+import heroCommunitySupport from "@/assets/hero-community-support.jpg";
+import heroUmrahSupport from "@/assets/hero-umrah-support.jpg";
+import heroGlobalPlatform from "@/assets/hero-global-platform.jpg";
+import businessDigitalServices from "@/assets/business-digital-services.webp";
+import businessNetworking from "@/assets/business-networking.webp";
+import businessTechnology from "@/assets/business-technology.webp";
+import businessCommunity from "@/assets/business-community.webp";
+import businessGlobalOpportunities from "@/assets/business-global-opportunities.webp";
 import supportCommunityRelief from "@/assets/support-community-relief.jpg";
 import supportEmergencyRelief from "@/assets/support-emergency-relief.jpg";
 import supportEssentialEducation from "@/assets/support-essential-education.jpg";
@@ -27,7 +32,7 @@ type Entry = { content_type: string; slug: string };
 type Media = { storage_path: string; name: string };
 
 type Item = {
-  contentType: "service" | "project" | "blog_post" | "homepage" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
+  contentType: "service" | "project" | "blog_post" | "homepage" | "business" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
   slug: string;
   title: string;
   summary: string;
@@ -46,11 +51,18 @@ function currentSiteItems(): Item[] {
     ...projects.map((p, i) => ({ contentType: "project" as const, slug: p.slug, title: p.title.en, summary: p.summary.en, body: p.sections.en.map((x) => `${x.title}\n${x.body}`).join("\n\n"), category: p.category.en, image: p.image, imageAlt: p.imageAlt.en, sortOrder: i })),
     ...articles.map((a, i) => ({ contentType: "blog_post" as const, slug: a.slug, title: a.title.en, summary: a.summary.en, body: a.body.en.join("\n\n"), category: a.category.en, author: a.author, image: a.image, imageAlt: a.title.en, sortOrder: i })),
     ...[
-      { src: heroAi, label: "AI-assisted web design" },
-      { src: heroBusiness, label: "Business website solutions" },
-      { src: heroCommunity, label: "Community and collaboration" },
-      { src: heroUmrah, label: "Umrah support community" },
-    ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-slide-${i + 2}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.label, sortOrder: i + 2 })),
+      { src: heroDigitalSolutions, label: "Digital Solutions / Web Development", alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team" },
+      { src: heroCommunitySupport, label: "BK Community Support Initiative", alt: "Abubakar Alhaji Abubakar participating in dignified community support" },
+      { src: heroUmrahSupport, label: "Umrah Support Program", alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting" },
+      { src: heroGlobalPlatform, label: "Global Platform / Opportunities", alt: "Abubakar Alhaji Abubakar at a global digital platform workspace" },
+    ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-feature-${i + 1}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.alt, sortOrder: i + 1 })),
+    ...[
+      { slug: "digital-services", title: "Digital Services", image: businessDigitalServices },
+      { slug: "business-networking", title: "Business Networking", image: businessNetworking },
+      { slug: "technology", title: "Technology", image: businessTechnology },
+      { slug: "community", title: "Community", image: businessCommunity },
+      { slug: "global-opportunities", title: "Global Opportunities", image: businessGlobalOpportunities },
+    ].map((item, index) => ({ contentType: "business" as const, ...item, summary: "A practical pathway for trusted connection and progress.", imageAlt: `${item.title} visual`, sortOrder: index })),
     { contentType: "foundation_mission", slug: "mission", title: "Mission", summary: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", image: supportMission, imageAlt: "Dignified community food support for a family", sortOrder: 0 },
     { contentType: "foundation_vision", slug: "vision", title: "Vision", summary: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", image: supportVision, imageAlt: "A hopeful family looking toward a stronger community", sortOrder: 0 },
     ...[

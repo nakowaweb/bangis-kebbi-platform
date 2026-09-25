@@ -62,10 +62,15 @@ import communityImageAssetSrc from "@/assets/bangis-official-community.webp";
 const communityImageAsset = { url: communityImageAssetSrc };
 import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
 const portraitAsset = { url: portraitAssetSrc };
-import aiWorkspaceImage from "@/assets/hero-ai-workspace.jpg";
-import businessSolutionsImage from "@/assets/hero-business-solutions.jpg";
-import communityConnectionImage from "@/assets/hero-community-connection.jpg";
-import umrahCommunityFounderImage from "@/assets/hero-umrah-community-founder.jpg";
+import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
+import communitySupportHero from "@/assets/hero-community-support.jpg";
+import umrahSupportHero from "@/assets/hero-umrah-support.jpg";
+import globalPlatformHero from "@/assets/hero-global-platform.jpg";
+import businessDigitalServices from "@/assets/business-digital-services.webp";
+import businessNetworking from "@/assets/business-networking.webp";
+import businessTechnology from "@/assets/business-technology.webp";
+import businessCommunity from "@/assets/business-community.webp";
+import businessGlobalOpportunities from "@/assets/business-global-opportunities.webp";
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
@@ -140,23 +145,21 @@ export function HeroSection({ content, slides, location = "Kebbi State, Nigeria"
   );
 }
 
-const originalHeroSlide: HeroSlideInput = { src: portraitAsset.url, alt: "Abubakar Alhaji Abubakar at his BangisKebbi.com workspace", label: "BangisKebbi.com" };
 const fallbackHeroSlides: HeroSlideInput[] = [
-  { src: aiWorkspaceImage, alt: "AI-assisted web design and coding workspace", label: "AI-assisted web design" },
-  { src: businessSolutionsImage, alt: "Professional team creating a digital business solution", label: "Digital business solutions" },
-  { src: communityConnectionImage, alt: "Community members collaborating through digital technology", label: "People and collaboration" },
-  { src: umrahCommunityFounderImage, alt: "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting", label: "Umrah support" },
+  { src: digitalSolutionsHero, alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team", label: "Digital Solutions / Web Development" },
+  { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Community Support Initiative" },
+  { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
+  { src: globalPlatformHero, alt: "Abubakar Alhaji Abubakar at a global digital platform workspace", label: "Global Platform / Opportunities" },
 ];
 
 function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string }) {
-  const additionalSlides = fallbackHeroSlides.map((fallback, index) => slides?.find((slide) => slide.slot === index) ?? fallback);
-  const heroSlides = [originalHeroSlide, ...additionalSlides];
+  const heroSlides = slides?.length ? slides.slice(0, 4) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
   const reducedMotion = useRef(false);
   useEffect(() => { reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
-  const move = useCallback((step: number) => setActive((current) => (current + step + 5) % 5), []);
+  const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), [heroSlides.length]);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
     const timer = window.setInterval(() => move(1), 2700);
@@ -164,7 +167,7 @@ function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideIn
   }, [move, paused]);
   return (
     <div className="hero-media-enter relative mx-auto w-full max-w-[560px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
-      <div className="relative aspect-square overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
+      <div className="relative aspect-[8/5] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
         {heroSlides.map((slide, index) => <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-1 overflow-hidden rounded-md ${active === index ? "hero-slide-active" : ""}`}><img src={slide.src} alt={active === index ? slide.alt : ""} width={1280} height={1280} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover" /><figcaption className="absolute left-3 top-3 rounded-md bg-brand-ink/85 px-3 py-2 text-xs font-bold text-primary-foreground backdrop-blur">{slide.label}</figcaption></figure>)}
         <div className="location-badge-motion absolute bottom-4 right-4 z-20 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur"><p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p></div>
         <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-3 top-1/2 z-20 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground hover:bg-brand-ink" aria-label="Previous hero slide"><ChevronLeft /></Button>
@@ -309,11 +312,25 @@ export function ProjectsSection({ full = false, items }: { full?: boolean; items
   );
 }
 
-export function BusinessSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
+const businessVisuals = [businessDigitalServices, businessNetworking, businessTechnology, businessCommunity, businessGlobalOpportunities];
+
+export function BusinessSection({ title, description, items }: { title?: string | undefined; description?: string | undefined; items?: Array<{ slug: string; title: string; summary: string | null; imageUrl?: string | null }> | undefined } = {}) {
   const { t } = useLanguage();
+  const cmsBySlug = new Map(items?.map((item) => [item.slug, item]) ?? []);
+  const cards = businessCategories.map((fallback, index) => {
+    const slug = ["digital-services", "business-networking", "technology", "community", "global-opportunities"][index] ?? fallback.title.toLowerCase().replaceAll(" ", "-");
+    const cms = cmsBySlug.get(slug);
+    return { slug, title: cms?.title ?? fallback.title, description: cms?.summary ?? t("business.cardDetail"), image: cms ? cms.imageUrl : businessVisuals[index], icon: fallback.icon };
+  });
   return (
     <SectionShell eyebrow={t("business.eyebrow")} title={title ?? t("business.title")} description={description ?? t("business.description")}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{businessCategories.map((item) => <FeatureCard key={item.title} icon={item.icon} title={item.title} description={t("business.cardDetail")} />)}</div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{cards.map((item) => <article key={item.slug} className="motion-card flex min-w-0 flex-col items-center rounded-lg border border-border bg-card p-5 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
+        <div className="grid size-28 shrink-0 place-items-center overflow-hidden rounded-lg bg-secondary sm:size-24 lg:size-28">
+          {item.image ? <SafeImage src={item.image} alt="" loading="lazy" width={816} height={816} className="size-full object-cover" /> : <item.icon className="size-9 text-primary" aria-hidden="true" />}
+        </div>
+        <h3 className="mt-4 font-display text-base font-bold leading-5">{item.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+      </article>)}</div>
     </SectionShell>
   );
 }
@@ -321,7 +338,7 @@ export function BusinessSection({ title, description }: { title?: string | undef
 export function UmrahSection({ title, description, image, imageAlt }: { title?: string | undefined; description?: string | undefined; image?: string | undefined; imageAlt?: string | undefined } = {}) {
   const { t } = useLanguage();
   return (
-    <CompactPlatform image={image ?? umrahCommunityFounderImage} imageAlt={imageAlt ?? "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting"} icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
+    <CompactPlatform image={image ?? umrahSupportHero} imageAlt={imageAlt ?? "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting"} icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
   );
 }
 
