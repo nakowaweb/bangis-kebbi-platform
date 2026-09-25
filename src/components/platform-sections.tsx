@@ -240,7 +240,12 @@ export function PillarsSection() {
 
 export function AboutPreview({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
   const { t } = useLanguage();
-  const facts: TranslationKey[] = ["about.fact1", "about.fact2", "about.fact3", "about.fact4"];
+  const cards: Array<{ titleKey: TranslationKey; textKey: TranslationKey }> = [
+    { titleKey: "about.card1Title", textKey: "about.card1Text" },
+    { titleKey: "about.card2Title", textKey: "about.card2Text" },
+    { titleKey: "about.card3Title", textKey: "about.card3Text" },
+    { titleKey: "about.card4Title", textKey: "about.card4Text" },
+  ];
   return (
     <SectionShell eyebrow={t("about.eyebrow")} title={title ?? t("about.title")} description={description ?? t("about.description")}>
       <div className="grid gap-7 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
@@ -250,7 +255,15 @@ export function AboutPreview({ title, description }: { title?: string | undefine
           <blockquote className="absolute bottom-8 right-4 max-w-[48%] rounded-md bg-card p-4 text-xs leading-5 text-muted-foreground shadow-platform">{t("about.quote")}</blockquote>
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          {facts.map((fact) => <div key={fact} className="flex gap-3 rounded-md border border-border bg-card p-4"><CheckCircle2 className="h-5 w-5 shrink-0 text-primary" /><p className="text-sm font-semibold">{t(fact)}</p></div>)}
+          {cards.map((card) => (
+            <div key={card.titleKey} className="flex gap-3 rounded-md border border-border bg-card p-4">
+              <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
+              <div className="min-w-0">
+                <p className="text-sm font-bold leading-5">{t(card.titleKey)}</p>
+                <p className="mt-1 text-xs leading-5 text-muted-foreground">{t(card.textKey)}</p>
+              </div>
+            </div>
+          ))}
           <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2"><Button asChild><Link to="/about">{t("common.workWithMe")} <ArrowRight /></Link></Button><Button variant="outline" asChild><Link to="/contact">{t("common.letsConnect")}</Link></Button></div>
         </div>
       </div>
