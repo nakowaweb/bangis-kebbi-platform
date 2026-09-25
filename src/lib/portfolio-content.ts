@@ -1,13 +1,13 @@
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
-import bangisImage from "@/assets/global-city-hero.webp";
-import resortImage from "@/assets/resort-concept.webp";
-import businessImage from "@/assets/business-website.webp";
-import ecommerceImage from "@/assets/ecommerce-concept.webp";
-import hotelImage from "@/assets/hotel-concept.webp";
-import corporateImage from "@/assets/corporate-concept.webp";
-import personalBrandImage from "@/assets/personal-brand-concept.webp";
-import serviceCompanyImage from "@/assets/service-company-concept.webp";
+import bangisProjectAsset from "@/assets/projects/project-bangiskebbi.webp.asset.json";
+import resortProjectAsset from "@/assets/projects/project-resort.webp.asset.json";
+import businessProjectAsset from "@/assets/projects/project-business.webp.asset.json";
+import ecommerceProjectAsset from "@/assets/projects/project-ecommerce.webp.asset.json";
+import hotelProjectAsset from "@/assets/projects/project-hotel.webp.asset.json";
+import personalBrandProjectAsset from "@/assets/projects/project-personal-brand.webp.asset.json";
+import corporateImage from "@/assets/corporate-concept-final.webp";
+import serviceCompanyImage from "@/assets/service-company-concept-final.webp";
 import aiWebDesignImage from "@/assets/service-ai-web-design.jpg";
 import webDevelopmentImage from "@/assets/service-web-development.jpg";
 import uiUxDesignImage from "@/assets/service-ui-ux-design.jpg";
@@ -86,42 +86,88 @@ export type ProjectDefinition = {
 };
 
 const projectRows = [
-  { slug: "bangiskebbi-com", title: ["BangisKebbi.com", "BangisKebbi.com", "BangisKebbi.com"], category: ["Personal Brand Platform", "منصة علامة شخصية", "Dandalin Brand na Kai"], image: bangisImage, concept: false },
-  { slug: "hospitality-resort-concept", title: ["Hospitality Resort Concept", "تصور موقع منتجع ضيافة", "Tsarin Gidan Yanar Gizon Wurin Hutu"], category: ["UI/UX Design", "تصميم UI/UX", "Ƙirar UI/UX"], image: resortImage, concept: true },
-  { slug: "business-website-concept", title: ["Business Website Concept", "تصور موقع أعمال", "Tsarin Gidan Yanar Gizon Kasuwanci"], category: ["Web Development", "تطوير المواقع", "Haɓaka Yanar Gizo"], image: businessImage, concept: true },
-  { slug: "ecommerce-website-concept", title: ["E-commerce Website Concept", "تصور متجر إلكتروني", "Tsarin Shagon Intanet"], category: ["Commerce Experience", "تجربة تجارة إلكترونية", "Kwarewar Ciniki ta Intanet"], image: ecommerceImage, concept: true },
-  { slug: "hotel-website-concept", title: ["Hotel Website Concept", "تصور موقع فندق", "Tsarin Gidan Yanar Gizon Otal"], category: ["Hospitality Web Design", "تصميم مواقع الضيافة", "Ƙirar Yanar Gizon Baƙi"], image: hotelImage, concept: true },
-  { slug: "corporate-business-website-concept", title: ["Corporate Business Website Concept", "تصور موقع شركة", "Tsarin Gidan Yanar Gizon Kamfani"], category: ["Corporate Web Design", "تصميم مواقع الشركات", "Ƙirar Yanar Gizon Kamfani"], image: corporateImage, concept: true },
-  { slug: "personal-brand-website-concept", title: ["Personal Brand Website Concept", "تصور موقع علامة شخصية", "Tsarin Gidan Yanar Gizon Brand na Kai"], category: ["Personal Brand", "علامة شخصية", "Brand na Kai"], image: personalBrandImage, concept: true },
-  { slug: "service-company-website-concept", title: ["Service Company Website Concept", "تصور موقع شركة خدمات", "Tsarin Gidan Yanar Gizon Kamfanin Sabis"], category: ["Service Business", "أعمال خدمية", "Kasuwancin Sabis"], image: serviceCompanyImage, concept: true },
+  { slug: "bangiskebbi-com", title: ["BangisKebbi.com", "BangisKebbi.com", "BangisKebbi.com"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: bangisProjectAsset.url, concept: false },
+  { slug: "hospitality-resort-concept", title: ["Hospitality Resort Concept", "تصور موقع منتجع ضيافة", "Tsarin Gidan Yanar Gizon Wurin Hutu"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: resortProjectAsset.url, concept: true },
+  { slug: "business-website-concept", title: ["Business Website Concept", "تصور موقع أعمال", "Tsarin Gidan Yanar Gizon Kasuwanci"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: businessProjectAsset.url, concept: true },
+  { slug: "ecommerce-website-concept", title: ["E-commerce Website Concept", "تصور متجر إلكتروني", "Tsarin Shagon Intanet"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: ecommerceProjectAsset.url, concept: true },
+  { slug: "hotel-website-concept", title: ["Hotel Website Concept", "تصور موقع فندق", "Tsarin Gidan Yanar Gizon Otal"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: hotelProjectAsset.url, concept: true },
+  { slug: "personal-brand-website-concept", title: ["Personal Brand Website Concept", "تصور موقع علامة شخصية", "Tsarin Gidan Yanar Gizon Brand na Kai"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: personalBrandProjectAsset.url, concept: true },
+  { slug: "corporate-business-website-concept", title: ["Corporate Business Website Concept", "تصور موقع شركة", "Tsarin Gidan Yanar Gizon Kamfani"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: corporateImage, concept: true },
+  { slug: "service-company-website-concept", title: ["Service Company Website Concept", "تصور موقع شركة خدمات", "Tsarin Gidan Yanar Gizon Kamfanin Sabis"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: serviceCompanyImage, concept: true },
 ] as const;
+
+const projectSummaries: Record<string, LocalizedText> = {
+  "bangiskebbi-com": { en: "A premium international platform connecting technology, business, ideas and meaningful community opportunities.", ar: "منصة دولية راقية تربط التقنية والأعمال والأفكار والفرص المجتمعية الهادفة.", ha: "Dandali na duniya mai inganci da ke haɗa fasaha, kasuwanci, ra’ayoyi da damar al’umma." },
+  "hospitality-resort-concept": { en: "A refined resort experience built around destination discovery, elegant stays and effortless booking journeys.", ar: "تجربة منتجع راقية تتمحور حول اكتشاف الوجهة والإقامة الأنيقة وسهولة الحجز.", ha: "Kwarewar wurin hutu mai kyau don gano wuri, masauki na alfarma da booking mai sauƙi." },
+  "business-website-concept": { en: "A confident corporate presence that turns complex services, capabilities and growth opportunities into a clear story.", ar: "حضور مؤسسي واثق يحول الخدمات والقدرات وفرص النمو المعقدة إلى قصة واضحة.", ha: "Kasancewar kamfani mai ƙarfi da ke bayyana ayyuka, ƙwarewa da damar bunƙasa a sarari." },
+  "ecommerce-website-concept": { en: "A streamlined online store with clear product discovery, confident purchase decisions and a mobile-first checkout path.", ar: "متجر إلكتروني مبسط يسهّل اكتشاف المنتجات واتخاذ قرار الشراء ومسار الدفع عبر الجوال.", ha: "Shagon intanet mai sauƙi don gano kaya, yanke shawarar saya da biyan kuɗi ta waya." },
+  "hotel-website-concept": { en: "An elegant hotel showcase combining rooms, amenities and local character in a focused reservation experience.", ar: "عرض فندقي أنيق يجمع الغرف والمرافق والطابع المحلي ضمن تجربة حجز مركزة.", ha: "Nunin otal mai kyau da ke haɗa ɗakuna, kayan more rayuwa da yanayin wuri cikin booking mai sauƙi." },
+  "personal-brand-website-concept": { en: "A credible personal portfolio that presents expertise, selected work and professional opportunities with clarity.", ar: "ملف شخصي موثوق يعرض الخبرات والأعمال المختارة والفرص المهنية بوضوح.", ha: "Kundin aikin mutum mai inganci da ke nuna ƙwarewa, ayyuka da damar sana'a a sarari." },
+  "corporate-business-website-concept": { en: "A structured corporate platform for presenting expertise, sector insight and measurable business capabilities.", ar: "منصة مؤسسية منظمة لعرض الخبرات والرؤى القطاعية والقدرات العملية القابلة للقياس.", ha: "Dandalin kamfani mai tsari don nuna ƙwarewa, fahimtar fanni da ƙarfinsa na kasuwanci." },
+  "service-company-website-concept": { en: "A practical service-booking experience that helps customers compare options, build trust and request support quickly.", ar: "تجربة عملية لحجز الخدمات تساعد العملاء على المقارنة وبناء الثقة وطلب الدعم بسرعة.", ha: "Tsarin booking na sabis da ke taimaka wa kwastoma kwatantawa, amincewa da neman taimako da sauri." },
+};
+
+const projectDetailSections: Record<string, Array<{ title: string; body: string }>> = {
+  "bangiskebbi-com": [
+    { title: "Concept & purpose", body: "A founder-led global platform that brings professional services, projects, useful ideas and community initiatives into one coherent digital presence." },
+    { title: "Key features", body: "Multilingual publishing, secure member access, content and media management, global search, project and service libraries, Umrah support information and community programme pages." },
+    { title: "Technologies & skills demonstrated", body: "Full-stack web architecture, responsive UI/UX, database-backed CMS workflows, role-based administration, private media handling, accessibility, multilingual SEO and production content design." },
+    { title: "Project status", body: "Active platform in continuous development. Public content is live while selected member and administrative workflows remain protected." },
+  ],
+  "hospitality-resort-concept": [
+    { title: "Concept & purpose", body: "A premium destination website concept designed to make the resort atmosphere tangible before a guest begins planning a stay." },
+    { title: "Key features", body: "Immersive property imagery, room and villa discovery, amenity highlights, destination guidance, availability prompts and responsive enquiry journeys." },
+    { title: "Technologies & skills demonstrated", body: "Hospitality UX strategy, visual storytelling, responsive interface design, conversion-focused information hierarchy and component-based front-end planning." },
+    { title: "Project status", body: "Portfolio concept and interactive design demonstration. It is not represented as a commissioned or operating resort website." },
+  ],
+  "business-website-concept": [
+    { title: "Concept & purpose", body: "A modern business platform concept that communicates a company’s offer, credibility and direction without overwhelming prospective clients." },
+    { title: "Key features", body: "Focused service pathways, capability summaries, sector insights, trust indicators, responsive contact actions and space for case studies or reports." },
+    { title: "Technologies & skills demonstrated", body: "Corporate content strategy, responsive web development, modular design systems, accessible navigation and lead-generation UX." },
+    { title: "Project status", body: "Portfolio concept prepared to demonstrate a professional corporate web direction; no operating company is implied." },
+  ],
+  "ecommerce-website-concept": [
+    { title: "Concept & purpose", body: "A product-led commerce concept focused on helping shoppers discover, compare and understand items before moving toward purchase." },
+    { title: "Key features", body: "Category navigation, product cards, search and filtering patterns, product detail layouts, basket states and a clear mobile shopping journey." },
+    { title: "Technologies & skills demonstrated", body: "Commerce UX, product information architecture, responsive interface design, reusable catalogue components and conversion-aware interaction planning." },
+    { title: "Project status", body: "Front-end portfolio concept only. Payments, inventory and fulfilment integrations are not active." },
+  ],
+  "hotel-website-concept": [
+    { title: "Concept & purpose", body: "An elegant hospitality concept that presents rooms, amenities and the guest experience through a calm, premium visual system." },
+    { title: "Key features", body: "Room exploration, amenity and dining highlights, gallery layouts, local information, enquiry prompts and a future-ready reservation pathway." },
+    { title: "Technologies & skills demonstrated", body: "Luxury brand presentation, hospitality content design, mobile-first layouts, image-led storytelling and reservation journey planning." },
+    { title: "Project status", body: "Portfolio concept and design demonstration; booking and property-management connections are reserved for a future implementation." },
+  ],
+  "personal-brand-website-concept": [
+    { title: "Concept & purpose", body: "A professional personal-brand concept that turns experience, capabilities and selected work into a focused and credible online profile." },
+    { title: "Key features", body: "Profile introduction, expertise highlights, portfolio previews, service pathways, professional milestones and direct contact actions." },
+    { title: "Technologies & skills demonstrated", body: "Personal brand strategy, editorial hierarchy, portfolio UX, responsive presentation and accessible calls to action." },
+    { title: "Project status", body: "Portfolio concept designed as a reusable direction for professionals, consultants and creative founders." },
+  ],
+  "corporate-business-website-concept": [
+    { title: "Concept & purpose", body: "A structured corporate platform for an established organisation that needs to communicate expertise, governance and business value clearly." },
+    { title: "Key features", body: "Business-unit navigation, capability pages, performance highlights, thought-leadership areas, governance information and qualified enquiry routes." },
+    { title: "Technologies & skills demonstrated", body: "Enterprise information architecture, corporate UI systems, responsive development, data-visualisation planning and accessibility-conscious design." },
+    { title: "Project status", body: "Original portfolio concept. Company details, metrics and services are illustrative and are not claims about a real organisation." },
+  ],
+  "service-company-website-concept": [
+    { title: "Concept & purpose", body: "A trustworthy service-company concept that helps people understand available support and request the right service with minimal friction." },
+    { title: "Key features", body: "Service comparison, coverage information, team credibility, appointment requests, availability patterns, testimonials and responsive support actions." },
+    { title: "Technologies & skills demonstrated", body: "Service UX, appointment-flow design, local business content strategy, responsive interfaces and customer-journey optimisation." },
+    { title: "Project status", body: "Original portfolio concept. Scheduling, customer accounts and operational integrations are reserved for future development." },
+  ],
+};
 
 export const projects: ProjectDefinition[] = projectRows.map((row) => ({
   slug: row.slug,
   title: { en: row.title[0], ar: row.title[1], ha: row.title[2] },
   category: { en: row.category[0], ar: row.category[1], ha: row.category[2] },
-  summary: row.slug === "hospitality-resort-concept"
-    ? { en: "Luxury hospitality website concept with premium visual presentation, strong UX structure and responsive design.", ar: "تصور موقع ضيافة فاخر بعرض بصري راقٍ وبنية تجربة مستخدم قوية وتصميم متجاوب.", ha: "Samfurin gidan yanar gizon masauki na alfarma mai kyan gani, tsarin UX mai ƙarfi da ƙira mai daidaituwa." }
-    : row.slug === "business-website-concept"
-    ? { en: "Modern business website concept prepared as a demonstration of professional web development.", ar: "تصور موقع أعمال حديث أُعدّ كعرض لتطوير الويب الاحترافي.", ha: "Samfurin gidan yanar gizon kasuwanci na zamani da aka shirya don nuna haɓaka yanar gizo na ƙwararru." }
-    : row.slug === "bangiskebbi-com"
-    ? { en: "A premium international digital platform for ideas, technology, business and people.", ar: "منصة رقمية دولية راقية للأفكار والتقنية والأعمال والناس.", ha: "Dandalin dijital na duniya mai inganci don ra'ayoyi, fasaha, kasuwanci da mutane." }
-    : row.concept
-    ? { en: "A premium demonstration exploring clear content, responsive structure and a focused customer journey.", ar: "نموذج احترافي يستكشف وضوح المحتوى والبنية المتجاوبة ورحلة عميل مركزة.", ha: "Samfurin ƙwararru da ke nuna ingantaccen abun ciki, tsari mai daidaituwa da tafiyar abokin ciniki." }
-    : { en: "A multilingual personal-brand platform combining professional services, portfolio content, community information and secure member experiences.", ar: "منصة علامة شخصية متعددة اللغات تجمع الخدمات المهنية والأعمال والمجتمع وتجربة أعضاء آمنة.", ha: "Dandalin brand na kai mai harsuna da ke haɗa ayyukan ƙwararru, kundin aiki, al’umma da wurin mamba mai tsaro." },
+  summary: projectSummaries[row.slug] ?? { en: "A focused digital project.", ar: "مشروع رقمي هادف.", ha: "Aikin dijital mai manufa." },
   image: row.image,
   imageAlt: { en: `${row.title[0]} visual`, ar: `صورة ${row.title[1]}`, ha: `Hoton ${row.title[2]}` },
   concept: row.concept,
   sections: {
-    en: row.concept ? [
-      { title: "Concept direction", body: "A clear visual system presents the offer quickly while keeping the path to enquiry or booking easy to follow." },
-      { title: "Experience structure", body: "The concept covers a focused homepage, services or offers, trust-building information, responsive navigation and professional calls to action." },
-      { title: "Design reasoning", body: "Strong hierarchy, useful spacing and mobile-first decisions keep important actions visible without overwhelming the visitor." },
-    ] : [
-      { title: "Purpose and direction", body: "BangisKebbi.com presents Abubakar Alhaji Abubakar’s professional work, ideas and community initiatives through one coherent global platform." },
-      { title: "Platform capabilities", body: "Premium responsive design, a CMS with full admin control, secure authentication, a member dashboard, English/Arabic/Hausa multilingual support, SEO foundations, community pages, Umrah support and the BK Community Support Initiative." },
-      { title: "Technology and workflow", body: "The project uses a modern full-stack web architecture, database-backed publishing, private media access and role-based administration." },
-    ],
+    en: projectDetailSections[row.slug] ?? [],
     ar: row.concept ? [
       { title: "اتجاه التصور", body: "نظام بصري واضح يعرض الخدمة بسرعة ويجعل الوصول إلى الاستفسار أو الحجز سهلاً." },
       { title: "بنية التجربة", body: "يشمل التصور صفحة رئيسية مركزة وخدمات ومعلومات تعزز الثقة وتنقلاً متجاوباً ودعوات واضحة لاتخاذ إجراء." },
