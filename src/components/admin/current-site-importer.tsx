@@ -27,12 +27,13 @@ import supportOrphans from "@/assets/support-orphans.jpg";
 import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
 import supportMission from "@/assets/support-mission.jpg";
 import supportVision from "@/assets/support-vision.jpg";
+import { umrahBalanceVisual, umrahInformationVisuals, umrahJourneyVisuals } from "@/lib/umrah-visuals";
 
 type Entry = { id: string; content_type: string; slug: string; image_path: string | null };
 type Media = { storage_path: string; name: string };
 
 type Item = {
-  contentType: "service" | "project" | "blog_post" | "homepage" | "business" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
+  contentType: "service" | "project" | "blog_post" | "homepage" | "business" | "umrah_step" | "umrah_information" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
   slug: string;
   title: string;
   summary: string;
@@ -64,6 +65,9 @@ function currentSiteItems(): Item[] {
       { slug: "community", title: "Community", image: businessCommunity },
       { slug: "global-opportunities", title: "Global Opportunities", image: businessGlobalOpportunities },
     ].map((item, index) => ({ contentType: "business" as const, ...item, summary: "A practical pathway for trusted connection and progress.", imageAlt: `${item.title} visual`, sortOrder: index })),
+    ...umrahJourneyVisuals.map((item, index) => ({ contentType: "umrah_step" as const, ...item, title: ["Create an account", "Complete profile", "Submit information/documents", "Track Umrah support progress", "Review dashboard progress", "Prepare travel documents", "Coordinate travel arrangements", "Receive updates/support"][index] ?? item.slug, summary: "", imageAlt: item.alt, sortOrder: index })),
+    ...umrahInformationVisuals.map((item, index) => ({ contentType: "umrah_information" as const, ...item, title: ["Documents & Privacy", "Review & Decisions", "Preparation", "Coordination", "Updates", "Cancellations & Refunds"][index] ?? item.slug, summary: "", imageAlt: item.alt, sortOrder: index })),
+    { contentType: "umrah_information", slug: umrahBalanceVisual.slug, title: "Umrah Support Balance", summary: "Real member-specific balance and progress appear only in the private dashboard when available.", image: umrahBalanceVisual.image, imageAlt: umrahBalanceVisual.alt, sortOrder: 6 },
     { contentType: "foundation_mission", slug: "mission", title: "Mission", summary: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", image: supportMission, imageAlt: "Dignified community food support for a family", sortOrder: 0 },
     { contentType: "foundation_vision", slug: "vision", title: "Vision", summary: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", image: supportVision, imageAlt: "A hopeful family looking toward a stronger community", sortOrder: 0 },
     ...[
