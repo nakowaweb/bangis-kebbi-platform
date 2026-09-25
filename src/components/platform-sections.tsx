@@ -223,7 +223,7 @@ export function PlatformIntroduction({ title, description }: { title?: string | 
           <h2 className="mt-2 font-display text-2xl font-bold leading-tight sm:text-3xl">{title ?? t("home.introTitle")}</h2>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">{description ?? t("home.introDescription")}</p>
         </div>
-        <Button variant="outline" asChild><Link to="/about" search={(current) => current}>{t("home.aboutCta")} <ArrowRight /></Link></Button>
+        <Button variant="outline" asChild><Link to="/about">{t("home.aboutCta")} <ArrowRight /></Link></Button>
       </div>
     </section>
   );
@@ -310,7 +310,7 @@ export function AboutPreview({ title, description, items }: { title?: string | u
               </div>
             </article>
           );})}
-          <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2"><Button asChild><Link to="/about" search={(current) => current}>{t("common.workWithMe")} <ArrowRight /></Link></Button><Button variant="outline" asChild><Link to="/contact">{t("common.letsConnect")}</Link></Button></div>
+          <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2"><Button asChild><Link to="/about">{t("common.workWithMe")} <ArrowRight /></Link></Button><Button variant="outline" asChild><Link to="/contact">{t("common.letsConnect")}</Link></Button></div>
         </div>
       </div>
     </SectionShell>

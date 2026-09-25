@@ -6,15 +6,14 @@ import type { LanguageCode } from "@/lib/i18n/dictionary";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  validateSearch: (search: Record<string, unknown>) => ({ lang: typeof search["lang"] === "string" ? search["lang"] as LanguageCode : undefined }),
-  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) =>
+  head: ({ match }) =>
     pageHead({ search: match.search,
       title: "About Bangis Kebbi — Abubakar Alhaji Abubakar",
       description:
         "Learn about Abubakar Alhaji Abubakar, Bangis Kebbi Nakowa, an AI-assisted web designer, web developer, digital entrepreneur and community builder.",
       path: "/about",
     }),
-  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
+  loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
   loader: ({ deps }) => listPublicEntries({ data: { contentType: "about", language: deps.lang } }),
   component: AboutPage,
 });
