@@ -15,7 +15,7 @@ import {
   type FoundationProject,
 } from "@/lib/foundation.functions";
 
-/** Read-only member view: published foundation projects and updates, no admin controls. */
+/** Read-only member view: published community support projects and updates, no admin controls. */
 export function MemberFoundationPanel() {
   const load = useServerFn(getMemberFoundation);
   const query = useQuery({ queryKey: ["member-foundation"], queryFn: () => load() });
@@ -31,13 +31,13 @@ export function MemberFoundationPanel() {
     <section className="grid gap-5">
       <Card>
         <CardHeader className="pb-3">
-          <div className="flex items-center gap-2 text-brand-green"><HandHeart className="h-5 w-5" /><CardTitle className="text-lg">BK Foundations</CardTitle></div>
+          <div className="flex items-center gap-2 text-brand-green"><HandHeart className="h-5 w-5" /><CardTitle className="text-lg">BK Community Support Initiative</CardTitle></div>
           <CardDescription>
             Community support projects and published updates focused on practical help and accountable delivery.
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-wrap gap-2">
-          <Button variant="outline" size="sm" asChild><Link to="/foundation">Public Foundation page <ArrowRight /></Link></Button>
+          <Button variant="outline" size="sm" asChild><Link to="/foundation">Public initiative page <ArrowRight /></Link></Button>
           <Badge variant="secondary">{projects.length} published project{projects.length === 1 ? "" : "s"}</Badge>
           <Badge variant="secondary">{completed.length} completed</Badge>
         </CardContent>
@@ -45,7 +45,7 @@ export function MemberFoundationPanel() {
 
       <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
         {projects.length === 0 ? (
-          <Empty text="No foundation projects have been published yet." />
+          <Empty text="No community support projects have been published yet." />
         ) : (
           projects.map((project) => (
             <article key={project.id} className="flex h-full flex-col overflow-hidden rounded-lg border border-border bg-card">

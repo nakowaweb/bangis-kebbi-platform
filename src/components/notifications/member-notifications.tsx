@@ -37,7 +37,7 @@ const categoryIcons: Record<NotificationCategory, LucideIcon> = {
 const categoryLabels: Record<NotificationCategory, string> = {
   system: "System",
   umrah: "Umrah",
-  foundation: "BK Foundations",
+  foundation: "Community Support",
   account: "Account",
   announcement: "Announcement",
 };
@@ -57,7 +57,7 @@ const activityIcons: Record<string, LucideIcon> = {
 const sectionLabels: Record<string, string> = {
   profile: "Profile",
   umrah: "Umrah",
-  foundations: "BK Foundations",
+  foundations: "Community Support",
 };
 
 function useInbox() {
