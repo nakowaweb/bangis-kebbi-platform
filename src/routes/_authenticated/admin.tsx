@@ -26,7 +26,8 @@ import { MediaUploadField } from "@/components/admin/media-upload-field";
 import { SearchConfigTest } from "@/components/admin/search-config-test";
 import { archiveContentEntry, archiveMediaAsset, deleteContentEntry, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, restoreContentEntry, restoreMediaAsset, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { CurrentSiteImporter } from "@/components/admin/current-site-importer";
-import { getAdminOverview, listMembers, setMemberActive, setMemberRole } from "@/lib/members.functions";
+import { getAdminOverview, getMyAdminAccess } from "@/lib/members.functions";
+import { MembersManager } from "@/components/admin/members-manager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
@@ -110,7 +111,10 @@ function AdminPage() {
   const [query, setQuery] = useState("");
   const [area, setArea] = useState<string>("all");
 
-  const workspace = useQuery({ queryKey: ["admin-workspace"], queryFn: () => getWorkspace() });
+  const getAccess = useServerFn(getMyAdminAccess);
+  const access = useQuery({ queryKey: ["admin-access"], queryFn: () => getAccess() });
+  const can = (module: string) => Boolean(access.data?.isSuperAdmin || access.data?.modules.includes(module));
+  const workspace = useQuery({ queryKey: ["admin-workspace"], queryFn: () => getWorkspace(), enabled: access.isSuccess && can("content") });
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-workspace"] });
   const saveMutation = useMutation({
     mutationFn: () => saveEntry({ data: {
@@ -163,11 +167,12 @@ function AdminPage() {
     await navigate({ to: "/login", replace: true });
   }
 
-  if (workspace.isPending) return <AdminLoading />;
+  if (access.isPending || (can("content") && workspace.isPending)) return <AdminLoading />;
+  if (access.isError) return <AdminDenied message={access.error.message} onSignOut={signOut} />;
   if (workspace.isError) return <AdminDenied message={workspace.error.message} onSignOut={signOut} />;
 
   return (
-    <main className="min-h-[75vh] bg-secondary/45 py-8">
+    <main className="min-h-[75vh] bg-admin-surface py-8">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="mb-7 flex flex-col gap-4 border-b border-border pb-6 sm:flex-row sm:items-end sm:justify-between">
           <div><div className="flex items-center gap-2 text-primary"><ShieldCheck className="h-5 w-5" /><span className="text-xs font-bold uppercase">Protected workspace</span></div><h1 className="mt-2 font-display text-3xl font-bold">Website Content</h1><p className="mt-2 text-sm text-muted-foreground">Manage public content without exposing system credentials or private configuration.</p></div>
@@ -177,17 +182,17 @@ function AdminPage() {
         <Tabs defaultValue="overview">
           <TabsList className="mb-6 h-auto w-full justify-start overflow-x-auto bg-card p-1">
             <TabsTrigger value="overview"><LayoutDashboard /> Dashboard</TabsTrigger>
-            <TabsTrigger value="content"><FileText /> Content</TabsTrigger>
-            <TabsTrigger value="languages"><Languages /> Languages</TabsTrigger>
-            <TabsTrigger value="social"><Share2 /> Social links</TabsTrigger>
-            <TabsTrigger value="credentials"><BadgeCheck /> Credentials</TabsTrigger>
-            <TabsTrigger value="members"><Users /> Members</TabsTrigger>
-            <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger>
-            <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger>
-            <TabsTrigger value="umrah"><Plane /> Umrah</TabsTrigger>
-            <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger>
-            <TabsTrigger value="media"><Image /> Media</TabsTrigger>
-            <TabsTrigger value="audit"><History /> Audit log</TabsTrigger>
+            {can("content") ? <TabsTrigger value="content"><FileText /> Content</TabsTrigger> : null}
+            {can("translations") ? <TabsTrigger value="languages"><Languages /> Languages</TabsTrigger> : null}
+            {can("social") ? <TabsTrigger value="social"><Share2 /> Social links</TabsTrigger> : null}
+            {can("credentials") ? <TabsTrigger value="credentials"><BadgeCheck /> Credentials</TabsTrigger> : null}
+            {can("members") ? <TabsTrigger value="members"><Users /> Members</TabsTrigger> : null}
+            {can("notifications") ? <TabsTrigger value="notifications"><Bell /> Notifications</TabsTrigger> : null}
+            {can("content") ? <TabsTrigger value="settings"><Settings /> Settings</TabsTrigger> : null}
+            {can("umrah") ? <TabsTrigger value="umrah"><Plane /> Umrah</TabsTrigger> : null}
+            {can("foundations") ? <TabsTrigger value="foundations"><HandHeart /> BK Foundations</TabsTrigger> : null}
+            {can("content") ? <TabsTrigger value="media"><Image /> Media</TabsTrigger> : null}
+            {can("content") ? <TabsTrigger value="audit"><History /> Audit log</TabsTrigger> : null}
           </TabsList>
 
           <TabsContent value="overview"><AdminOverview /></TabsContent>
@@ -227,7 +232,7 @@ function AdminPage() {
           <TabsContent value="umrah"><AdminUmrahManager /></TabsContent>
           <TabsContent value="foundations"><AdminFoundationManager /></TabsContent>
           <TabsContent value="media"><MediaManager media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
-          <TabsContent value="members"><MembersManager /></TabsContent>
+          <TabsContent value="members">{can("members") ? <MembersManager isSuperAdmin={Boolean(access.data?.isSuperAdmin)} /> : null}</TabsContent>
           <TabsContent value="audit"><AuditLog rows={workspace.data?.audit ?? []} /></TabsContent>
         </Tabs>
       </div>
@@ -340,109 +345,6 @@ function Field({ label, children }: { label: string; children: ReactNode }) { re
 function EmptyState({ text }: { text: string }) { return <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">{text}</div>; }
 function AdminLoading() { return <main className="mx-auto grid min-h-[70vh] max-w-7xl gap-5 px-4 py-10"><Skeleton className="h-20 w-full" /><div className="grid gap-5 lg:grid-cols-[1fr_390px]"><Skeleton className="h-96" /><Skeleton className="h-96" /></div></main>; }
 function AdminDenied({ message, onSignOut }: { message: string; onSignOut: () => void }) { return <main className="grid min-h-[70vh] place-items-center px-4"><div className="max-w-md rounded-lg border border-border bg-card p-7 text-center"><ShieldCheck className="mx-auto h-10 w-10 text-primary" /><h1 className="mt-4 font-display text-2xl font-bold">Administrator access required</h1><p className="mt-3 text-sm text-muted-foreground">{message}</p><Button className="mt-6" variant="outline" onClick={onSignOut}>Sign out</Button></div></main>; }
-function MembersManager() {
-  const fetchMembers = useServerFn(listMembers);
-  const toggleActive = useServerFn(setMemberActive);
-  const toggleRole = useServerFn(setMemberRole);
-  const queryClient = useQueryClient();
-  const [search, setSearch] = useState("");
-  const [status, setStatus] = useState<"all" | "active" | "inactive">("all");
-  const [page, setPage] = useState(0);
-
-  const members = useQuery({
-    queryKey: ["admin-members", search, status, page],
-    queryFn: () => fetchMembers({ data: { search, status, page } }),
-  });
-  const refresh = () => queryClient.invalidateQueries({ queryKey: ["admin-members"] });
-
-  if (members.isError) return <EmptyState text={members.error.message} />;
-
-  const rows = members.data?.members ?? [];
-  const total = members.data?.total ?? 0;
-  const pageSize = members.data?.pageSize ?? 20;
-
-  return (
-    <section>
-      <div className="mb-4 flex flex-col gap-3 sm:flex-row">
-        <Input value={search} onChange={(event) => { setPage(0); setSearch(event.target.value); }} placeholder="Search name, email, country or city" aria-label="Search members" />
-        <Select value={status} onValueChange={(value) => { setPage(0); setStatus(value as "all" | "active" | "inactive"); }}>
-          <SelectTrigger className="sm:w-48"><SelectValue /></SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All members</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Deactivated</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-
-      {members.isPending ? <Skeleton className="h-64 w-full" /> : rows.length === 0 ? <EmptyState text="No members match this view." /> : (
-        <div className="overflow-hidden rounded-lg border border-border bg-card">
-          {rows.map((member: { id: string; full_name: string; email: string; phone: string | null; country: string | null; city: string | null; is_active: boolean; created_at: string; roles: string[] }) => (
-            <div key={member.id} className="grid gap-3 border-b border-border p-4 last:border-b-0 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
-              <div className="min-w-0">
-                <strong className="block truncate text-sm">{member.full_name || "Unnamed member"}</strong>
-                <p className="mt-1 truncate text-xs text-muted-foreground">
-                  {member.email}{member.country ? ` · ${member.city ? `${member.city}, ` : ""}${member.country}` : ""} · Joined {new Date(member.created_at).toLocaleDateString()}
-                </p>
-                <div className="mt-2 flex flex-wrap gap-1.5">
-                  <Badge variant={member.is_active ? "default" : "secondary"}>{member.is_active ? "Active" : "Deactivated"}</Badge>
-                  {member.roles.map((role) => <Badge key={role} variant="outline">{role.replaceAll("_", " ")}</Badge>)}
-                </div>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                <AlertDialog>
-                  <AlertDialogTrigger asChild>
-                    <Button size="sm" variant={member.is_active ? "destructive" : "outline"}>{member.is_active ? "Deactivate" : "Activate"}</Button>
-                  </AlertDialogTrigger>
-                  <AlertDialogContent>
-                    <AlertDialogHeader>
-                      <AlertDialogTitle>{member.is_active ? "Deactivate this account?" : "Activate this account?"}</AlertDialogTitle>
-                      <AlertDialogDescription>This change is recorded in the audit log.</AlertDialogDescription>
-                    </AlertDialogHeader>
-                    <AlertDialogFooter>
-                      <AlertDialogCancel>Cancel</AlertDialogCancel>
-                      <AlertDialogAction onClick={async () => {
-                        try { await toggleActive({ data: { userId: member.id, isActive: !member.is_active } }); toast.success("Member status updated"); refresh(); }
-                        catch (error) { toast.error(error instanceof Error ? error.message : "Update failed"); }
-                      }}>Confirm</AlertDialogAction>
-                    </AlertDialogFooter>
-                  </AlertDialogContent>
-                </AlertDialog>
-                <Select value="" onValueChange={async (value) => {
-                  const [role, action] = value.split(":");
-                  try {
-                    await toggleRole({ data: { userId: member.id, role: role as "admin", grant: action === "grant" } });
-                    toast.success("Role updated");
-                    refresh();
-                  } catch (error) { toast.error(error instanceof Error ? error.message : "Only a Super Admin can change roles"); }
-                }}>
-                  <SelectTrigger className="h-9 w-44"><SelectValue placeholder="Manage role" /></SelectTrigger>
-                  <SelectContent>
-                    {["member", "content_manager", "support", "finance", "admin", "super_admin"].map((role) => (
-                      <SelectItem key={`${role}:grant`} value={`${role}:grant`}>Grant {role.replaceAll("_", " ")}</SelectItem>
-                    ))}
-                    {["content_manager", "support", "finance", "admin", "super_admin"].map((role) => (
-                      <SelectItem key={`${role}:revoke`} value={`${role}:revoke`}>Remove {role.replaceAll("_", " ")}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ))}
-        </div>
-      )}
-
-      <div className="mt-4 flex items-center justify-between text-sm text-muted-foreground">
-        <span>{total} member{total === 1 ? "" : "s"}</span>
-        <div className="flex gap-2">
-          <Button size="sm" variant="outline" disabled={page === 0} onClick={() => setPage(page - 1)}>Previous</Button>
-          <Button size="sm" variant="outline" disabled={(page + 1) * pageSize >= total} onClick={() => setPage(page + 1)}>Next</Button>
-        </div>
-      </div>
-    </section>
-  );
-}
-
 function AdminOverview() {
   const loadOverview = useServerFn(getAdminOverview);
   const overview = useQuery({ queryKey: ["admin-overview"], queryFn: () => loadOverview() });
