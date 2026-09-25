@@ -55,7 +55,7 @@ export const services: ServiceDefinition[] = serviceBase.map(([slug, en, ar, ha]
   slug,
   title: { en, ar, ha },
   summary: summaries[slug] ?? summaries["web-development"] ?? { en: "Professional digital service.", ar: "خدمة رقمية احترافية.", ha: "Sabis na dijital na ƙwararru." },
-  image: serviceVisuals[index] ?? businessImage,
+  image: serviceVisuals[index] ?? businessProjectAsset.url,
   imageAlt: { en: `${en} service concept`, ar: `تصور لخدمة ${ar}`, ha: `Hoton tsarin sabis na ${ha}` },
   canDo: {
     en: slug === "ui-ux-design" ? ["User journeys and interface planning", "Wireframes and polished screen design", "Responsive and accessible interaction patterns"] : slug === "website-maintenance" ? ["Content and software updates", "Performance and usability checks", "Issue resolution and continuous improvement"] : ["Discovery and practical scope definition", "Responsive website or application delivery", "Content, CMS and launch preparation"],
