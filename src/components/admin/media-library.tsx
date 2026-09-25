@@ -96,7 +96,10 @@ export function MediaLibrary({ media, registerMedia, onChanged }: { media: Media
       <Select value={status} onValueChange={setStatus}><SelectTrigger aria-label="Filter by media status"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="archived">Archived</SelectItem><SelectItem value="all">All statuses</SelectItem></SelectContent></Select>
     </div>
     {visible.length === 0 ? <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">No media matches this view.</div> : <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
-      {visible.map((item) => <MediaCard key={item.id} item={item} previewUrl={previews[storedPath(item.storage_path)]} onChanged={onChanged} />)}
+      {visible.map((item) => {
+        const previewUrl = previews[storedPath(item.storage_path)];
+        return <MediaCard key={item.id} item={item} {...(previewUrl ? { previewUrl } : {})} onChanged={onChanged} />;
+      })}
     </div>}
   </section>;
 }
