@@ -116,3 +116,8 @@
 - [x] Preserve the supplied image unchanged as the fallback visual and connect the section to its existing CMS image field
 - [x] Add the four requested visual points and keep the existing initiative CTA and route
 - [ ] Register the supplied banner in the production Media Library — blocked when no production admin session is available
+
+## Final compact CAC credential card
+- [ ] Replace the large public credential card with the supplied compact CAC design
+- [ ] Keep certificate viewing, official verification and CMS-managed credential data working
+- [ ] Verify responsive presentation and production build health
