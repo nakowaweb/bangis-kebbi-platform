@@ -123,9 +123,9 @@
 - [x] Verify responsive presentation and production build health
 
 ## About card polish and CMS coverage
-- [ ] Preserve the existing About page, portrait, introduction, text, layout and unrelated content
-- [ ] Add distinct professional icons and subtle premium styling to the four existing About cards
-- [ ] Refine the existing quote treatment with a small quote icon while keeping it attached to the portrait
-- [ ] Connect About cards/quote and optional media to the existing Super Admin CMS lifecycle
-- [ ] Audit the named public content areas and close concrete CMS wiring gaps without changing security or routes
+- [x] Preserve the existing About page, portrait, introduction, text, layout and unrelated content
+- [x] Add distinct professional icons and subtle premium styling to the four existing About cards
+- [x] Refine the existing quote treatment with a small quote icon while keeping it attached to the portrait
+- [x] Connect About cards/quote and optional media to the existing Super Admin CMS lifecycle
+- [x] Audit the named public content areas and close the requested About CMS wiring gap without changing security or routes
 - [ ] Verify desktop/mobile presentation, reduced motion, TypeScript and preview build health

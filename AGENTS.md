@@ -8,3 +8,5 @@
 > Commits you push to the connected branch sync back to Lovable and show up in
 > the editor, so keep the branch in a working state.
 <!-- LOVABLE:END -->
+
+- About card content and quote use `about` CMS entries (`about-card-1` through `about-card-4`, `about-quote`); built-in localized copy and Lucide icons remain safe fallbacks so the original portrait asset is never replaced by this feature.

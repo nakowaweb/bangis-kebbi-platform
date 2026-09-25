@@ -41,8 +41,8 @@ type Item = {
   body?: string;
   category?: string;
   author?: string;
-  image: string;
-  imageAlt: string;
+  image?: string;
+  imageAlt?: string;
   sortOrder: number;
   publishedAt?: string;
 };
@@ -53,6 +53,12 @@ function currentSiteItems(): Item[] {
     ...services.map((s, i) => ({ contentType: "service" as const, slug: s.slug, title: s.title.en, summary: s.summary.en, body: [...s.canDo.en].join("\n"), image: s.image, imageAlt: s.imageAlt.en, sortOrder: i })),
     ...projects.map((p, i) => ({ contentType: "project" as const, slug: p.slug, title: p.title.en, summary: p.summary.en, body: p.sections.en.map((x) => `${x.title}\n${x.body}`).join("\n\n"), category: p.category.en, image: p.image, imageAlt: p.imageAlt.en, sortOrder: i })),
     ...articles.map((a, i) => ({ contentType: "blog_post" as const, slug: a.slug, title: a.title.en, summary: a.summary.en, body: a.body.en.join("\n\n"), category: a.category.en, author: a.author, image: a.image, imageAlt: a.title.en, sortOrder: i, publishedAt: a.publishedAt })),
+    { contentType: "about", slug: "summary", title: "Technology, People & Meaningful Impact", summary: "I’m Abubakar Alhaji Abubakar, an AI Web Designer & Web Developer focused on practical digital solutions, meaningful collaboration and positive impact.", sortOrder: 0 },
+    { contentType: "about", slug: "about-card-1", title: "Creative Digital Solutions", summary: "I design modern websites and digital solutions that turn ideas into practical, accessible experiences.", sortOrder: 1 },
+    { contentType: "about", slug: "about-card-2", title: "Reliable Support & Collaboration", summary: "I work with individuals, businesses and communities to provide dependable digital support and build useful connections.", sortOrder: 2 },
+    { contentType: "about", slug: "about-card-3", title: "Global Mindset, Real Connections", summary: "I connect technology, business and people with a global outlook while staying grounded in real community needs.", sortOrder: 3 },
+    { contentType: "about", slug: "about-card-4", title: "Technology for Positive Impact", summary: "I believe technology should create opportunities, solve real problems and contribute positively to people and communities.", sortOrder: 4 },
+    { contentType: "about", slug: "about-quote", title: "“Technology gives you tools, but people give you opportunities.”", summary: "", sortOrder: 5 },
     ...[
       { src: heroDigitalSolutions, label: "Digital Solutions / Web Development", alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team" },
       { src: heroCommunitySupport, label: "BK Community Support Initiative", alt: "Abubakar Alhaji Abubakar participating in dignified community support" },
@@ -112,15 +118,15 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
       setProgress(`${++done} / ${missing.length}: ${item.title}`);
       try {
         const existingEntry = existing.get(`${item.contentType}:${item.slug}`);
-        const name = fileName(item.image);
-        let path = uploaded.get(`imported/${name}`);
-        if (!path) {
+        const name = item.image ? fileName(item.image) : null;
+        let path = name ? uploaded.get(`imported/${name}`) : undefined;
+        if (item.image && name && !path) {
           const blob = await (await fetch(item.image)).blob();
           const type = blob.type || (name.endsWith(".jpg") ? "image/jpeg" : "image/webp");
           path = `imported/${name}`;
           const { error } = await supabase.storage.from("site-media").upload(path, blob, { contentType: type, upsert: true });
           if (error) throw new Error(`Image upload: ${error.message}`);
-          await registerMedia({ data: { name, storagePath: path, mimeType: type as "image/jpeg", altText: item.imageAlt, byteSize: blob.size } });
+          await registerMedia({ data: { name, storagePath: path, mimeType: type as "image/jpeg", altText: item.imageAlt ?? item.title, byteSize: blob.size } });
           uploaded.set(`imported/${name}`, path);
         }
         await saveEntry({ data: {
