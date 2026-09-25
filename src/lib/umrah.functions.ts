@@ -692,12 +692,19 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" })
       .limit(60),
     client
       .from("umrah_partners")
-      .select("id,name,country,website_url,services")
+      .select("id,name,country,state_region,city,logo_path,website_url,services,sort_order" as "*")
       .eq("verification_status", "verified")
       .eq("is_visible", true)
+      .order("sort_order" as never, { ascending: true })
       .order("name", { ascending: true })
-      .limit(20),
+      .limit(100),
   ]);
 
-  return { entries: await applyTranslations(client as never, entries ?? [], data.language), partners: partners ?? [] };
+  const rows = (partners ?? []) as unknown as Array<{ id: string; name: string; country: string | null; state_region: string | null; city: string | null; logo_path: string | null; website_url: string | null; services: string | null }>;
+  const { signSiteMedia, mediaUrl } = await import("@/lib/public-content.server");
+  const signed = await signSiteMedia(rows.map((row) => row.logo_path));
+  return {
+    entries: await applyTranslations(client as never, entries ?? [], data.language),
+    partners: rows.map(({ logo_path, ...row }) => ({ ...row, logoUrl: mediaUrl(logo_path, signed) })),
+  };
 });
