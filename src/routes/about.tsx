@@ -2,17 +2,19 @@ import { createFileRoute } from "@tanstack/react-router";
 
 import { AboutPreview, CommunitySection, PillarsSection } from "@/components/platform-sections";
 import { listPublicEntries } from "@/lib/content.functions";
+import type { LanguageCode } from "@/lib/i18n/dictionary";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/about")({
-  head: ({ match }) =>
+  validateSearch: (search: Record<string, unknown>) => ({ lang: typeof search["lang"] === "string" ? search["lang"] as LanguageCode : undefined }),
+  head: ({ match }: { match: { search: { lang?: LanguageCode } } }) =>
     pageHead({ search: match.search,
       title: "About Bangis Kebbi — Abubakar Alhaji Abubakar",
       description:
         "Learn about Abubakar Alhaji Abubakar, Bangis Kebbi Nakowa, an AI-assisted web designer, web developer, digital entrepreneur and community builder.",
       path: "/about",
     }),
-  loaderDeps: ({ search }) => ({ lang: ((search as Record<string, unknown>)["lang"] === "ar" || (search as Record<string, unknown>)["lang"] === "ha") ? (search as Record<string, unknown>)["lang"] as "ar" | "ha" : "en" }),
+  loaderDeps: ({ search }) => ({ lang: search.lang ?? "en" }),
   loader: ({ deps }) => listPublicEntries({ data: { contentType: "about", language: deps.lang } }),
   component: AboutPage,
 });
