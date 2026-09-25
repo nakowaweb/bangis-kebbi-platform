@@ -118,6 +118,6 @@
 - [ ] Register the supplied banner in the production Media Library — blocked when no production admin session is available
 
 ## Final compact CAC credential card
-- [ ] Replace the large public credential card with the supplied compact CAC design
-- [ ] Keep certificate viewing, official verification and CMS-managed credential data working
-- [ ] Verify responsive presentation and production build health
+- [x] Replace the large public credential card with the supplied compact CAC design
+- [x] Keep certificate viewing, official verification and CMS-managed credential data working
+- [x] Verify responsive presentation and production build health
