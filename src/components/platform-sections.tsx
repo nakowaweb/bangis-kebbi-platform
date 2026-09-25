@@ -255,16 +255,33 @@ export function AboutPreview({ title, description }: { title?: string | undefine
   );
 }
 
-export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null }> | undefined }) {
+export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; imageUrl?: string | null }> | undefined }) {
   const { t, language } = useLanguage();
+  const fallbackBySlug = new Map(portfolioServices.map((item) => [item.slug, item]));
   const visibleServices = items?.length
-    ? items.map((item, index) => ({ slug: item.slug, title: item.title, description: item.summary ?? t("home.serviceFallback"), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }))
-    : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
+    ? items.map((item, index) => {
+      const fallback = fallbackBySlug.get(item.slug);
+      return { slug: item.slug, title: item.title, description: item.summary ?? t("home.serviceFallback"), image: item.imageUrl ?? fallback?.image, imageAlt: fallback ? text(fallback.imageAlt, language) : item.title, icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 };
+    })
+    : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), image: item.image, imageAlt: text(item.imageAlt, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} action={!full ? { label: t("common.viewAllServices"), href: "/services" } : undefined}>
       {!full ? <div className="mb-6 overflow-hidden border-y border-border py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase text-muted-foreground">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span>{service.title}</span><span className="text-brand-cyan">•</span></span>)}</div></div> : null}
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {visibleServices.map((service) => <FeatureCard key={service.slug} icon={service.icon} title={service.title} description={service.description} action={t("common.learnMore")} href="/services/$slug" slug={service.slug} />)}
+      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+        {visibleServices.map((service) => {
+          const Icon = service.icon;
+          return <article key={service.slug} className="motion-card group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
+            <div className="relative aspect-[8/5] overflow-hidden bg-secondary">
+              <SafeImage src={service.image} alt={service.imageAlt} loading="lazy" width={1200} height={752} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
+            </div>
+            <div className="relative flex flex-1 flex-col px-5 pb-5 pt-8">
+              <span className="absolute -top-7 left-5 grid size-14 place-items-center rounded-md border border-border bg-card text-primary shadow-sm"><Icon className="size-6" /></span>
+              <h3 className="font-display text-lg font-bold leading-6">{service.title}</h3>
+              <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{service.description}</p>
+              <Button variant="link" className="mt-4 h-auto justify-start px-0 font-bold" asChild><Link to="/services/$slug" params={{ slug: service.slug }}>{t("common.learnMore")} <ArrowRight /></Link></Button>
+            </div>
+          </article>;
+        })}
       </div>
     </SectionShell>
   );

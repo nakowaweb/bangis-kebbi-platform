@@ -59,3 +59,8 @@
 - [x] Add filename search, media-type filtering and archive-state filtering
 - [x] Add direct upload, same-kind replacement, remove-from-content, archive/restore and protected permanent deletion controls
 - [ ] Verify authenticated Media Library workflows against production — blocked when no production admin session is available
+
+## Services reference-card update
+- [x] Rebuild only the Services section as six responsive image-led cards matching the supplied reference
+- [x] Create six distinct service visuals and keep CMS-managed images as the public-card priority
+- [ ] Register the six built-in visuals in the production Media Library — blocked when no production admin session is available
