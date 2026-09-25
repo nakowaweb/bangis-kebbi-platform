@@ -82,3 +82,9 @@
 - [x] Replace the public fallback rotation with exactly four responsive slides and preserve the 2.7-second accessible carousel behavior
 - [x] Connect all four slides to distinct Homepage/Hero CMS entries with ordering, publish/unpublish, replacement and removal controls
 - [ ] Register the four images in the production Media Library — blocked when no production admin session is available
+
+## Business card small visuals
+- [ ] Add five small, proportional visuals matching the supplied reference to the existing Business cards
+- [ ] Connect each visual to a distinct CMS entry for Media Library preview, replacement and removal
+- [ ] Verify the Business cards on desktop and mobile without changing other sections
+- [ ] Register the five images in the production Media Library — blocked when no production admin session is available
