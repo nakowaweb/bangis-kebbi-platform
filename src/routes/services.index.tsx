@@ -32,12 +32,18 @@ export const Route = createFileRoute("/services/")({
   }),
   errorComponent: RouteError,
   loaderDeps: (opts) => ({ lang: ((opts.search as { lang?: LanguageCode }).lang ?? "en") as LanguageCode }),
-  loader: ({ deps }) => listPublicEntries({ data: { contentType: "service", language: deps.lang } }),
+  loader: async ({ deps }) => {
+    const [services, business] = await Promise.all([
+      listPublicEntries({ data: { contentType: "service", language: deps.lang } }),
+      listPublicEntries({ data: { contentType: "business", language: deps.lang } }),
+    ]);
+    return { services, business };
+  },
   component: ServicesPage,
 });
 
 function ServicesPage() {
-  const loadedServices = Route.useLoaderData();
+  const { services: loadedServices, business } = Route.useLoaderData();
   const { language } = useLanguage();
   const cmsSlugs = new Set(loadedServices.map((item) => item.slug));
   const services = [...loadedServices, ...fallbackServices.filter((item) => !cmsSlugs.has(item.slug)).map((service) => ({ id: service.slug, slug: service.slug, title: text(service.title, language), summary: text(service.summary, language), category: null, imageUrl: service.image }))];
@@ -59,7 +65,7 @@ function ServicesPage() {
           </ul>
         </SectionShell>
       )}
-      <BusinessSection />
+      <BusinessSection items={business} />
       <ContactSection />
     </main>
   );

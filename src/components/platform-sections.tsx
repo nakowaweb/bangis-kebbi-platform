@@ -66,6 +66,11 @@ import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
 import communitySupportHero from "@/assets/hero-community-support.jpg";
 import umrahSupportHero from "@/assets/hero-umrah-support.jpg";
 import globalPlatformHero from "@/assets/hero-global-platform.jpg";
+import businessDigitalServices from "@/assets/business-digital-services.webp";
+import businessNetworking from "@/assets/business-networking.webp";
+import businessTechnology from "@/assets/business-technology.webp";
+import businessCommunity from "@/assets/business-community.webp";
+import businessGlobalOpportunities from "@/assets/business-global-opportunities.webp";
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
@@ -307,11 +312,25 @@ export function ProjectsSection({ full = false, items }: { full?: boolean; items
   );
 }
 
-export function BusinessSection({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
+const businessVisuals = [businessDigitalServices, businessNetworking, businessTechnology, businessCommunity, businessGlobalOpportunities];
+
+export function BusinessSection({ title, description, items }: { title?: string | undefined; description?: string | undefined; items?: Array<{ slug: string; title: string; summary: string | null; imageUrl?: string | null }> | undefined } = {}) {
   const { t } = useLanguage();
+  const cmsBySlug = new Map(items?.map((item) => [item.slug, item]) ?? []);
+  const cards = businessCategories.map((fallback, index) => {
+    const slug = ["digital-services", "business-networking", "technology", "community", "global-opportunities"][index] ?? fallback.title.toLowerCase().replaceAll(" ", "-");
+    const cms = cmsBySlug.get(slug);
+    return { slug, title: cms?.title ?? fallback.title, description: cms?.summary ?? t("business.cardDetail"), image: cms ? cms.imageUrl : businessVisuals[index], icon: fallback.icon };
+  });
   return (
     <SectionShell eyebrow={t("business.eyebrow")} title={title ?? t("business.title")} description={description ?? t("business.description")}>
-      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{businessCategories.map((item) => <FeatureCard key={item.title} icon={item.icon} title={item.title} description={t("business.cardDetail")} />)}</div>
+      <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-5">{cards.map((item) => <article key={item.slug} className="motion-card flex min-w-0 flex-col items-center rounded-lg border border-border bg-card p-5 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
+        <div className="grid size-28 shrink-0 place-items-center overflow-hidden rounded-lg bg-secondary sm:size-24 lg:size-28">
+          {item.image ? <SafeImage src={item.image} alt="" loading="lazy" width={816} height={816} className="size-full object-cover" /> : <item.icon className="size-9 text-primary" aria-hidden="true" />}
+        </div>
+        <h3 className="mt-4 font-display text-base font-bold leading-5">{item.title}</h3>
+        <p className="mt-2 text-sm leading-6 text-muted-foreground">{item.description}</p>
+      </article>)}</div>
     </SectionShell>
   );
 }
