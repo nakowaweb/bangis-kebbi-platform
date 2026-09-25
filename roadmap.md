@@ -103,10 +103,10 @@
 - [ ] Register the fifteen visuals in the production Media Library — blocked when no production admin session is available
 
 ## Projects final professional update
-- [ ] Match the supplied three-column image-led project card direction across all eight projects
-- [ ] Create distinct premium visuals for the corporate and service-company projects
-- [ ] Make every project image and prominent action open its project details page
-- [ ] Expand all eight project details with purpose, key features, demonstrated skills, status and future live-link space
-- [ ] Preserve CMS and Media Library replacement controls, security and unrelated page design
-- [ ] Verify eight cards and all detail links on desktop and mobile
+- [x] Match the supplied three-column image-led project card direction across all eight projects
+- [x] Create distinct premium visuals for the corporate and service-company projects
+- [x] Make every project image and prominent action open its project details page
+- [x] Expand all eight project details with purpose, key features, demonstrated skills, status and future live-link space
+- [x] Preserve CMS and Media Library replacement controls, security and unrelated page design
+- [x] Verify eight cards and all detail links on desktop and mobile
 - [ ] Register new project visuals in the production Media Library — blocked when no production admin session is available

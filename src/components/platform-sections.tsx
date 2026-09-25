@@ -303,21 +303,26 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
   );
 }
 
-const projectImages = [heroImage, resortImage, businessImage];
-export function ProjectsSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; payload: unknown; imageUrl?: string | null }> | undefined }) {
+const projectImages = portfolioProjects.map((project) => project.image);
+export function ProjectsSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; category?: string | null; concept?: boolean; payload: unknown; imageUrl?: string | null; image_alt?: string | null }> | undefined }) {
   const { t, language } = useLanguage();
-  const visibleProjects = items?.length ? items.map((item, index) => ({ slug: item.slug, name: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("home.projectFallbackCategory"), description: item.summary ?? t("home.projectFallbackSummary"), image: item.imageUrl ?? projectImages[index] ?? heroImage, concept: false })) : portfolioProjects.map((item) => ({ slug: item.slug, name: text(item.title, language), category: text(item.category, language), description: text(item.summary, language), image: item.image, concept: item.concept }));
+  const visibleProjects = items?.length ? items.map((item, index) => ({ slug: item.slug, name: item.title, category: item.category ?? (typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("home.projectFallbackCategory")), description: item.summary ?? t("home.projectFallbackSummary"), image: item.imageUrl ?? projectImages[index] ?? heroImage, imageAlt: item.image_alt ?? item.title, concept: item.concept ?? false })) : portfolioProjects.map((item) => ({ slug: item.slug, name: text(item.title, language), category: text(item.category, language), description: text(item.summary, language), image: item.image, imageAlt: text(item.imageAlt, language), concept: item.concept }));
   return (
     <SectionShell eyebrow={t("home.projectsEyebrow")} title={t("home.projectsTitle")} description={t("home.projectsDescription")} action={!full ? { label: t("common.viewAllProjects"), href: "/projects" } : undefined}>
       {full && <div className="mb-5 flex flex-wrap gap-2">{projectCategories.map((category) => <Badge key={category} variant="outline">{category}</Badge>)}</div>}
-      <div className="grid gap-4 md:grid-cols-3">
-        {visibleProjects.map((project, index) => (
-          <article key={project.slug} className="motion-card group overflow-hidden rounded-lg border border-border bg-card shadow-sm transition hover:-translate-y-1 hover:shadow-platform">
-            <div className="relative aspect-[16/9] overflow-hidden bg-brand-ink">
-               <SafeImage src={project.image} alt={project.name} loading="lazy" width={1200} height={750} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-              {index === 0 && <img src={appIconAsset.url} alt="BangisKebbi.com" loading="lazy" className="absolute left-5 top-5 h-14 w-14 rounded-lg" />}
+      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        {visibleProjects.map((project) => (
+          <article key={project.slug} className="motion-card group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
+            <Link to="/projects/$slug" params={{ slug: project.slug }} aria-label={`${t("common.viewProject")}: ${project.name}`} className="relative block aspect-[8/5] overflow-hidden bg-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
+              <SafeImage src={project.image} alt={project.imageAlt} loading="lazy" width={1536} height={960} className="size-full object-cover transition duration-500 group-hover:scale-[1.035]" />
+            </Link>
+            <div className="flex flex-1 flex-col p-5">
+              {project.concept && <Badge variant="secondary" className="mb-3 w-fit">Concept / Demo</Badge>}
+              <h3 className="font-display text-lg font-bold leading-6">{project.name}</h3>
+              <p className="mt-1 text-xs font-semibold text-primary">{project.category}</p>
+              <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{project.description}</p>
+              <Button className="mt-5 w-full font-bold" asChild><Link to="/projects/$slug" params={{ slug: project.slug }}>{t("common.viewProject")} <ArrowRight /></Link></Button>
             </div>
-             <div className="p-5">{project.concept && <Badge variant="secondary" className="mb-3">Concept / Demo</Badge>}<h3 className="font-display text-lg font-bold">{project.name}</h3><p className="mt-1 text-xs font-semibold text-primary">{project.category}</p><p className="mt-2 text-sm leading-6 text-muted-foreground">{project.description}</p><Button variant="link" className="mt-2 px-0" asChild><Link to="/projects/$slug" params={{ slug: project.slug }}>{t("common.viewProject")} <ArrowRight /></Link></Button></div>
           </article>
         ))}
       </div>
