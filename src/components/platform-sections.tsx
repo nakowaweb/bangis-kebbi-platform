@@ -389,7 +389,7 @@ export function FoundationSection({ title, description, image, imageAlt }: { tit
             <Button className="mt-7 h-12 w-full font-bold sm:w-fit sm:px-7" asChild><Link to="/foundation">{t("foundation.previewAction")} <ArrowRight /></Link></Button>
           </div>
           <div className="relative min-h-64 overflow-hidden bg-secondary sm:min-h-80 lg:min-h-[520px]">
-            <SafeImage src={image ?? communitySupportBannerAsset.url} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="eager" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center] transition duration-700 group-hover:scale-[1.015]" />
+            <SafeImage src={image ?? communitySupportBannerAsset.url} fallbackSrc={communitySupportBannerAsset.url} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="eager" fetchPriority="high" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center] transition duration-700 group-hover:scale-[1.015]" />
             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card/35 to-transparent lg:hidden" />
           </div>
         </div>
