@@ -319,7 +319,7 @@ export function BusinessSection({ title, description }: { title?: string | undef
 export function UmrahSection({ title, description, image, imageAlt }: { title?: string | undefined; description?: string | undefined; image?: string | undefined; imageAlt?: string | undefined } = {}) {
   const { t } = useLanguage();
   return (
-    <CompactPlatform image={image ?? umrahCommunityFounderImage} imageAlt={imageAlt ?? "Abubakar Alhaji Abubakar with a Nigerian Muslim community in a peaceful Umrah setting"} icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
+    <CompactPlatform image={image ?? umrahSupportHero} imageAlt={imageAlt ?? "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting"} icon={Plane} eyebrow={t("umrah.previewEyebrow")} title={title ?? t("umrah.previewTitle")} description={description ?? t("umrah.previewDescription")} href="/umrah" action={t("umrah.previewAction")} tone="gold" />
   );
 }
 
