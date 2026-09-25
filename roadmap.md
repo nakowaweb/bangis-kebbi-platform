@@ -94,3 +94,10 @@
 - [x] Replace the three fallback article images and match the reference card content and actions
 - [x] Add the CMS-managed blog author profile photo to Website Settings
 - [ ] Register the three images and author profile photo in the production Media Library — blocked when no production admin session is available
+
+## Umrah reference-section update
+- [x] Match the supplied journey layout with eight small, proportional illustrations
+- [x] Match the supplied important-information layout with six small illustrations
+- [x] Present the support-balance explanation with an Umrah visual and no sample financial figures
+- [x] Connect all fifteen visuals to Umrah CMS entries for Media Library replacement or removal
+- [ ] Register the fifteen visuals in the production Media Library — blocked when no production admin session is available

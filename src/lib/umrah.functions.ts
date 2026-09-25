@@ -683,7 +683,7 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" })
   const [{ data: entries }, { data: partners }] = await Promise.all([
     client
       .from("content_entries")
-      .select("id,content_type,slug,title,summary,body,sort_order")
+      .select("id,content_type,slug,title,summary,body,image_path,image_alt,sort_order")
       .in("content_type", publicUmrahTypes)
       .eq("status", "published")
       .eq("is_enabled", true)
@@ -700,11 +700,13 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" })
       .limit(100),
   ]);
 
+  const contentRows = entries ?? [];
   const rows = (partners ?? []) as unknown as Array<{ id: string; name: string; country: string | null; state_region: string | null; city: string | null; logo_path: string | null; website_url: string | null; services: string | null }>;
   const { signSiteMedia, mediaUrl } = await import("@/lib/public-content.server");
-  const signed = await signSiteMedia(rows.map((row) => row.logo_path));
+  const signed = await signSiteMedia([...contentRows.map((row) => row.image_path), ...rows.map((row) => row.logo_path)]);
+  const translated = await applyTranslations(client as never, contentRows, data.language);
   return {
-    entries: await applyTranslations(client as never, entries ?? [], data.language),
+    entries: translated.map((row) => ({ ...row, imageUrl: mediaUrl(row.image_path, signed) })),
     partners: rows.map(({ logo_path, ...row }) => ({ ...row, logoUrl: mediaUrl(logo_path, signed) })),
   };
 });
