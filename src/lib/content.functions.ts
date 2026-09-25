@@ -153,7 +153,7 @@ export const getAdminWorkspace = createServerFn({ method: "GET" })
     const [{ data: settings }, { data: entries }, { data: media }, { data: audit }] = await Promise.all([
       context.supabase.from("site_settings").select("*").eq("setting_key", "primary").single(),
       context.supabase.from("content_entries").select("*").order("updated_at", { ascending: false }).limit(100),
-       context.supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(60),
+       context.supabase.from("media_assets").select("*").order("created_at", { ascending: false }).limit(300),
       context.supabase.from("admin_audit_logs").select("*").order("created_at", { ascending: false }).limit(50),
     ]);
     return { settings, entries: entries ?? [], media: media ?? [], audit: audit ?? [], userId: context.userId };
@@ -260,6 +260,69 @@ export const restoreMediaAsset = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "restored media", content_type: "media", content_id: media.id, content_label: media.name });
     return { ok: true };
+  });
+
+export const replaceMediaAsset = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({
+    id: z.string().uuid(),
+    name: z.string().trim().min(1).max(200),
+    mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"]),
+    byteSize: z.number().int().positive().max(52428800),
+    width: z.number().int().positive().optional(),
+    height: z.number().int().positive().optional(),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: current, error: readError } = await context.supabase.from("media_assets").select("id,name,mime_type,storage_path,deleted_at").eq("id", data.id).single();
+    if (readError) throw new Error(readError.message);
+    if (current.deleted_at) throw new Error("Restore this media before replacing it.");
+    const currentKind = current.mime_type.startsWith("video/") ? "video" : "image";
+    const nextKind = data.mimeType.startsWith("video/") ? "video" : "image";
+    if (currentKind !== nextKind) throw new Error(`Choose another ${currentKind} file so existing content remains compatible.`);
+    const { data: saved, error } = await context.supabase.from("media_assets").update({
+      name: data.name,
+      mime_type: data.mimeType,
+      byte_size: data.byteSize,
+      width: data.width ?? null,
+      height: data.height ?? null,
+    }).eq("id", data.id).select("*").single();
+    if (error) throw new Error(error.message);
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: "replaced media file", content_type: "media", content_id: saved.id, content_label: saved.name });
+    return saved;
+  });
+
+export const removeMediaFromContent = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ id: z.string().uuid(), confirmed: z.literal(true) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: media, error: readError } = await context.supabase.from("media_assets").select("id,name,storage_path,usage_count").eq("id", data.id).single();
+    if (readError) throw new Error(readError.message);
+    const path = media.storage_path;
+    const { data: entries, error: refError } = await context.supabase.from("content_entries").select("id,image_path,og_image_path,gallery,payload");
+    if (refError) throw new Error(refError.message);
+    const refs = (entries ?? []).filter((entry) => entry.image_path === path || entry.og_image_path === path || JSON.stringify(entry.gallery ?? []).includes(path) || JSON.stringify(entry.payload ?? {}).includes(path));
+    for (const entry of refs) {
+      const gallery = Array.isArray(entry.gallery) ? entry.gallery.filter((item) => item !== path) : entry.gallery;
+      const payload = entry.payload && typeof entry.payload === "object" && !Array.isArray(entry.payload)
+        ? Object.fromEntries(Object.entries(entry.payload as Record<string, Json>).map(([key, value]) => [key, value === path ? null : value]))
+        : entry.payload;
+      const { error } = await context.supabase.from("content_entries").update({
+        image_path: entry.image_path === path ? null : entry.image_path,
+        og_image_path: entry.og_image_path === path ? null : entry.og_image_path,
+        gallery,
+        payload,
+        updated_by: context.userId,
+      }).eq("id", entry.id);
+      if (error) throw new Error(error.message);
+    }
+    if (media.usage_count !== 0) {
+      const { error } = await context.supabase.from("media_assets").update({ usage_count: 0 }).eq("id", media.id);
+      if (error) throw new Error(error.message);
+    }
+    await context.supabase.from("admin_audit_logs").insert({ admin_id: context.userId, action: `removed media from ${refs.length} content item(s)`, content_type: "media", content_id: media.id, content_label: media.name });
+    return { ok: true, removedReferences: refs.length };
   });
 
 export const deleteMediaAssetPermanently = createServerFn({ method: "POST" })
