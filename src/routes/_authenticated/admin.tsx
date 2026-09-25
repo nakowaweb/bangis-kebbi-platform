@@ -195,9 +195,9 @@ function AdminPage() {
 
           <TabsContent value="content">
             {workspace.data ? <CurrentSiteImporter entries={workspace.data.entries} media={workspace.data.media} onDone={refresh} /> : null}
-            <div className="grid gap-6 lg:grid-cols-[minmax(0,1fr)_390px]">
-              <section className="min-w-0">
-                <div className="mb-4 flex flex-col gap-3 sm:flex-row">
+            <div className="grid gap-6 lg:h-[calc(100dvh-7rem)] lg:grid-cols-[minmax(0,1fr)_390px] lg:items-start">
+              <section className="min-w-0 lg:flex lg:h-full lg:flex-col lg:overflow-hidden">
+                <div className="mb-4 flex shrink-0 flex-col gap-3 sm:flex-row">
                   <Input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search content" aria-label="Search content" />
                   <Select value={area} onValueChange={setArea}>
                     <SelectTrigger className="sm:w-52" aria-label="Filter by content area"><SelectValue /></SelectTrigger>
@@ -208,7 +208,7 @@ function AdminPage() {
                   </Select>
                   <Button onClick={() => setEditor(emptyEditor)}><Plus /> New item</Button>
                 </div>
-                <div className="overflow-hidden rounded-lg border border-border bg-card">
+                <div className="overflow-hidden rounded-lg border border-border bg-card lg:min-h-0 lg:flex-1 lg:overflow-y-auto lg:overscroll-contain">
                   {entries.length === 0 ? <div className="p-10 text-center text-sm text-muted-foreground">No content matches this view.</div> : entries.map((entry) => (
                     <button key={entry.id} type="button" onClick={() => setEditor({ id: entry.id, contentType: entry.content_type as EditorState["contentType"], slug: entry.slug, title: entry.title, summary: entry.summary ?? "", body: entry.body ?? "", imagePath: entry.image_path ?? "", imageAlt: entry.image_alt ?? "", category: entry.category ?? "", author: entry.author ?? "", tags: (entry.tags ?? []).join(", "), language: (entry.language as EditorState["language"]) ?? "en", gallery: (Array.isArray(entry.gallery) ? entry.gallery.filter((item): item is string => typeof item === "string") : []).join(", "), projectUrl: entry.project_url ?? "", completedOn: entry.completed_on ?? "", seoTitle: entry.seo_title ?? "", seoDescription: entry.seo_description ?? "", canonicalUrl: entry.canonical_url ?? "", ogTitle: entry.og_title ?? "", ogDescription: entry.og_description ?? "", ogImagePath: entry.og_image_path ?? "", status: entry.status, isEnabled: entry.is_enabled, isFeatured: entry.is_featured, sortOrder: entry.sort_order, scheduledFor: entry.scheduled_for ? entry.scheduled_for.slice(0, 16) : "", ...(() => { const p = (entry.payload && typeof entry.payload === "object" && !Array.isArray(entry.payload) ? entry.payload : {}) as Record<string, unknown>; return { videoUrl: typeof p["videoUrl"] === "string" ? p["videoUrl"] as string : "", videoPath: typeof p["videoPath"] === "string" ? p["videoPath"] as string : "", videoCaption: typeof p["videoCaption"] === "string" ? p["videoCaption"] as string : "" }; })(), publishedAt: entry.published_at ? entry.published_at.slice(0, 16) : "" })} className="grid w-full gap-2 border-b border-border p-4 text-left transition last:border-b-0 hover:bg-secondary/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center">
                       <span className="min-w-0"><strong className="block truncate text-sm">{entry.title}</strong><span className="mt-1 block text-xs text-muted-foreground">{entry.content_type.replaceAll("_", " ")} · Updated {new Date(entry.updated_at).toLocaleDateString()}</span></span>
@@ -238,7 +238,7 @@ function AdminPage() {
 function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore, onDelete }: { editor: EditorState; setEditor: (value: EditorState) => void; saving: boolean; onSave: () => void; onArchive?: (() => void) | undefined; onRestore?: (() => void) | undefined; onDelete?: (() => void) | undefined }) {
   const [showPreview, setShowPreview] = useState(false);
   const update = <K extends keyof EditorState>(key: K, value: EditorState[K]) => setEditor({ ...editor, [key]: value });
-  return <aside className="h-fit rounded-lg border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24"><div className="mb-5 flex items-center justify-between"><h2 className="font-display text-lg font-bold">{editor.id ? "Edit content" : "New content"}</h2><Badge variant="outline">{editor.status}</Badge></div><div className="grid gap-4">
+  return <aside className="h-fit rounded-lg border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-contain"><div className="mb-5 flex items-center justify-between"><h2 className="font-display text-lg font-bold">{editor.id ? "Edit content" : "New content"}</h2><Badge variant="outline">{editor.status}</Badge></div><div className="grid gap-4">
     <Field label="Content area"><Select value={editor.contentType} onValueChange={(value) => update("contentType", value as EditorState["contentType"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{contentTypes.map((type) => <SelectItem key={type} value={type}>{type.replaceAll("_", " ")}</SelectItem>)}</SelectContent></Select></Field>
     <Field label="Title"><Input value={editor.title} maxLength={200} onChange={(event) => update("title", event.target.value)} /></Field>
     <Field label="URL name"><Input value={editor.slug} maxLength={160} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" onChange={(event) => update("slug", event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} /></Field>
