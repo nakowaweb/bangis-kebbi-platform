@@ -63,7 +63,7 @@ function ProjectPage() {
   const title = project?.title ?? (fallback ? text(fallback.title, language) : "Project");
   const summary = project?.summary ?? (fallback ? text(fallback.summary, language) : undefined);
   const category = project?.category ?? (fallback ? text(fallback.category, language) : "Project");
-  const gallery = Array.isArray(project?.gallery) ? (project.gallery as unknown[]).filter((item): item is string => typeof item === "string") : [];
+  const gallery = project?.galleryUrls ?? [];
   const labels = language === "ar" ? { home: "الرئيسية", projects: "الأعمال", completed: "تاريخ الإكمال", tools: "الأدوات", visit: "زيارة المشروع", discuss: "ناقش مشروعاً مشابهاً" } : language === "ha" ? { home: "Gida", projects: "Ayyuka", completed: "An kammala", tools: "Kayan aiki", visit: "Ziyarci aikin", discuss: "Tattauna irin wannan aikin" } : { home: "Home", projects: "Projects", completed: "Completed", tools: "Tools used", visit: "Visit the live project", discuss: "Discuss a similar project" };
   return (
     <main>
