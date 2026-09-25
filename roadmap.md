@@ -53,3 +53,9 @@
 - [x] Create and install the founder-referenced Umrah/community visual in the homepage carousel and Umrah section
 - [x] Preserve the original first hero image, update all four supporting visuals from the founder reference, and make their CMS slots replaceable
 - [x] Increase hero autoplay to 2.7 seconds with smooth transitions and reduced-motion support
+
+## Media Library visual gallery
+- [x] Replace the file list with image-first and playable-video cards
+- [x] Add filename search, media-type filtering and archive-state filtering
+- [x] Add direct upload, same-kind replacement, remove-from-content, archive/restore and protected permanent deletion controls
+- [ ] Verify authenticated Media Library workflows against production — blocked when no production admin session is available
