@@ -8,6 +8,12 @@ import hotelImage from "@/assets/hotel-concept.webp";
 import corporateImage from "@/assets/corporate-concept.webp";
 import personalBrandImage from "@/assets/personal-brand-concept.webp";
 import serviceCompanyImage from "@/assets/service-company-concept.webp";
+import aiWebDesignImage from "@/assets/service-ai-web-design.jpg";
+import webDevelopmentImage from "@/assets/service-web-development.jpg";
+import uiUxDesignImage from "@/assets/service-ui-ux-design.jpg";
+import wordpressDevelopmentImage from "@/assets/service-wordpress-development.jpg";
+import digitalBusinessSolutionsImage from "@/assets/service-digital-business-solutions.jpg";
+import websiteMaintenanceImage from "@/assets/service-website-maintenance.jpg";
 
 type LocalizedText = Record<LanguageCode, string>;
 export const text = (value: LocalizedText, language: LanguageCode) => value[language] || value.en;
@@ -23,7 +29,7 @@ export type ServiceDefinition = {
   process: Record<LanguageCode, string[]>;
 };
 
-const serviceVisuals = [ecommerceImage, corporateImage, personalBrandImage, businessImage, serviceCompanyImage, hotelImage];
+const serviceVisuals = [aiWebDesignImage, webDevelopmentImage, uiUxDesignImage, wordpressDevelopmentImage, digitalBusinessSolutionsImage, websiteMaintenanceImage];
 const serviceBase = [
   ["ai-web-design", "AI Web Design", "تصميم المواقع بمساعدة الذكاء الاصطناعي", "Ƙirar Yanar Gizo da AI"],
   ["web-development", "Web Development", "تطوير المواقع", "Haɓaka Yanar Gizo"],
