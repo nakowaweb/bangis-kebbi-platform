@@ -101,3 +101,12 @@
 - [x] Present the support-balance explanation with an Umrah visual and no sample financial figures
 - [x] Connect all fifteen visuals to Umrah CMS entries for Media Library replacement or removal
 - [ ] Register the fifteen visuals in the production Media Library — blocked when no production admin session is available
+
+## Projects final professional update
+- [ ] Match the supplied three-column image-led project card direction across all eight projects
+- [ ] Create distinct premium visuals for the corporate and service-company projects
+- [ ] Make every project image and prominent action open its project details page
+- [ ] Expand all eight project details with purpose, key features, demonstrated skills, status and future live-link space
+- [ ] Preserve CMS and Media Library replacement controls, security and unrelated page design
+- [ ] Verify eight cards and all detail links on desktop and mobile
+- [ ] Register new project visuals in the production Media Library — blocked when no production admin session is available
