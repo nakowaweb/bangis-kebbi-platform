@@ -1,14 +1,15 @@
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  Blocks,
   ChevronLeft,
   ChevronRight,
   BriefcaseBusiness,
   Building2,
-  CheckCircle2,
   Code2,
   Globe2,
   FileText,
+  Handshake,
   HandHeart,
   Home,
   Linkedin,
@@ -18,8 +19,10 @@ import {
   Newspaper,
   Plane,
   Play,
+  Quote,
   ShieldCheck,
   Sprout,
+  TrendingUp,
   HeartHandshake,
   type LucideIcon,
   UsersRound,
@@ -242,32 +245,71 @@ export function PillarsSection() {
   );
 }
 
-export function AboutPreview({ title, description }: { title?: string | undefined; description?: string | undefined } = {}) {
+type AboutManagedItem = {
+  id: string;
+  slug: string;
+  title: string;
+  summary: string | null;
+  imageUrl?: string | null;
+  image_alt?: string | null;
+  sort_order: number;
+};
+
+type AboutCardDisplay = {
+  slug: string;
+  title: string;
+  text: string;
+  icon: LucideIcon;
+  tone: string;
+  imageUrl?: string | null;
+  imageAlt?: string;
+};
+
+export function AboutPreview({ title, description, items }: { title?: string | undefined; description?: string | undefined; items?: AboutManagedItem[] | undefined } = {}) {
   const { t } = useLanguage();
-  const cards: Array<{ titleKey: TranslationKey; textKey: TranslationKey }> = [
-    { titleKey: "about.card1Title", textKey: "about.card1Text" },
-    { titleKey: "about.card2Title", textKey: "about.card2Text" },
-    { titleKey: "about.card3Title", textKey: "about.card3Text" },
-    { titleKey: "about.card4Title", textKey: "about.card4Text" },
+  const fallbackCards: AboutCardDisplay[] = [
+    { slug: "about-card-1", title: t("about.card1Title"), text: t("about.card1Text"), icon: Blocks, tone: "bg-brand-cyan/10 text-primary" },
+    { slug: "about-card-2", title: t("about.card2Title"), text: t("about.card2Text"), icon: Handshake, tone: "bg-brand-green/10 text-brand-green" },
+    { slug: "about-card-3", title: t("about.card3Title"), text: t("about.card3Text"), icon: Globe2, tone: "bg-brand-gold/15 text-brand-gold" },
+    { slug: "about-card-4", title: t("about.card4Title"), text: t("about.card4Text"), icon: TrendingUp, tone: "bg-primary/10 text-primary" },
   ];
+  const defaultCard = fallbackCards[0] ?? { slug: "about-card-1", title: t("about.card1Title"), text: t("about.card1Text"), icon: Blocks, tone: "bg-brand-cyan/10 text-primary" };
+  const managedCards = items?.filter((item) => /^about-card-[1-4]$/.test(item.slug)).sort((a, b) => a.sort_order - b.sort_order) ?? [];
+  const cards = managedCards.length
+    ? managedCards.map((item) => {
+      const fallback = fallbackCards.find((card) => card.slug === item.slug) ?? defaultCard;
+      return { ...fallback, title: item.title, text: item.summary ?? fallback.text, imageUrl: item.imageUrl, imageAlt: item.image_alt ?? item.title };
+    })
+    : fallbackCards;
+  const managedQuote = items?.find((item) => item.slug === "about-quote");
+  const hasManagedAbout = Boolean(items?.some((item) => /^about-(?:card-[1-4]|quote)$/.test(item.slug)));
+  const quote = managedQuote?.title ?? (!hasManagedAbout ? t("about.quote") : null);
   return (
     <SectionShell eyebrow={t("about.eyebrow")} title={title ?? t("about.title")} description={description ?? t("about.description")}>
       <div className="grid gap-7 lg:grid-cols-[.9fr_1.1fr] lg:items-center">
         <div className="relative min-h-[330px] overflow-hidden rounded-lg bg-secondary">
           <div className="absolute left-5 top-5 h-16 w-16 bg-[radial-gradient(circle,var(--brand-cyan)_2px,transparent_2px)] bg-[length:12px_12px] opacity-70" />
           <img src={portraitAsset.url} alt={t("about.portraitAlt")} loading="lazy" width={720} height={900} className="absolute bottom-0 left-0 h-[92%] w-[68%] object-contain object-bottom" />
-          <blockquote className="absolute bottom-8 right-4 max-w-[48%] rounded-md bg-card p-4 text-xs leading-5 text-muted-foreground shadow-platform">{t("about.quote")}</blockquote>
+          {quote ? <blockquote className="about-quote absolute bottom-8 right-4 max-w-[48%] rounded-md border border-border bg-card/95 p-4 pt-7 text-xs font-medium leading-5 text-foreground shadow-platform backdrop-blur">
+            <Quote className="absolute left-4 top-[-18px] size-9 rounded-full bg-primary p-2 text-primary-foreground shadow-sm" aria-hidden="true" />
+            {quote}
+            <span className="mt-3 block h-1 w-10 rounded-full bg-brand-cyan" aria-hidden="true" />
+          </blockquote> : null}
         </div>
         <div className="grid gap-4 sm:grid-cols-2">
-          {cards.map((card) => (
-            <div key={card.titleKey} className="flex gap-3 rounded-md border border-border bg-card p-4">
-              <CheckCircle2 className="h-5 w-5 shrink-0 text-primary" />
+          {cards.map((card) => {
+            const Icon = card.icon;
+            return (
+            <article key={card.slug} className="about-card motion-card group flex min-h-40 gap-4 overflow-hidden rounded-md border border-border bg-card p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-platform">
+              <span className={`grid size-12 shrink-0 place-items-center overflow-hidden rounded-full ${card.tone}`}>
+                {card.imageUrl ? <SafeImage src={card.imageUrl} alt={card.imageAlt} loading="lazy" width={96} height={96} className="size-full object-cover" /> : <Icon className="size-6 transition duration-300 group-hover:scale-105" aria-hidden="true" />}
+              </span>
               <div className="min-w-0">
-                <p className="text-sm font-bold leading-5">{t(card.titleKey)}</p>
-                <p className="mt-1 text-xs leading-5 text-muted-foreground">{t(card.textKey)}</p>
+                <h3 className="font-display text-base font-bold leading-5 text-foreground">{card.title}</h3>
+                <p className="mt-2 text-sm leading-5 text-muted-foreground">{card.text}</p>
               </div>
-            </div>
-          ))}
+            </article>
+          );})}
           <div className="sm:col-span-2 flex flex-wrap gap-3 pt-2"><Button asChild><Link to="/about">{t("common.workWithMe")} <ArrowRight /></Link></Button><Button variant="outline" asChild><Link to="/contact">{t("common.letsConnect")}</Link></Button></div>
         </div>
       </div>
