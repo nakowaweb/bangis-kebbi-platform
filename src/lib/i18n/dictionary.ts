@@ -163,13 +163,17 @@ const en = {
 
   // About page
   "about.eyebrow": "About Me",
-  "about.title": "A passion for technology, people and impact.",
-  "about.description": "I build practical digital solutions, connect people to opportunities and support initiatives that make a positive difference.",
+  "about.title": "Technology, People & Meaningful Impact",
+  "about.description": "I’m Abubakar Alhaji Abubakar, an AI Web Designer & Web Developer focused on building practical digital solutions and turning ideas into useful platforms. My work combines technology, business, community connection and opportunities, with a strong interest in using digital skills to create meaningful impact.",
   "about.quote": "“Technology gives you tools, but people give you opportunities.”",
-  "about.fact1": "Creative digital solutions with a clear purpose",
-  "about.fact2": "Reliable support for brands and communities",
-  "about.fact3": "A global mindset grounded in real people",
-  "about.fact4": "Positive impact through technology and connection",
+  "about.card1Title": "Creative Digital Solutions",
+  "about.card1Text": "I design modern websites and digital solutions that turn ideas into practical, accessible experiences.",
+  "about.card2Title": "Reliable Support & Collaboration",
+  "about.card2Text": "I work with individuals, businesses and communities to provide dependable digital support and build useful connections.",
+  "about.card3Title": "Global Mindset, Real Connections",
+  "about.card3Text": "I connect technology, business and people with a global outlook while staying grounded in real community needs.",
+  "about.card4Title": "Technology for Positive Impact",
+  "about.card4Text": "I believe technology should create opportunities, solve real problems and contribute positively to people and communities.",
   "about.portraitAlt": "Abubakar Alhaji Abubakar at his BangisKebbi.com workspace",
 
   // Services
