@@ -21,6 +21,8 @@ import supportLowIncomeFamilies from "@/assets/support-low-income-families.jpg";
 import supportMedicalCoordination from "@/assets/support-medical-coordination.jpg";
 import supportOrphans from "@/assets/support-orphans.jpg";
 import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
+import supportMission from "@/assets/support-mission.jpg";
+import supportVision from "@/assets/support-vision.jpg";
 
 export const Route = createFileRoute("/foundation/")({
   head: ({ match }) =>
@@ -98,10 +100,24 @@ function FoundationPage() {
         </div>
       </section>
 
-      <section className="border-b border-border bg-background py-10">
-        <div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 md:grid-cols-2 lg:px-8">
-           <Panel icon={Target} eyebrow={fcopy.missionLabel} title={mission?.title ?? fcopy.missionLabel} text={mission?.summary ?? mission?.body ?? fcopy.mission} />
-           <Panel icon={Compass} eyebrow={fcopy.visionLabel} title={vision?.title ?? fcopy.visionLabel} text={vision?.summary ?? vision?.body ?? fcopy.vision} />
+      <section className="border-b border-border bg-background py-10 sm:py-14">
+        <div className="mx-auto grid max-w-7xl gap-5 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+          <MissionVisionCard
+            icon={Target}
+            eyebrow={fcopy.missionLabel}
+            title={mission?.title ?? fcopy.missionLabel}
+            text={mission?.summary ?? mission?.body ?? fcopy.mission}
+            image={mission?.imageUrl ?? supportMission}
+            imageAlt={mission?.image_alt ?? "Dignified community food support for a family"}
+          />
+          <MissionVisionCard
+            icon={Compass}
+            eyebrow={fcopy.visionLabel}
+            title={vision?.title ?? fcopy.visionLabel}
+            text={vision?.summary ?? vision?.body ?? fcopy.vision}
+            image={vision?.imageUrl ?? supportVision}
+            imageAlt={vision?.image_alt ?? "A hopeful family looking toward a stronger community"}
+          />
         </div>
       </section>
 
@@ -189,6 +205,23 @@ function Panel({ icon: Icon, eyebrow, title, text }: { icon: typeof Target; eyeb
       <p className="mt-4 text-xs font-bold uppercase text-primary">{eyebrow}</p>
       <h2 className="mt-1 font-display text-xl font-bold">{title}</h2>
       <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">{text}</p>
+    </article>
+  );
+}
+
+function MissionVisionCard({ icon: Icon, eyebrow, title, text, image, imageAlt }: { icon: typeof Target; eyebrow: string; title: string; text: string | null; image: string; imageAlt: string }) {
+  return (
+    <article className="motion-card group relative isolate min-h-[440px] overflow-hidden rounded-lg border border-border bg-card shadow-platform sm:min-h-[400px]">
+      <SafeImage src={image} alt={imageAlt} loading="lazy" width={1536} height={864} className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.02]" />
+      <div className="absolute inset-0 bg-gradient-to-b from-card via-card/95 to-card/20 sm:bg-gradient-to-r sm:from-card sm:via-card/95 sm:to-card/5" />
+      <div className="absolute inset-x-0 bottom-0 h-14 translate-y-5 -skew-y-3 bg-brand-gold/80" aria-hidden="true" />
+      <div className="absolute inset-x-0 bottom-0 h-12 translate-y-7 -skew-y-3 bg-brand-navy" aria-hidden="true" />
+      <div className="relative z-10 flex max-w-[33rem] flex-col p-6 sm:w-[62%] sm:p-8 lg:p-7 xl:p-9">
+        <span className="grid h-12 w-12 place-items-center rounded-md bg-brand-cyan/15 text-primary"><Icon className="h-6 w-6" /></span>
+        <p className="mt-5 text-xs font-bold uppercase text-primary">{eyebrow}</p>
+        <h2 className="mt-1 font-display text-2xl font-bold text-card-foreground sm:text-3xl">{title}</h2>
+        <p className="mt-4 whitespace-pre-line text-base leading-7 text-muted-foreground">{text}</p>
+      </div>
     </article>
   );
 }

@@ -70,3 +70,9 @@
 - [x] Rebuild the public support-program area as ten responsive image-led cards
 - [x] Prioritize secure CMS media paths with distinct bundled image fallbacks
 - [ ] Register the ten built-in visuals in the production Media Library — blocked when no production admin session is available
+
+## BK Community Support Initiative Mission & Vision update
+- [x] Rebuild only Mission and Vision as responsive image-backed cards matching the supplied reference
+- [x] Add distinct humanitarian and hopeful-family fallback visuals
+- [x] Connect both cards to the existing CMS image path and secure display workflow
+- [ ] Register the two built-in visuals in the production Media Library — blocked when no production admin session is available

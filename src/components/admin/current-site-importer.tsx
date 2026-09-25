@@ -20,12 +20,14 @@ import supportLowIncomeFamilies from "@/assets/support-low-income-families.jpg";
 import supportMedicalCoordination from "@/assets/support-medical-coordination.jpg";
 import supportOrphans from "@/assets/support-orphans.jpg";
 import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
+import supportMission from "@/assets/support-mission.jpg";
+import supportVision from "@/assets/support-vision.jpg";
 
 type Entry = { content_type: string; slug: string };
 type Media = { storage_path: string; name: string };
 
 type Item = {
-  contentType: "service" | "project" | "blog_post" | "homepage" | "foundation_what_we_do";
+  contentType: "service" | "project" | "blog_post" | "homepage" | "foundation_mission" | "foundation_vision" | "foundation_what_we_do";
   slug: string;
   title: string;
   summary: string;
@@ -49,6 +51,8 @@ function currentSiteItems(): Item[] {
       { src: heroCommunity, label: "Community and collaboration" },
       { src: heroUmrah, label: "Umrah support community" },
     ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-slide-${i + 2}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.label, sortOrder: i + 2 })),
+    { contentType: "foundation_mission", slug: "mission", title: "Mission", summary: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", image: supportMission, imageAlt: "Dignified community food support for a family", sortOrder: 0 },
+    { contentType: "foundation_vision", slug: "vision", title: "Vision", summary: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", image: supportVision, imageAlt: "A hopeful family looking toward a stronger community", sortOrder: 0 },
     ...[
       { slug: "food-assistance", title: "Food Assistance", summary: "Providing nutritious food items to individuals and families in need.", image: supportFoodAssistance },
       { slug: "orphan-support", title: "Orphan Support", summary: "Supporting orphans through care, education and essential needs.", image: supportOrphans },
@@ -116,7 +120,7 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
     <div className="mb-6 rounded-lg border border-border bg-card p-4">
       <strong className="text-sm">Bring the current website into the CMS</strong>
       <p className="mt-1 text-sm text-muted-foreground">
-        {missing.length} services, projects, blog posts, hero slides and support programs are shown on the website but are not yet in the CMS. This copies them (with their images) so you can edit, replace or remove them here. Nothing already in the CMS is changed.
+        {missing.length} services, projects, blog posts, hero slides and community items are shown on the website but are not yet in the CMS. This copies them (with their images) so you can edit, replace or remove them here. Nothing already in the CMS is changed.
       </p>
       <Button className="mt-3" onClick={run} disabled={running}>{running ? `Importing ${progress}` : "Import current website content"}</Button>
     </div>
