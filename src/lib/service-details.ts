@@ -1,6 +1,6 @@
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
-type L<T> = Record<LanguageCode, T>;
+type L<T> = { en: T } & Partial<Record<Exclude<LanguageCode, "en">, T>>;
 export type ServiceDetail = { meaning: L<string>; provide: L<string[]>; useCases: L<string[]>; cta: L<string> };
 
 export const serviceDetails: Record<string, ServiceDetail> = {

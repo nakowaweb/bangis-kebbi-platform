@@ -77,7 +77,7 @@ function ProjectPage() {
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(project?.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
-        {fallback && <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">{fallback.sections[language].map((section) => <section key={section.title} className="border-t border-border pt-5"><h2 className="font-display text-xl font-bold">{section.title}</h2><p className="mt-3 text-sm leading-7 text-muted-foreground">{section.body}</p></section>)}</div>}
+        {fallback && <div className="mt-10 grid gap-x-10 gap-y-8 md:grid-cols-2">{(fallback.sections[language] ?? fallback.sections.en).map((section) => <section key={section.title} className="border-t border-border pt-5"><h2 className="font-display text-xl font-bold">{section.title}</h2><p className="mt-3 text-sm leading-7 text-muted-foreground">{section.body}</p></section>)}</div>}
         <dl className="mt-6 grid gap-3 sm:grid-cols-2">
           {project?.completed_on && <div><dt className="text-xs font-bold uppercase text-primary">{labels.completed}</dt><dd className="text-sm text-muted-foreground">{new Date(project.completed_on).toLocaleDateString()}</dd></div>}
           {project && project.tags.length > 0 && <div><dt className="text-xs font-bold uppercase text-primary">{labels.tools}</dt><dd className="text-sm text-muted-foreground">{project.tags.join(", ")}</dd></div>}

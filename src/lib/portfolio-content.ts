@@ -18,7 +18,8 @@ import blogDigitalOpportunitiesAsset from "@/assets/blog-digital-opportunities.p
 import blogAiDesignAsset from "@/assets/blog-ai-design.png.asset.json";
 import blogBusinessAsset from "@/assets/blog-business.png.asset.json";
 
-type LocalizedText = Record<LanguageCode, string>;
+type Localized<T> = { en: T } & Partial<Record<Exclude<LanguageCode, "en">, T>>;
+type LocalizedText = Localized<string>;
 export const text = (value: LocalizedText, language: LanguageCode) => value[language] || value.en;
 
 export type ServiceDefinition = {
@@ -27,9 +28,9 @@ export type ServiceDefinition = {
   summary: LocalizedText;
   image: string;
   imageAlt: LocalizedText;
-  canDo: Record<LanguageCode, string[]>;
-  audience: Record<LanguageCode, string[]>;
-  process: Record<LanguageCode, string[]>;
+  canDo: Localized<string[]>;
+  audience: Localized<string[]>;
+  process: Localized<string[]>;
 };
 
 const serviceVisuals = [aiWebDesignImage, webDevelopmentImage, uiUxDesignImage, wordpressDevelopmentImage, digitalBusinessSolutionsImage, websiteMaintenanceImage];
@@ -82,7 +83,7 @@ export type ProjectDefinition = {
   image: string;
   imageAlt: LocalizedText;
   concept: boolean;
-  sections: Record<LanguageCode, Array<{ title: string; body: string }>>;
+  sections: Localized<Array<{ title: string; body: string }>>;
 };
 
 const projectRows = [
@@ -197,7 +198,7 @@ export type ArticleDefinition = {
   title: LocalizedText;
   category: LocalizedText;
   summary: LocalizedText;
-  body: Record<LanguageCode, string[]>;
+  body: Localized<string[]>;
   image: string;
   author: string;
   publishedAt: string;

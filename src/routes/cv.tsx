@@ -65,7 +65,7 @@ const copy: Record<"en" | "ar" | "ha", Copy> = {
 
 function CvPage() {
   const { language } = useLanguage();
-  const c = copy[language];
+  const c = copy[language === "ar" || language === "ha" ? language : "en"];
   const load = useServerFn(getPublicEntry);
   const managed = useQuery({ queryKey: ["professional-cv", language], queryFn: () => load({ data: { contentType: "about", slug: "professional-cv", language } }), staleTime: 1_800_000 }).data;
   const links = useContactLinks();
