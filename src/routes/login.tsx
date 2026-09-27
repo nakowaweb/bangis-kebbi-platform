@@ -108,7 +108,7 @@ function LoginPage() {
 
   return (
     <main>
-      <SectionShell eyebrow="Secure Access" title="Login" description="Sign in to your account. Content-management access is restricted by administrator role.">
+      <SectionShell eyebrow="Secure Access" title="Login" description="Welcome back! Sign in to your BangisKebbi.com account.">
         <form onSubmit={signIn} className="mx-auto grid max-w-md gap-4 rounded-xl border border-border bg-card p-6 shadow-platform">
           <LockKeyhole className="h-8 w-8 text-brand-cyan" />
           <Input name="email" type="email" placeholder="Email" aria-label="Email" autoComplete="email" required />

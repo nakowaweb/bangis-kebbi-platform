@@ -2,9 +2,29 @@
  * Languages the AI translation provider (Lovable AI Gateway / Gemini) can translate into.
  * Languages without a reviewed static dictionary are translated live and cached server-side.
  */
-export type WorldLanguage = { code: string; label: string; nativeLabel: string; dir: "ltr" | "rtl" };
+export type WorldLanguage = { code: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; country: string | undefined };
 
 const RTL = new Set(["ar", "ur", "fa", "he", "ps", "sd", "ug", "yi", "dv", "ckb"]);
+
+/** A representative flag is used only where the language has a clear country association. */
+const COUNTRY_BY_LANGUAGE: Record<string, string> = {
+  af: "ZA", sq: "AL", am: "ET", ar: "SA", hy: "AM", as: "IN", ay: "BO", az: "AZ",
+  bm: "ML", eu: "ES", be: "BY", bn: "BD", bs: "BA", bg: "BG", my: "MM", ca: "ES",
+  ceb: "PH", ny: "MW", zh: "CN", "zh-TW": "TW", co: "FR", hr: "HR", cs: "CZ", da: "DK",
+  dv: "MV", nl: "NL", en: "GB", et: "EE", ee: "GH", fil: "PH", fi: "FI", fr: "FR",
+  ff: "SN", gl: "ES", ka: "GE", de: "DE", el: "GR", gn: "PY", gu: "IN", ht: "HT",
+  ha: "NG", haw: "US", he: "IL", hi: "IN", hmn: "LA", hu: "HU", is: "IS", ig: "NG",
+  id: "ID", ga: "IE", it: "IT", ja: "JP", jv: "ID", kn: "IN", kk: "KZ", km: "KH",
+  rw: "RW", ko: "KR", ku: "TR", ckb: "IQ", ky: "KG", lo: "LA", lv: "LV", ln: "CD",
+  lt: "LT", lg: "UG", lb: "LU", mk: "MK", mg: "MG", ms: "MY", ml: "IN", mt: "MT",
+  mi: "NZ", mr: "IN", mn: "MN", ne: "NP", no: "NO", or: "IN", om: "ET", ps: "AF",
+  fa: "IR", pl: "PL", pt: "PT", pa: "IN", qu: "PE", ro: "RO", ru: "RU", sm: "WS",
+  gd: "GB", sr: "RS", st: "LS", sn: "ZW", sd: "PK", si: "LK", sk: "SK", sl: "SI",
+  so: "SO", es: "ES", su: "ID", sw: "TZ", sv: "SE", tg: "TJ", ta: "IN", tt: "RU",
+  te: "IN", th: "TH", ti: "ER", ts: "ZA", tr: "TR", tk: "TM", tw: "GH", uk: "UA",
+  ur: "PK", ug: "CN", uz: "UZ", vi: "VN", cy: "GB", wo: "SN", xh: "ZA", yi: "IL",
+  yo: "NG", zu: "ZA",
+};
 
 const raw: Array<[string, string, string]> = [
   ["af", "Afrikaans", "Afrikaans"], ["sq", "Albanian", "Shqip"], ["am", "Amharic", "አማርኛ"], ["ar", "Arabic", "العربية"],
@@ -41,7 +61,7 @@ const raw: Array<[string, string, string]> = [
 ];
 
 export const worldLanguages: WorldLanguage[] = raw
-  .map(([code, label, nativeLabel]) => ({ code, label, nativeLabel, dir: RTL.has(code) ? "rtl" as const : "ltr" as const }))
+  .map(([code, label, nativeLabel]) => ({ code, label, nativeLabel, dir: RTL.has(code) ? "rtl" as const : "ltr" as const, country: COUNTRY_BY_LANGUAGE[code] }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
 const byCode = new Map(worldLanguages.map((item) => [item.code, item]));
