@@ -27,6 +27,7 @@ import { SearchConfigTest } from "@/components/admin/search-config-test";
 import { archiveContentEntry, deleteContentEntry, getAdminWorkspace, registerMediaAsset, restoreContentEntry, saveContentEntry, saveSiteSettings } from "@/lib/content.functions";
 import { CurrentSiteImporter } from "@/components/admin/current-site-importer";
 import { MediaLibrary } from "@/components/admin/media-library";
+import { SiteImageBackup } from "@/components/admin/site-image-backup";
 import { getAdminOverview, getMyAdminAccess } from "@/lib/members.functions";
 import { languages, type LanguageCode } from "@/lib/i18n/dictionary";
 import { isWorldLanguage, worldLanguages } from "@/lib/i18n/world-languages";
@@ -237,7 +238,7 @@ function AdminPage() {
           <TabsContent value="credentials"><AdminCredentialManager entries={(workspace.data?.entries ?? []).filter((entry) => entry.content_type === "business" && entry.category === "company_credential")} onChanged={refresh} /></TabsContent>
           <TabsContent value="umrah"><AdminUmrahManager /></TabsContent>
           <TabsContent value="foundations"><AdminFoundationManager /></TabsContent>
-          <TabsContent value="media"><MediaLibrary media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
+          <TabsContent value="media" className="grid gap-5">{workspace.data ? <SiteImageBackup media={workspace.data.media} onDone={refresh} /> : null}<MediaLibrary media={workspace.data?.media ?? []} registerMedia={registerMedia} onChanged={refresh} /></TabsContent>
           <TabsContent value="members">{can("members") ? <MembersManager isSuperAdmin={Boolean(access.data?.isSuperAdmin)} /> : null}</TabsContent>
           <TabsContent value="audit"><AuditLog rows={workspace.data?.audit ?? []} /></TabsContent>
         </Tabs>
