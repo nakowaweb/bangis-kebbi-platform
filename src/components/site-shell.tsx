@@ -131,7 +131,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
   const primary = languages.filter((item) => item.primary);
   const additional = worldOptions.filter((item) => !["en", "ar", "ha"].includes(item.code));
   const current = additional.find((item) => item.code === activeLanguage);
-  const LanguageMarker = ({ flag }: { flag?: string }) => flag ? (
+  const LanguageMarker = ({ flag }: { flag: string | undefined }) => flag ? (
     <span aria-hidden="true" className="w-5 shrink-0 text-center text-base leading-none">{flag}</span>
   ) : (
     <Languages aria-hidden="true" className="h-4 w-5 shrink-0 text-muted-foreground" />

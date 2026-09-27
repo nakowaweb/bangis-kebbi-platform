@@ -2,7 +2,7 @@
  * Languages the AI translation provider (Lovable AI Gateway / Gemini) can translate into.
  * Languages without a reviewed static dictionary are translated live and cached server-side.
  */
-export type WorldLanguage = { code: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; flag?: string };
+export type WorldLanguage = { code: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; flag: string | undefined };
 
 const RTL = new Set(["ar", "ur", "fa", "he", "ps", "sd", "ug", "yi", "dv", "ckb"]);
 
