@@ -85,7 +85,7 @@ function SiteHeader() {
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "text-brand-cyan" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-md px-1.5 py-2 text-xs font-semibold whitespace-nowrap transition-colors hover:bg-secondary hover:text-foreground xl:px-2"
+              className={`rounded-md px-1.5 py-2 text-xs font-semibold transition-colors hover:bg-secondary hover:text-foreground xl:px-2 ${item.labelKey === "foundation" ? "max-w-[5.5rem] leading-[1.15] text-center" : "whitespace-nowrap"}`}
             >
               {t(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
