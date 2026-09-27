@@ -134,5 +134,5 @@
 - [x] Extract the eight approved 3D visuals directly from the supplied reference without regeneration
 - [x] Preserve the navy section, eight-card arrangement and fixed existing destinations
 - [x] Connect each visual to a stable Homepage CMS entry with replacement, removal, ordering and visibility controls
-- [ ] Verify desktop, tablet and mobile rendering, active glow, links, overflow, console and build health
+- [x] Verify desktop, tablet and mobile rendering, active glow, links, overflow, console and build health
 - [ ] Register the eight entries in the production Media Library — blocked when no production admin session is available
