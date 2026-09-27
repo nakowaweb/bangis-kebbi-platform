@@ -72,9 +72,9 @@ function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
-      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6 lg:flex lg:px-8">
+      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6 lg:flex lg:gap-x-1 lg:px-3 xl:gap-x-2 xl:px-5">
         <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="BangisKebbi.com home">
-          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-12 w-auto max-w-[210px] shrink object-contain sm:max-w-[250px]" />
+          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-12 w-auto max-w-[210px] shrink object-contain sm:max-w-[250px] lg:max-w-[180px] xl:max-w-[210px]" />
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label={t("nav.main")}>
@@ -85,14 +85,14 @@ function SiteHeader() {
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "text-brand-cyan" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-md px-3 py-2 text-sm font-semibold transition-colors hover:bg-secondary hover:text-foreground"
+              className="rounded-md px-2 py-2 text-xs font-semibold transition-colors hover:bg-secondary hover:text-foreground xl:px-2.5 xl:text-sm"
             >
               {t(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden shrink-0 items-center gap-2 lg:flex">
+        <div className="hidden shrink-0 items-center gap-1 lg:flex xl:gap-2">
           <GlobalSearch />
           {signedIn ? (
             <Button size="sm" className="bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
