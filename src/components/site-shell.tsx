@@ -77,7 +77,7 @@ function SiteHeader() {
           <img src={logoAsset.url} alt="BangisKebbi.com" className="h-10 w-auto max-w-[190px] shrink-0 object-contain sm:max-w-[220px] lg:max-w-[165px] xl:max-w-[190px]" />
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label={t("nav.main")}>
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex" aria-label={t("nav.main")}>
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -85,7 +85,7 @@ function SiteHeader() {
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "text-brand-cyan" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-md px-2 py-2 text-xs font-semibold transition-colors hover:bg-secondary hover:text-foreground xl:px-2.5 xl:text-sm"
+              className="rounded-md px-1.5 py-2 text-xs font-semibold whitespace-nowrap transition-colors hover:bg-secondary hover:text-foreground xl:px-2"
             >
               {t(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
