@@ -50,7 +50,7 @@ export function LiveTranslator({ language }: { language: string | null }) {
     const applyText = (node: Text) => {
       const current = node.nodeValue ?? "";
       if (applied.get(node) === current) return;
-      const source = originals.get(node) !== undefined && applied.get(node) !== undefined ? originals.get(node)! : current;
+      const source = current;
       if (!translatable(source) || skipped(node.parentElement)) return;
       const key = source.trim();
       const hit = cache.get(key);
