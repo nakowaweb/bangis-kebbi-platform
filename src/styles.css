@@ -225,6 +225,7 @@
 @keyframes badge-float { 50% { transform: translateY(-3px); } }
 @keyframes image-breathe { 50% { transform: scale(1.012); } }
 @keyframes hero-slide-pan { from { transform: scale(1.01) translateX(-0.5%); } to { transform: scale(1.055) translateX(0.75%); } }
+@keyframes quick-nav-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 
 .hero-slide { opacity: 0; transform: translateX(18px) scale(0.985); pointer-events: none; transition: opacity 620ms ease, transform 760ms ease; }
 .hero-slide-active { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; z-index: 10; }
@@ -247,6 +248,12 @@
   .service-strip-track { animation: service-strip-move 42s linear infinite; }
   .motion-card, .social-card { transition-duration: 260ms; }
   .motion-card:hover, .social-card:hover { transform: translateY(-3px); }
+  .quick-nav-card { animation: quick-nav-enter 420ms ease-out both; }
+  .quick-nav-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+}
+
+.quick-nav-active {
+  box-shadow: 0 0 0 1px color-mix(in oklab, var(--brand-cyan) 75%, transparent), 0 0 24px color-mix(in oklab, var(--brand-cyan) 36%, transparent), inset 0 0 20px color-mix(in oklab, var(--brand-cyan) 9%, transparent);
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -263,7 +263,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
     </div>
     <Field label="Tags / tools (comma separated)"><Input value={editor.tags} onChange={(event) => update("tags", event.target.value)} /></Field>
     <MediaUploadField label="Main image" kind="image" value={editor.imagePath} onChange={(path) => update("imagePath", path)} />
-    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">Homepage hero slides use addresses hero-feature-1 through hero-feature-4 and category hero_carousel. Use Order to reorder them; publish or unpublish to show or hide a slide; replace or remove its Main image below.</p> : null}
+    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">Homepage hero slides use addresses hero-feature-1 through hero-feature-4 and category hero_carousel. Quick-navigation cards use addresses quick-nav-home, quick-nav-services, quick-nav-umrah, quick-nav-projects, quick-nav-blog, quick-nav-foundation, quick-nav-community and quick-nav-cv with category quick_navigation. Use Order to reorder; publish/unpublish or the visibility switch to show/hide; replace or remove the Main image below.</p> : null}
     <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
     <GalleryPicker value={editor.gallery} onChange={(value) => update("gallery", value)} />
     <div className="rounded-lg border border-dashed border-border p-4"><p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Video</p><div className="grid gap-3">
