@@ -14,6 +14,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Skeleton } from "@/components/ui/skeleton";
 import { Switch } from "@/components/ui/switch";
 import { adminModules } from "@/lib/admin-access";
+import { languages, type LanguageCode } from "@/lib/i18n/dictionary";
 import {
   deleteMemberPermanently, listMembers, resetMemberPassword, setAdminPermissions,
   setMemberActive, setMemberRole, updateMemberProfile,
@@ -102,7 +103,7 @@ function MemberDetail({ member, isSuperAdmin, onChanged, onClose }: { member: Me
 
   const protectedAccount = member.roles.includes("super_admin");
   const editable = isSuperAdmin && !protectedAccount;
-  const [form, setForm] = useState({ fullName: member.full_name, email: member.email, phone: member.phone ?? "", country: member.country ?? "", city: member.city ?? "", preferredLanguage: (member.preferred_language as "en" | "ha" | "ar") ?? "en" });
+  const [form, setForm] = useState({ fullName: member.full_name, email: member.email, phone: member.phone ?? "", country: member.country ?? "", city: member.city ?? "", preferredLanguage: (member.preferred_language as LanguageCode) ?? "en" });
   const [roles, setRoles] = useState(member.roles);
   const [modules, setModules] = useState<string[]>(member.modules);
   const [active, setActive] = useState(member.is_active);
@@ -132,9 +133,9 @@ function MemberDetail({ member, isSuperAdmin, onChanged, onClose }: { member: Me
           <div key={k} className="grid gap-1.5"><Label htmlFor={`m-${k}`}>{l}</Label><Input id={`m-${k}`} value={form[k]} disabled={!isSuperAdmin} onChange={(e) => setForm({ ...form, [k]: e.target.value })} /></div>
         ))}
         <div className="grid gap-1.5"><Label>Preferred language</Label>
-          <Select value={form.preferredLanguage} disabled={!isSuperAdmin} onValueChange={(v) => setForm({ ...form, preferredLanguage: v as "en" })}>
+          <Select value={form.preferredLanguage} disabled={!isSuperAdmin} onValueChange={(v) => setForm({ ...form, preferredLanguage: v as LanguageCode })}>
             <SelectTrigger><SelectValue /></SelectTrigger>
-            <SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ar">العربية</SelectItem><SelectItem value="ha">Hausa</SelectItem></SelectContent>
+            <SelectContent>{languages.map((item) => <SelectItem key={item.code} value={item.code}>{item.flag} {item.nativeLabel}</SelectItem>)}</SelectContent>
           </Select>
         </div>
       </div>

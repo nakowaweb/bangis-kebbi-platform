@@ -31,6 +31,7 @@ import { MemberActivitiesPanel, MemberNotificationsPanel } from "@/components/no
 import { MemberUmrahPanel } from "@/components/umrah/member-umrah";
 import { supabase } from "@/integrations/supabase/client";
 import { useLanguage } from "@/lib/language";
+import { languages, type LanguageCode } from "@/lib/i18n/dictionary";
 import { getMyAccount, markNotificationRead, updateMyProfile } from "@/lib/account.functions";
 import { pageHead } from "@/lib/seo";
 
@@ -60,7 +61,7 @@ function DashboardPage() {
   const refresh = () => queryClient.invalidateQueries({ queryKey: ["member-account"] });
 
   const profileMutation = useMutation({
-    mutationFn: (values: { fullName: string; phone: string; country: string; city: string; preferredLanguage: "en" | "ha" | "ar" }) => saveProfile({ data: values }),
+    mutationFn: (values: { fullName: string; phone: string; country: string; city: string; preferredLanguage: LanguageCode }) => saveProfile({ data: values }),
     onSuccess: () => { toast.success("Profile updated"); refresh(); },
     onError: (error: Error) => toast.error(error.message),
   });
@@ -225,9 +226,9 @@ function SummaryCard({ title, description, children }: { title: string; descript
   );
 }
 
-function ProfileForm({ profile, saving, onSave }: { profile: any; saving: boolean; onSave: (values: { fullName: string; phone: string; country: string; city: string; preferredLanguage: "en" | "ha" | "ar" }) => void }) {
-  const [language, setLanguage] = useState<"en" | "ha" | "ar">((profile?.preferred_language as "en" | "ha" | "ar") ?? "en");
-  useEffect(() => { setLanguage((profile?.preferred_language as "en" | "ha" | "ar") ?? "en"); }, [profile?.preferred_language]);
+function ProfileForm({ profile, saving, onSave }: { profile: any; saving: boolean; onSave: (values: { fullName: string; phone: string; country: string; city: string; preferredLanguage: LanguageCode }) => void }) {
+  const [language, setLanguage] = useState<LanguageCode>((profile?.preferred_language as LanguageCode) ?? "en");
+  useEffect(() => { setLanguage((profile?.preferred_language as LanguageCode) ?? "en"); }, [profile?.preferred_language]);
 
   function submit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -255,12 +256,10 @@ function ProfileForm({ profile, saving, onSave }: { profile: any; saving: boolea
           <FormField label="Country"><Input name="country" defaultValue={profile?.country ?? ""} maxLength={80} /></FormField>
           <FormField label="City"><Input name="city" defaultValue={profile?.city ?? ""} maxLength={80} /></FormField>
           <FormField label="Preferred language">
-            <Select value={language} onValueChange={(value) => setLanguage(value as "en" | "ha" | "ar")}>
+            <Select value={language} onValueChange={(value) => setLanguage(value as LanguageCode)}>
               <SelectTrigger><SelectValue /></SelectTrigger>
               <SelectContent>
-                <SelectItem value="en">English</SelectItem>
-                <SelectItem value="ha">Hausa</SelectItem>
-                <SelectItem value="ar">Arabic</SelectItem>
+                {languages.map((item) => <SelectItem key={item.code} value={item.code}>{item.flag} {item.nativeLabel}</SelectItem>)}
               </SelectContent>
             </Select>
           </FormField>
