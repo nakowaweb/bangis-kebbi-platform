@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ChevronDown, Globe2, Mail, Menu, UserRound } from "lucide-react";
+import { ChevronDown, Languages, Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -13,13 +13,8 @@ const iconAsset = { url: iconAssetSrc };
 import { platformLabels, socialIcons } from "@/components/social-icons";
 import { useContactLinks } from "@/components/contact-actions";
 import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
+import { Command, CommandEmpty, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { GlobalSearch } from "@/components/global-search";
 import { LanguageProvider, languageMeta, languages, useLanguage, type LanguageCode, type TranslationKey } from "@/lib/language";
@@ -131,12 +126,14 @@ function SiteHeader() {
 }
 
 function LanguageSelector({ compact = false }: { compact?: boolean }) {
-  const { language, setLanguage, t, availableLanguages } = useLanguage();
+  const { activeLanguage, setLanguage, t, worldOptions } = useLanguage();
+  const [open, setOpen] = useState(false);
   const primary = languages.filter((item) => item.primary);
-  const additional = availableLanguages.filter((item) => !item.primary);
+  const additional = worldOptions.filter((item) => !["en", "ar", "ha"].includes(item.code));
+  const current = additional.find((item) => item.code === activeLanguage);
 
   return (
-    <div className="grid min-w-0 grid-cols-4 gap-1 sm:flex sm:justify-end sm:gap-2" aria-label={t("common.language")}>
+    <div data-no-translate className="grid min-w-0 grid-cols-4 gap-1 sm:flex sm:justify-end sm:gap-1.5" aria-label={t("common.language")}>
       {primary.map((item) => (
         <Button
           key={item.code}
@@ -144,32 +141,46 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
           variant="outline"
           size="sm"
           onClick={() => setLanguage(item.code)}
-          aria-pressed={language === item.code}
-          className={`h-10 min-w-0 gap-1 border-border bg-background px-1.5 text-xs font-semibold shadow-sm sm:px-3 sm:text-sm ${language === item.code ? "border-brand-cyan bg-secondary text-primary shadow-glow" : "text-foreground"}`}
+          aria-pressed={activeLanguage === item.code}
+          className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold shadow-sm sm:px-2.5 sm:text-xs ${activeLanguage === item.code ? "border-brand-cyan bg-secondary text-primary" : "text-foreground"}`}
         >
-          <span aria-hidden="true" className="text-base leading-none sm:text-lg">{item.flag}</span>
+          <span aria-hidden="true" className="text-sm leading-none">{item.flag}</span>
           <span className={compact ? "truncate" : ""}>{item.nativeLabel}</span>
         </Button>
       ))}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="outline" size="sm" className="h-10 min-w-0 gap-1 border-border bg-background px-1.5 text-xs font-semibold text-primary shadow-sm sm:px-3 sm:text-sm" aria-label="More languages">
-            <Globe2 className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
-            <span>{compact ? "More" : "More"}</span>
-            <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+      <Popover open={open} onOpenChange={setOpen}>
+        <PopoverTrigger asChild>
+          <Button
+            variant="outline"
+            size="sm"
+            aria-label="More languages"
+            className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold text-primary shadow-sm sm:px-2.5 sm:text-xs ${current ? "border-brand-cyan bg-secondary" : ""}`}
+          >
+            <Languages className="h-3.5 w-3.5 shrink-0" />
+            <span className="truncate">{current ? current.nativeLabel : "More"}</span>
+            <ChevronDown className="h-3 w-3 shrink-0" />
           </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent align="end" sideOffset={8} className="min-w-56 rounded-lg border-border bg-popover p-3 shadow-platform">
-          <DropdownMenuLabel className="sr-only">More languages</DropdownMenuLabel>
-          {additional.map((item) => (
-            <DropdownMenuItem key={item.code} onSelect={() => setLanguage(item.code as LanguageCode)} className={`gap-3 rounded-md px-3 py-2.5 text-base ${language === item.code ? "bg-secondary font-semibold text-primary" : ""}`}>
-              <span aria-hidden="true" className="text-2xl leading-none">{item.flag}</span>
-              <span>{item.nativeLabel}</span>
-            </DropdownMenuItem>
-          ))}
-          {additional.length === 0 ? <p className="px-3 py-4 text-sm text-muted-foreground">No additional languages enabled.</p> : null}
-        </DropdownMenuContent>
-      </DropdownMenu>
+        </PopoverTrigger>
+        <PopoverContent align="end" sideOffset={6} className="w-64 rounded-lg border-border p-0 shadow-platform">
+          <Command>
+            <CommandInput placeholder={`Search ${additional.length} languages…`} className="h-9 text-sm" />
+            <CommandList className="max-h-72">
+              <CommandEmpty>No language found.</CommandEmpty>
+              {additional.map((item) => (
+                <CommandItem
+                  key={item.code}
+                  value={`${item.label} ${item.nativeLabel} ${item.code}`}
+                  onSelect={() => { setLanguage(item.code); setOpen(false); }}
+                  className={`flex items-center justify-between gap-2 text-sm ${activeLanguage === item.code ? "font-semibold text-primary" : ""}`}
+                >
+                  <span className="truncate">{item.nativeLabel}</span>
+                  <span className="shrink-0 text-xs text-muted-foreground">{item.label}</span>
+                </CommandItem>
+              ))}
+            </CommandList>
+          </Command>
+        </PopoverContent>
+      </Popover>
     </div>
   );
 }
