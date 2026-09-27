@@ -163,3 +163,10 @@
 - [x] Set the homepage hero to three-second automatic transitions using the existing three managed slots and bundled approved fallbacks
 - [x] Move verified partners higher on the Umrah page and add header/homepage shortcuts to its real section
 - [x] Verify affected images, language options, live translation, navigation and responsive layouts without changing production data
+
+## Complete worldwide translation reliability
+- [x] Preserve every supported worldwide language in the URL across navigation and refresh
+- [x] Prevent untranslated request placeholders from blocking cold translation results
+- [x] Translate long content without truncation/key mismatches and back off safely during provider failures
+- [x] Preserve the active language automatically across every internal navigation
+- [x] Verify Japanese and Portuguese on desktop/mobile, Arabic RTL, active-language display, navigation and refresh
