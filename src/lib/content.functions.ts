@@ -1,3 +1,4 @@
+import { isWorldLanguage } from "@/lib/i18n/world-languages";
 import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
@@ -63,7 +64,7 @@ const settingsInput = z.object({
   seoDescription: z.string().trim().min(1).max(500),
   googleSearchCx: z.union([z.literal(""), z.string().trim().regex(/^[A-Za-z0-9:_-]{5,100}$/, "The Search Engine ID contains invalid characters.")]),
   profileImagePath: z.string().trim().max(500),
-  enabledLanguages: z.array(z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"])).min(3).max(9),
+  enabledLanguages: z.array(z.string().refine(isWorldLanguage)).min(3).max(200),
 });
 
 function publicClient() {
