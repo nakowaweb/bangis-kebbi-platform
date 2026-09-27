@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  Lightbulb,
+  MapPin,
+  Settings,
+  Users,
   Blocks,
   ChevronLeft,
   ChevronRight,

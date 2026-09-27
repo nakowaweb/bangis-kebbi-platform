@@ -303,6 +303,24 @@
   .hero-icon-chip-3 { animation: badge-float 7s 1.2s ease-in-out infinite; }
 }
 
+.hero-pill { position: relative; display: inline-flex; align-items: center; gap: 0.6rem; border-radius: 999px; border: 1.5px solid var(--pill); padding: 0.55rem 1.1rem; font-family: var(--font-display-family); font-size: 0.8rem; font-weight: 900; letter-spacing: 0.02em; text-transform: uppercase; color: var(--pill); background: color-mix(in oklab, var(--pill) 10%, transparent); backdrop-filter: blur(6px); box-shadow: 0 0 18px color-mix(in oklab, var(--pill) 45%, transparent), inset 0 0 14px color-mix(in oklab, var(--pill) 18%, transparent); text-shadow: 0 0 12px color-mix(in oklab, var(--pill) 60%, transparent); pointer-events: none; user-select: none; }
+.hero-pill svg { filter: drop-shadow(0 0 6px var(--pill)); }
+.hero-pill-gold { --pill: var(--brand-gold); }
+.hero-pill-cyan { --pill: var(--brand-cyan); }
+.hero-pill-green { --pill: oklch(0.8 0.2 150); }
+@media (min-width: 640px) { .hero-pill { font-size: 1.05rem; padding: 0.8rem 1.6rem; } }
+.hero-title-a { background: linear-gradient(90deg, var(--primary-foreground) 0%, var(--primary-foreground) 55%, var(--brand-gold) 72%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.hero-title-b { background: linear-gradient(90deg, var(--brand-cyan) 0%, var(--brand-cyan) 45%, oklch(0.8 0.2 150) 60%); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 14px color-mix(in oklab, var(--brand-cyan) 35%, transparent)); }
+.hero-word { font-weight: 800; }
+@keyframes hero-pill-float { 0%, 100% { transform: translateY(0); box-shadow: 0 0 14px color-mix(in oklab, var(--pill) 35%, transparent), inset 0 0 12px color-mix(in oklab, var(--pill) 15%, transparent); } 50% { transform: translateY(-6px); box-shadow: 0 0 30px color-mix(in oklab, var(--pill) 70%, transparent), inset 0 0 18px color-mix(in oklab, var(--pill) 25%, transparent); } }
+@keyframes hero-word-glow { 50% { text-shadow: 0 0 14px currentColor; } }
+@keyframes hero-title-shift { 50% { filter: drop-shadow(0 0 22px color-mix(in oklab, var(--brand-cyan) 55%, transparent)); } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-pill { animation: hero-pill-float 4s ease-in-out infinite; }
+  .hero-word { animation: hero-word-glow 4s ease-in-out infinite; }
+  .hero-title-b { animation: hero-text-reveal 640ms 110ms ease-out both, hero-title-shift 5s 1s ease-in-out infinite; }
+}
+
 .quick-nav-active {
   box-shadow: 0 0 0 1px color-mix(in oklab, var(--brand-cyan) 75%, transparent), 0 0 24px color-mix(in oklab, var(--brand-cyan) 36%, transparent), inset 0 0 20px color-mix(in oklab, var(--brand-cyan) 9%, transparent);
 }
