@@ -10,7 +10,7 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import { defaultLanguage } from "../lib/i18n/dictionary";
+import { defaultLanguage, type LanguageCode } from "../lib/i18n/dictionary";
 import { isWorldLanguage, worldLanguage } from "../lib/i18n/world-languages";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -79,9 +79,11 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   // `?lang=` is the site-wide locale switch; every other search parameter is passed through untouched.
-  validateSearch: (search: Record<string, unknown>): { lang?: string } => {
+  validateSearch: (search: Record<string, unknown>): { lang?: LanguageCode } => {
     const value = search["lang"];
-    return isWorldLanguage(value) ? { lang: value } : {};
+    // The public router preserves every provider-supported code. Data loaders still
+    // intentionally narrow unreviewed locales to English before CMS lookup.
+    return isWorldLanguage(value) ? { lang: value as LanguageCode } : {};
   },
   head: () => ({
     meta: [
