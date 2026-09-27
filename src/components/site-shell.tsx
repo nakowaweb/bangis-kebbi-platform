@@ -220,6 +220,16 @@ function MobileMenu() {
         </SheetHeader>
         <div className="space-y-6 px-5 py-6">
           <nav className="grid gap-2" aria-label={t("nav.mobile")}>
+            {signedIn ? (
+              <SheetClose asChild>
+                <Button className="h-12 justify-start bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
+                  <Link to="/dashboard">
+                    <UserRound />
+                    {t("common.dashboard")}
+                  </Link>
+                </Button>
+              </SheetClose>
+            ) : null}
             {navItems.map((item) => (
               <SheetClose asChild key={`${item.href}-${item.hash ?? "top"}`}>
                 <Link
@@ -235,13 +245,7 @@ function MobileMenu() {
           </nav>
           <div className="grid gap-3 border-t border-border pt-5">
             <GlobalSearch mobile />
-            {signedIn ? (
-              <SheetClose asChild>
-                <Button className="h-12 justify-start bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
-                  <Link to="/dashboard">{t("common.dashboard")}</Link>
-                </Button>
-              </SheetClose>
-            ) : (
+            {!signedIn ? (
               <>
                 <SheetClose asChild>
                   <Button variant="outline" className="h-12 justify-start" asChild>
@@ -254,7 +258,7 @@ function MobileMenu() {
                   </Button>
                 </SheetClose>
               </>
-            )}
+            ) : null}
             <div className="rounded-lg border border-border bg-secondary p-3">
               <p className="mb-2 text-sm font-semibold text-foreground">{t("common.language")}</p>
               <LanguageSelector />
