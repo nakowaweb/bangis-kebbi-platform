@@ -143,4 +143,4 @@
 - [x] Add secure Super Admin controls for language availability and future additions
 - [x] Extend CMS dynamic-content translation management to every enabled language
 - [x] Verify persistence, page navigation, RTL/LTR switching and responsive layout
-- [ ] Restore the existing backend schema so generated types and the full build can be verified — blocked because the connected backend has no application tables
+- [x] Restore the existing backend schema and verify the complete nine-language type surface

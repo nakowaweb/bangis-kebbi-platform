@@ -87,9 +87,9 @@ function ServiceDetailPage() {
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(service?.body ?? "").split(/\n{2,}/).filter(Boolean).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
-        {detail && !service?.body && <section className="max-w-3xl"><h2 className="font-display text-xl font-bold">{labels.meaning}</h2><p className="mt-3 text-base leading-8 text-muted-foreground">{detail.meaning[language]}</p></section>}
-        {fallback && <div className="mt-10 grid gap-8 lg:grid-cols-3"><ListBlock title={labels.capabilities} items={detail?.provide[language] ?? fallback.canDo[language]} /><ListBlock title={labels.audience} items={fallback.audience[language]} /><ListBlock title={labels.process} items={fallback.process[language]} numbered /></div>}
-        {detail && <section className="mt-10"><ListBlock title={labels.useCases} items={detail.useCases[language]} /><Button className="mt-6" asChild><Link to="/contact">{detail.cta[language]}</Link></Button></section>}
+        {detail && !service?.body && <section className="max-w-3xl"><h2 className="font-display text-xl font-bold">{labels.meaning}</h2><p className="mt-3 text-base leading-8 text-muted-foreground">{detail.meaning[language] ?? detail.meaning.en}</p></section>}
+        {fallback && <div className="mt-10 grid gap-8 lg:grid-cols-3"><ListBlock title={labels.capabilities} items={detail?.provide[language] ?? detail?.provide.en ?? fallback.canDo[language] ?? fallback.canDo.en} /><ListBlock title={labels.audience} items={fallback.audience[language] ?? fallback.audience.en} /><ListBlock title={labels.process} items={fallback.process[language] ?? fallback.process.en} numbered /></div>}
+        {detail && <section className="mt-10"><ListBlock title={labels.useCases} items={detail.useCases[language] ?? detail.useCases.en} /><Button className="mt-6" asChild><Link to="/contact">{detail.cta[language] ?? detail.cta.en}</Link></Button></section>}
         {service ? <EntryVideo payload={service.payload} fileUrl={service.videoFileUrl} title={title} /> : null}
         <ContactActions />
       </SectionShell>

@@ -49,61 +49,103 @@ export type Database = {
       }
       content_entries: {
         Row: {
+          author: string | null
           body: string | null
+          canonical_url: string | null
+          category: string | null
+          completed_on: string | null
           content_type: string
           created_at: string
           deleted_at: string | null
+          gallery: Json
           id: string
+          image_alt: string | null
           image_path: string | null
           is_enabled: boolean
           is_featured: boolean
+          language: string
+          og_description: string | null
+          og_image_path: string | null
+          og_title: string | null
           payload: Json
+          project_url: string | null
           published_at: string | null
           scheduled_for: string | null
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           sort_order: number
           status: Database["public"]["Enums"]["content_status"]
           summary: string | null
+          tags: string[]
           title: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          author?: string | null
           body?: string | null
+          canonical_url?: string | null
+          category?: string | null
+          completed_on?: string | null
           content_type: string
           created_at?: string
           deleted_at?: string | null
+          gallery?: Json
           id?: string
+          image_alt?: string | null
           image_path?: string | null
           is_enabled?: boolean
           is_featured?: boolean
+          language?: string
+          og_description?: string | null
+          og_image_path?: string | null
+          og_title?: string | null
           payload?: Json
+          project_url?: string | null
           published_at?: string | null
           scheduled_for?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
+          tags?: string[]
           title: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          author?: string | null
           body?: string | null
+          canonical_url?: string | null
+          category?: string | null
+          completed_on?: string | null
           content_type?: string
           created_at?: string
           deleted_at?: string | null
+          gallery?: Json
           id?: string
+          image_alt?: string | null
           image_path?: string | null
           is_enabled?: boolean
           is_featured?: boolean
+          language?: string
+          og_description?: string | null
+          og_image_path?: string | null
+          og_title?: string | null
           payload?: Json
+          project_url?: string | null
           published_at?: string | null
           scheduled_for?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
+          tags?: string[]
           title?: string
           updated_at?: string
           updated_by?: string | null
@@ -158,6 +200,193 @@ export type Database = {
           },
         ]
       }
+      content_translations: {
+        Row: {
+          body: string | null
+          content_entry_id: string
+          created_at: string
+          created_by: string | null
+          id: string
+          image_alt: string | null
+          is_machine_generated: boolean
+          language: string
+          og_description: string | null
+          og_title: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          seo_description: string | null
+          seo_title: string | null
+          status: Database["public"]["Enums"]["translation_status"]
+          summary: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          body?: string | null
+          content_entry_id: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_alt?: string | null
+          is_machine_generated?: boolean
+          language: string
+          og_description?: string | null
+          og_title?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          status?: Database["public"]["Enums"]["translation_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          body?: string | null
+          content_entry_id?: string
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_alt?: string | null
+          is_machine_generated?: boolean
+          language?: string
+          og_description?: string | null
+          og_title?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
+          status?: Database["public"]["Enums"]["translation_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "content_translations_content_entry_id_fkey"
+            columns: ["content_entry_id"]
+            isOneToOne: false
+            referencedRelation: "content_entries"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      foundation_project_updates: {
+        Row: {
+          body: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          image_path: string | null
+          is_published: boolean
+          project_id: string
+          published_at: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          project_id: string
+          published_at?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          body?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          project_id?: string
+          published_at?: string | null
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "foundation_project_updates_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "foundation_projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      foundation_projects: {
+        Row: {
+          category: string
+          created_at: string
+          created_by: string | null
+          description: string | null
+          end_date: string | null
+          id: string
+          image_path: string | null
+          is_published: boolean
+          location: string | null
+          media: Json
+          published_at: string | null
+          slug: string
+          sort_order: number
+          start_date: string | null
+          status: Database["public"]["Enums"]["foundation_status"]
+          summary: string | null
+          title: string
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          location?: string | null
+          media?: Json
+          published_at?: string | null
+          slug: string
+          sort_order?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["foundation_status"]
+          summary?: string | null
+          title: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          created_by?: string | null
+          description?: string | null
+          end_date?: string | null
+          id?: string
+          image_path?: string | null
+          is_published?: boolean
+          location?: string | null
+          media?: Json
+          published_at?: string | null
+          slug?: string
+          sort_order?: number
+          start_date?: string | null
+          status?: Database["public"]["Enums"]["foundation_status"]
+          summary?: string | null
+          title?: string
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       media_assets: {
         Row: {
           alt_text: string
@@ -209,6 +438,36 @@ export type Database = {
         }
         Relationships: []
       }
+      member_activities: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          section: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          section?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          section?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       member_documents: {
         Row: {
           byte_size: number
@@ -247,6 +506,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      notification_messages: {
+        Row: {
+          audience: string
+          body: string | null
+          category: Database["public"]["Enums"]["notification_category"]
+          created_at: string
+          created_by: string | null
+          id: string
+          link_path: string | null
+          published_at: string | null
+          status: Database["public"]["Enums"]["notification_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          body?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_path?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          body?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_path?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_recipients: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_recipients_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "notification_messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -398,6 +731,301 @@ export type Database = {
         }
         Relationships: []
       }
+      site_social_links: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          display_label: string
+          icon_key: string | null
+          id: string
+          is_enabled: boolean
+          platform: string
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          display_label?: string
+          icon_key?: string | null
+          id?: string
+          is_enabled?: boolean
+          platform: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          url: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          display_label?: string
+          icon_key?: string | null
+          id?: string
+          is_enabled?: boolean
+          platform?: string
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+          url?: string
+        }
+        Relationships: []
+      }
+      umrah_application_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: string
+          application_id: string
+          created_at: string
+          from_status: Database["public"]["Enums"]["umrah_status"] | null
+          id: string
+          member_visible: boolean
+          note: string | null
+          to_status: Database["public"]["Enums"]["umrah_status"] | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: string
+          application_id: string
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["umrah_status"] | null
+          id?: string
+          member_visible?: boolean
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["umrah_status"] | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: string
+          application_id?: string
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["umrah_status"] | null
+          id?: string
+          member_visible?: boolean
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["umrah_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "umrah_application_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "umrah_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      umrah_applications: {
+        Row: {
+          admin_message: string | null
+          application_number: string
+          city: string | null
+          country_of_residence: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          full_name: string
+          id: string
+          internal_note: string | null
+          member_notes: string | null
+          nationality: string | null
+          passport_expiry_date: string | null
+          passport_issue_date: string | null
+          passport_issuing_country: string | null
+          passport_number: string | null
+          phone: string | null
+          preferred_travel_period: string | null
+          reviewed_by: string | null
+          state_region: string | null
+          status: Database["public"]["Enums"]["umrah_status"]
+          submitted_at: string | null
+          travel_notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_message?: string | null
+          application_number?: string
+          city?: string | null
+          country_of_residence?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          full_name?: string
+          id?: string
+          internal_note?: string | null
+          member_notes?: string | null
+          nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
+          passport_issuing_country?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          preferred_travel_period?: string | null
+          reviewed_by?: string | null
+          state_region?: string | null
+          status?: Database["public"]["Enums"]["umrah_status"]
+          submitted_at?: string | null
+          travel_notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_message?: string | null
+          application_number?: string
+          city?: string | null
+          country_of_residence?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          full_name?: string
+          id?: string
+          internal_note?: string | null
+          member_notes?: string | null
+          nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
+          passport_issuing_country?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          preferred_travel_period?: string | null
+          reviewed_by?: string | null
+          state_region?: string | null
+          status?: Database["public"]["Enums"]["umrah_status"]
+          submitted_at?: string | null
+          travel_notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      umrah_documents: {
+        Row: {
+          application_id: string
+          byte_size: number
+          created_at: string
+          document_type: string
+          id: string
+          mime_type: string
+          original_name: string
+          review_note: string | null
+          review_status: string
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_id: string
+          byte_size: number
+          created_at?: string
+          document_type: string
+          id?: string
+          mime_type: string
+          original_name: string
+          review_note?: string | null
+          review_status?: string
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_id?: string
+          byte_size?: number
+          created_at?: string
+          document_type?: string
+          id?: string
+          mime_type?: string
+          original_name?: string
+          review_note?: string | null
+          review_status?: string
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "umrah_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "umrah_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      umrah_partners: {
+        Row: {
+          city: string | null
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_visible: boolean
+          logo_path: string | null
+          name: string
+          notes: string | null
+          services: string | null
+          sort_order: number
+          state_region: string | null
+          updated_at: string
+          verification_status: string
+          website_url: string | null
+        }
+        Insert: {
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_visible?: boolean
+          logo_path?: string | null
+          name: string
+          notes?: string | null
+          services?: string | null
+          sort_order?: number
+          state_region?: string | null
+          updated_at?: string
+          verification_status?: string
+          website_url?: string | null
+        }
+        Update: {
+          city?: string | null
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_visible?: boolean
+          logo_path?: string | null
+          name?: string
+          notes?: string | null
+          services?: string | null
+          sort_order?: number
+          state_region?: string | null
+          updated_at?: string
+          verification_status?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -425,6 +1053,17 @@ export type Database = {
     }
     Functions: {
       claim_first_super_admin: { Args: never; Returns: boolean }
+      create_system_notification: {
+        Args: {
+          _body: string
+          _category: Database["public"]["Enums"]["notification_category"]
+          _created_by: string
+          _link: string
+          _recipients: string[]
+          _title: string
+        }
+        Returns: string
+      }
       ensure_member_role: { Args: never; Returns: undefined }
       has_role: {
         Args: {
@@ -435,6 +1074,16 @@ export type Database = {
       }
       is_content_admin: { Args: { _user_id: string }; Returns: boolean }
       is_platform_admin: { Args: { _user_id: string }; Returns: boolean }
+      log_member_activity: {
+        Args: {
+          _description?: string
+          _kind: string
+          _section?: string
+          _title: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:
@@ -445,6 +1094,30 @@ export type Database = {
         | "finance"
         | "member"
       content_status: "draft" | "published" | "unpublished" | "archived"
+      foundation_status: "planned" | "active" | "completed" | "archived"
+      notification_category:
+        | "system"
+        | "umrah"
+        | "foundation"
+        | "account"
+        | "announcement"
+      notification_status: "draft" | "published"
+      translation_status:
+        | "draft"
+        | "ready"
+        | "published"
+        | "unpublished"
+        | "archived"
+      umrah_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "documents_required"
+        | "approved"
+        | "processing"
+        | "completed"
+        | "rejected"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -581,6 +1254,33 @@ export const Constants = {
         "member",
       ],
       content_status: ["draft", "published", "unpublished", "archived"],
+      foundation_status: ["planned", "active", "completed", "archived"],
+      notification_category: [
+        "system",
+        "umrah",
+        "foundation",
+        "account",
+        "announcement",
+      ],
+      notification_status: ["draft", "published"],
+      translation_status: [
+        "draft",
+        "ready",
+        "published",
+        "unpublished",
+        "archived",
+      ],
+      umrah_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "documents_required",
+        "approved",
+        "processing",
+        "completed",
+        "rejected",
+        "cancelled",
+      ],
     },
   },
 } as const

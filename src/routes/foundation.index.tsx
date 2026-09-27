@@ -58,7 +58,7 @@ const supportPrograms = [
 
 function FoundationPage() {
   const { language } = useLanguage();
-  const fcopy = foundationCopy[language];
+  const fcopy = foundationCopy[language === "ar" || language === "ha" ? language : "en"];
   const load = useServerFn(getFoundationOverview);
   const overview = useQuery({ queryKey: ["foundation-public"], queryFn: () => load() });
 

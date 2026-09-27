@@ -49,7 +49,7 @@ function UmrahPage() {
   const notices = group("umrah_notice");
   const info = [...group("umrah"), ...group("umrah_information")];
   const contact = group("umrah_contact");
-  const fallback = umrahCopy[language];
+  const fallback = umrahCopy[language === "ar" || language === "ha" ? language : "en"];
   const sectionLabels = language === "ar"
     ? { journeyDescription: "عملية بسيطة وواضحة تساعد الأعضاء على التخطيط والاستعداد بثقة.", importantInformation: "معلومات مهمة", importantDescription: "نقاط أساسية حول طلب دعم العمرة.", dashboardLabel: "عرض لوحة التحكم" }
     : language === "ha"

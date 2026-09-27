@@ -96,7 +96,7 @@ function BlogPostPage() {
           {post?.author ?? fallback?.author ?? ""}{post?.published_at || fallback?.publishedAt ? ` · ${new Date(post?.published_at ?? fallback?.publishedAt ?? "").toLocaleDateString()}` : ""}
         </p>
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
-          {(post?.body ? post.body.split(/\n{2,}/).filter(Boolean) : fallback?.body[language] ?? []).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
+          {(post?.body ? post.body.split(/\n{2,}/).filter(Boolean) : fallback?.body[language] ?? fallback?.body.en ?? []).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
         {post && post.tags.length > 0 && (
           <ul className="mt-6 flex flex-wrap gap-2">
