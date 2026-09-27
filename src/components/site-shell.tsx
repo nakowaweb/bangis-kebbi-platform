@@ -166,7 +166,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
             aria-label="More languages"
             className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold text-primary shadow-sm sm:px-2.5 sm:text-xs ${current ? "border-brand-cyan bg-secondary" : ""}`}
           >
-            <LanguageMarker country={current?.country} />
+            <Globe aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-brand-cyan" />
             <span className="truncate">{current ? current.nativeLabel : "More"}</span>
             <ChevronDown className="h-3 w-3 shrink-0" />
           </Button>
