@@ -76,9 +76,9 @@ function Index() {
   const payload = hero?.payload && typeof hero.payload === "object" && !Array.isArray(hero.payload) ? hero.payload : {};
   const value = (key: string) => typeof payload[key] === "string" ? payload[key] : undefined;
   const heroSlides = publicContent.entries
-    .filter((entry) => entry.content_type === "homepage" && /^hero-feature-[1-4]$/.test(entry.slug))
+    .filter((entry) => entry.content_type === "homepage" && /^hero-feature-[1-3]$/.test(entry.slug))
     .sort((a, b) => a.sort_order - b.sort_order)
-    .slice(0, 4)
+    .slice(0, 3)
     .map((entry) => ({ src: entry.imageUrl, alt: entry.image_alt ?? entry.title, label: entry.title }))
     .filter((entry): entry is { src: string; alt: string; label: string } => Boolean(entry.src));
   const quickNavigation = publicContent.entries

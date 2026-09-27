@@ -9,7 +9,6 @@ import { articles, projects, services } from "@/lib/portfolio-content";
 import heroDigitalSolutions from "@/assets/hero-digital-solutions.jpg";
 import heroCommunitySupport from "@/assets/hero-community-support.jpg";
 import heroUmrahSupport from "@/assets/hero-umrah-support.jpg";
-import heroGlobalPlatform from "@/assets/hero-global-platform.jpg";
 import businessDigitalServices from "@/assets/business-digital-services.webp";
 import businessNetworking from "@/assets/business-networking.webp";
 import businessTechnology from "@/assets/business-technology.webp";
@@ -71,7 +70,6 @@ function currentSiteItems(): Item[] {
       { src: heroDigitalSolutions, label: "Digital Solutions / Web Development", alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team" },
       { src: heroCommunitySupport, label: "BK Community Support Initiative", alt: "Abubakar Alhaji Abubakar participating in dignified community support" },
       { src: heroUmrahSupport, label: "Umrah Support Program", alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting" },
-      { src: heroGlobalPlatform, label: "Global Platform / Opportunities", alt: "Abubakar Alhaji Abubakar at a global digital platform workspace" },
     ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-feature-${i + 1}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.alt, sortOrder: i + 1 })),
     ...[
       { slug: "quick-nav-home", title: "Home", image: quickNavHome.url, imageAlt: "Premium house" },

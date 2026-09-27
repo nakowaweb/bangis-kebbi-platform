@@ -13,3 +13,4 @@
 - Homepage quick navigation uses `homepage` CMS entries named `quick-nav-home`, `quick-nav-services`, `quick-nav-umrah`, `quick-nav-projects`, `quick-nav-blog`, `quick-nav-foundation`, `quick-nav-community`, and `quick-nav-cv`; this preserves fixed safe destinations while allowing managed visuals and ordering.
 - Supported public languages are centralized in `src/lib/i18n/dictionary.ts`; this keeps direction, labels, persistence, interface text, CMS translation targets, and account preferences aligned.
 - Legacy built-in page copy falls back to English when a newer locale has no static translation; CMS translations remain authoritative when published.
+- The homepage hero uses exactly three CMS-managed slots (`hero-feature-1` through `hero-feature-3`) in a full-width stage; keep the one-second accessible carousel and bundled fallbacks without changing founder imagery.
