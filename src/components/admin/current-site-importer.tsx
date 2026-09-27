@@ -28,6 +28,14 @@ import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
 import supportMission from "@/assets/support-mission.jpg";
 import supportVision from "@/assets/support-vision.jpg";
 import communitySupportBannerAsset from "@/assets/homepage-community-support-banner.png.asset.json";
+import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp.asset.json";
+import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp.asset.json";
+import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp.asset.json";
+import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp.asset.json";
+import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp.asset.json";
+import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp.asset.json";
+import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp.asset.json";
+import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp.asset.json";
 import { umrahBalanceVisual, umrahInformationVisuals, umrahJourneyVisuals } from "@/lib/umrah-visuals";
 
 type Entry = { id: string; content_type: string; slug: string; image_path: string | null };
@@ -65,6 +73,16 @@ function currentSiteItems(): Item[] {
       { src: heroUmrahSupport, label: "Umrah Support Program", alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting" },
       { src: heroGlobalPlatform, label: "Global Platform / Opportunities", alt: "Abubakar Alhaji Abubakar at a global digital platform workspace" },
     ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-feature-${i + 1}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.alt, sortOrder: i + 1 })),
+    ...[
+      { slug: "quick-nav-home", title: "Home", image: quickNavHome.url, imageAlt: "Premium house" },
+      { slug: "quick-nav-services", title: "Services", image: quickNavServices.url, imageAlt: "Professional gear and tools" },
+      { slug: "quick-nav-umrah", title: "Umrah", image: quickNavUmrah.url, imageAlt: "Kaaba at Masjid al-Haram" },
+      { slug: "quick-nav-projects", title: "Projects", image: quickNavProjects.url, imageAlt: "Laptop displaying web development" },
+      { slug: "quick-nav-blog", title: "Blog", image: quickNavBlog.url, imageAlt: "Article document with pen" },
+      { slug: "quick-nav-foundation", title: "BK Community Support Initiative", image: quickNavFoundation.url, imageAlt: "Helping hands supporting people" },
+      { slug: "quick-nav-community", title: "Community", image: quickNavCommunity.url, imageAlt: "Professional community group" },
+      { slug: "quick-nav-cv", title: "CV", image: quickNavCv.url, imageAlt: "Professional résumé document" },
+    ].map((item, index) => ({ contentType: "homepage" as const, ...item, summary: "", category: "quick_navigation", sortOrder: index })),
     ...[
       { slug: "digital-services", title: "Digital Services", image: businessDigitalServices },
       { slug: "business-networking", title: "Business Networking", image: businessNetworking },

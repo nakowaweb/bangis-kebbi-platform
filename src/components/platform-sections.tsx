@@ -11,12 +11,10 @@ import {
   FileText,
   Handshake,
   HandHeart,
-  Home,
   Linkedin,
   Mail,
   MessageCircle,
   Network,
-  Newspaper,
   Plane,
   Play,
   Quote,
@@ -27,40 +25,14 @@ import {
   type LucideIcon,
   UsersRound,
   Video,
-  Wrench,
 } from "lucide-react";
-import { useCallback, useEffect, useRef, useState, type ComponentType, type ReactNode } from "react";
+import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
 
 import { useLanguage } from "@/lib/language";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
 import { articles as portfolioArticles, projects as portfolioProjects, services as portfolioServices, text } from "@/lib/portfolio-content";
 import { SafeImage } from "@/components/safe-image";
 import { useContactLinks } from "@/components/contact-actions";
-
-/** Recognizable Kaaba line icon for Umrah, drawn with the same geometry and stroke treatment as Lucide. */
-function KaabaIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={2}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-      aria-hidden="true"
-      focusable="false"
-    >
-      <path d="m4 7 8-3 8 3v12l-8 2-8-2Z" />
-      <path d="m4 7 8 3 8-3M12 10v11" />
-      <path d="M4 11.25 12 14l8-2.75" />
-      <path d="M7.25 8.2v3.9M16.75 8.2v3.9" />
-      <path d="M8.75 19.8v-4.2l3.25.95v4.05" />
-    </svg>
-  );
-}
-
-type IconType = ComponentType<{ className?: string }>;
 
 import appIconAssetSrc from "@/assets/bangis-app-icon.png";
 const appIconAsset = { url: appIconAssetSrc };
@@ -81,6 +53,14 @@ import businessGlobalOpportunities from "@/assets/business-global-opportunities.
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
+import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp.asset.json";
+import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp.asset.json";
+import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp.asset.json";
+import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp.asset.json";
+import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp.asset.json";
+import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp.asset.json";
+import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp.asset.json";
+import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp.asset.json";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -107,19 +87,23 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
 ];
 
 const quickActions: Array<{
+  slug: string;
   label: TranslationKey;
   href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community" | "/cv";
-  icon: IconType;
+  image: string;
+  imageAlt: string;
 }> = [
-  { label: "nav.home", href: "/", icon: Home },
-  { label: "nav.services", href: "/services", icon: Wrench },
-  { label: "nav.umrah", href: "/umrah", icon: KaabaIcon },
-  { label: "nav.projects", href: "/projects", icon: BriefcaseBusiness },
-  { label: "nav.blog", href: "/blog", icon: Newspaper },
-  { label: "nav.foundation", href: "/foundation", icon: HandHeart },
-  { label: "nav.community", href: "/community", icon: UsersRound },
-  { label: "nav.cv", href: "/cv", icon: FileText },
+  { slug: "quick-nav-home", label: "nav.home", href: "/", image: quickNavHome.url, imageAlt: "Premium house" },
+  { slug: "quick-nav-services", label: "nav.services", href: "/services", image: quickNavServices.url, imageAlt: "Professional gear and tools" },
+  { slug: "quick-nav-umrah", label: "nav.umrah", href: "/umrah", image: quickNavUmrah.url, imageAlt: "Kaaba at Masjid al-Haram" },
+  { slug: "quick-nav-projects", label: "nav.projects", href: "/projects", image: quickNavProjects.url, imageAlt: "Laptop displaying web development" },
+  { slug: "quick-nav-blog", label: "nav.blog", href: "/blog", image: quickNavBlog.url, imageAlt: "Article document with pen" },
+  { slug: "quick-nav-foundation", label: "nav.foundation", href: "/foundation", image: quickNavFoundation.url, imageAlt: "Helping hands supporting people" },
+  { slug: "quick-nav-community", label: "nav.community", href: "/community", image: quickNavCommunity.url, imageAlt: "Professional community group" },
+  { slug: "quick-nav-cv", label: "nav.cv", href: "/cv", image: quickNavCv.url, imageAlt: "Professional résumé document" },
 ];
+
+type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_alt?: string | null; sort_order: number };
 
 type HeroSlideInput = { src: string; alt: string; label: string; slot?: number };
 
@@ -185,26 +169,30 @@ function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideIn
   );
 }
 
-export function QuickActionsSection() {
+export function QuickActionsSection({ items = [] }: { items?: QuickActionManagedItem[] }) {
   const { t } = useLanguage();
+  const managed = new Map(items.map((item) => [item.slug, item]));
+  const visibleActions = quickActions
+    .map((item, fallbackOrder) => ({ item, managedItem: managed.get(item.slug), fallbackOrder }))
+    .sort((a, b) => (a.managedItem?.sort_order ?? a.fallbackOrder) - (b.managedItem?.sort_order ?? b.fallbackOrder));
   return (
     <section className="border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
-      <nav className="mx-auto max-w-7xl px-3 py-4 sm:px-6 sm:py-5 lg:px-8" aria-label={t("nav.quickLinks")}>
-        <div className="grid grid-cols-4 gap-2 sm:grid-cols-8 sm:gap-3">
-          {quickActions.map((item) => (
+      <nav className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-6 lg:px-8" aria-label={t("nav.quickLinks")}>
+        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-8">
+          {visibleActions.map(({ item, managedItem }) => (
             <Link
               key={item.href}
               to={item.href}
               aria-label={t(item.label)}
               activeOptions={{ exact: item.href === "/" }}
-              activeProps={{ className: "border-brand-cyan bg-brand-cyan/15 text-brand-cyan shadow-glow" }}
-              inactiveProps={{ className: "border-primary-foreground/15 bg-primary-foreground/5 text-primary-foreground hover:border-brand-cyan/55 hover:bg-primary-foreground/10 hover:text-brand-cyan" }}
-              className="group flex min-h-20 min-w-0 flex-col items-center justify-center gap-2 rounded-lg border px-1 py-3 text-center transition duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-24 sm:px-2"
+              activeProps={{ className: "quick-nav-active border-brand-cyan bg-brand-cyan/10 text-brand-cyan shadow-glow" }}
+              inactiveProps={{ className: "border-primary-foreground/20 bg-primary-foreground/[0.035] text-primary-foreground hover:border-brand-cyan/60 hover:bg-primary-foreground/[0.07] hover:text-brand-cyan" }}
+              className="quick-nav-card group flex min-h-36 min-w-0 flex-col items-center justify-center gap-3 rounded-lg border px-2 py-4 text-center transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-40"
             >
-              <span className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-primary-foreground/10 transition group-hover:bg-brand-cyan/15 sm:h-10 sm:w-10">
-                <item.icon className="h-5 w-5 shrink-0 sm:h-6 sm:w-6" aria-hidden="true" />
+              <span className="block h-[72px] w-[72px] shrink-0 overflow-hidden rounded-lg border border-brand-cyan/35 bg-brand-navy shadow-platform sm:h-20 sm:w-20">
+                <SafeImage src={managedItem?.imageUrl ?? item.image} fallbackSrc={item.image} alt={managedItem?.image_alt ?? item.imageAlt} width={178} height={178} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
               </span>
-              <span className="w-full text-[10px] font-bold leading-tight sm:text-xs">{t(item.label)}</span>
+              <span className="w-full text-xs font-bold leading-tight sm:text-sm">{t(item.label)}</span>
             </Link>
           ))}
         </div>

@@ -128,4 +128,11 @@
 - [x] Refine the existing quote treatment with a small quote icon while keeping it attached to the portrait
 - [x] Connect About cards/quote and optional media to the existing Super Admin CMS lifecycle
 - [x] Audit the named public content areas and close the requested About CMS wiring gap without changing security or routes
-- [ ] Verify desktop/mobile presentation, reduced motion, TypeScript and preview build health
+- [x] Verify desktop/mobile presentation, reduced motion, TypeScript and preview build health
+
+## Homepage quick navigation reference upgrade
+- [x] Extract the eight approved 3D visuals directly from the supplied reference without regeneration
+- [x] Preserve the navy section, eight-card arrangement and fixed existing destinations
+- [x] Connect each visual to a stable Homepage CMS entry with replacement, removal, ordering and visibility controls
+- [ ] Verify desktop, tablet and mobile rendering, active glow, links, overflow, console and build health
+- [ ] Register the eight entries in the production Media Library — blocked when no production admin session is available

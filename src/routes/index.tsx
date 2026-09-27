@@ -81,10 +81,13 @@ function Index() {
     .slice(0, 4)
     .map((entry) => ({ src: entry.imageUrl, alt: entry.image_alt ?? entry.title, label: entry.title }))
     .filter((entry): entry is { src: string; alt: string; label: string } => Boolean(entry.src));
+  const quickNavigation = publicContent.entries
+    .filter((entry) => entry.content_type === "homepage" && /^quick-nav-(home|services|umrah|projects|blog|foundation|community|cv)$/.test(entry.slug))
+    .map((entry) => ({ slug: entry.slug, imageUrl: entry.imageUrl, image_alt: entry.image_alt, sort_order: entry.sort_order }));
   return (
     <main>
       <HeroSection content={{ eyebrow: value("eyebrow"), title: hero?.title, subtitle: value("subtitle"), description: hero?.summary ?? value("description"), primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
-      <QuickActionsSection />
+      <QuickActionsSection items={quickNavigation} />
       <PlatformIntroduction title={about?.title} description={about?.summary ?? undefined} />
       <ServicesSection items={services} />
       <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
