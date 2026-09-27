@@ -773,6 +773,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ui_text_translations: {
+        Row: {
+          created_at: string
+          id: string
+          language: string
+          source_hash: string
+          source_text: string
+          translated_text: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language: string
+          source_hash: string
+          source_text: string
+          translated_text: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language?: string
+          source_hash?: string
+          source_text?: string
+          translated_text?: string
+        }
+        Relationships: []
+      }
       umrah_application_history: {
         Row: {
           action: string
