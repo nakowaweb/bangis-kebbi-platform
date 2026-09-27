@@ -136,3 +136,10 @@
 - [x] Connect each visual to a stable Homepage CMS entry with replacement, removal, ordering and visibility controls
 - [x] Verify desktop, tablet and mobile rendering, active glow, links, overflow, console and build health
 - [ ] Register the eight entries in the production Media Library — blocked when no production admin session is available
+
+## Multilingual header and managed languages
+- [ ] Reproduce the approved desktop, tablet and mobile language selector without changing other header elements
+- [ ] Extend working site translations from EN/AR/HA to FR/ES/TR/DE/UR/ZH with Urdu RTL and English fallback
+- [ ] Add secure Super Admin controls for language availability, ordering and future additions
+- [ ] Extend CMS dynamic-content translation management to every enabled language
+- [ ] Verify persistence, page navigation, RTL/LTR switching, responsive layout and build health
