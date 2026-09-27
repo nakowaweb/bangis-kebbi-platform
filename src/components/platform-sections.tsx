@@ -191,7 +191,14 @@ export function QuickActionsSection({ items = [] }: { items?: QuickActionManaged
               className="quick-nav-card group flex min-h-36 min-w-0 flex-col items-center justify-center gap-3 rounded-lg border px-2 py-4 text-center transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-40"
             >
               <span className="block h-[72px] w-[72px] shrink-0 overflow-hidden rounded-lg border border-brand-cyan/35 bg-brand-navy shadow-platform sm:h-20 sm:w-20">
-                <SafeImage src={managedItem ? managedItem.imageUrl ?? undefined : item.image} fallbackSrc={managedItem?.imageUrl ? item.image : undefined} alt={managedItem?.image_alt ?? item.imageAlt} width={178} height={178} loading="lazy" className="h-full w-full object-cover transition duration-300 group-hover:scale-105" />
+                <SafeImage
+                  {...(managedItem ? (managedItem.imageUrl ? { src: managedItem.imageUrl, fallbackSrc: item.image } : {}) : { src: item.image })}
+                  alt={managedItem?.image_alt ?? item.imageAlt}
+                  width={178}
+                  height={178}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
+                />
               </span>
               <span className="w-full text-xs font-bold leading-tight sm:text-sm">{t(item.label)}</span>
             </Link>
