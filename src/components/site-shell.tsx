@@ -1,6 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import * as FlagIcons from "country-flag-icons/react/3x2";
 import { ChevronDown, Languages, Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
@@ -18,6 +19,7 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Sheet, SheetClose, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { GlobalSearch } from "@/components/global-search";
 import { LanguageProvider, languageMeta, languages, useLanguage, type LanguageCode, type TranslationKey } from "@/lib/language";
+import { worldLanguage } from "@/lib/i18n/world-languages";
 import { listPublicSocialLinks } from "@/lib/social.functions";
 import { navItems } from "@/lib/site-data";
 
@@ -131,11 +133,14 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
   const primary = languages.filter((item) => item.primary);
   const additional = worldOptions.filter((item) => !["en", "ar", "ha"].includes(item.code));
   const current = additional.find((item) => item.code === activeLanguage);
-  const LanguageMarker = ({ flag }: { flag: string | undefined }) => flag ? (
-    <span aria-hidden="true" className="w-5 shrink-0 text-center text-base leading-none">{flag}</span>
-  ) : (
-    <Languages aria-hidden="true" className="h-4 w-5 shrink-0 text-muted-foreground" />
-  );
+  const LanguageMarker = ({ country }: { country: string | undefined }) => {
+    const Flag = country ? FlagIcons[country as keyof typeof FlagIcons] : undefined;
+    return Flag ? (
+      <Flag aria-hidden="true" className="h-3.5 w-5 shrink-0 rounded-[2px] object-cover shadow-sm ring-1 ring-border" />
+    ) : (
+      <Languages aria-hidden="true" className="h-4 w-5 shrink-0 text-muted-foreground" />
+    );
+  };
 
   return (
     <div data-no-translate className="grid min-w-0 grid-cols-4 gap-1 sm:flex sm:justify-end sm:gap-1.5" aria-label={t("common.language")}>
@@ -149,7 +154,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
           aria-pressed={activeLanguage === item.code}
           className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold shadow-sm sm:px-2.5 sm:text-xs ${activeLanguage === item.code ? "border-brand-cyan bg-secondary text-primary" : "text-foreground"}`}
         >
-          <span aria-hidden="true" className="text-sm leading-none">{item.flag}</span>
+          <LanguageMarker country={worldLanguage(item.code).country} />
           <span className={compact ? "truncate" : ""}>{item.nativeLabel}</span>
         </Button>
       ))}
@@ -161,7 +166,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
             aria-label="More languages"
             className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold text-primary shadow-sm sm:px-2.5 sm:text-xs ${current ? "border-brand-cyan bg-secondary" : ""}`}
           >
-            <LanguageMarker flag={current?.flag} />
+            <LanguageMarker country={current?.country} />
             <span className="truncate">{current ? current.nativeLabel : "More"}</span>
             <ChevronDown className="h-3 w-3 shrink-0" />
           </Button>
@@ -178,7 +183,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
                   onSelect={() => { setLanguage(item.code); setOpen(false); }}
                   className={`grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 text-sm ${activeLanguage === item.code ? "font-semibold text-primary" : ""}`}
                 >
-                  <LanguageMarker flag={item.flag} />
+                  <LanguageMarker country={item.country} />
                   <span className="truncate">{item.nativeLabel}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">{item.label}</span>
                 </CommandItem>

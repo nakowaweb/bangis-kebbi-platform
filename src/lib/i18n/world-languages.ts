@@ -2,7 +2,7 @@
  * Languages the AI translation provider (Lovable AI Gateway / Gemini) can translate into.
  * Languages without a reviewed static dictionary are translated live and cached server-side.
  */
-export type WorldLanguage = { code: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; flag: string | undefined };
+export type WorldLanguage = { code: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; country: string | undefined };
 
 const RTL = new Set(["ar", "ur", "fa", "he", "ps", "sd", "ug", "yi", "dv", "ckb"]);
 
@@ -25,11 +25,6 @@ const COUNTRY_BY_LANGUAGE: Record<string, string> = {
   ur: "PK", ug: "CN", uz: "UZ", vi: "VN", cy: "GB", wo: "SN", xh: "ZA", yi: "IL",
   yo: "NG", zu: "ZA",
 };
-
-function countryFlag(country: string | undefined): string | undefined {
-  if (!country) return undefined;
-  return [...country].map((letter) => String.fromCodePoint(127397 + letter.charCodeAt(0))).join("");
-}
 
 const raw: Array<[string, string, string]> = [
   ["af", "Afrikaans", "Afrikaans"], ["sq", "Albanian", "Shqip"], ["am", "Amharic", "አማርኛ"], ["ar", "Arabic", "العربية"],
@@ -66,7 +61,7 @@ const raw: Array<[string, string, string]> = [
 ];
 
 export const worldLanguages: WorldLanguage[] = raw
-  .map(([code, label, nativeLabel]) => ({ code, label, nativeLabel, dir: RTL.has(code) ? "rtl" as const : "ltr" as const, flag: countryFlag(COUNTRY_BY_LANGUAGE[code]) }))
+  .map(([code, label, nativeLabel]) => ({ code, label, nativeLabel, dir: RTL.has(code) ? "rtl" as const : "ltr" as const, country: COUNTRY_BY_LANGUAGE[code] }))
   .sort((a, b) => a.label.localeCompare(b.label));
 
 const byCode = new Map(worldLanguages.map((item) => [item.code, item]));
