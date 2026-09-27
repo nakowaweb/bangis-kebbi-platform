@@ -148,3 +148,10 @@
 ## Language markers and account-page copy
 - [x] Add a representative flag or neutral language icon beside every language option
 - [x] Replace the public Login and Registration descriptions without changing access controls
+
+## Final homepage hero reference update
+- [ ] Recompose the homepage hero as the approved full-width visual stage without changing its wording, brand, header, navigation or photos
+- [ ] Use exactly three existing CMS-managed hero images with one-second automatic transitions and manual controls
+- [ ] Add non-obstructive globe and technology motion with reduced-motion support
+- [ ] Verify desktop, tablet, iPhone and Android layouts, translations, controls, images, motion, overflow and preview health
+- [ ] Confirm repository synchronization status without publishing or changing production data
