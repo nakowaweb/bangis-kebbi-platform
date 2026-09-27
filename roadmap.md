@@ -150,16 +150,16 @@
 - [x] Replace the public Login and Registration descriptions without changing access controls
 
 ## Final homepage hero reference update
-- [ ] Recompose the homepage hero as the approved full-width visual stage without changing its wording, brand, header, navigation or photos
-- [ ] Use exactly three existing CMS-managed hero images with one-second automatic transitions and manual controls
-- [ ] Add non-obstructive globe and technology motion with reduced-motion support
-- [ ] Verify desktop, tablet, iPhone and Android layouts, translations, controls, images, motion, overflow and preview health
-- [ ] Confirm repository synchronization status without publishing or changing production data
+- [x] Recompose the homepage hero as the approved full-width visual stage without changing its wording, brand, header, navigation or photos
+- [x] Use exactly three existing CMS-managed hero images with three-second automatic transitions and manual controls
+- [x] Add non-obstructive globe and technology motion with reduced-motion support
+- [x] Verify desktop, tablet, iPhone and Android layouts, translations, controls, images, motion, overflow and preview health
+- [x] Confirm repository synchronization remains platform-managed without publishing or changing production data
 
 ## Hostinger production asset restoration
-- [ ] Replace deployment-specific fallback asset URLs with production-portable bundled files for quick navigation, credentials and Umrah visuals
-- [ ] Preserve CMS-managed images while making broken or unavailable managed links fall back to the approved visuals
-- [ ] Restore the exact About introduction above the existing portrait and feature cards
-- [ ] Set the homepage hero to three-second automatic transitions using the existing three managed slots and bundled approved fallbacks
-- [ ] Move verified partners higher on the Umrah page and add header/homepage shortcuts to its real section
-- [ ] Verify affected images, language options, navigation and responsive layouts without changing production data
+- [x] Replace deployment-specific fallback asset URLs with production-portable bundled files for quick navigation, credentials, Umrah, Projects and Blog visuals
+- [x] Preserve CMS-managed images while making broken or unavailable managed links fall back to the approved visuals
+- [x] Restore the exact About introduction above the existing portrait and feature cards
+- [x] Set the homepage hero to three-second automatic transitions using the existing three managed slots and bundled approved fallbacks
+- [x] Move verified partners higher on the Umrah page and add header/homepage shortcuts to its real section
+- [x] Verify affected images, language options, live translation, navigation and responsive layouts without changing production data
