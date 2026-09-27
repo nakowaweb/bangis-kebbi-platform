@@ -46,7 +46,7 @@ import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
 const portraitAsset = { url: portraitAssetSrc };
 import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
 import communitySupportHero from "@/assets/hero-community-support.jpg";
-import communitySupportBannerAsset from "@/assets/homepage-community-support-banner.png.asset.json";
+import communitySupportBanner from "@/assets/homepage-community-support-banner.png";
 import umrahSupportHero from "@/assets/hero-umrah-support.jpg";
 import businessDigitalServices from "@/assets/business-digital-services.webp";
 import businessNetworking from "@/assets/business-networking.webp";
@@ -56,14 +56,14 @@ import businessGlobalOpportunities from "@/assets/business-global-opportunities.
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
-import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp.asset.json";
-import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp.asset.json";
-import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp.asset.json";
-import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp.asset.json";
-import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp.asset.json";
-import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp.asset.json";
-import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp.asset.json";
-import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp.asset.json";
+import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp";
+import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp";
+import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp";
+import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp";
+import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp";
+import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp";
+import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp";
+import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -92,23 +92,24 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
 const quickActions: Array<{
   slug: string;
   label: TranslationKey;
-  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/community" | "/cv";
+  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/cv";
+  hash?: string;
   image: string;
   imageAlt: string;
 }> = [
-  { slug: "quick-nav-home", label: "nav.home", href: "/", image: quickNavHome.url, imageAlt: "Premium house" },
-  { slug: "quick-nav-services", label: "nav.services", href: "/services", image: quickNavServices.url, imageAlt: "Professional gear and tools" },
-  { slug: "quick-nav-umrah", label: "nav.umrah", href: "/umrah", image: quickNavUmrah.url, imageAlt: "Kaaba at Masjid al-Haram" },
-  { slug: "quick-nav-projects", label: "nav.projects", href: "/projects", image: quickNavProjects.url, imageAlt: "Laptop displaying web development" },
-  { slug: "quick-nav-blog", label: "nav.blog", href: "/blog", image: quickNavBlog.url, imageAlt: "Article document with pen" },
-  { slug: "quick-nav-foundation", label: "nav.foundation", href: "/foundation", image: quickNavFoundation.url, imageAlt: "Helping hands supporting people" },
-  { slug: "quick-nav-community", label: "nav.community", href: "/community", image: quickNavCommunity.url, imageAlt: "Professional community group" },
-  { slug: "quick-nav-cv", label: "nav.cv", href: "/cv", image: quickNavCv.url, imageAlt: "Professional résumé document" },
+  { slug: "quick-nav-home", label: "nav.home", href: "/", image: quickNavHome, imageAlt: "Premium house" },
+  { slug: "quick-nav-services", label: "nav.services", href: "/services", image: quickNavServices, imageAlt: "Professional gear and tools" },
+  { slug: "quick-nav-umrah", label: "nav.umrah", href: "/umrah", image: quickNavUmrah, imageAlt: "Kaaba at Masjid al-Haram" },
+  { slug: "quick-nav-projects", label: "nav.projects", href: "/projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
+  { slug: "quick-nav-blog", label: "nav.blog", href: "/blog", image: quickNavBlog, imageAlt: "Article document with pen" },
+  { slug: "quick-nav-foundation", label: "nav.foundation", href: "/foundation", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
+  { slug: "quick-nav-community", label: "nav.verifiedPartners", href: "/umrah", hash: "verified-partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
+  { slug: "quick-nav-cv", label: "nav.cv", href: "/cv", image: quickNavCv, imageAlt: "Professional résumé document" },
 ];
 
 type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_alt?: string | null; sort_order: number };
 
-type HeroSlideInput = { src: string; alt: string; label: string; slot?: number };
+type HeroSlideInput = { src: string; alt: string; label: string; slot?: number; fallbackSrc?: string };
 
 export function HeroSection({ intervalSeconds = 3, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number }) {
   const { t, language } = useLanguage();
@@ -163,7 +164,7 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
     <div className="hero-stage relative min-h-[590px] w-full overflow-hidden sm:min-h-[620px] lg:min-h-[650px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
         <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
-          <img src={slide.src} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-[62%_center] sm:object-center" />
+          <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-[62%_center] sm:object-center" />
         </figure>
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
@@ -211,8 +212,9 @@ export function QuickActionsSection({ items = [] }: { items?: QuickActionManaged
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-8">
           {visibleActions.map(({ item, managedItem }) => (
             <Link
-              key={item.href}
+              key={item.slug}
               to={item.href}
+              {...(item.hash ? { hash: item.hash } : {})}
               aria-label={t(item.label)}
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "quick-nav-active border-brand-cyan bg-brand-cyan/10 text-brand-cyan shadow-glow" }}
@@ -456,7 +458,7 @@ export function FoundationSection({ title, description, image, imageAlt }: { tit
             <Button className="mt-7 h-12 w-full font-bold sm:w-fit sm:px-7" asChild><Link to="/foundation">{t("foundation.previewAction")} <ArrowRight /></Link></Button>
           </div>
           <div className="relative min-h-64 overflow-hidden bg-secondary sm:min-h-80 lg:min-h-[520px]">
-            <SafeImage src={image ?? communitySupportBannerAsset.url} fallbackSrc={communitySupportBannerAsset.url} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="eager" fetchPriority="high" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center] transition duration-700 group-hover:scale-[1.015]" />
+            <SafeImage src={image ?? communitySupportBanner} fallbackSrc={communitySupportBanner} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="eager" fetchPriority="high" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center] transition duration-700 group-hover:scale-[1.015]" />
             <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card/35 to-transparent lg:hidden" />
           </div>
         </div>

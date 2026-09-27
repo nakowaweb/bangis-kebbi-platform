@@ -21,9 +21,12 @@ export const Route = createFileRoute("/about")({
 function AboutPage() {
   const items = Route.useLoaderData() ?? [];
   const summary = items.find((item) => item.slug === "summary");
+  const legacyTitle = "A passion for technology, people and impact.";
+  const title = !summary?.title || summary.title === legacyTitle ? undefined : summary.title;
+  const description = !summary?.summary || summary.title === legacyTitle ? undefined : summary.summary;
   return (
     <main>
-      <AboutPreview title={summary?.title} description={summary?.summary ?? undefined} items={items} />
+      <AboutPreview title={title} description={description} items={items} />
       <PillarsSection />
       <CommunitySection />
     </main>

@@ -1,11 +1,11 @@
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
-import bangisProjectAsset from "@/assets/projects/project-bangiskebbi.webp.asset.json";
-import resortProjectAsset from "@/assets/projects/project-resort.webp.asset.json";
-import businessProjectAsset from "@/assets/projects/project-business.webp.asset.json";
-import ecommerceProjectAsset from "@/assets/projects/project-ecommerce.webp.asset.json";
-import hotelProjectAsset from "@/assets/projects/project-hotel.webp.asset.json";
-import personalBrandProjectAsset from "@/assets/projects/project-personal-brand.webp.asset.json";
+import bangisProjectAsset from "@/assets/projects/project-bangiskebbi.webp";
+import resortProjectAsset from "@/assets/projects/project-resort.webp";
+import businessProjectAsset from "@/assets/projects/project-business.webp";
+import ecommerceProjectAsset from "@/assets/projects/project-ecommerce.webp";
+import hotelProjectAsset from "@/assets/projects/project-hotel.webp";
+import personalBrandProjectAsset from "@/assets/projects/project-personal-brand.webp";
 import corporateImage from "@/assets/corporate-concept-final.webp";
 import serviceCompanyImage from "@/assets/service-company-concept-final.webp";
 import aiWebDesignImage from "@/assets/service-ai-web-design.jpg";
@@ -14,9 +14,9 @@ import uiUxDesignImage from "@/assets/service-ui-ux-design.jpg";
 import wordpressDevelopmentImage from "@/assets/service-wordpress-development.jpg";
 import digitalBusinessSolutionsImage from "@/assets/service-digital-business-solutions.jpg";
 import websiteMaintenanceImage from "@/assets/service-website-maintenance.jpg";
-import blogDigitalOpportunitiesAsset from "@/assets/blog-digital-opportunities.png.asset.json";
-import blogAiDesignAsset from "@/assets/blog-ai-design.png.asset.json";
-import blogBusinessAsset from "@/assets/blog-business.png.asset.json";
+import blogDigitalOpportunitiesAsset from "@/assets/blog-digital-opportunities.png";
+import blogAiDesignAsset from "@/assets/blog-ai-design.png";
+import blogBusinessAsset from "@/assets/blog-business.png";
 
 type Localized<T> = { en: T } & Partial<Record<Exclude<LanguageCode, "en">, T>>;
 type LocalizedText = Localized<string>;
@@ -56,7 +56,7 @@ export const services: ServiceDefinition[] = serviceBase.map(([slug, en, ar, ha]
   slug,
   title: { en, ar, ha },
   summary: summaries[slug] ?? summaries["web-development"] ?? { en: "Professional digital service.", ar: "خدمة رقمية احترافية.", ha: "Sabis na dijital na ƙwararru." },
-  image: serviceVisuals[index] ?? businessProjectAsset.url,
+  image: serviceVisuals[index] ?? businessProjectAsset,
   imageAlt: { en: `${en} service concept`, ar: `تصور لخدمة ${ar}`, ha: `Hoton tsarin sabis na ${ha}` },
   canDo: {
     en: slug === "ui-ux-design" ? ["User journeys and interface planning", "Wireframes and polished screen design", "Responsive and accessible interaction patterns"] : slug === "website-maintenance" ? ["Content and software updates", "Performance and usability checks", "Issue resolution and continuous improvement"] : ["Discovery and practical scope definition", "Responsive website or application delivery", "Content, CMS and launch preparation"],
@@ -87,12 +87,12 @@ export type ProjectDefinition = {
 };
 
 const projectRows = [
-  { slug: "bangiskebbi-com", title: ["BangisKebbi.com", "BangisKebbi.com", "BangisKebbi.com"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: bangisProjectAsset.url, concept: false },
-  { slug: "hospitality-resort-concept", title: ["Hospitality Resort Concept", "تصور موقع منتجع ضيافة", "Tsarin Gidan Yanar Gizon Wurin Hutu"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: resortProjectAsset.url, concept: true },
-  { slug: "business-website-concept", title: ["Business Website Concept", "تصور موقع أعمال", "Tsarin Gidan Yanar Gizon Kasuwanci"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: businessProjectAsset.url, concept: true },
-  { slug: "ecommerce-website-concept", title: ["E-commerce Website Concept", "تصور متجر إلكتروني", "Tsarin Shagon Intanet"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: ecommerceProjectAsset.url, concept: true },
-  { slug: "hotel-website-concept", title: ["Hotel Website Concept", "تصور موقع فندق", "Tsarin Gidan Yanar Gizon Otal"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: hotelProjectAsset.url, concept: true },
-  { slug: "personal-brand-website-concept", title: ["Personal Brand Website Concept", "تصور موقع علامة شخصية", "Tsarin Gidan Yanar Gizon Brand na Kai"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: personalBrandProjectAsset.url, concept: true },
+  { slug: "bangiskebbi-com", title: ["BangisKebbi.com", "BangisKebbi.com", "BangisKebbi.com"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: bangisProjectAsset, concept: false },
+  { slug: "hospitality-resort-concept", title: ["Hospitality Resort Concept", "تصور موقع منتجع ضيافة", "Tsarin Gidan Yanar Gizon Wurin Hutu"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: resortProjectAsset, concept: true },
+  { slug: "business-website-concept", title: ["Business Website Concept", "تصور موقع أعمال", "Tsarin Gidan Yanar Gizon Kasuwanci"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: businessProjectAsset, concept: true },
+  { slug: "ecommerce-website-concept", title: ["E-commerce Website Concept", "تصور متجر إلكتروني", "Tsarin Shagon Intanet"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: ecommerceProjectAsset, concept: true },
+  { slug: "hotel-website-concept", title: ["Hotel Website Concept", "تصور موقع فندق", "Tsarin Gidan Yanar Gizon Otal"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: hotelProjectAsset, concept: true },
+  { slug: "personal-brand-website-concept", title: ["Personal Brand Website Concept", "تصور موقع علامة شخصية", "Tsarin Gidan Yanar Gizon Brand na Kai"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: personalBrandProjectAsset, concept: true },
   { slug: "corporate-business-website-concept", title: ["Corporate Business Website Concept", "تصور موقع شركة", "Tsarin Gidan Yanar Gizon Kamfani"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: corporateImage, concept: true },
   { slug: "service-company-website-concept", title: ["Service Company Website Concept", "تصور موقع شركة خدمات", "Tsarin Gidan Yanar Gizon Kamfanin Sabis"], category: ["Digital Project", "مشروع رقمي", "Aikin Dijital"], image: serviceCompanyImage, concept: true },
 ] as const;
@@ -215,7 +215,7 @@ export const articles: ArticleDefinition[] = [
       ar: ["تصبح الفكرة قوية عندما تحل مشكلة واضحة لأشخاص حقيقيين. البداية ليست بإضافة مزيد من الخصائص، بل بفهم الجمهور والقرار الذي يحتاج إلى اتخاذه وأبسط طريق إلى الأمام.", "بعد ذلك يمنح الحضور الرقمي الموثوق الفكرة مكاناً واضحاً. يساعد المحتوى المركز والتصميم المتجاوب ووسائل التواصل السهلة العملاء والمتعاونين على فهم العرض واتخاذ الخطوة التالية.", "يتحقق التقدم بالاختبار والاستماع والتحسين. الاستمرارية في التنفيذ تبني الثقة بصورة أفضل من الادعاءات المبالغ فيها."],
       ha: ["Ra’ayi mai ƙarfi yana zama mai amfani idan ya warware matsala a bayyane ga mutane na gaske. Mataki na farko ba ƙara fasali ba ne; fahimtar masu amfani da shawarar da suke son yanke wa ne.", "Kasancewa mai kyau a intanet yana ba wa ra’ayin gida mai ma’ana. Abun ciki mai sauƙi, ƙira mai daidaituwa da hanyoyin tuntuɓa suna taimaka wa kwastomomi su fahimci tayin.", "Ci gaba yana zuwa ta gwaji, sauraro da ingantawa. Aiki na dindindin yana gina amincewa fiye da magana mai wuce gona da iri."],
     },
-    image: blogDigitalOpportunitiesAsset.url,
+    image: blogDigitalOpportunitiesAsset,
     author: "Abubakar Alhaji Abubakar",
     publishedAt: "2026-09-25T00:00:00.000Z",
   },
@@ -229,7 +229,7 @@ export const articles: ArticleDefinition[] = [
       ar: ["يمكن للذكاء الاصطناعي تسريع البحث والمقارنة والمسودات الأولى، لكنه لا يحل محل فهم العميل والجمهور وسياق العمل.", "يستخدم المسار المسؤول الذكاء الاصطناعي كمساعد: تحديد المطلوب، والتحقق من المعلومات، وصياغة الاتجاه البصري، ومراجعة كل مخرج، واختبار التجربة على أجهزة حقيقية.", "يجب أن تبدو النتيجة واضحة وإنسانية، وأن يرى الزائر الخدمة والدليل والخطوة التالية."],
       ha: ["AI na iya hanzarta bincike da rubutun farko, amma ba zai maye gurbin fahimtar abokin ciniki, masu amfani ko yanayin kasuwanci ba.", "Tsarin aiki mai kyau yana amfani da AI a matsayin mataimaki: a tsara buƙata, a tabbatar da bayanai, a zaɓi hanyar gani, a duba komai sannan a gwada a na’urori na gaske.", "Sakamakon ya kamata ya kasance mai sauƙi kuma na ɗan adam. Mai ziyara ya ga sabis, hujja da mataki na gaba."],
     },
-    image: blogAiDesignAsset.url,
+    image: blogAiDesignAsset,
     author: "Abubakar Alhaji Abubakar",
     publishedAt: "2026-09-25T00:00:00.000Z",
   },
@@ -243,7 +243,7 @@ export const articles: ArticleDefinition[] = [
       ar: ["تبدأ الثقة بالدقة. يجب أن يصف الموقع الاحترافي ما هو متاح فعلاً، وأن يوضح الأعمال التجريبية بصدق، وأن يتجنب الوعود التي تعتمد على أطراف أخرى.", "تساعد صفحات الخدمات الواضحة وتفاصيل الأعمال ووسائل التواصل الحقيقية الزائر على تقييم الملاءمة قبل التواصل. كما توضح صفحات الخصوصية والشروط كيفية التعامل مع الحسابات والرسائل والوثائق.", "يحتاج الموقع الموثوق إلى متابعة بعد الإطلاق؛ فالمحتوى والروابط والأمان والأداء تحتاج إلى مراجعة منتظمة."],
       ha: ["Amincewa tana farawa da gaskiya. Gidan yanar gizo na ƙwararru ya bayyana abin da ake bayarwa, ya nuna aikin samfurin a sarari kuma ya guji alkawuran da suka dogara da wasu.", "Shafukan sabis, bayanan ayyuka da hanyoyin tuntuɓa na gaske suna taimaka wa mai ziyara ya fahimci dacewa kafin ya tuntuɓa. Shafukan sirri da sharuɗɗa su kuma bayyana yadda ake kula da asusu, saƙonni da takardu.", "Ana kula da gidan yanar gizo mai aminci bayan ƙaddamarwa. Abun ciki, links, tsaro da sauri suna buƙatar duba lokaci-lokaci."],
     },
-    image: blogBusinessAsset.url,
+    image: blogBusinessAsset,
     author: "Abubakar Alhaji Abubakar",
     publishedAt: "2026-09-25T00:00:00.000Z",
   },
