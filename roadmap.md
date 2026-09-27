@@ -142,4 +142,5 @@
 - [x] Extend working site translations from EN/AR/HA to FR/ES/TR/DE/UR/ZH with Urdu RTL and English fallback
 - [x] Add secure Super Admin controls for language availability and future additions
 - [x] Extend CMS dynamic-content translation management to every enabled language
-- [ ] Verify persistence, page navigation, RTL/LTR switching, responsive layout and build health
+- [x] Verify persistence, page navigation, RTL/LTR switching and responsive layout
+- [ ] Restore the existing backend schema so generated types and the full build can be verified — blocked because the connected backend has no application tables

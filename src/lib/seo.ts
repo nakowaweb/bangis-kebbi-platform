@@ -4,7 +4,17 @@ import { pageSeo } from "@/lib/i18n/seo-text";
 /** Public site origin. Absolute URLs are required for canonical, og:url and hreflang. */
 export const SITE_ORIGIN = "https://bangiskebbi.com";
 
-const ogLocales: Record<LanguageCode, string> = { en: "en_NG", ar: "ar_AR", ha: "ha_NG" };
+const ogLocales: Record<LanguageCode, string> = {
+  en: "en_NG",
+  ar: "ar_SA",
+  ha: "ha_NG",
+  fr: "fr_FR",
+  es: "es_ES",
+  tr: "tr_TR",
+  de: "de_DE",
+  ur: "ur_PK",
+  zh: "zh_CN",
+};
 
 /**
  * Localized public URLs use a `?lang=` suffix. The existing flat TanStack file routes stay
