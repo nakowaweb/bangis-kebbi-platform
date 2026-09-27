@@ -1,6 +1,10 @@
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
+  Lightbulb,
+  MapPin,
+  Settings,
+  Users,
   Blocks,
   ChevronLeft,
   ChevronRight,
@@ -106,7 +110,7 @@ type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_al
 
 type HeroSlideInput = { src: string; alt: string; label: string; slot?: number };
 
-export function HeroSection({ content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string }) {
+export function HeroSection({ intervalSeconds = 3, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number }) {
   const { t, language } = useLanguage();
   // Short payload labels (eyebrow and buttons) are not part of the translatable CMS fields,
   // so outside English the reviewed dictionary wording is used instead of the English payload.
@@ -117,6 +121,7 @@ export function HeroSection({ content, slides, location = "Kebbi State, Nigeria"
         slides={slides}
         location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}
         globalStatus={globalStatus}
+        intervalMs={Math.min(30, Math.max(1, intervalSeconds)) * 1000}
         eyebrow={label(content?.eyebrow, "home.heroEyebrow")}
         subtitle={content?.subtitle ?? t("home.heroSubtitle")}
         primaryCta={label(content?.primaryCta, "common.hireMe")}
@@ -126,13 +131,21 @@ export function HeroSection({ content, slides, location = "Kebbi State, Nigeria"
   );
 }
 
+function highlightSubtitle(text: string) {
+  const tones: Record<string, string> = { people: "text-brand-cyan", technology: "text-brand-gold", opportunities: "text-brand-green" };
+  return text.split(/(people|technology|opportunities)/i).map((part, i) => {
+    const tone = tones[part.toLowerCase()];
+    return tone ? <span key={i} className={`hero-word ${tone}`}>{part}</span> : part;
+  });
+}
+
 const fallbackHeroSlides: HeroSlideInput[] = [
   { src: digitalSolutionsHero, alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team", label: "Digital Solutions / Web Development" },
   { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Community Support Initiative" },
   { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
 ];
 
-function HeroCarousel({ slides, location, globalStatus, eyebrow, subtitle, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string }) {
+function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, subtitle, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string; intervalMs: number }) {
   const { t } = useLanguage();
   const heroSlides = slides?.length ? slides.slice(0, 3) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
@@ -143,9 +156,9 @@ function HeroCarousel({ slides, location, globalStatus, eyebrow, subtitle, prima
   const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), [heroSlides.length]);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
-    const timer = window.setInterval(() => move(1), 1000);
+    const timer = window.setInterval(() => move(1), intervalMs);
     return () => window.clearInterval(timer);
-  }, [move, paused]);
+  }, [move, paused, intervalMs]);
   return (
     <div className="hero-stage relative min-h-[590px] w-full overflow-hidden sm:min-h-[620px] lg:min-h-[650px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
@@ -156,27 +169,28 @@ function HeroCarousel({ slides, location, globalStatus, eyebrow, subtitle, prima
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-20" />
 
-      <div className="absolute inset-x-0 top-5 z-20 mx-auto flex max-w-7xl flex-wrap gap-2 px-14 sm:top-8 sm:gap-3 sm:px-20 lg:px-24">
-        <span className="hero-icon-chip hero-icon-chip-1"><span className="hero-icon-ring"><Sprout className="h-4 w-4" /></span>{eyebrow.split("•")[0]?.trim()}</span>
-        <span className="hero-icon-chip hero-icon-chip-2"><span className="hero-icon-ring"><Code2 className="h-4 w-4" /></span>{eyebrow.split("•")[1]?.trim()}</span>
-        <span className="hero-icon-chip hero-icon-chip-3"><span className="hero-icon-ring"><Globe2 className="h-4 w-4" /></span>{eyebrow.split("•")[2]?.trim()}</span>
-      </div>
-
-      <div className="relative z-20 mx-auto flex min-h-[590px] max-w-7xl items-end px-14 pb-24 pt-24 sm:min-h-[620px] sm:px-20 sm:pb-24 sm:pt-28 lg:min-h-[650px] lg:items-center lg:px-24 lg:pb-20 lg:pt-28">
-        <div className="hero-copy-enter max-w-[760px] drop-shadow-lg">
-          <h1 className="max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-6xl">
-            <span className="hero-line hero-line-1 block">{t("home.heroTitleLine1")}</span>
-            <span className="hero-line hero-line-2 hero-glow-text mt-1 block text-brand-cyan">{t("home.heroTitleLine2")}</span>
+      <div className="relative z-20 mx-auto flex min-h-[600px] max-w-7xl items-end px-14 pb-20 pt-10 sm:min-h-[640px] sm:px-20 lg:min-h-[680px] lg:items-center lg:px-24 lg:pb-16">
+        <div className="hero-copy-enter max-w-[780px]">
+          <div className="flex flex-wrap gap-2 sm:gap-4" aria-label={eyebrow}>
+            <span className="hero-pill hero-pill-gold"><Lightbulb className="h-5 w-5 sm:h-6 sm:w-6" />{eyebrow.split("•")[0]?.trim()}</span>
+            <span className="hero-pill hero-pill-cyan" style={{ animationDelay: "0.8s" }}><Settings className="h-5 w-5 sm:h-6 sm:w-6" />{eyebrow.split("•")[1]?.trim()}</span>
+            <span className="hero-pill hero-pill-green" style={{ animationDelay: "1.6s" }}><Users className="h-5 w-5 sm:h-6 sm:w-6" />{eyebrow.split("•")[2]?.trim()}</span>
+          </div>
+          <h1 className="mt-8 font-display text-4xl font-extrabold leading-[1.05] drop-shadow-lg sm:mt-10 sm:text-6xl lg:text-7xl">
+            <span className="hero-line hero-line-1 hero-title-a block">{t("home.heroTitleLine1")}</span>
+            <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroTitleLine2")}</span>
           </h1>
-          <p className="hero-line hero-line-3 mt-5 max-w-2xl font-display text-base font-semibold leading-snug text-primary-foreground sm:text-xl">{subtitle}</p>
+          <p className="hero-line hero-line-3 mt-5 max-w-2xl font-display text-lg font-semibold leading-snug drop-shadow sm:text-2xl">{highlightSubtitle(subtitle)}</p>
           <div className="hero-cta-enter mt-7 flex flex-wrap gap-3">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{primaryCta} <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10" asChild><Link to="/projects">{secondaryCta}</Link></Button>
+            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{primaryCta} <ArrowRight /></Link></Button>
+            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{secondaryCta}</Link></Button>
+          </div>
+          <div className="hero-location location-badge-motion mt-6 inline-flex items-center gap-3 rounded-xl border border-primary-foreground/20 bg-brand-ink/70 px-4 py-3 backdrop-blur-md sm:px-5">
+            <MapPin className="h-7 w-7 shrink-0 fill-primary-foreground text-brand-ink" aria-hidden="true" />
+            <span><span className="flex items-center gap-2 text-sm font-bold sm:text-base">{location}<span className="inline-flex h-4 w-4 overflow-hidden rounded-full border border-primary-foreground/40" aria-hidden="true"><span className="w-1/3 bg-brand-green" /><span className="w-1/3 bg-primary-foreground" /><span className="w-1/3 bg-brand-green" /></span></span><span className="mt-0.5 flex items-center gap-1.5 text-xs text-primary-foreground/80 sm:text-sm"><Globe2 className="h-3.5 w-3.5 text-brand-cyan" aria-hidden="true" />{globalStatus}</span></span>
           </div>
         </div>
       </div>
-
-      <div className="location-badge-motion absolute bottom-5 right-4 z-20 max-w-[180px] rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-3 py-2 text-[11px] backdrop-blur sm:bottom-7 sm:right-7 sm:px-4 sm:py-3 sm:text-xs lg:right-12"><p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p></div>
       <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-2 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
       <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-2 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
