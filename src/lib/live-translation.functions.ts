@@ -13,7 +13,7 @@ async function sha(text: string) {
  * Results are cached, so each string is sent to the AI provider only once per language.
  */
 export const translateTexts = createServerFn({ method: "POST" })
-  .inputValidator((input: unknown) =>
+  .validator((input: unknown) =>
     z.object({
       language: z.string().refine(isWorldLanguage, "Unsupported language"),
       texts: z.array(z.string().min(1).max(3000)).min(1).max(120),
