@@ -182,7 +182,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
                   key={item.code}
                   value={`${item.label} ${item.nativeLabel} ${item.code}`}
                   onSelect={() => { setLanguage(item.code); setOpen(false); }}
-                  aria-selected={activeLanguage === item.code}
+                  data-current={activeLanguage === item.code ? "true" : undefined}
                   data-no-translate
                   className={`grid grid-cols-[1.25rem_minmax(0,1fr)_auto_1rem] items-center gap-2 text-sm ${activeLanguage === item.code ? "bg-secondary font-semibold text-primary" : ""}`}
                 >
