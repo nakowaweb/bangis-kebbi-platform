@@ -99,6 +99,22 @@ export const getPublicContent = createServerFn({ method: "GET" })
     };
   });
 
+/** Public language availability, read server-side so signed-out visitors never hit protected database helpers. */
+export const getPublicEnabledLanguages = createServerFn({ method: "GET" }).handler(async () => {
+  const { data } = await publicClient()
+    .from("site_settings")
+    .select("social_links")
+    .eq("is_active", true)
+    .limit(1)
+    .maybeSingle();
+  const config = data?.social_links && typeof data.social_links === "object" && !Array.isArray(data.social_links)
+    ? data.social_links as Record<string, unknown>
+    : {};
+  return Array.isArray(config["enabledLanguages"])
+    ? config["enabledLanguages"].filter(isWorldLanguage)
+    : [];
+});
+
 const publicListInput = z.object({ contentType: z.enum(contentTypes), language: languageInput });
 
 /** Published entries of one content area, ordered for public listing pages. */
