@@ -109,7 +109,7 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
   const submitMutation = useMutation({
     mutationFn: () => submit({}),
     onSuccess: () => {
-      toast.success("Application submitted. You will be notified about any change.");
+      toast.success("Your Umrah application has been submitted successfully.");
       refresh();
     },
     onError: (error: Error) => toast.error(error.message),
@@ -243,15 +243,15 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
             ) : null}
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button disabled={submitMutation.isPending || missing.length > 0}>
-                  <Send /> Submit application
+                <Button disabled={submitMutation.isPending || submitMutation.isSuccess || missing.length > 0}>
+                  <Send /> {submitMutation.isPending ? "Submitting…" : "Submit application"}
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
                   <AlertDialogTitle>Submit this application?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    You will not be able to edit it while it is being reviewed. No payment is taken at this stage.
+                    You can submit your application only once. You will not be able to edit it while it is being reviewed. No payment is taken at this stage.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -260,6 +260,20 @@ export function MemberUmrahPanel({ userId }: { userId: string }) {
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+          </CardContent>
+        </Card>
+      ) : null}
+
+      {application && !editableStatuses.includes(status) && application["submitted_at"] ? (
+        <Card className="border-brand-cyan/50 bg-secondary/40">
+          <CardContent className="flex items-start gap-3 pt-6">
+            <CheckCircle2 className="mt-0.5 size-5 shrink-0 text-brand-cyan" />
+            <div>
+              <p className="text-sm font-semibold">Your Umrah application has been submitted successfully.</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                You can view your submitted application and follow its status above. Each member can submit only one application.
+              </p>
+            </div>
           </CardContent>
         </Card>
       ) : null}

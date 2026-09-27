@@ -1,0 +1,1 @@
+CREATE UNIQUE INDEX IF NOT EXISTS umrah_applications_one_per_member ON public.umrah_applications (user_id);
