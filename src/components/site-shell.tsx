@@ -1,7 +1,7 @@
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { Mail, Menu, UserRound } from "lucide-react";
+import { ChevronDown, Globe2, Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -75,7 +75,7 @@ function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
-      <div className="mx-auto grid h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-3 px-4 sm:flex sm:px-6 lg:px-8">
+      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6 lg:flex lg:px-8">
         <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="BangisKebbi.com home">
           <img src={logoAsset.url} alt="BangisKebbi.com" className="h-12 w-auto max-w-[210px] shrink object-contain sm:max-w-[250px]" />
         </Link>
@@ -117,40 +117,60 @@ function SiteHeader() {
               </Button>
             </>
           )}
-          <LanguageMenu compact />
+          <LanguageSelector />
         </div>
 
         <div className="flex shrink-0 items-center gap-2 lg:hidden">
           <GlobalSearch />
-          <LanguageMenu compact />
           <MobileMenu />
         </div>
+        <div className="col-span-2 min-w-0 lg:hidden"><LanguageSelector compact /></div>
       </div>
     </header>
   );
 }
 
-function LanguageMenu({ compact = false }: { compact?: boolean }) {
-  const { language, setLanguage, t } = useLanguage();
-  const current = languageMeta(language);
+function LanguageSelector({ compact = false }: { compact?: boolean }) {
+  const { language, setLanguage, t, availableLanguages } = useLanguage();
+  const primary = languages.filter((item) => item.primary);
+  const additional = availableLanguages.filter((item) => !item.primary);
 
   return (
-    <DropdownMenu>
-      <DropdownMenuTrigger asChild>
-        <Button variant="outline" size="sm" className="h-10 min-w-11 border-border bg-background/80" aria-label={t("common.language")}>
-          {compact ? current.short : current.nativeLabel}
+    <div className="grid min-w-0 grid-cols-4 gap-1 sm:flex sm:justify-end sm:gap-2" aria-label={t("common.language")}>
+      {primary.map((item) => (
+        <Button
+          key={item.code}
+          type="button"
+          variant="outline"
+          size="sm"
+          onClick={() => setLanguage(item.code)}
+          aria-pressed={language === item.code}
+          className={`h-10 min-w-0 gap-1 border-border bg-background px-1.5 text-xs font-semibold shadow-sm sm:px-3 sm:text-sm ${language === item.code ? "border-brand-cyan bg-secondary text-primary shadow-glow" : "text-foreground"}`}
+        >
+          <span aria-hidden="true" className="text-base leading-none sm:text-lg">{item.flag}</span>
+          <span className={compact ? "truncate" : ""}>{item.nativeLabel}</span>
         </Button>
-      </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="border-border bg-popover shadow-platform">
-        <DropdownMenuLabel>{t("common.language")}</DropdownMenuLabel>
-        {languages.map((item) => (
-          <DropdownMenuItem key={item.code} onSelect={() => setLanguage(item.code as LanguageCode)} className="gap-2">
-            <span className="font-semibold">{item.short}</span>
-            <span>{item.nativeLabel}</span>
-          </DropdownMenuItem>
-        ))}
-      </DropdownMenuContent>
-    </DropdownMenu>
+      ))}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button variant="outline" size="sm" className="h-10 min-w-0 gap-1 border-border bg-background px-1.5 text-xs font-semibold text-primary shadow-sm sm:px-3 sm:text-sm" aria-label="More languages">
+            <Globe2 className="h-4 w-4 shrink-0 sm:h-5 sm:w-5" />
+            <span>{compact ? "More" : "More"}</span>
+            <ChevronDown className="h-3.5 w-3.5 shrink-0" />
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" sideOffset={8} className="min-w-56 rounded-lg border-border bg-popover p-3 shadow-platform">
+          <DropdownMenuLabel className="sr-only">More languages</DropdownMenuLabel>
+          {additional.map((item) => (
+            <DropdownMenuItem key={item.code} onSelect={() => setLanguage(item.code as LanguageCode)} className={`gap-3 rounded-md px-3 py-2.5 text-base ${language === item.code ? "bg-secondary font-semibold text-primary" : ""}`}>
+              <span aria-hidden="true" className="text-2xl leading-none">{item.flag}</span>
+              <span>{item.nativeLabel}</span>
+            </DropdownMenuItem>
+          ))}
+          {additional.length === 0 ? <p className="px-3 py-4 text-sm text-muted-foreground">No additional languages enabled.</p> : null}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
 
@@ -210,7 +230,7 @@ function MobileMenu() {
             )}
             <div className="rounded-lg border border-border bg-secondary p-3">
               <p className="mb-2 text-sm font-semibold text-foreground">{t("common.language")}</p>
-              <LanguageMenu />
+              <LanguageSelector />
             </div>
             <SocialRow />
           </div>
@@ -328,12 +348,12 @@ function SiteFooter() {
 }
 
 function FooterLanguage() {
-  const { language, setLanguage, t } = useLanguage();
+  const { language, setLanguage, t, availableLanguages } = useLanguage();
   return (
     <div>
       <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">{t("common.language")}</p>
       <div className="flex flex-wrap gap-2">
-        {languages.map((item) => (
+        {availableLanguages.map((item) => (
           <button
             key={item.code}
             type="button"
@@ -341,7 +361,7 @@ function FooterLanguage() {
             aria-current={item.code === language ? "true" : undefined}
             className={`min-h-11 rounded-md border px-3 py-2 text-sm font-semibold transition ${item.code === language ? "border-brand-cyan bg-brand-cyan/10 text-primary" : "border-border bg-card text-muted-foreground hover:text-foreground"}`}
           >
-            {item.nativeLabel}
+            <span aria-hidden="true">{item.flag}</span> {item.nativeLabel}
           </button>
         ))}
       </div>

@@ -8,7 +8,7 @@ const profileInput = z.object({
   phone: z.string().trim().max(40),
   country: z.string().trim().max(80),
   city: z.string().trim().max(80),
-  preferredLanguage: z.enum(["en", "ha", "ar"]),
+  preferredLanguage: z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]),
 });
 
 export type MemberAccount = Awaited<ReturnType<typeof loadAccount>>;

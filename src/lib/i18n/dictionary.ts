@@ -2,17 +2,36 @@
  * Controlled UI translation dictionary. English is the source of truth; Hausa and
  * Arabic are human-reviewed strings, never a browser translation overlay.
  */
-export type LanguageCode = "en" | "ha" | "ar";
+import { generatedDictionaries } from "./generated";
+
+export type LanguageCode = "en" | "ar" | "ha" | "fr" | "es" | "tr" | "de" | "ur" | "zh";
+
+export type LanguageOption = {
+  code: LanguageCode;
+  short: string;
+  flag: string;
+  label: string;
+  nativeLabel: string;
+  dir: "ltr" | "rtl";
+  locale: string;
+  primary: boolean;
+};
 
 /** Display order requested by the site owner: English, العربية, Hausa. Codes are unchanged. */
-export const languages: Array<{ code: LanguageCode; short: string; label: string; nativeLabel: string; dir: "ltr" | "rtl"; locale: string }> = [
-  { code: "en", short: "EN", label: "English", nativeLabel: "English", dir: "ltr", locale: "en-NG" },
-  { code: "ar", short: "AR", label: "Arabic", nativeLabel: "العربية", dir: "rtl", locale: "ar" },
-  { code: "ha", short: "HA", label: "Hausa", nativeLabel: "Hausa", dir: "ltr", locale: "ha-NG" },
+export const languages: LanguageOption[] = [
+  { code: "en", short: "EN", flag: "🇬🇧", label: "English", nativeLabel: "English", dir: "ltr", locale: "en-NG", primary: true },
+  { code: "ar", short: "AR", flag: "🇸🇦", label: "Arabic", nativeLabel: "Arabic", dir: "rtl", locale: "ar", primary: true },
+  { code: "ha", short: "HA", flag: "🇳🇬", label: "Hausa", nativeLabel: "Hausa", dir: "ltr", locale: "ha-NG", primary: true },
+  { code: "fr", short: "FR", flag: "🇫🇷", label: "French", nativeLabel: "French", dir: "ltr", locale: "fr-FR", primary: false },
+  { code: "es", short: "ES", flag: "🇪🇸", label: "Spanish", nativeLabel: "Spanish", dir: "ltr", locale: "es-ES", primary: false },
+  { code: "tr", short: "TR", flag: "🇹🇷", label: "Turkish", nativeLabel: "Turkish", dir: "ltr", locale: "tr-TR", primary: false },
+  { code: "de", short: "DE", flag: "🇩🇪", label: "German", nativeLabel: "German", dir: "ltr", locale: "de-DE", primary: false },
+  { code: "ur", short: "UR", flag: "🇵🇰", label: "Urdu", nativeLabel: "Urdu", dir: "rtl", locale: "ur-PK", primary: false },
+  { code: "zh", short: "ZH", flag: "🇨🇳", label: "Chinese", nativeLabel: "Chinese", dir: "ltr", locale: "zh-CN", primary: false },
 ];
 
 /** Canonical SEO order for hreflang alternates — independent of the visual menu order. */
-export const hreflangOrder: LanguageCode[] = ["en", "ar", "ha"];
+export const hreflangOrder: LanguageCode[] = ["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"];
 
 export const defaultLanguage: LanguageCode = "en";
 
@@ -21,7 +40,7 @@ export function languageMeta(code: LanguageCode) {
 }
 
 export function isLanguageCode(value: unknown): value is LanguageCode {
-  return value === "en" || value === "ha" || value === "ar";
+  return languages.some((item) => item.code === value);
 }
 
 const en = {
@@ -1144,7 +1163,22 @@ const ar: Record<TranslationKey, string> = {
 
 };
 
-export const dictionaries: Record<LanguageCode, Record<TranslationKey, string>> = { en, ha, ar };
+const englishFallback = (code: Exclude<LanguageCode, "en" | "ha" | "ar">): Record<TranslationKey, string> => ({
+  ...en,
+  ...generatedDictionaries[code],
+});
+
+export const dictionaries: Record<LanguageCode, Record<TranslationKey, string>> = {
+  en,
+  ha,
+  ar,
+  fr: englishFallback("fr"),
+  es: englishFallback("es"),
+  tr: englishFallback("tr"),
+  de: englishFallback("de"),
+  ur: englishFallback("ur"),
+  zh: englishFallback("zh"),
+};
 
 export function translate(language: LanguageCode, key: TranslationKey): string {
   return dictionaries[language][key] || dictionaries.en[key];

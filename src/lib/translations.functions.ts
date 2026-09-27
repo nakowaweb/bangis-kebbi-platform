@@ -4,13 +4,22 @@ import { z } from "zod";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-export const translationLanguages = ["ha", "ar"] as const;
+export const translationLanguages = ["ar", "ha", "fr", "es", "tr", "de", "ur", "zh"] as const;
 export type TranslationLanguage = (typeof translationLanguages)[number];
 
 export const translationStatuses = ["draft", "ready", "published", "unpublished", "archived"] as const;
 export type TranslationStatus = (typeof translationStatuses)[number];
 
-export const translationLanguageLabels: Record<TranslationLanguage, string> = { ar: "العربية (Arabic)", ha: "Hausa" };
+export const translationLanguageLabels: Record<TranslationLanguage, string> = {
+  ar: "🇸🇦 Arabic",
+  ha: "🇳🇬 Hausa",
+  fr: "🇫🇷 French",
+  es: "🇪🇸 Spanish",
+  tr: "🇹🇷 Turkish",
+  de: "🇩🇪 German",
+  ur: "🇵🇰 Urdu",
+  zh: "🇨🇳 Chinese",
+};
 
 type AdminContext = {
   supabase: {
@@ -25,7 +34,7 @@ async function requireContentAdmin(context: AdminContext) {
   await requireModule(context as never, "translations");
 }
 
-/** Every English entry plus its Hausa/Arabic versions, for the admin translation workspace. */
+/** Every English entry plus its localized versions, for the admin translation workspace. */
 export const listTranslationWorkspace = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .handler(async ({ context }) => {
@@ -115,7 +124,16 @@ export const deleteTranslation = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
-const languageNames: Record<TranslationLanguage, string> = { ha: "Hausa", ar: "Modern Standard Arabic" };
+const languageNames: Record<TranslationLanguage, string> = {
+  ar: "Modern Standard Arabic",
+  ha: "Hausa",
+  fr: "French",
+  es: "Spanish",
+  tr: "Turkish",
+  de: "German",
+  ur: "Urdu",
+  zh: "Simplified Chinese",
+};
 
 /**
  * Produces a machine translation DRAFT only. It is returned to the editor for review and is

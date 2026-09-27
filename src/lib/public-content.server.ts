@@ -88,7 +88,7 @@ type TranslatableRow = {
 const TRANSLATION_FIELDS = ["title", "summary", "body", "image_alt", "seo_title", "seo_description", "og_title", "og_description"] as const;
 
 /**
- * Overlays published Hausa/Arabic translations onto English content rows.
+ * Overlays published translations onto English content rows.
  * English rows are returned untouched, and a missing translated field falls back
  * to the English original so a page is never half-empty.
  */

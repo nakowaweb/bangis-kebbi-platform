@@ -6,7 +6,7 @@ type Entry = { title: string; description: string };
  * Localized titles and meta descriptions for the fixed public pages.
  * Detail pages take their wording from the translated CMS entry instead.
  */
-const seoText: Record<string, Record<LanguageCode, Entry>> = {
+const seoText: Record<string, Partial<Record<LanguageCode, Entry>>> = {
   "/": {
     en: {
       title: "BangisKebbi.com — Ideas, Technology, Business and People",

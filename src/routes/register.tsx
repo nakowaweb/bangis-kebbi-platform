@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { CountryRegionFields } from "@/components/umrah/country-region-select";
 import { pageHead } from "@/lib/seo";
+import { languages } from "@/lib/i18n/dictionary";
 import { supabase } from "@/integrations/supabase/client";
 
 export const Route = createFileRoute("/register")({
@@ -86,9 +87,7 @@ function RegisterPage() {
           <div className="grid gap-4 sm:grid-cols-2">
             <Input name="phone" type="tel" placeholder="Phone" aria-label="Phone" autoComplete="tel" required />
             <select name="preferredLanguage" aria-label="Preferred language" defaultValue="en" className="h-10 rounded-md border border-input bg-background px-3 text-sm">
-              <option value="en">English</option>
-              <option value="ha">Hausa</option>
-              <option value="ar">Arabic</option>
+              {languages.map((item) => <option key={item.code} value={item.code}>{item.flag} {item.nativeLabel}</option>)}
             </select>
           </div>
           <div className="grid gap-4 sm:grid-cols-3">

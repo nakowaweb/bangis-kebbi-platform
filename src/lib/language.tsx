@@ -21,6 +21,7 @@ const STORAGE_KEY = "bk.language";
 type LanguageContextValue = {
   language: LanguageCode;
   dir: "ltr" | "rtl";
+  availableLanguages: typeof languages;
   setLanguage: (language: LanguageCode) => void;
   t: (key: TranslationKey) => string;
   formatDate: (value: string | Date | null | undefined, withTime?: boolean) => string;
@@ -43,7 +44,9 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   // Server and first client render always agree; the stored preference is applied after hydration.
   const [stored, setStored] = useState<LanguageCode | null>(null);
-  const language = urlLanguage ?? stored ?? defaultLanguage;
+  const [enabledCodes, setEnabledCodes] = useState<LanguageCode[]>(languages.map((item) => item.code));
+  const requestedLanguage = urlLanguage ?? stored ?? defaultLanguage;
+  const language = enabledCodes.includes(requestedLanguage) ? requestedLanguage : defaultLanguage;
   const meta = languageMeta(language);
 
   useEffect(() => {
@@ -55,6 +58,26 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
       /* storage unavailable — English stays the default */
     }
   }, [urlLanguage]);
+
+  useEffect(() => {
+    let active = true;
+    void supabase
+      .from("site_settings")
+      .select("social_links")
+      .eq("is_active", true)
+      .limit(1)
+      .maybeSingle()
+      .then(({ data }) => {
+        const config = data?.social_links && typeof data.social_links === "object" && !Array.isArray(data.social_links)
+          ? data.social_links as Record<string, unknown>
+          : {};
+        const configured = Array.isArray(config["enabledLanguages"])
+          ? config["enabledLanguages"].filter(isLanguageCode)
+          : [];
+        if (active && configured.length > 0) setEnabledCodes(["en", ...configured.filter((code) => code !== "en")]);
+      });
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     document.documentElement.lang = meta.code;
@@ -89,11 +112,12 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     () => ({
       language,
       dir: meta.dir,
+      availableLanguages: languages.filter((item) => enabledCodes.includes(item.code)),
       setLanguage,
       t: (key: TranslationKey) => translate(language, key),
       formatDate: (input, withTime = false) => formatDate(input, language, withTime),
     }),
-    [language, meta.dir, setLanguage],
+    [enabledCodes, language, meta.dir, setLanguage],
   );
 
   return <LanguageContext.Provider value={value}>{children}</LanguageContext.Provider>;
