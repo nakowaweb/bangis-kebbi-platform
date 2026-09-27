@@ -82,7 +82,7 @@ function SiteHeader() {
             <Link
               key={`${item.href}-${item.hash ?? "top"}`}
               to={item.href}
-              hash={item.hash}
+              {...(item.hash ? { hash: item.hash } : {})}
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "text-brand-cyan" }}
               inactiveProps={{ className: "text-muted-foreground" }}
@@ -221,7 +221,7 @@ function MobileMenu() {
               <SheetClose asChild key={`${item.href}-${item.hash ?? "top"}`}>
                 <Link
                   to={item.href}
-                  hash={item.hash}
+                  {...(item.hash ? { hash: item.hash } : {})}
                   activeOptions={{ exact: item.href === "/" }}
                   className="rounded-lg border border-border bg-card px-4 py-3 text-base font-semibold text-foreground shadow-sm"
                 >

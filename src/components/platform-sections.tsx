@@ -164,7 +164,7 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
     <div className="hero-stage relative min-h-[590px] w-full overflow-hidden sm:min-h-[620px] lg:min-h-[650px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
         <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
-          <SafeImage src={slide.src} fallbackSrc={slide.fallbackSrc} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-[62%_center] sm:object-center" />
+          <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-[62%_center] sm:object-center" />
         </figure>
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
@@ -214,7 +214,7 @@ export function QuickActionsSection({ items = [] }: { items?: QuickActionManaged
             <Link
               key={item.slug}
               to={item.href}
-              hash={item.hash}
+              {...(item.hash ? { hash: item.hash } : {})}
               aria-label={t(item.label)}
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "quick-nav-active border-brand-cyan bg-brand-cyan/10 text-brand-cyan shadow-glow" }}
