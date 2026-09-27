@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { ExternalLink, FileBadge2, Search } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
-import cacCredentialDesign from "@/assets/cac-credential-reference.png.asset.json";
+import cacCredentialDesign from "@/assets/cac-credential-reference.png";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { listPublicCredentials, type PublicCredential } from "@/lib/credentials.functions";
@@ -58,7 +58,7 @@ function CredentialCard({ credential }: { credential: PublicCredential }) {
       <article className="motion-card relative overflow-hidden rounded-lg border border-border bg-card shadow-sm md:col-span-2 lg:col-span-3" aria-label={`${credential.title}, ${credential.companyName}, RC Number ${credential.number}`}>
         <div className="relative aspect-[1433/521] w-full overflow-hidden">
           <img
-            src={cacCredentialDesign.url}
+            src={cacCredentialDesign}
             alt="CAC Certificate of Incorporation for BANGISKEBBI GLOBAL LTD, RC Number 9884960"
             className="pointer-events-none absolute left-[-3.63%] top-[-46.25%] h-[196.55%] w-[107.19%] max-w-none object-cover"
             loading="eager"

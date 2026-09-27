@@ -63,6 +63,7 @@ function UmrahPage() {
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10">
            <section><h1 className="font-display text-3xl font-bold">{fallback.title}</h1><p className="mt-2 font-display text-xl font-semibold text-primary">{fallback.headline}</p><p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">{fallback.intro}</p></section>
+           <VerifiedPartners partners={partners} />
            {info.length > 0 ? <Block title={fallback.information} items={info} /> : null}
             <Journey title={fallback.journey} description={sectionLabels.journeyDescription} steps={fallback.steps} managed={steps} />
             <ImportantInformation title={sectionLabels.importantInformation} description={sectionLabels.importantDescription} items={[
@@ -78,38 +79,6 @@ function UmrahPage() {
            {notices.length > 0 ? <Block title={fallback.notices} items={notices} /> : null}
            {faqs.length > 0 ? <Block title={fallback.questions} items={faqs} /> : null}
            {contact.length > 0 ? <Block title={fallback.contact} items={contact} /> : null}
-
-          {partners.length > 0 ? (
-            <div>
-              <h2 className="font-display text-xl font-bold sm:text-2xl">Verified partners</h2>
-              <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {partners.map((partner) => {
-                  const location = [partner.city, partner.state_region, partner.country].filter(Boolean).join(", ");
-                  return (
-                    <Card key={partner.id} className="overflow-hidden">
-                      {partner.logoUrl ? (
-                        <div className="flex h-36 items-center justify-center bg-secondary/40 p-4">
-                          <SafeImage src={partner.logoUrl} alt={`${partner.name} logo`} loading="lazy" className="max-h-full max-w-full object-contain" />
-                        </div>
-                      ) : null}
-                      <CardHeader className="pb-2">
-                        <CardTitle className="text-base">{partner.name}</CardTitle>
-                        {location ? <CardDescription>{location}</CardDescription> : null}
-                      </CardHeader>
-                      <CardContent className="grid gap-2">
-                        {partner.services ? <p className="text-sm text-muted-foreground">{partner.services}</p> : null}
-                        {partner.website_url ? (
-                          <a className="text-sm font-medium text-brand-cyan underline" href={partner.website_url} target="_blank" rel="noopener noreferrer">
-                            Visit website
-                          </a>
-                        ) : null}
-                      </CardContent>
-                    </Card>
-                  );
-                })}
-              </div>
-            </div>
-          ) : null}
 
           <Card className="border-brand-cyan/40">
             <CardHeader>
@@ -138,7 +107,7 @@ function UmrahPage() {
 
 function managedImage(entries: Entry[], slug: string, fallback: { image: string; alt: string }) {
   const entry = entries.find((item) => item.slug === slug);
-  return { src: entry?.imageUrl || fallback.image, alt: entry?.image_alt || fallback.alt };
+  return { src: entry?.imageUrl || fallback.image, fallbackSrc: fallback.image, alt: entry?.image_alt || fallback.alt };
 }
 
 function Journey({ title, description, steps, managed }: { title: string; description: string; steps: string[]; managed: Entry[] }) {
@@ -146,7 +115,7 @@ function Journey({ title, description, steps, managed }: { title: string; descri
     const visual = umrahJourneyVisuals[index];
     if (!visual) return null;
     const image = managedImage(managed, visual.slug, visual);
-    return <li key={step} className="grid min-h-44 grid-cols-[minmax(0,1fr)_6.5rem] items-center gap-3 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm"><div className="min-w-0 self-start"><span className="inline-flex size-8 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">{String(index + 1).padStart(2, "0")}</span><p className="mt-3 text-sm font-bold leading-5">{step}</p></div><SafeImage src={image.src} alt={image.alt} loading="lazy" width={140} height={140} className="size-full max-h-32 object-contain" /></li>;
+    return <li key={step} className="grid min-h-44 grid-cols-[minmax(0,1fr)_6.5rem] items-center gap-3 overflow-hidden rounded-lg border border-border bg-card p-4 shadow-sm"><div className="min-w-0 self-start"><span className="inline-flex size-8 items-center justify-center rounded-md bg-secondary text-xs font-bold text-primary">{String(index + 1).padStart(2, "0")}</span><p className="mt-3 text-sm font-bold leading-5">{step}</p></div><SafeImage src={image.src} fallbackSrc={image.fallbackSrc} alt={image.alt} loading="lazy" width={140} height={140} className="size-full max-h-32 object-contain" /></li>;
   })}</ol></section>;
 }
 
@@ -155,13 +124,22 @@ function ImportantInformation({ title, description, items, managed }: { title: s
     const visual = umrahInformationVisuals[index];
     if (!visual) return null;
     const image = managedImage(managed, visual.slug, visual);
-    return <article key={item.title} className="grid min-h-40 grid-cols-[6rem_minmax(0,1fr)] items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-sm"><SafeImage src={image.src} alt={image.alt} loading="lazy" width={120} height={120} className="size-full max-h-28 object-contain" /><div className="min-w-0"><h3 className="font-display text-base font-bold">{item.title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{item.body}</p></div></article>;
+    return <article key={item.title} className="grid min-h-40 grid-cols-[6rem_minmax(0,1fr)] items-center gap-4 rounded-lg border border-border bg-card p-4 shadow-sm"><SafeImage src={image.src} fallbackSrc={image.fallbackSrc} alt={image.alt} loading="lazy" width={120} height={120} className="size-full max-h-28 object-contain" /><div className="min-w-0"><h3 className="font-display text-base font-bold">{item.title}</h3><p className="mt-2 text-sm leading-6 text-muted-foreground">{item.body}</p></div></article>;
   })}</div></section>;
 }
 
 function SupportBalance({ title, body, dashboardLabel, managed }: { title: string; body: string; dashboardLabel: string; managed: Entry[] }) {
   const image = managedImage(managed, umrahBalanceVisual.slug, umrahBalanceVisual);
-  return <section className="overflow-hidden rounded-lg border border-border bg-secondary/50 shadow-sm"><div className="grid items-stretch lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]"><div className="p-6 sm:p-8"><h2 className="font-display text-2xl font-bold">{title}</h2><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{body}</p><Button asChild className="mt-5"><Link to="/dashboard">{dashboardLabel}</Link></Button></div><div className="min-h-52 bg-card p-3"><SafeImage src={image.src} alt={image.alt} loading="lazy" width={474} height={170} className="size-full min-h-48 object-cover" /></div></div></section>;
+  return <section className="overflow-hidden rounded-lg border border-border bg-secondary/50 shadow-sm"><div className="grid items-stretch lg:grid-cols-[minmax(0,1.2fr)_minmax(20rem,0.8fr)]"><div className="p-6 sm:p-8"><h2 className="font-display text-2xl font-bold">{title}</h2><p className="mt-3 max-w-3xl text-sm leading-7 text-muted-foreground">{body}</p><Button asChild className="mt-5"><Link to="/dashboard">{dashboardLabel}</Link></Button></div><div className="min-h-52 bg-card p-3"><SafeImage src={image.src} fallbackSrc={image.fallbackSrc} alt={image.alt} loading="lazy" width={474} height={170} className="size-full min-h-48 object-cover" /></div></div></section>;
+}
+
+type Partner = { id: string; name: string; city: string | null; state_region: string | null; country: string | null; logoUrl: string | null; website_url: string | null; services: string | null };
+
+function VerifiedPartners({ partners }: { partners: Partner[] }) {
+  return <section id="verified-partners" className="scroll-mt-28"><h2 className="font-display text-xl font-bold sm:text-2xl">Verified partners</h2>{partners.length > 0 ? <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">{partners.map((partner) => {
+    const location = [partner.city, partner.state_region, partner.country].filter(Boolean).join(", ");
+    return <Card key={partner.id} className="overflow-hidden">{partner.logoUrl ? <div className="flex h-36 items-center justify-center bg-secondary/40 p-4"><SafeImage src={partner.logoUrl} alt={`${partner.name} logo`} loading="lazy" className="max-h-full max-w-full object-contain" /></div> : null}<CardHeader className="pb-2"><CardTitle className="text-base">{partner.name}</CardTitle>{location ? <CardDescription>{location}</CardDescription> : null}</CardHeader><CardContent className="grid gap-2">{partner.services ? <p className="text-sm text-muted-foreground">{partner.services}</p> : null}{partner.website_url ? <a className="text-sm font-medium text-brand-cyan underline" href={partner.website_url} target="_blank" rel="noopener noreferrer">Visit website</a> : null}</CardContent></Card>;
+  })}</div> : <p className="mt-3 text-sm text-muted-foreground">Approved, verified and publicly visible partners will appear here.</p>}</section>;
 }
 
 const umrahCopy = {

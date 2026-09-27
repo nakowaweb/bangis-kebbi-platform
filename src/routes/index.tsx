@@ -17,7 +17,10 @@ import { RouteError } from "@/components/route-error";
 import { CompanyCredentials } from "@/components/company-credentials";
 import { getPublicContent } from "@/lib/content.functions";
 import heroImageSrc from "@/assets/hero-digital-solutions.jpg";
+import heroCommunitySrc from "@/assets/hero-community-support.jpg";
+import heroUmrahSrc from "@/assets/hero-umrah-support.jpg";
 const heroImage = { url: heroImageSrc };
+const heroFallbacks = [heroImageSrc, heroCommunitySrc, heroUmrahSrc];
 
 export const Route = createFileRoute("/")({
   head: ({ match }: { match: { search: { lang?: LanguageCode } } }) => {
@@ -79,8 +82,8 @@ function Index() {
     .filter((entry) => entry.content_type === "homepage" && /^hero-feature-[1-3]$/.test(entry.slug))
     .sort((a, b) => a.sort_order - b.sort_order)
     .slice(0, 3)
-    .map((entry) => ({ src: entry.imageUrl, alt: entry.image_alt ?? entry.title, label: entry.title }))
-    .filter((entry): entry is { src: string; alt: string; label: string } => Boolean(entry.src));
+    .map((entry, index) => ({ src: entry.imageUrl, fallbackSrc: heroFallbacks[index], alt: entry.image_alt ?? entry.title, label: entry.title }))
+    .filter((entry): entry is { src: string; fallbackSrc: string; alt: string; label: string } => Boolean(entry.src && entry.fallbackSrc));
   const quickNavigation = publicContent.entries
     .filter((entry) => entry.content_type === "homepage" && /^quick-nav-(home|services|umrah|projects|blog|foundation|community|cv)$/.test(entry.slug))
     .map((entry) => ({ slug: entry.slug, imageUrl: entry.imageUrl, image_alt: entry.image_alt, sort_order: entry.sort_order }));

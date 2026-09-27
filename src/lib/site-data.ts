@@ -24,15 +24,16 @@ import {
 } from "lucide-react";
 
 export const navItems = [
-  { labelKey: "home", label: "Home", href: "/" },
-  { labelKey: "about", label: "About", href: "/about" },
-  { labelKey: "services", label: "Services", href: "/services" },
-  { labelKey: "projects", label: "Projects", href: "/projects" },
-  { labelKey: "business", label: "Business", href: "/business" },
-  { labelKey: "umrah", label: "Umrah", href: "/umrah" },
-  { labelKey: "foundation", label: "Community Support", href: "/foundation" },
-  { labelKey: "blog", label: "Blog", href: "/blog" },
-  { labelKey: "contact", label: "Contact", href: "/contact" },
+  { labelKey: "home", label: "Home", href: "/", hash: undefined },
+  { labelKey: "about", label: "About", href: "/about", hash: undefined },
+  { labelKey: "services", label: "Services", href: "/services", hash: undefined },
+  { labelKey: "projects", label: "Projects", href: "/projects", hash: undefined },
+  { labelKey: "business", label: "Business", href: "/business", hash: undefined },
+  { labelKey: "umrah", label: "Umrah", href: "/umrah", hash: undefined },
+  { labelKey: "verifiedPartners", label: "Verified Partners", href: "/umrah", hash: "verified-partners" },
+  { labelKey: "foundation", label: "Community Support", href: "/foundation", hash: undefined },
+  { labelKey: "blog", label: "Blog", href: "/blog", hash: undefined },
+  { labelKey: "contact", label: "Contact", href: "/contact", hash: undefined },
 ] as const;
 
 export const serviceCards: Array<{
