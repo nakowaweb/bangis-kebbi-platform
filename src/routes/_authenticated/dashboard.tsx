@@ -204,7 +204,6 @@ function DashboardPage() {
               <CardContent className="grid gap-3 sm:max-w-sm">
                 <Button asChild variant="outline"><Link to="/reset-password">Change password</Link></Button>
                 <Button variant="outline" onClick={signOut}><LogOut /> {t("member.signOut")}</Button>
-                <p className="text-xs text-muted-foreground">Your role and permissions can only be changed by a Super Admin.</p>
               </CardContent>
             </Card>
           </TabsContent>
