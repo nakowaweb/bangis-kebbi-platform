@@ -144,3 +144,7 @@
 - [x] Extend CMS dynamic-content translation management to every enabled language
 - [x] Verify persistence, page navigation, RTL/LTR switching and responsive layout
 - [x] Restore the existing backend schema and verify the complete nine-language type surface
+
+## Language markers and account-page copy
+- [x] Add a representative flag or neutral language icon beside every language option
+- [x] Replace the public Login and Registration descriptions without changing access controls

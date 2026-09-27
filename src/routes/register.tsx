@@ -78,7 +78,7 @@ function RegisterPage() {
   }
   return (
     <main>
-      <SectionShell eyebrow="Join Now" title="Register" description="Create a secure account. Member services remain planned for a later phase.">
+      <SectionShell eyebrow="Join Now" title="Register" description="Create your account and become part of our growing global community.">
         <form onSubmit={register} className="mx-auto grid max-w-2xl gap-4 rounded-xl border border-border bg-card p-6 shadow-platform">
           <div className="grid gap-4 sm:grid-cols-2">
             <Input name="fullName" placeholder="Full Name" aria-label="Full Name" autoComplete="name" required />

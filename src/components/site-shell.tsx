@@ -131,6 +131,11 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
   const primary = languages.filter((item) => item.primary);
   const additional = worldOptions.filter((item) => !["en", "ar", "ha"].includes(item.code));
   const current = additional.find((item) => item.code === activeLanguage);
+  const LanguageMarker = ({ flag }: { flag?: string }) => flag ? (
+    <span aria-hidden="true" className="w-5 shrink-0 text-center text-base leading-none">{flag}</span>
+  ) : (
+    <Languages aria-hidden="true" className="h-4 w-5 shrink-0 text-muted-foreground" />
+  );
 
   return (
     <div data-no-translate className="grid min-w-0 grid-cols-4 gap-1 sm:flex sm:justify-end sm:gap-1.5" aria-label={t("common.language")}>
@@ -156,7 +161,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
             aria-label="More languages"
             className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold text-primary shadow-sm sm:px-2.5 sm:text-xs ${current ? "border-brand-cyan bg-secondary" : ""}`}
           >
-            <Languages className="h-3.5 w-3.5 shrink-0" />
+            <LanguageMarker flag={current?.flag} />
             <span className="truncate">{current ? current.nativeLabel : "More"}</span>
             <ChevronDown className="h-3 w-3 shrink-0" />
           </Button>
@@ -171,8 +176,9 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
                   key={item.code}
                   value={`${item.label} ${item.nativeLabel} ${item.code}`}
                   onSelect={() => { setLanguage(item.code); setOpen(false); }}
-                  className={`flex items-center justify-between gap-2 text-sm ${activeLanguage === item.code ? "font-semibold text-primary" : ""}`}
+                  className={`grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 text-sm ${activeLanguage === item.code ? "font-semibold text-primary" : ""}`}
                 >
+                  <LanguageMarker flag={item.flag} />
                   <span className="truncate">{item.nativeLabel}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">{item.label}</span>
                 </CommandItem>
