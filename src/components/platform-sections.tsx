@@ -115,16 +115,22 @@ export function HeroSection({ content, slides, location = "Kebbi State, Nigeria"
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
       <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
+      <div className="hero-glow-orb-1 pointer-events-none absolute -left-24 top-6 -z-10 h-72 w-72 rounded-full bg-brand-cyan/15 blur-3xl" />
+      <div className="hero-glow-orb-2 pointer-events-none absolute -right-10 bottom-0 -z-10 h-80 w-80 rounded-full bg-brand-navy/50 blur-3xl" />
       <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
-        <div className="hero-copy-enter">
-          <p className="hero-line hero-line-1 text-xs font-bold uppercase text-brand-cyan">{label(content?.eyebrow?.toLowerCase() === "more than a website" ? undefined : content?.eyebrow, "home.heroEyebrow")}</p>
-          <h1 className="hero-line hero-line-2 mt-3 max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-7xl">
-            {content?.title && content.title.toUpperCase() !== "A GLOBAL PLATFORM" ? content.title : <>{t("home.heroTitleLine1")}<br /><span className="text-brand-cyan">{t("home.heroTitleLine2")}</span></>}
+        <div className="hero-copy-enter hero-glass rounded-2xl border border-primary-foreground/10 bg-primary-foreground/[0.04] p-6 backdrop-blur-md sm:p-8 lg:p-10">
+          <p className="hero-line hero-line-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-brand-cyan sm:text-xs">
+            <span className="hero-dot inline-block h-1.5 w-1.5 rounded-full bg-brand-cyan" />
+            {label(content?.eyebrow, "home.heroEyebrow")}
+          </p>
+          <h1 className="hero-line hero-line-2 mt-4 max-w-3xl font-display text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl">
+            {t("home.heroTitleLine1")}
+            <br />
+            <span className="text-brand-cyan hero-glow-text">{t("home.heroTitleLine2")}</span>
           </h1>
-          <p className="hero-line hero-line-3 mt-5 max-w-xl font-display text-xl font-bold leading-tight sm:text-2xl lg:text-3xl">
+          <p className="hero-line hero-line-3 mt-5 max-w-xl font-display text-lg font-semibold leading-snug text-primary-foreground/90 sm:text-xl">
             {content?.subtitle ?? t("home.heroSubtitle")}
           </p>
-          <p className="hero-line hero-line-4 mt-5 max-w-lg text-sm leading-6 text-primary-foreground/80">{content?.description ?? t("home.heroDescription")}</p>
           <div className="hero-cta-enter mt-7 flex flex-col gap-3 sm:flex-row">
             <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{label(content?.primaryCta, "common.hireMe")} <ArrowRight /></Link></Button>
             <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{label(content?.secondaryCta, "common.exploreWork")}</Link></Button>

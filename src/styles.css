@@ -226,6 +226,10 @@
 @keyframes image-breathe { 50% { transform: scale(1.012); } }
 @keyframes hero-slide-pan { from { transform: scale(1.01) translateX(-0.5%); } to { transform: scale(1.055) translateX(0.75%); } }
 @keyframes quick-nav-enter { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes hero-text-reveal { from { opacity: 0; filter: blur(7px); transform: translateY(14px); } to { opacity: 1; filter: blur(0); transform: translateY(0); } }
+@keyframes hero-glow-pulse { 0%, 100% { text-shadow: 0 0 16px color-mix(in oklab, var(--brand-cyan) 30%, transparent); } 50% { text-shadow: 0 0 28px color-mix(in oklab, var(--brand-cyan) 55%, transparent); } }
+@keyframes hero-dot-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-cyan) 45%, transparent); opacity: 0.8; } 50% { box-shadow: 0 0 0 5px color-mix(in oklab, var(--brand-cyan) 0%, transparent); opacity: 1; } }
+@keyframes hero-glow-drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(14px, -12px); } }
 
 .hero-slide { opacity: 0; transform: translateX(18px) scale(0.985); pointer-events: none; transition: opacity 620ms ease, transform 760ms ease; }
 .hero-slide-active { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; z-index: 10; }
@@ -234,7 +238,7 @@
   .section-reveal { animation: section-reveal 520ms ease-out both; }
   .hero-copy-enter { animation: hero-copy-enter 620ms ease-out both; }
   .hero-media-enter { animation: hero-media-enter 720ms 90ms ease-out both; }
-  .hero-line { animation: hero-copy-enter 560ms ease-out both; }
+  .hero-line { animation: hero-text-reveal 640ms ease-out both; }
   .hero-line-1 { animation-delay: 40ms; }
   .hero-line-2 { animation-delay: 110ms; }
   .hero-line-3 { animation-delay: 180ms; }
@@ -250,6 +254,11 @@
   .motion-card:hover, .social-card:hover { transform: translateY(-3px); }
   .quick-nav-card { animation: quick-nav-enter 420ms ease-out both; }
   .quick-nav-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-glow); }
+  .hero-glow-text { animation: hero-glow-pulse 5s ease-in-out infinite; }
+  .hero-dot { animation: hero-dot-pulse 3s ease-in-out infinite; }
+  .hero-glow-orb-1 { animation: hero-glow-drift 16s ease-in-out infinite; }
+  .hero-glow-orb-2 { animation: hero-glow-drift 22s 4s ease-in-out infinite reverse; }
+  .hero-glass { box-shadow: 0 18px 60px -32px color-mix(in oklab, var(--brand-cyan) 40%, transparent); }
 }
 
 .quick-nav-active {
