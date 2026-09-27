@@ -231,11 +231,18 @@ export const submitMyUmrahApplication = createServerFn({ method: "POST" })
       throw new Error(UMRAH_IDENTITY_ERROR);
     }
 
-    const { error } = await context.supabase
+    // Status-constrained update: a concurrent or repeated submit affects zero
+    // rows once the application has left a submittable state.
+    const { data: submitted, error } = await context.supabase
       .from("umrah_applications")
       .update({ status: "submitted", submitted_at: new Date().toISOString() })
-      .eq("id", existing.id);
+      .eq("id", existing.id)
+      .in("status", submittable)
+      .select("id");
     if (error) throw new Error(error.message);
+    if (!submitted || submitted.length === 0) {
+      throw new Error("This application has already been submitted.");
+    }
 
     await context.supabase.from("umrah_application_history").insert({
       application_id: existing.id,
