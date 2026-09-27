@@ -82,7 +82,7 @@ function Index() {
     .filter((entry) => entry.content_type === "homepage" && /^hero-feature-[1-3]$/.test(entry.slug))
     .sort((a, b) => a.sort_order - b.sort_order)
     .slice(0, 3)
-    .map((entry, index) => ({ src: entry.imageUrl, fallbackSrc: heroFallbacks[index], alt: entry.image_alt ?? entry.title, label: entry.title }))
+    .map((entry, index) => ({ src: entry.imageUrl ?? heroFallbacks[index], fallbackSrc: heroFallbacks[index], alt: entry.image_alt ?? entry.title, label: entry.title }))
     .filter((entry): entry is { src: string; fallbackSrc: string; alt: string; label: string } => Boolean(entry.src && entry.fallbackSrc));
   const quickNavigation = publicContent.entries
     .filter((entry) => entry.content_type === "homepage" && /^quick-nav-(home|services|umrah|projects|blog|foundation|community|cv)$/.test(entry.slug))
