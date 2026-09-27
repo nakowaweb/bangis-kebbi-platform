@@ -1,7 +1,9 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
+import { getPublicEnabledLanguages } from "@/lib/content.functions";
 import {
   defaultLanguage,
   formatDate,
@@ -52,6 +54,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   const navigate = useNavigate();
   const [stored, setStored] = useState<string | null>(null);
   const [enabledCodes, setEnabledCodes] = useState<string[] | null>(null);
+  const loadEnabledLanguages = useServerFn(getPublicEnabledLanguages);
   const requested = urlLanguage ?? stored ?? defaultLanguage;
   const isEnabled = (code: string) => !enabledCodes || enabledCodes.includes(code) || ["en", "ar", "ha"].includes(code);
   const activeLanguage = isEnabled(requested) ? requested : defaultLanguage;
@@ -70,21 +73,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let active = true;
-    void supabase
-      .from("site_settings")
-      .select("social_links")
-      .eq("is_active", true)
-      .limit(1)
-      .maybeSingle()
-      .then(({ data }) => {
-        const config = data?.social_links && typeof data.social_links === "object" && !Array.isArray(data.social_links)
-          ? data.social_links as Record<string, unknown>
-          : {};
-        const configured = Array.isArray(config["enabledLanguages"]) ? config["enabledLanguages"].filter(isWorldLanguage) : [];
-        if (active && configured.length > 0) setEnabledCodes([...new Set(["en", "ar", "ha", ...configured])]);
-      });
+    void loadEnabledLanguages().then((configured) => {
+      if (active && configured.length > 0) setEnabledCodes([...new Set(["en", "ar", "ha", ...configured])]);
+    });
     return () => { active = false; };
-  }, []);
+  }, [loadEnabledLanguages]);
 
   useEffect(() => {
     document.documentElement.lang = world.code;

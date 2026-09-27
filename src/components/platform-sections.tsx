@@ -44,7 +44,6 @@ import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
 import communitySupportHero from "@/assets/hero-community-support.jpg";
 import communitySupportBannerAsset from "@/assets/homepage-community-support-banner.png.asset.json";
 import umrahSupportHero from "@/assets/hero-umrah-support.jpg";
-import globalPlatformHero from "@/assets/hero-global-platform.jpg";
 import businessDigitalServices from "@/assets/business-digital-services.webp";
 import businessNetworking from "@/assets/business-networking.webp";
 import businessTechnology from "@/assets/business-technology.webp";
@@ -114,30 +113,15 @@ export function HeroSection({ content, slides, location = "Kebbi State, Nigeria"
   const label = (value: string | undefined, key: Parameters<typeof t>[0]) => (language === "en" ? value ?? t(key) : t(key));
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
-      <div className="absolute inset-0 -z-10 workspace-grid opacity-30" />
-      <div className="hero-glow-orb-1 pointer-events-none absolute -left-24 top-6 -z-10 h-72 w-72 rounded-full bg-brand-cyan/15 blur-3xl" />
-      <div className="hero-glow-orb-2 pointer-events-none absolute -right-10 bottom-0 -z-10 h-80 w-80 rounded-full bg-brand-navy/50 blur-3xl" />
-      <div className="mx-auto grid max-w-7xl items-center gap-9 px-4 py-10 sm:px-6 sm:py-14 lg:min-h-[650px] lg:grid-cols-[minmax(0,1fr)_minmax(420px,.82fr)] lg:px-8">
-        <div className="hero-copy-enter hero-glass rounded-2xl border border-primary-foreground/10 bg-primary-foreground/[0.04] p-6 backdrop-blur-md sm:p-8 lg:p-10">
-          <p className="hero-line hero-line-1 flex items-center gap-2 text-[11px] font-bold uppercase tracking-wide text-brand-cyan sm:text-xs">
-            <span className="hero-dot inline-block h-1.5 w-1.5 rounded-full bg-brand-cyan" />
-            {label(content?.eyebrow, "home.heroEyebrow")}
-          </p>
-          <h1 className="hero-line hero-line-2 mt-4 max-w-3xl font-display text-3xl font-extrabold leading-[1.05] sm:text-4xl lg:text-5xl">
-            {t("home.heroTitleLine1")}
-            <br />
-            <span className="text-brand-cyan hero-glow-text">{t("home.heroTitleLine2")}</span>
-          </h1>
-          <p className="hero-line hero-line-3 mt-5 max-w-xl font-display text-lg font-semibold leading-snug text-primary-foreground/90 sm:text-xl">
-            {content?.subtitle ?? t("home.heroSubtitle")}
-          </p>
-          <div className="hero-cta-enter mt-7 flex flex-col gap-3 sm:flex-row">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{label(content?.primaryCta, "common.hireMe")} <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/35 bg-brand-ink/30 px-7 text-primary-foreground hover:bg-primary-foreground/10" asChild><Link to="/projects">{label(content?.secondaryCta, "common.exploreWork")}</Link></Button>
-          </div>
-        </div>
-        <HeroCarousel slides={slides} location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location} globalStatus={globalStatus} />
-      </div>
+      <HeroCarousel
+        slides={slides}
+        location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}
+        globalStatus={globalStatus}
+        eyebrow={label(content?.eyebrow, "home.heroEyebrow")}
+        subtitle={content?.subtitle ?? t("home.heroSubtitle")}
+        primaryCta={label(content?.primaryCta, "common.hireMe")}
+        secondaryCta={label(content?.secondaryCta, "common.exploreWork")}
+      />
     </section>
   );
 }
@@ -146,11 +130,11 @@ const fallbackHeroSlides: HeroSlideInput[] = [
   { src: digitalSolutionsHero, alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team", label: "Digital Solutions / Web Development" },
   { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Community Support Initiative" },
   { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
-  { src: globalPlatformHero, alt: "Abubakar Alhaji Abubakar at a global digital platform workspace", label: "Global Platform / Opportunities" },
 ];
 
-function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string }) {
-  const heroSlides = slides?.length ? slides.slice(0, 4) : fallbackHeroSlides;
+function HeroCarousel({ slides, location, globalStatus, eyebrow, subtitle, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string }) {
+  const { t } = useLanguage();
+  const heroSlides = slides?.length ? slides.slice(0, 3) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
@@ -159,18 +143,43 @@ function HeroCarousel({ slides, location, globalStatus }: { slides?: HeroSlideIn
   const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), [heroSlides.length]);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
-    const timer = window.setInterval(() => move(1), 2700);
+    const timer = window.setInterval(() => move(1), 1000);
     return () => window.clearInterval(timer);
   }, [move, paused]);
   return (
-    <div className="hero-media-enter relative mx-auto w-full max-w-[560px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
-      <div className="relative aspect-[8/5] overflow-hidden rounded-lg border border-primary-foreground/15 bg-card/5 p-1 shadow-platform">
-        {heroSlides.map((slide, index) => <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-1 overflow-hidden rounded-md ${active === index ? "hero-slide-active" : ""}`}><img src={slide.src} alt={active === index ? slide.alt : ""} width={1280} height={1280} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover" /><figcaption className="absolute left-3 top-3 rounded-md bg-brand-ink/85 px-3 py-2 text-xs font-bold text-primary-foreground backdrop-blur">{slide.label}</figcaption></figure>)}
-        <div className="location-badge-motion absolute bottom-4 right-4 z-20 rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-4 py-3 text-xs backdrop-blur"><p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p></div>
-        <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-3 top-1/2 z-20 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground hover:bg-brand-ink" aria-label="Previous hero slide"><ChevronLeft /></Button>
-        <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-3 top-1/2 z-20 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground hover:bg-brand-ink" aria-label="Next hero slide"><ChevronRight /></Button>
+    <div className="hero-stage relative min-h-[590px] w-full overflow-hidden sm:min-h-[620px] lg:min-h-[650px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
+      {heroSlides.map((slide, index) => (
+        <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
+          <img src={slide.src} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-[62%_center] sm:object-center" />
+        </figure>
+      ))}
+      <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
+      <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-20" />
+
+      <div className="absolute inset-x-0 top-5 z-20 mx-auto flex max-w-7xl flex-wrap gap-2 px-14 sm:top-8 sm:gap-3 sm:px-20 lg:px-24">
+        <span className="hero-icon-chip hero-icon-chip-1"><span className="hero-icon-ring"><Sprout className="h-4 w-4" /></span>{eyebrow.split("•")[0]?.trim()}</span>
+        <span className="hero-icon-chip hero-icon-chip-2"><span className="hero-icon-ring"><Code2 className="h-4 w-4" /></span>{eyebrow.split("•")[1]?.trim()}</span>
+        <span className="hero-icon-chip hero-icon-chip-3"><span className="hero-icon-ring"><Globe2 className="h-4 w-4" /></span>{eyebrow.split("•")[2]?.trim()}</span>
       </div>
-      <div className="mt-2 flex items-center justify-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-2.5 rounded-full transition-all ${active === index ? "w-6 bg-brand-cyan" : "w-2.5 bg-primary-foreground/35"}`} /></Button>)}</div>
+
+      <div className="relative z-20 mx-auto flex min-h-[590px] max-w-7xl items-end px-14 pb-24 pt-24 sm:min-h-[620px] sm:px-20 sm:pb-24 sm:pt-28 lg:min-h-[650px] lg:items-center lg:px-24 lg:pb-20 lg:pt-28">
+        <div className="hero-copy-enter max-w-[760px] drop-shadow-lg">
+          <h1 className="max-w-3xl font-display text-4xl font-extrabold leading-[1.02] sm:text-5xl lg:text-6xl">
+            <span className="hero-line hero-line-1 block">{t("home.heroTitleLine1")}</span>
+            <span className="hero-line hero-line-2 hero-glow-text mt-1 block text-brand-cyan">{t("home.heroTitleLine2")}</span>
+          </h1>
+          <p className="hero-line hero-line-3 mt-5 max-w-2xl font-display text-base font-semibold leading-snug text-primary-foreground sm:text-xl">{subtitle}</p>
+          <div className="hero-cta-enter mt-7 flex flex-wrap gap-3">
+            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild><Link to="/contact">{primaryCta} <ArrowRight /></Link></Button>
+            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10" asChild><Link to="/projects">{secondaryCta}</Link></Button>
+          </div>
+        </div>
+      </div>
+
+      <div className="location-badge-motion absolute bottom-5 right-4 z-20 max-w-[180px] rounded-md border border-primary-foreground/20 bg-brand-ink/90 px-3 py-2 text-[11px] backdrop-blur sm:bottom-7 sm:right-7 sm:px-4 sm:py-3 sm:text-xs lg:right-12"><p className="font-bold">{location}</p><p className="mt-1 text-primary-foreground/70">{globalStatus}</p></div>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-2 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-2 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
+      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
 }
