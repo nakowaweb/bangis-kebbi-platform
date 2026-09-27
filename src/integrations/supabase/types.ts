@@ -49,61 +49,103 @@ export type Database = {
       }
       content_entries: {
         Row: {
+          author: string | null
           body: string | null
+          canonical_url: string | null
+          category: string | null
+          completed_on: string | null
           content_type: string
           created_at: string
           deleted_at: string | null
+          gallery: Json
           id: string
+          image_alt: string | null
           image_path: string | null
           is_enabled: boolean
           is_featured: boolean
+          language: string
+          og_description: string | null
+          og_image_path: string | null
+          og_title: string | null
           payload: Json
+          project_url: string | null
           published_at: string | null
           scheduled_for: string | null
+          seo_description: string | null
+          seo_title: string | null
           slug: string
           sort_order: number
           status: Database["public"]["Enums"]["content_status"]
           summary: string | null
+          tags: string[]
           title: string
           updated_at: string
           updated_by: string | null
         }
         Insert: {
+          author?: string | null
           body?: string | null
+          canonical_url?: string | null
+          category?: string | null
+          completed_on?: string | null
           content_type: string
           created_at?: string
           deleted_at?: string | null
+          gallery?: Json
           id?: string
+          image_alt?: string | null
           image_path?: string | null
           is_enabled?: boolean
           is_featured?: boolean
+          language?: string
+          og_description?: string | null
+          og_image_path?: string | null
+          og_title?: string | null
           payload?: Json
+          project_url?: string | null
           published_at?: string | null
           scheduled_for?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug: string
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
+          tags?: string[]
           title: string
           updated_at?: string
           updated_by?: string | null
         }
         Update: {
+          author?: string | null
           body?: string | null
+          canonical_url?: string | null
+          category?: string | null
+          completed_on?: string | null
           content_type?: string
           created_at?: string
           deleted_at?: string | null
+          gallery?: Json
           id?: string
+          image_alt?: string | null
           image_path?: string | null
           is_enabled?: boolean
           is_featured?: boolean
+          language?: string
+          og_description?: string | null
+          og_image_path?: string | null
+          og_title?: string | null
           payload?: Json
+          project_url?: string | null
           published_at?: string | null
           scheduled_for?: string | null
+          seo_description?: string | null
+          seo_title?: string | null
           slug?: string
           sort_order?: number
           status?: Database["public"]["Enums"]["content_status"]
           summary?: string | null
+          tags?: string[]
           title?: string
           updated_at?: string
           updated_by?: string | null
