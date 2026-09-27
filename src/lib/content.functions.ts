@@ -29,7 +29,7 @@ const contentInput = z.object({
   category: optionalText(120),
   author: optionalText(120),
   tags: z.array(z.string().trim().min(1).max(40)).max(20).optional(),
-  language: z.enum(["en", "ha", "ar"]).optional(),
+  language: z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]).optional(),
   gallery: z.array(z.string().trim().min(1).max(500)).max(20).optional(),
   projectUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
   completedOn: z.union([z.literal(""), z.string().trim().max(20)]).optional(),
@@ -58,7 +58,7 @@ const settingsInput = z.object({
   phone: z.string().trim().max(40),
   whatsapp: z.string().trim().max(40),
   footerContent: z.string().trim().max(500),
-  defaultLanguage: z.enum(["en", "ha", "ar"]),
+  defaultLanguage: z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]),
   seoTitle: z.string().trim().min(1).max(180),
   seoDescription: z.string().trim().min(1).max(500),
   googleSearchCx: z.union([z.literal(""), z.string().trim().regex(/^[A-Za-z0-9:_-]{5,100}$/, "The Search Engine ID contains invalid characters.")]),
@@ -75,7 +75,7 @@ async function requireContentAdmin(context: { supabase: ReturnType<typeof public
   await requireModule(context as never, "content");
 }
 
-const languageInput = z.enum(["en", "ha", "ar"]).default("en");
+const languageInput = z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]).default("en");
 
 export const getPublicContent = createServerFn({ method: "GET" })
   .validator((input: unknown) => z.object({ language: languageInput }).default({ language: "en" }).parse(input ?? {}))
