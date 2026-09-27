@@ -230,6 +230,7 @@ function MobileMenu() {
                 </Button>
               </SheetClose>
             ) : null}
+            <GlobalSearch mobile />
             {navItems.map((item) => (
               <SheetClose asChild key={`${item.href}-${item.hash ?? "top"}`}>
                 <Link
@@ -244,7 +245,6 @@ function MobileMenu() {
             ))}
           </nav>
           <div className="grid gap-3 border-t border-border pt-5">
-            <GlobalSearch mobile />
             {!signedIn ? (
               <>
                 <SheetClose asChild>
