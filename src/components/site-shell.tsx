@@ -73,8 +73,8 @@ function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
       <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6 lg:flex lg:gap-x-1 lg:px-3 xl:gap-x-2 xl:px-5">
-        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="BangisKebbi.com home">
-          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-12 w-auto max-w-[210px] shrink object-contain sm:max-w-[250px] lg:max-w-[180px] xl:max-w-[210px]" />
+        <Link to="/" className="flex min-w-0 items-center gap-3 pr-5 lg:border-r lg:border-border/70 lg:pr-7" aria-label="BangisKebbi.com home">
+          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-10 w-auto max-w-[190px] shrink object-contain sm:max-w-[220px] lg:max-w-[165px] xl:max-w-[190px]" />
         </Link>
 
         <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label={t("nav.main")}>
