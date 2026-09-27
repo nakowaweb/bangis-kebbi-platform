@@ -844,6 +844,7 @@ export type Database = {
           phone: string | null
           preferred_travel_period: string | null
           reviewed_by: string | null
+          state_region: string | null
           status: Database["public"]["Enums"]["umrah_status"]
           submitted_at: string | null
           travel_notes: string | null
@@ -873,6 +874,7 @@ export type Database = {
           phone?: string | null
           preferred_travel_period?: string | null
           reviewed_by?: string | null
+          state_region?: string | null
           status?: Database["public"]["Enums"]["umrah_status"]
           submitted_at?: string | null
           travel_notes?: string | null
@@ -902,6 +904,7 @@ export type Database = {
           phone?: string | null
           preferred_travel_period?: string | null
           reviewed_by?: string | null
+          state_region?: string | null
           status?: Database["public"]["Enums"]["umrah_status"]
           submitted_at?: string | null
           travel_notes?: string | null
@@ -965,6 +968,7 @@ export type Database = {
       }
       umrah_partners: {
         Row: {
+          city: string | null
           contact_email: string | null
           contact_phone: string | null
           country: string | null
@@ -972,14 +976,18 @@ export type Database = {
           created_by: string | null
           id: string
           is_visible: boolean
+          logo_path: string | null
           name: string
           notes: string | null
           services: string | null
+          sort_order: number
+          state_region: string | null
           updated_at: string
           verification_status: string
           website_url: string | null
         }
         Insert: {
+          city?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           country?: string | null
@@ -987,14 +995,18 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_visible?: boolean
+          logo_path?: string | null
           name: string
           notes?: string | null
           services?: string | null
+          sort_order?: number
+          state_region?: string | null
           updated_at?: string
           verification_status?: string
           website_url?: string | null
         }
         Update: {
+          city?: string | null
           contact_email?: string | null
           contact_phone?: string | null
           country?: string | null
@@ -1002,9 +1014,12 @@ export type Database = {
           created_by?: string | null
           id?: string
           is_visible?: boolean
+          logo_path?: string | null
           name?: string
           notes?: string | null
           services?: string | null
+          sort_order?: number
+          state_region?: string | null
           updated_at?: string
           verification_status?: string
           website_url?: string | null
@@ -1087,7 +1102,12 @@ export type Database = {
         | "account"
         | "announcement"
       notification_status: "draft" | "published"
-      translation_status: "draft" | "ready" | "published"
+      translation_status:
+        | "draft"
+        | "ready"
+        | "published"
+        | "unpublished"
+        | "archived"
       umrah_status:
         | "draft"
         | "submitted"
@@ -1243,7 +1263,13 @@ export const Constants = {
         "announcement",
       ],
       notification_status: ["draft", "published"],
-      translation_status: ["draft", "ready", "published"],
+      translation_status: [
+        "draft",
+        "ready",
+        "published",
+        "unpublished",
+        "archived",
+      ],
       umrah_status: [
         "draft",
         "submitted",
