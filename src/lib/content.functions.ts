@@ -77,7 +77,7 @@ async function requireContentAdmin(context: { supabase: ReturnType<typeof public
   await requireModule(context as never, "content");
 }
 
-const languageInput = z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]).default("en");
+const languageInput = z.preprocess((v) => (["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"].includes(v as string) ? v : "en"), z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]));
 
 export const getPublicContent = createServerFn({ method: "GET" })
   .validator((input: unknown) => z.object({ language: languageInput }).default({ language: "en" }).parse(input ?? {}))

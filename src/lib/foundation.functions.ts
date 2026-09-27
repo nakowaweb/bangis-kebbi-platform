@@ -126,7 +126,7 @@ async function decorate(rows: ProjectRow[]): Promise<FoundationProject[]> {
 /* --------------------------------- public -------------------------------- */
 
 export const getFoundationOverview = createServerFn({ method: "GET" })
-  .validator((input: unknown) => z.object({ language: z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]).default("en") }).default({ language: "en" }).parse(input ?? {}))
+  .validator((input: unknown) => z.object({ language: z.preprocess((v) => (["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"].includes(v as string) ? v : "en"), z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"])) }).default({ language: "en" }).parse(input ?? {}))
   .handler(async ({ data }) => {
   const client = publicClient();
   const [{ data: entries }, { data: projects }] = await Promise.all([
