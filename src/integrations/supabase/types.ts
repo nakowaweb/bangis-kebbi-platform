@@ -438,6 +438,36 @@ export type Database = {
         }
         Relationships: []
       }
+      member_activities: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          kind: string
+          section: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind: string
+          section?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          kind?: string
+          section?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       member_documents: {
         Row: {
           byte_size: number
@@ -476,6 +506,80 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      notification_messages: {
+        Row: {
+          audience: string
+          body: string | null
+          category: Database["public"]["Enums"]["notification_category"]
+          created_at: string
+          created_by: string | null
+          id: string
+          link_path: string | null
+          published_at: string | null
+          status: Database["public"]["Enums"]["notification_status"]
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          audience?: string
+          body?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_path?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          audience?: string
+          body?: string | null
+          category?: Database["public"]["Enums"]["notification_category"]
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          link_path?: string | null
+          published_at?: string | null
+          status?: Database["public"]["Enums"]["notification_status"]
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      notification_recipients: {
+        Row: {
+          created_at: string
+          id: string
+          message_id: string
+          read_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message_id: string
+          read_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message_id?: string
+          read_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notification_recipients_message_id_fkey"
+            columns: ["message_id"]
+            isOneToOne: false
+            referencedRelation: "notification_messages"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notifications: {
         Row: {
@@ -934,6 +1038,17 @@ export type Database = {
     }
     Functions: {
       claim_first_super_admin: { Args: never; Returns: boolean }
+      create_system_notification: {
+        Args: {
+          _body: string
+          _category: Database["public"]["Enums"]["notification_category"]
+          _created_by: string
+          _link: string
+          _recipients: string[]
+          _title: string
+        }
+        Returns: string
+      }
       ensure_member_role: { Args: never; Returns: undefined }
       has_role: {
         Args: {
@@ -944,6 +1059,16 @@ export type Database = {
       }
       is_content_admin: { Args: { _user_id: string }; Returns: boolean }
       is_platform_admin: { Args: { _user_id: string }; Returns: boolean }
+      log_member_activity: {
+        Args: {
+          _description?: string
+          _kind: string
+          _section?: string
+          _title: string
+          _user_id: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:
@@ -955,6 +1080,13 @@ export type Database = {
         | "member"
       content_status: "draft" | "published" | "unpublished" | "archived"
       foundation_status: "planned" | "active" | "completed" | "archived"
+      notification_category:
+        | "system"
+        | "umrah"
+        | "foundation"
+        | "account"
+        | "announcement"
+      notification_status: "draft" | "published"
       translation_status: "draft" | "ready" | "published"
       umrah_status:
         | "draft"
@@ -1103,6 +1235,14 @@ export const Constants = {
       ],
       content_status: ["draft", "published", "unpublished", "archived"],
       foundation_status: ["planned", "active", "completed", "archived"],
+      notification_category: [
+        "system",
+        "umrah",
+        "foundation",
+        "account",
+        "announcement",
+      ],
+      notification_status: ["draft", "published"],
       translation_status: ["draft", "ready", "published"],
       umrah_status: [
         "draft",
