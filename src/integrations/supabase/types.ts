@@ -556,6 +556,244 @@ export type Database = {
         }
         Relationships: []
       }
+      umrah_application_history: {
+        Row: {
+          action: string
+          actor_id: string | null
+          actor_role: string
+          application_id: string
+          created_at: string
+          from_status: Database["public"]["Enums"]["umrah_status"] | null
+          id: string
+          member_visible: boolean
+          note: string | null
+          to_status: Database["public"]["Enums"]["umrah_status"] | null
+        }
+        Insert: {
+          action: string
+          actor_id?: string | null
+          actor_role?: string
+          application_id: string
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["umrah_status"] | null
+          id?: string
+          member_visible?: boolean
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["umrah_status"] | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string | null
+          actor_role?: string
+          application_id?: string
+          created_at?: string
+          from_status?: Database["public"]["Enums"]["umrah_status"] | null
+          id?: string
+          member_visible?: boolean
+          note?: string | null
+          to_status?: Database["public"]["Enums"]["umrah_status"] | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "umrah_application_history_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "umrah_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      umrah_applications: {
+        Row: {
+          admin_message: string | null
+          application_number: string
+          city: string | null
+          country_of_residence: string | null
+          created_at: string
+          date_of_birth: string | null
+          email: string | null
+          emergency_contact_name: string | null
+          emergency_contact_phone: string | null
+          emergency_contact_relationship: string | null
+          full_name: string
+          id: string
+          internal_note: string | null
+          member_notes: string | null
+          nationality: string | null
+          passport_expiry_date: string | null
+          passport_issue_date: string | null
+          passport_issuing_country: string | null
+          passport_number: string | null
+          phone: string | null
+          preferred_travel_period: string | null
+          reviewed_by: string | null
+          status: Database["public"]["Enums"]["umrah_status"]
+          submitted_at: string | null
+          travel_notes: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          admin_message?: string | null
+          application_number?: string
+          city?: string | null
+          country_of_residence?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          full_name?: string
+          id?: string
+          internal_note?: string | null
+          member_notes?: string | null
+          nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
+          passport_issuing_country?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          preferred_travel_period?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["umrah_status"]
+          submitted_at?: string | null
+          travel_notes?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          admin_message?: string | null
+          application_number?: string
+          city?: string | null
+          country_of_residence?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          email?: string | null
+          emergency_contact_name?: string | null
+          emergency_contact_phone?: string | null
+          emergency_contact_relationship?: string | null
+          full_name?: string
+          id?: string
+          internal_note?: string | null
+          member_notes?: string | null
+          nationality?: string | null
+          passport_expiry_date?: string | null
+          passport_issue_date?: string | null
+          passport_issuing_country?: string | null
+          passport_number?: string | null
+          phone?: string | null
+          preferred_travel_period?: string | null
+          reviewed_by?: string | null
+          status?: Database["public"]["Enums"]["umrah_status"]
+          submitted_at?: string | null
+          travel_notes?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      umrah_documents: {
+        Row: {
+          application_id: string
+          byte_size: number
+          created_at: string
+          document_type: string
+          id: string
+          mime_type: string
+          original_name: string
+          review_note: string | null
+          review_status: string
+          storage_path: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          application_id: string
+          byte_size: number
+          created_at?: string
+          document_type: string
+          id?: string
+          mime_type: string
+          original_name: string
+          review_note?: string | null
+          review_status?: string
+          storage_path: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          application_id?: string
+          byte_size?: number
+          created_at?: string
+          document_type?: string
+          id?: string
+          mime_type?: string
+          original_name?: string
+          review_note?: string | null
+          review_status?: string
+          storage_path?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "umrah_documents_application_id_fkey"
+            columns: ["application_id"]
+            isOneToOne: false
+            referencedRelation: "umrah_applications"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      umrah_partners: {
+        Row: {
+          contact_email: string | null
+          contact_phone: string | null
+          country: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_visible: boolean
+          name: string
+          notes: string | null
+          services: string | null
+          updated_at: string
+          verification_status: string
+          website_url: string | null
+        }
+        Insert: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_visible?: boolean
+          name: string
+          notes?: string | null
+          services?: string | null
+          updated_at?: string
+          verification_status?: string
+          website_url?: string | null
+        }
+        Update: {
+          contact_email?: string | null
+          contact_phone?: string | null
+          country?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_visible?: boolean
+          name?: string
+          notes?: string | null
+          services?: string | null
+          updated_at?: string
+          verification_status?: string
+          website_url?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -604,6 +842,16 @@ export type Database = {
         | "member"
       content_status: "draft" | "published" | "unpublished" | "archived"
       translation_status: "draft" | "ready" | "published"
+      umrah_status:
+        | "draft"
+        | "submitted"
+        | "under_review"
+        | "documents_required"
+        | "approved"
+        | "processing"
+        | "completed"
+        | "rejected"
+        | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -741,6 +989,17 @@ export const Constants = {
       ],
       content_status: ["draft", "published", "unpublished", "archived"],
       translation_status: ["draft", "ready", "published"],
+      umrah_status: [
+        "draft",
+        "submitted",
+        "under_review",
+        "documents_required",
+        "approved",
+        "processing",
+        "completed",
+        "rejected",
+        "cancelled",
+      ],
     },
   },
 } as const
