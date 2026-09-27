@@ -2,7 +2,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import * as FlagIcons from "country-flag-icons/react/3x2";
-import { ChevronDown, Languages, Mail, Menu, UserRound } from "lucide-react";
+import { ChevronDown, Globe, Languages, Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -73,11 +73,11 @@ function SiteHeader() {
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
       <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6 lg:flex lg:gap-x-1 lg:px-3 xl:gap-x-2 xl:px-5">
-        <Link to="/" className="flex min-w-0 items-center gap-3" aria-label="BangisKebbi.com home">
-          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-12 w-auto max-w-[210px] shrink object-contain sm:max-w-[250px] lg:max-w-[180px] xl:max-w-[210px]" />
+        <Link to="/" className="flex shrink-0 items-center gap-3 pr-5 lg:border-r lg:border-border/70 lg:pr-7" aria-label="BangisKebbi.com home">
+          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-10 w-auto max-w-[185px] shrink-0 object-contain sm:max-w-[210px] lg:max-w-[150px] xl:max-w-[175px]" />
         </Link>
 
-        <nav className="hidden flex-1 items-center justify-center gap-1 lg:flex" aria-label={t("nav.main")}>
+        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex" aria-label={t("nav.main")}>
           {navItems.map((item) => (
             <Link
               key={item.href}
@@ -85,7 +85,7 @@ function SiteHeader() {
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "text-brand-cyan" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className="rounded-md px-2 py-2 text-xs font-semibold transition-colors hover:bg-secondary hover:text-foreground xl:px-2.5 xl:text-sm"
+              className={`rounded-md px-1.5 py-2 text-[11px] font-semibold transition-colors hover:bg-secondary hover:text-foreground 2xl:text-xs ${item.labelKey === "foundation" ? "max-w-[5rem] leading-[1.1] text-center" : "whitespace-nowrap"}`}
             >
               {t(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
@@ -166,7 +166,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
             aria-label="More languages"
             className={`h-8 min-w-0 gap-1 border-border bg-background px-1.5 text-[11px] font-semibold text-primary shadow-sm sm:px-2.5 sm:text-xs ${current ? "border-brand-cyan bg-secondary" : ""}`}
           >
-            <LanguageMarker country={current?.country} />
+            <Globe aria-hidden="true" className="h-3.5 w-3.5 shrink-0 text-brand-cyan" />
             <span className="truncate">{current ? current.nativeLabel : "More"}</span>
             <ChevronDown className="h-3 w-3 shrink-0" />
           </Button>
