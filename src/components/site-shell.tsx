@@ -182,11 +182,14 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
                   key={item.code}
                   value={`${item.label} ${item.nativeLabel} ${item.code}`}
                   onSelect={() => { setLanguage(item.code); setOpen(false); }}
-                  className={`grid grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-2 text-sm ${activeLanguage === item.code ? "font-semibold text-primary" : ""}`}
+                  aria-selected={activeLanguage === item.code}
+                  data-no-translate
+                  className={`grid grid-cols-[1.25rem_minmax(0,1fr)_auto_1rem] items-center gap-2 text-sm ${activeLanguage === item.code ? "bg-secondary font-semibold text-primary" : ""}`}
                 >
                   <LanguageMarker country={item.country} />
                   <span className="truncate">{item.nativeLabel}</span>
                   <span className="shrink-0 text-xs text-muted-foreground">{item.label}</span>
+                  {activeLanguage === item.code ? <Check aria-label="Selected" className="h-4 w-4 text-brand-cyan" /> : <span />}
                 </CommandItem>
               ))}
             </CommandList>

@@ -79,8 +79,9 @@ export function LiveTranslator({ language }: { language: string | null }) {
       if (pending.size) void flush();
     };
     const flush = async () => {
-      const batch = [...pending].filter((t) => !cache.has(t)).slice(0, 120);
-      pending = new Set();
+      const all = [...pending].filter((t) => !cache.has(t));
+      const batch = all.slice(0, 120);
+      pending = new Set(all.slice(120));
       if (!batch.length || cancelled) return;
       batch.forEach((t) => cache.set(t, t)); // prevent duplicate requests while loading
       for (let i = 0; i < batch.length; i += 40) {
@@ -89,7 +90,8 @@ export function LiveTranslator({ language }: { language: string | null }) {
           const { translations } = await translateTexts({ data: { language, texts: chunk.map((t) => t.slice(0, 3000)) } });
           chunk.forEach((t) => cache.set(t, translations[t] ?? t));
         } catch {
-          /* keep original text if the provider is unavailable */
+          // Provider unavailable: forget placeholders so the text is retried on the next scan.
+          chunk.forEach((t) => cache.delete(t));
         }
       }
       if (!cancelled) schedule();

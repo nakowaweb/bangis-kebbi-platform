@@ -72,8 +72,9 @@ function RegisterPage() {
       toast.error(message);
       return;
     }
-    toast.success("Welcome to BangisKebbi.com");
-    if (data.session) { await navigate({ to: "/dashboard", replace: true }); return; }
+    // Registration never keeps the visitor signed in; they sign in on the Login page.
+    if (data.session) await supabase.auth.signOut();
+    toast.success("Account created. Please sign in with your email and password.");
     await navigate({ to: "/login", replace: true });
   }
   return (
