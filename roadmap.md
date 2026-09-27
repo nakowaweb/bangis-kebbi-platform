@@ -167,4 +167,5 @@
 ## Complete worldwide translation reliability
 - [x] Preserve every supported worldwide language in the URL across navigation and refresh
 - [x] Prevent untranslated request placeholders from blocking cold translation results
+- [x] Translate long content without truncation/key mismatches and back off safely during provider failures
 - [ ] Verify multiple cold languages on desktop and mobile, Arabic RTL, active-language display, navigation and refresh
