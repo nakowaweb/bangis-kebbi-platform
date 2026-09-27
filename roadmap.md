@@ -168,4 +168,5 @@
 - [x] Preserve every supported worldwide language in the URL across navigation and refresh
 - [x] Prevent untranslated request placeholders from blocking cold translation results
 - [x] Translate long content without truncation/key mismatches and back off safely during provider failures
+- [x] Preserve the active language automatically across every internal navigation
 - [ ] Verify multiple cold languages on desktop and mobile, Arabic RTL, active-language display, navigation and refresh

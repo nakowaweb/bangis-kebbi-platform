@@ -6,6 +6,7 @@ import {
   useRouter,
   useRouterState,
   HeadContent,
+  retainSearchParams,
   Scripts,
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
@@ -84,6 +85,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     // The public router preserves every provider-supported code. Data loaders still
     // intentionally narrow unreviewed locales to English before CMS lookup.
     return isWorldLanguage(value) ? { lang: value as LanguageCode } : {};
+  },
+  search: {
+    middlewares: [retainSearchParams(["lang"])],
   },
   head: () => ({
     meta: [
