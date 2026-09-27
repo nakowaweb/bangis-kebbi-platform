@@ -26,15 +26,15 @@ import supportOrphans from "@/assets/support-orphans.jpg";
 import supportZakatSadaqah from "@/assets/support-zakat-sadaqah.jpg";
 import supportMission from "@/assets/support-mission.jpg";
 import supportVision from "@/assets/support-vision.jpg";
-import communitySupportBannerAsset from "@/assets/homepage-community-support-banner.png.asset.json";
-import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp.asset.json";
-import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp.asset.json";
-import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp.asset.json";
-import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp.asset.json";
-import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp.asset.json";
-import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp.asset.json";
-import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp.asset.json";
-import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp.asset.json";
+import communitySupportBanner from "@/assets/homepage-community-support-banner.png";
+import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp";
+import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp";
+import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp";
+import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp";
+import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp";
+import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp";
+import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp";
+import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp";
 import { umrahBalanceVisual, umrahInformationVisuals, umrahJourneyVisuals } from "@/lib/umrah-visuals";
 
 type Entry = { id: string; content_type: string; slug: string; image_path: string | null };
@@ -60,7 +60,7 @@ function currentSiteItems(): Item[] {
     ...services.map((s, i) => ({ contentType: "service" as const, slug: s.slug, title: s.title.en, summary: s.summary.en, body: [...s.canDo.en].join("\n"), image: s.image, imageAlt: s.imageAlt.en, sortOrder: i })),
     ...projects.map((p, i) => ({ contentType: "project" as const, slug: p.slug, title: p.title.en, summary: p.summary.en, body: p.sections.en.map((x) => `${x.title}\n${x.body}`).join("\n\n"), category: p.category.en, image: p.image, imageAlt: p.imageAlt.en, sortOrder: i })),
     ...articles.map((a, i) => ({ contentType: "blog_post" as const, slug: a.slug, title: a.title.en, summary: a.summary.en, body: a.body.en.join("\n\n"), category: a.category.en, author: a.author, image: a.image, imageAlt: a.title.en, sortOrder: i, publishedAt: a.publishedAt })),
-    { contentType: "about", slug: "summary", title: "A passion for technology, people and impact.", summary: "I’m Abubakar Alhaji Abubakar, an AI Web Designer & Web Developer focused on building practical digital solutions and turning ideas into useful platforms. My work connects technology, business, people and opportunities, with a commitment to creating positive community impact.", sortOrder: 0 },
+    { contentType: "about", slug: "summary", title: "A Passion for Technology, People & Opportunities", summary: "I'm Abubakar Alhaji Abubakar, an AI Web Designer and Web Developer passionate about transforming ideas into practical digital solutions. Through BangisKebbi.com, I connect technology, business and people while creating opportunities for collaboration and community development.", sortOrder: 0 },
     { contentType: "about", slug: "about-card-1", title: "Creative Digital Solutions", summary: "I design modern websites and digital solutions that turn ideas into practical, accessible experiences.", sortOrder: 1 },
     { contentType: "about", slug: "about-card-2", title: "Reliable Support & Collaboration", summary: "I work with individuals, businesses and communities to provide dependable digital support and build useful connections.", sortOrder: 2 },
     { contentType: "about", slug: "about-card-3", title: "Global Mindset, Real Connections", summary: "I connect technology, business and people with a global outlook while staying grounded in real community needs.", sortOrder: 3 },
@@ -72,14 +72,14 @@ function currentSiteItems(): Item[] {
       { src: heroUmrahSupport, label: "Umrah Support Program", alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting" },
     ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-feature-${i + 1}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.alt, sortOrder: i + 1 })),
     ...[
-      { slug: "quick-nav-home", title: "Home", image: quickNavHome.url, imageAlt: "Premium house" },
-      { slug: "quick-nav-services", title: "Services", image: quickNavServices.url, imageAlt: "Professional gear and tools" },
-      { slug: "quick-nav-umrah", title: "Umrah", image: quickNavUmrah.url, imageAlt: "Kaaba at Masjid al-Haram" },
-      { slug: "quick-nav-projects", title: "Projects", image: quickNavProjects.url, imageAlt: "Laptop displaying web development" },
-      { slug: "quick-nav-blog", title: "Blog", image: quickNavBlog.url, imageAlt: "Article document with pen" },
-      { slug: "quick-nav-foundation", title: "BK Community Support Initiative", image: quickNavFoundation.url, imageAlt: "Helping hands supporting people" },
-      { slug: "quick-nav-community", title: "Community", image: quickNavCommunity.url, imageAlt: "Professional community group" },
-      { slug: "quick-nav-cv", title: "CV", image: quickNavCv.url, imageAlt: "Professional résumé document" },
+      { slug: "quick-nav-home", title: "Home", image: quickNavHome, imageAlt: "Premium house" },
+      { slug: "quick-nav-services", title: "Services", image: quickNavServices, imageAlt: "Professional gear and tools" },
+      { slug: "quick-nav-umrah", title: "Umrah", image: quickNavUmrah, imageAlt: "Kaaba at Masjid al-Haram" },
+      { slug: "quick-nav-projects", title: "Projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
+      { slug: "quick-nav-blog", title: "Blog", image: quickNavBlog, imageAlt: "Article document with pen" },
+      { slug: "quick-nav-foundation", title: "BK Community Support Initiative", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
+      { slug: "quick-nav-community", title: "Verified Partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
+      { slug: "quick-nav-cv", title: "CV", image: quickNavCv, imageAlt: "Professional résumé document" },
     ].map((item, index) => ({ contentType: "homepage" as const, ...item, summary: "", category: "quick_navigation", sortOrder: index })),
     ...[
       { slug: "digital-services", title: "Digital Services", image: businessDigitalServices },
@@ -91,7 +91,7 @@ function currentSiteItems(): Item[] {
     ...umrahJourneyVisuals.map((item, index) => ({ contentType: "umrah_step" as const, ...item, title: ["Create an account", "Complete profile", "Submit information/documents", "Track Umrah support progress", "Review dashboard progress", "Prepare travel documents", "Coordinate travel arrangements", "Receive updates/support"][index] ?? item.slug, summary: "", imageAlt: item.alt, sortOrder: index })),
     ...umrahInformationVisuals.map((item, index) => ({ contentType: "umrah_information" as const, ...item, title: ["Documents & Privacy", "Review & Decisions", "Preparation", "Coordination", "Updates", "Cancellations & Refunds"][index] ?? item.slug, summary: "", imageAlt: item.alt, sortOrder: index })),
     { contentType: "umrah_information", slug: umrahBalanceVisual.slug, title: "Umrah Support Balance", summary: "Real member-specific balance and progress appear only in the private dashboard when available.", image: umrahBalanceVisual.image, imageAlt: umrahBalanceVisual.alt, sortOrder: 6 },
-    { contentType: "foundation", slug: "overview", title: "Supporting people and communities.", summary: "Community initiatives designed for practical support, dignity and transparent updates.", image: communitySupportBannerAsset.url, imageAlt: "Nigerian Muslim community members sharing educational support with children", sortOrder: 0 },
+    { contentType: "foundation", slug: "overview", title: "Supporting people and communities.", summary: "Community initiatives designed for practical support, dignity and transparent updates.", image: communitySupportBanner, imageAlt: "Nigerian Muslim community members sharing educational support with children", sortOrder: 0 },
     { contentType: "foundation_mission", slug: "mission", title: "Mission", summary: "To provide practical, dignified and targeted support to people and families facing genuine hardship, with priority given to verified community needs.", image: supportMission, imageAlt: "Dignified community food support for a family", sortOrder: 0 },
     { contentType: "foundation_vision", slug: "vision", title: "Vision", summary: "Stronger, better-connected communities where people facing hardship can access timely and meaningful support.", image: supportVision, imageAlt: "A hopeful family looking toward a stronger community", sortOrder: 0 },
     ...[

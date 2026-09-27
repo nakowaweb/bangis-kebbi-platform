@@ -80,7 +80,7 @@ function SiteHeader() {
         <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex" aria-label={t("nav.main")}>
           {navItems.map((item) => (
             <Link
-              key={item.href}
+              key={`${item.href}-${item.hash ?? "top"}`}
               to={item.href}
               hash={item.hash}
               activeOptions={{ exact: item.href === "/" }}
