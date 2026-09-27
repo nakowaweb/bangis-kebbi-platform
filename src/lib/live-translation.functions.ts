@@ -40,9 +40,11 @@ export const translateTexts = createServerFn({ method: "POST" })
     const result: Record<string, string> = {};
     const missing: Array<{ text: string; hash: string }> = [];
     unique.forEach((text, i) => {
-      const hit = cache.get(hashes[i]!);
+      const hash = hashes[i];
+      if (!hash) return;
+      const hit = cache.get(hash);
       if (hit !== undefined) result[text] = hit;
-      else missing.push({ text, hash: hashes[i]! });
+      else missing.push({ text, hash });
     });
     if (missing.length === 0) return { translations: result };
 
@@ -78,10 +80,7 @@ export const translateTexts = createServerFn({ method: "POST" })
       list = (JSON.parse(content) as { t?: unknown }).t;
     } catch { list = []; }
     const translated = Array.isArray(list) && list.length === missing.length ? list : null;
-    if (!translated) {
-      missing.forEach((m) => { result[m.text] = m.text; });
-      return { translations: result };
-    }
+    if (!translated) throw new Error("Translation provider returned an invalid response.");
     const rows = missing.map((m, i) => {
       const value = typeof translated[i] === "string" && translated[i] ? translated[i] as string : m.text;
       result[m.text] = value;

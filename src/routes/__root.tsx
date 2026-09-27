@@ -10,7 +10,8 @@ import {
 } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
-import { defaultLanguage, isLanguageCode, languageMeta, type LanguageCode } from "../lib/i18n/dictionary";
+import { defaultLanguage } from "../lib/i18n/dictionary";
+import { isWorldLanguage, worldLanguage } from "../lib/i18n/world-languages";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import { SiteShell } from "../components/site-shell";
@@ -78,9 +79,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   // `?lang=` is the site-wide locale switch; every other search parameter is passed through untouched.
-  validateSearch: (search: Record<string, unknown>): { lang?: LanguageCode } => {
+  validateSearch: (search: Record<string, unknown>): { lang?: string } => {
     const value = search["lang"];
-    return isLanguageCode(value) ? { lang: value } : {};
+    return isWorldLanguage(value) ? { lang: value } : {};
   },
   head: () => ({
     meta: [
@@ -111,10 +112,10 @@ function RootShell({ children }: { children: ReactNode }) {
   const code = useRouterState({
     select: (state) => {
       const value = (state.location.search as Record<string, unknown> | undefined)?.["lang"];
-      return isLanguageCode(value) ? value : defaultLanguage;
+      return isWorldLanguage(value) ? value : defaultLanguage;
     },
   });
-  const meta = languageMeta(code);
+  const meta = worldLanguage(code);
   return (
     <html lang={meta.code} dir={meta.dir}>
       <head>

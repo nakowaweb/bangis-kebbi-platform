@@ -2,8 +2,8 @@ import { useEffect } from "react";
 
 import { translateTexts } from "@/lib/live-translation.functions";
 
-const SKIP = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA", "INPUT", "SELECT", "SVG", "OPTION"]);
-const ATTRS = ["placeholder", "aria-label", "title", "alt"] as const;
+const SKIP = new Set(["SCRIPT", "STYLE", "NOSCRIPT", "CODE", "PRE", "TEXTAREA", "INPUT", "SVG"]);
+const ATTRS = ["placeholder", "aria-label", "aria-description", "aria-valuetext", "title", "alt"] as const;
 const originals = new WeakMap<Node, string>();
 const attrOriginals = new WeakMap<Element, Record<string, string>>();
 const memory = new Map<string, Map<string, string>>();
@@ -44,12 +44,17 @@ export function LiveTranslator({ language }: { language: string | null }) {
     memory.set(language, cache);
     const applied = new WeakMap<Node, string>();
     let pending = new Set<string>();
+    const inFlight = new Set<string>();
     let timer: number | undefined;
     let cancelled = false;
 
     const applyText = (node: Text) => {
       const current = node.nodeValue ?? "";
-      if (applied.get(node) === current) return;
+      const lastApplied = applied.get(node);
+      if (lastApplied === current) {
+        const original = originals.get(node)?.trim();
+        if (!original || cache.get(original) === current) return;
+      }
       const source = current;
       if (!translatable(source) || skipped(node.parentElement)) return;
       const key = source.trim();
@@ -79,21 +84,22 @@ export function LiveTranslator({ language }: { language: string | null }) {
       if (pending.size) void flush();
     };
     const flush = async () => {
-      const all = [...pending].filter((t) => !cache.has(t));
+      const all = [...pending].filter((t) => !cache.has(t) && !inFlight.has(t));
       const batch = all.slice(0, 120);
       pending = new Set(all.slice(120));
       if (!batch.length || cancelled) return;
-      batch.forEach((t) => cache.set(t, t)); // prevent duplicate requests while loading
-      for (let i = 0; i < batch.length; i += 40) {
-        const chunk = batch.slice(i, i + 40);
+      batch.forEach((t) => inFlight.add(t));
+      const chunks = Array.from({ length: Math.ceil(batch.length / 40) }, (_, i) => batch.slice(i * 40, i * 40 + 40));
+      await Promise.all(chunks.map(async (chunk) => {
         try {
           const { translations } = await translateTexts({ data: { language, texts: chunk.map((t) => t.slice(0, 3000)) } });
           chunk.forEach((t) => cache.set(t, translations[t] ?? t));
         } catch {
-          // Provider unavailable: forget placeholders so the text is retried on the next scan.
-          chunk.forEach((t) => cache.delete(t));
+          // Provider unavailable: leave strings uncached so the next scan retries them.
+        } finally {
+          chunk.forEach((t) => inFlight.delete(t));
         }
-      }
+      }));
       if (!cancelled) schedule();
     };
     const schedule = () => { window.clearTimeout(timer); timer = window.setTimeout(scan, 120); };
