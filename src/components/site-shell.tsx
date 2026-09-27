@@ -364,7 +364,7 @@ function FooterLanguage() {
     <div>
       <p className="mb-2 text-xs font-bold uppercase text-muted-foreground">{t("common.language")}</p>
       <div className="flex flex-wrap gap-2">
-        {availableLanguages.map((item) => (
+        {availableLanguages.filter((item) => item.primary).map((item) => (
           <button
             key={item.code}
             type="button"
