@@ -28,6 +28,7 @@ import { archiveContentEntry, deleteContentEntry, getAdminWorkspace, registerMed
 import { CurrentSiteImporter } from "@/components/admin/current-site-importer";
 import { MediaLibrary } from "@/components/admin/media-library";
 import { getAdminOverview, getMyAdminAccess } from "@/lib/members.functions";
+import { languages, type LanguageCode } from "@/lib/i18n/dictionary";
 import { MembersManager } from "@/components/admin/members-manager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
@@ -59,7 +60,7 @@ type EditorState = {
   category: string;
   author: string;
   tags: string;
-  language: "en" | "ha" | "ar";
+  language: LanguageCode;
   gallery: string;
   projectUrl: string;
   completedOn: string;
@@ -255,7 +256,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
     <Field label="Schedule (optional)"><Input type="datetime-local" value={editor.scheduledFor} onChange={(event) => update("scheduledFor", event.target.value)} /></Field>
     <div className="grid grid-cols-2 gap-3">
       <Field label="Category"><Input value={editor.category} maxLength={120} onChange={(event) => update("category", event.target.value)} /></Field>
-      <Field label="Language"><Select value={editor.language} onValueChange={(value) => update("language", value as EditorState["language"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ar">العربية</SelectItem><SelectItem value="ha">Hausa</SelectItem></SelectContent></Select></Field>
+      <Field label="Language"><Select value={editor.language} onValueChange={(value) => update("language", value as EditorState["language"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{languages.map((item) => <SelectItem key={item.code} value={item.code}>{item.flag} {item.nativeLabel}</SelectItem>)}</SelectContent></Select></Field>
     </div>
     <div className="grid grid-cols-2 gap-3">
       <Field label="Author"><Input value={editor.author} maxLength={120} onChange={(event) => update("author", event.target.value)} /></Field>
@@ -299,16 +300,17 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
 }
 
 type SettingsRow = NonNullable<Awaited<ReturnType<typeof getAdminWorkspace>>["settings"]>;
-function SettingsEditor({ settings, onSave }: { settings: SettingsRow; onSave: (data: { id: string; websiteName: string; companyName: string; location: string; globalStatus: string; contactEmail: string; phone: string; whatsapp: string; footerContent: string; defaultLanguage: "en" | "ha" | "ar"; seoTitle: string; seoDescription: string; googleSearchCx: string; profileImagePath: string }) => Promise<void> }) {
+function SettingsEditor({ settings, onSave }: { settings: SettingsRow; onSave: (data: { id: string; websiteName: string; companyName: string; location: string; globalStatus: string; contactEmail: string; phone: string; whatsapp: string; footerContent: string; defaultLanguage: LanguageCode; seoTitle: string; seoDescription: string; googleSearchCx: string; profileImagePath: string }) => Promise<void> }) {
   const config = settings.social_links && typeof settings.social_links === "object" && !Array.isArray(settings.social_links) ? settings.social_links as Record<string, unknown> : {};
-  const [form, setForm] = useState({ id: settings.id, websiteName: settings.website_name, companyName: settings.company_name, location: settings.location, globalStatus: settings.global_status, contactEmail: settings.contact_email ?? "", phone: settings.phone ?? "", whatsapp: settings.whatsapp ?? "", footerContent: settings.footer_content, defaultLanguage: settings.default_language as "en" | "ha" | "ar", seoTitle: settings.seo_title, seoDescription: settings.seo_description, googleSearchCx: typeof config["googleSearchCx"] === "string" ? config["googleSearchCx"] : "", profileImagePath: settings.profile_image_path ?? "" });
+  const initialEnabled = Array.isArray(config["enabledLanguages"]) ? config["enabledLanguages"].filter((code): code is LanguageCode => languages.some((item) => item.code === code)) : languages.map((item) => item.code);
+  const [form, setForm] = useState({ id: settings.id, websiteName: settings.website_name, companyName: settings.company_name, location: settings.location, globalStatus: settings.global_status, contactEmail: settings.contact_email ?? "", phone: settings.phone ?? "", whatsapp: settings.whatsapp ?? "", footerContent: settings.footer_content, defaultLanguage: settings.default_language as LanguageCode, seoTitle: settings.seo_title, seoDescription: settings.seo_description, googleSearchCx: typeof config["googleSearchCx"] === "string" ? config["googleSearchCx"] : "", profileImagePath: settings.profile_image_path ?? "", enabledLanguages: initialEnabled });
   const [busy, setBusy] = useState(false);
-  async function submit(event: FormEvent) { event.preventDefault(); setBusy(true); await onSave(form); setBusy(false); }
+  async function submit(event: FormEvent) { event.preventDefault(); setBusy(true); await onSave({ ...form, enabledLanguages: undefined } as typeof form & { enabledLanguages?: undefined }); setBusy(false); }
   return <form onSubmit={submit} className="mx-auto grid max-w-3xl gap-5 rounded-lg border border-border bg-card p-6"><div><h2 className="font-display text-xl font-bold">Website settings</h2><p className="mt-1 text-sm text-muted-foreground">Content settings only. Credentials and service configuration are never exposed here.</p></div><div className="grid gap-4 sm:grid-cols-2">
     <Field label="Website name"><Input value={form.websiteName} maxLength={120} onChange={(e) => setForm({ ...form, websiteName: e.target.value })} /></Field><Field label="Company name"><Input value={form.companyName} maxLength={160} onChange={(e) => setForm({ ...form, companyName: e.target.value })} /></Field>
     <Field label="Location"><Input value={form.location} maxLength={160} onChange={(e) => setForm({ ...form, location: e.target.value })} /></Field><Field label="Global status"><Input value={form.globalStatus} maxLength={160} onChange={(e) => setForm({ ...form, globalStatus: e.target.value })} /></Field>
     <Field label="Contact email"><Input type="email" value={form.contactEmail} maxLength={254} onChange={(e) => setForm({ ...form, contactEmail: e.target.value })} /></Field><Field label="Phone"><Input value={form.phone} maxLength={40} onChange={(e) => setForm({ ...form, phone: e.target.value })} /></Field>
-    <Field label="WhatsApp"><Input value={form.whatsapp} maxLength={40} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} /></Field><Field label="Default language"><Select value={form.defaultLanguage} onValueChange={(value) => setForm({ ...form, defaultLanguage: value as "en" | "ha" | "ar" })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="en">English</SelectItem><SelectItem value="ha">Hausa</SelectItem><SelectItem value="ar">Arabic</SelectItem></SelectContent></Select></Field>
+    <Field label="WhatsApp"><Input value={form.whatsapp} maxLength={40} onChange={(e) => setForm({ ...form, whatsapp: e.target.value })} /></Field><Field label="Default language"><Select value={form.defaultLanguage} onValueChange={(value) => setForm({ ...form, defaultLanguage: value as LanguageCode })}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{languages.map((item) => <SelectItem key={item.code} value={item.code}>{item.flag} {item.nativeLabel}</SelectItem>)}</SelectContent></Select></Field>
   </div><MediaUploadField label="Blog author profile photo" kind="image" value={form.profileImagePath} onChange={(profileImagePath) => setForm({ ...form, profileImagePath })} hint="Shown beside the author name on blog cards. Upload, replace or remove it here, then save settings." /><Field label="Footer statement"><Textarea value={form.footerContent} maxLength={500} onChange={(e) => setForm({ ...form, footerContent: e.target.value })} /></Field><Field label="SEO title"><Input value={form.seoTitle} maxLength={180} onChange={(e) => setForm({ ...form, seoTitle: e.target.value })} /></Field><Field label="SEO description"><Textarea value={form.seoDescription} maxLength={500} onChange={(e) => setForm({ ...form, seoDescription: e.target.value })} /></Field><div className="rounded-lg border border-border p-4"><p className="text-xs font-bold uppercase text-primary">Search provider</p><div className="mt-1 flex flex-wrap items-center justify-between gap-2"><p className="text-sm font-semibold">Google Programmable Search Engine (default web search)</p><Badge variant={form.googleSearchCx.trim() ? "default" : "secondary"}>{form.googleSearchCx.trim() ? "Configured" : "Not configured"}</Badge></div><div className="mt-3"><Field label="Search Engine ID / CX"><Input value={form.googleSearchCx} maxLength={200} placeholder="e.g. 0123456789abcdef0" onChange={(e) => setForm({ ...form, googleSearchCx: e.target.value })} /></Field></div><SearchConfigTest cx={form.googleSearchCx} /><p className="mt-2 text-xs text-muted-foreground">Create a search engine at programmablesearchengine.google.com, copy its Search engine ID here, test it, then save. Site Search works independently.</p></div><Button type="submit" disabled={busy}><Save /> {busy ? "Saving…" : "Save settings"}</Button></form>;
 }
 
