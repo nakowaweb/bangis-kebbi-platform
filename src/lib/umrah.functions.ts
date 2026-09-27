@@ -25,22 +25,19 @@ export type UmrahDocumentType = (typeof umrahDocumentTypes)[number];
 
 export const umrahDocumentLabels: Record<string, string> = {
   passport: "Passport",
-  id_card_front: "ID Card — Front",
-  id_card_back: "ID Card — Back",
+  id_card_front: "Additional Document",
+  id_card_back: "Additional Document",
   // Legacy categories kept only so older uploads still display a readable name.
-  identification: "ID Card — Front",
+  identification: "Additional Document",
   photograph: "Previously uploaded document",
   other: "Previously uploaded document",
 };
 
-export const UMRAH_IDENTITY_ERROR =
-  "Please upload either your Passport, or both the front and back of your ID Card.";
+export const UMRAH_IDENTITY_ERROR = "Please upload your Passport.";
 
-/** Identity requirement: passport alone, or both sides of an ID card. */
+/** Identity requirement: a passport is required. Additional documents are optional. */
 export function hasUmrahIdentityDocuments(types: Iterable<string>): boolean {
-  const present = new Set(types);
-  if (present.has("passport")) return true;
-  return (present.has("id_card_front") || present.has("identification")) && present.has("id_card_back");
+  return new Set(types).has("passport");
 }
 
 export const UMRAH_MAX_BYTES = 10 * 1024 * 1024;
