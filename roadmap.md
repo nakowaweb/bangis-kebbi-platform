@@ -138,8 +138,8 @@
 - [ ] Register the eight entries in the production Media Library — blocked when no production admin session is available
 
 ## Multilingual header and managed languages
-- [ ] Reproduce the approved desktop, tablet and mobile language selector without changing other header elements
-- [ ] Extend working site translations from EN/AR/HA to FR/ES/TR/DE/UR/ZH with Urdu RTL and English fallback
-- [ ] Add secure Super Admin controls for language availability, ordering and future additions
-- [ ] Extend CMS dynamic-content translation management to every enabled language
+- [x] Reproduce the approved desktop, tablet and mobile language selector without changing other header elements
+- [x] Extend working site translations from EN/AR/HA to FR/ES/TR/DE/UR/ZH with Urdu RTL and English fallback
+- [x] Add secure Super Admin controls for language availability and future additions
+- [x] Extend CMS dynamic-content translation management to every enabled language
 - [ ] Verify persistence, page navigation, RTL/LTR switching, responsive layout and build health
