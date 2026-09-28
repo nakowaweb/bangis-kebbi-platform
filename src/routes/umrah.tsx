@@ -1,7 +1,8 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
-import { ContactSection, UmrahSection } from "@/components/platform-sections";
+import { ContactSection } from "@/components/platform-sections";
+import { UmrahLanding } from "@/components/umrah/umrah-landing";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { getPublicUmrahInfo } from "@/lib/umrah.functions";
@@ -40,7 +41,9 @@ type Entry = { id: string; content_type: string; slug: string; title: string; su
 function UmrahPage() {
   const { entries, partners } = Route.useLoaderData();
   const { language } = useLanguage();
-  const rows = entries as Entry[];
+  const allRows = entries as Entry[];
+  const isLanding = (slug: string) => slug.startsWith("umrah-hero") || slug.startsWith("umrah-landing") || slug.startsWith("partners-slide");
+  const rows = allRows.filter((entry) => !isLanding(entry.slug));
   const group = (type: string) => rows.filter((entry) => entry.content_type === type);
 
   const steps = group("umrah_step");
@@ -58,7 +61,8 @@ function UmrahPage() {
 
   return (
     <main>
-      <UmrahSection />
+      <UmrahLanding entries={allRows.filter((e) => isLanding(e.slug))} partnerCount={partners.length} />
+
 
       <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
         <div className="grid gap-10">
