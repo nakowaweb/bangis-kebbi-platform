@@ -83,7 +83,7 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
     { title: "Apply for Umrah", body: "Fill in your details and upload the required documents to register for Umrah support.", icon: FileText, image: cardApply, to: signedIn ? "/dashboard" : "/login", tone: "bg-card" },
     { title: "My Umrah Savings Goal", body: "Set your personal savings goal to plan for your Umrah journey at your own pace.", icon: Wallet, image: cardGoal, to: signedIn ? "/dashboard" : "/login", tone: "bg-success/10", goal: true },
     { title: "Travel Partners", body: "Explore travel partners who provide Umrah packages and travel services.", icon: Plane, image: cardTravel, to: "/partners", tone: "bg-brand-gold/10" },
-    { title: "My Records", body: "View your application status, savings history and all your Umrah records.", icon: ClipboardList, image: cardRecords, to: signedIn ? "/dashboard" : "/login", tone: "bg-accent/40" },
+    { title: "My Records", body: "View your application status, savings history and all your Umrah records.", icon: ClipboardList, image: cardRecords, to: signedIn ? "/dashboard" : "/login", tone: "bg-secondary/60" },
   ] as const;
 
   return (
