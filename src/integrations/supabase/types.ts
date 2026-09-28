@@ -1007,11 +1007,15 @@ export type Database = {
           name: string
           notes: string | null
           services: string | null
+          show_email: boolean
+          show_phone: boolean
+          show_whatsapp: boolean
           sort_order: number
           state_region: string | null
           updated_at: string
           verification_status: string
           website_url: string | null
+          whatsapp: string | null
         }
         Insert: {
           city?: string | null
@@ -1026,11 +1030,15 @@ export type Database = {
           name: string
           notes?: string | null
           services?: string | null
+          show_email?: boolean
+          show_phone?: boolean
+          show_whatsapp?: boolean
           sort_order?: number
           state_region?: string | null
           updated_at?: string
           verification_status?: string
           website_url?: string | null
+          whatsapp?: string | null
         }
         Update: {
           city?: string | null
@@ -1045,11 +1053,15 @@ export type Database = {
           name?: string
           notes?: string | null
           services?: string | null
+          show_email?: boolean
+          show_phone?: boolean
+          show_whatsapp?: boolean
           sort_order?: number
           state_region?: string | null
           updated_at?: string
           verification_status?: string
           website_url?: string | null
+          whatsapp?: string | null
         }
         Relationships: []
       }
