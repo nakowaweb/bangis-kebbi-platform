@@ -993,6 +993,89 @@ export type Database = {
           },
         ]
       }
+      umrah_goals: {
+        Row: {
+          balance: number
+          created_at: string
+          currency: string
+          id: string
+          package_id: string | null
+          status: string
+          target_amount: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          package_id?: string | null
+          status?: string
+          target_amount?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          package_id?: string | null
+          status?: string
+          target_amount?: number | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "umrah_goals_package_id_fkey"
+            columns: ["package_id"]
+            isOneToOne: false
+            referencedRelation: "umrah_packages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      umrah_packages: {
+        Row: {
+          created_at: string
+          currency: string
+          description: string | null
+          id: string
+          is_available: boolean
+          name: string
+          price: number | null
+          sort_order: number
+          tier: Database["public"]["Enums"]["umrah_tier"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name: string
+          price?: number | null
+          sort_order?: number
+          tier: Database["public"]["Enums"]["umrah_tier"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          description?: string | null
+          id?: string
+          is_available?: boolean
+          name?: string
+          price?: number | null
+          sort_order?: number
+          tier?: Database["public"]["Enums"]["umrah_tier"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
       umrah_partners: {
         Row: {
           city: string | null
@@ -1065,6 +1148,122 @@ export type Database = {
         }
         Relationships: []
       }
+      umrah_payment_methods: {
+        Row: {
+          code: string
+          created_at: string
+          id: string
+          instructions: string | null
+          is_enabled: boolean
+          label: string
+          receiving_details: string | null
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_enabled?: boolean
+          label: string
+          receiving_details?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          id?: string
+          instructions?: string | null
+          is_enabled?: boolean
+          label?: string
+          receiving_details?: string | null
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      umrah_settings: {
+        Row: {
+          deposits_enabled: boolean
+          id: number
+          updated_at: string
+        }
+        Insert: {
+          deposits_enabled?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Update: {
+          deposits_enabled?: boolean
+          id?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      umrah_transactions: {
+        Row: {
+          amount: number
+          created_at: string
+          created_by: string | null
+          currency: string
+          goal_id: string | null
+          id: string
+          kind: string
+          method_code: string
+          note: string | null
+          reference: string | null
+          review_note: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          goal_id?: string | null
+          id?: string
+          kind?: string
+          method_code: string
+          note?: string | null
+          reference?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          created_by?: string | null
+          currency?: string
+          goal_id?: string | null
+          id?: string
+          kind?: string
+          method_code?: string
+          note?: string | null
+          reference?: string | null
+          review_note?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "umrah_transactions_goal_id_fkey"
+            columns: ["goal_id"]
+            isOneToOne: false
+            referencedRelation: "umrah_goals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -1123,6 +1322,19 @@ export type Database = {
         }
         Returns: undefined
       }
+      record_umrah_refund: {
+        Args: {
+          _amount: number
+          _method: string
+          _note: string
+          _user_id: string
+        }
+        Returns: string
+      }
+      review_umrah_transaction: {
+        Args: { _approve: boolean; _id: string; _note?: string }
+        Returns: undefined
+      }
     }
     Enums: {
       app_role:
@@ -1157,6 +1369,7 @@ export type Database = {
         | "completed"
         | "rejected"
         | "cancelled"
+      umrah_tier: "economy" | "classic" | "vip"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -1320,6 +1533,7 @@ export const Constants = {
         "rejected",
         "cancelled",
       ],
+      umrah_tier: ["economy", "classic", "vip"],
     },
   },
 } as const

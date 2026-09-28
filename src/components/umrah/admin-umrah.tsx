@@ -42,6 +42,7 @@ import {
   umrahStatuses,
   umrahDocumentLabels,
 } from "@/lib/umrah.functions";
+import { AdminGoals, AdminPackages, AdminPaymentMethods, AdminTransactions } from "@/components/umrah/admin-umrah-finance";
 
 export function AdminUmrahManager() {
   const [openId, setOpenId] = useState<string | null>(null);
@@ -52,6 +53,10 @@ export function AdminUmrahManager() {
         <TabsTrigger value="partners">
           <Building2 /> Partners
         </TabsTrigger>
+        <TabsTrigger value="packages">Packages</TabsTrigger>
+        <TabsTrigger value="payments">Payment methods</TabsTrigger>
+        <TabsTrigger value="transactions">Transactions</TabsTrigger>
+        <TabsTrigger value="goals">Goals</TabsTrigger>
       </TabsList>
       <TabsContent value="applications">
         {openId ? (
@@ -63,6 +68,10 @@ export function AdminUmrahManager() {
       <TabsContent value="partners">
         <PartnersManager />
       </TabsContent>
+      <TabsContent value="packages"><AdminPackages /></TabsContent>
+      <TabsContent value="payments"><AdminPaymentMethods /></TabsContent>
+      <TabsContent value="transactions"><AdminTransactions /></TabsContent>
+      <TabsContent value="goals"><AdminGoals /></TabsContent>
     </Tabs>
   );
 }

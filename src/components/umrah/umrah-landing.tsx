@@ -86,10 +86,10 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
   const text = (slug: string, fallback: string) => entries.find((e) => e.slug === slug)?.title || fallback;
 
   const cards = [
-    { title: "Apply for Umrah", body: "Fill in your details and upload the required documents to register for Umrah support.", icon: FileText, image: cardApply, to: signedIn ? "/dashboard" : "/login", tone: "bg-card" },
-    { title: "My Umrah Savings Goal", body: "Set your personal savings goal to plan for your Umrah journey at your own pace.", icon: Wallet, image: cardGoal, to: signedIn ? "/dashboard" : "/login", tone: "bg-success/10", goal: true },
-    { title: "Travel Partners", body: "Explore travel partners who provide Umrah packages and travel services.", icon: Plane, image: cardTravel, to: "/partners", tone: "bg-brand-gold/10" },
-    { title: "My Records", body: "View your application status, savings history and all your Umrah records.", icon: ClipboardList, image: cardRecords, to: signedIn ? "/dashboard" : "/login", tone: "bg-secondary/60" },
+    { title: "Apply for Umrah", body: "Fill in your details and upload the required documents to register for Umrah support.", icon: FileText, image: cardApply, to: "/my-umrah", search: { tab: "application" }, tone: "bg-card" },
+    { title: "My Umrah Savings Goal", body: "Set your personal savings goal to plan for your Umrah journey at your own pace.", icon: Wallet, image: cardGoal, to: "/my-umrah", search: { tab: "goal" }, tone: "bg-success/10", goal: true },
+    { title: "Travel Partners", body: "Explore travel partners who provide Umrah packages and travel services.", icon: Plane, image: cardTravel, to: "/partners", search: undefined, tone: "bg-brand-gold/10" },
+    { title: "My Records", body: "View your application status, savings history and all your Umrah records.", icon: ClipboardList, image: cardRecords, to: "/my-umrah", search: { tab: "records" }, tone: "bg-secondary/60" },
   ] as const;
 
   return (
@@ -105,8 +105,8 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
             </h1>
             <p className="mt-4 text-base leading-7 text-primary-foreground/90 sm:text-lg">{text("umrah-landing-subtitle", "Preparation • Application Support • Personal Savings Goals • Travel Connections • Guidance & Support")}</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link to={signedIn ? "/dashboard" : "/register"} className={`${pill} bg-success text-primary-foreground shadow-lg`}><FileText className="size-5" />Apply for Umrah<ArrowRight className="size-4" /></Link>
-              <Link to={signedIn ? "/dashboard" : "/login"} className={`${pill} border border-primary-foreground/70 bg-brand-ink/30 backdrop-blur`}><Wallet className="size-5" />Start My Umrah Goal<ArrowRight className="size-4" /></Link>
+              <Link to="/my-umrah" search={{ tab: "application" }} className={`${pill} bg-success text-primary-foreground shadow-lg`}><FileText className="size-5" />Apply for Umrah<ArrowRight className="size-4" /></Link>
+              <Link to="/my-umrah" search={{ tab: "goal" }} className={`${pill} border border-primary-foreground/70 bg-brand-ink/30 backdrop-blur`}><Wallet className="size-5" />Start My Umrah Goal<ArrowRight className="size-4" /></Link>
               <Link to="/partners" className={`${pill} border border-brand-cyan bg-card text-foreground`}><Handshake className="size-5" />Explore Travel Partners<ArrowRight className="size-4" /></Link>
             </div>
           </div>
@@ -122,13 +122,13 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {cards.map((c) => (
-            <Link key={c.title} to={c.to} className={`group relative flex min-h-64 flex-col overflow-hidden rounded-xl border border-border ${c.tone} p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg`}>
+            <Link key={c.title} to={c.to as "/my-umrah"} search={c.search as { tab?: "application" }} className={`group relative flex min-h-64 flex-col overflow-hidden rounded-xl border border-border ${c.tone} p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg`}>
               <div className="flex items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><c.icon className="size-5" /></span><h2 className="font-display text-lg font-bold">{c.title}</h2><ChevronRight className="ms-auto size-5 transition group-hover:translate-x-1" /></div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">{c.body}</p>
               {"goal" in c ? (
                 <div className="mt-auto rounded-lg border border-border bg-card p-3 text-sm">
                   <p className="font-semibold">Your Goal Progress</p>
-                  <p className="mt-2 text-muted-foreground">{signedIn === null ? "…" : signedIn ? "No recorded contributions yet." : "Sign in to view your Umrah Goal."}</p>
+                  <p className="mt-2 text-muted-foreground">{signedIn === null ? "…" : signedIn ? "Open your goal to see your real recorded balance." : "Sign in to view your Umrah Goal."}</p>
                 </div>
               ) : (
                 <SafeImage src={c.image} alt="" loading="lazy" width={200} height={140} className="mt-auto ms-auto h-28 w-auto object-contain" />

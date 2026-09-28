@@ -64,42 +64,13 @@ function UmrahPage() {
       <UmrahLanding entries={allRows.filter((e) => isLanding(e.slug))} partnerCount={partners.length} />
 
 
-      <section className="mx-auto max-w-6xl px-4 py-14 sm:px-6 lg:px-8">
+      <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8">
         <div className="grid gap-10">
-           <section><h1 className="font-display text-3xl font-bold">{fallback.title}</h1><p className="mt-2 font-display text-xl font-semibold text-primary">{fallback.headline}</p><p className="mt-4 max-w-3xl text-sm leading-7 text-muted-foreground">{fallback.intro}</p></section>
-           <VerifiedPartners partners={partners} />
            {info.length > 0 ? <Block title={fallback.information} items={info} /> : null}
-            <Journey title={fallback.journey} description={sectionLabels.journeyDescription} steps={fallback.steps} managed={steps} />
-            <ImportantInformation title={sectionLabels.importantInformation} description={sectionLabels.importantDescription} items={[
-              { title: fallback.documentsTitle, body: fallback.documents },
-              { title: fallback.reviewTitle, body: fallback.review },
-              { title: fallback.preparationTitle, body: fallback.preparation },
-              { title: fallback.coordinationTitle, body: fallback.coordination },
-              { title: fallback.updatesTitle, body: fallback.updates },
-              { title: fallback.refundTitle, body: fallback.refund },
-            ]} managed={info} />
-            <SupportBalance title={fallback.balanceTitle} body={fallback.balance} dashboardLabel={sectionLabels.dashboardLabel} managed={info} />
            {requirements.length > 0 ? <Block title={fallback.requirements} items={requirements} /> : null}
            {notices.length > 0 ? <Block title={fallback.notices} items={notices} /> : null}
            {faqs.length > 0 ? <Block title={fallback.questions} items={faqs} /> : null}
            {contact.length > 0 ? <Block title={fallback.contact} items={contact} /> : null}
-
-          <Card className="border-brand-cyan/40">
-            <CardHeader>
-               <CardTitle className="text-lg">{fallback.applyTitle}</CardTitle>
-              <CardDescription>
-                 {fallback.applyBody}
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="flex flex-wrap gap-3">
-              <Button asChild>
-                 <Link to="/login">{fallback.signIn}</Link>
-              </Button>
-              <Button asChild variant="outline">
-                 <Link to="/register">{fallback.register}</Link>
-              </Button>
-            </CardContent>
-          </Card>
            <ContactActions />
         </div>
       </section>
