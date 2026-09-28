@@ -1213,6 +1213,7 @@ export type Database = {
           kind: string
           method_code: string
           note: string | null
+          receipt_path: string | null
           reference: string | null
           review_note: string | null
           reviewed_at: string | null
@@ -1230,6 +1231,7 @@ export type Database = {
           kind?: string
           method_code: string
           note?: string | null
+          receipt_path?: string | null
           reference?: string | null
           review_note?: string | null
           reviewed_at?: string | null
@@ -1247,6 +1249,7 @@ export type Database = {
           kind?: string
           method_code?: string
           note?: string | null
+          receipt_path?: string | null
           reference?: string | null
           review_note?: string | null
           reviewed_at?: string | null

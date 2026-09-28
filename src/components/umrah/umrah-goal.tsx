@@ -11,7 +11,7 @@ const db = supabase as any;
 
 export type Pkg = { id: string; tier: string; name: string; description: string | null; price: number | null; currency: string; is_available: boolean; sort_order: number };
 export type Goal = { id: string; user_id: string; package_id: string | null; target_amount: number | null; currency: string; balance: number; status: string; created_at: string };
-export type Tx = { id: string; user_id: string; method_code: string; kind: string; amount: number; currency: string; reference: string | null; note: string | null; status: string; review_note: string | null; created_at: string; reviewed_at: string | null };
+export type Tx = { id: string; user_id: string; method_code: string; kind: string; amount: number; currency: string; reference: string | null; note: string | null; status: string; review_note: string | null; receipt_path?: string | null; created_at: string; reviewed_at: string | null };
 type Method = { code: string; label: string; instructions: string | null; receiving_details: string | null; is_enabled: boolean; sort_order: number };
 
 const money = (n: number | null | undefined, c = "NGN") => (n == null ? "—" : `${c} ${Number(n).toLocaleString(undefined, { maximumFractionDigits: 2 })}`);
@@ -37,9 +37,10 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
   const { loading, goal, packages, txs, methods, depositsEnabled, reload } = useUmrahMemberData(userId);
   const [pkg, setPkg] = useState<string>("");
   const [target, setTarget] = useState("");
+  const [currency, setCurrency] = useState<"NGN" | "USDT">("NGN");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  useEffect(() => { setPkg(goal?.package_id ?? ""); setTarget(goal?.target_amount ? String(goal.target_amount) : ""); }, [goal]);
+  useEffect(() => { setPkg(goal?.package_id ?? ""); setTarget(goal?.target_amount ? String(goal.target_amount) : ""); setCurrency(goal?.currency === "USDT" ? "USDT" : "NGN"); }, [goal]);
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading your Umrah goal…</p>;
   const balance = Number(goal?.balance ?? 0);
@@ -48,12 +49,14 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
   const tgt = goal?.target_amount ? Number(goal.target_amount) : null;
   const pct = tgt ? Math.min(100, Math.round((balance / tgt) * 100)) : 0;
   const approved = txs.filter((t) => t.status === "approved");
+  const currencyLocked = balance !== 0;
 
   const save = async () => {
     const amount = target ? Number(target) : null;
     if (amount != null && (!Number.isFinite(amount) || amount <= 0)) { toast.error("Enter a valid target amount."); return; }
     setSaving(true);
-    const row = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
+    const row: Record<string, unknown> = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
+    if (!currencyLocked) row["currency"] = currency;
     const { error } = goal ? await db.from("umrah_goals").update(row).eq("id", goal.id) : await db.from("umrah_goals").insert(row);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
@@ -61,6 +64,7 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
     setEditing(false);
     void reload();
   };
+
 
   return (
     <div className="grid gap-5">
@@ -91,7 +95,10 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
                   ))}
                 </div>
               </div>
-              <div className="grid max-w-xs gap-2"><Label htmlFor="goal-target">Personal target amount (NGN)</Label><Input id="goal-target" inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="e.g. your own target" /></div>
+              <div className="flex flex-wrap gap-4">
+                <div className="grid gap-2"><Label>Goal currency</Label><div className="flex gap-2">{(["NGN", "USDT"] as const).map((c) => <Button key={c} type="button" size="sm" variant={currency === c ? "default" : "outline"} disabled={currencyLocked} onClick={() => setCurrency(c)}>{c}</Button>)}</div>{currencyLocked ? <p className="text-xs text-muted-foreground">Locked because a balance is recorded.</p> : null}</div>
+                <div className="grid max-w-xs gap-2"><Label htmlFor="goal-target">Personal target amount ({currency})</Label><Input id="goal-target" inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="e.g. your own target" /></div>
+              </div>
               <div className="flex gap-2"><Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save goal"}</Button><Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button></div>
             </div>
           )}
@@ -103,8 +110,10 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
         <CardContent className="grid gap-3 sm:grid-cols-2">
           {depositsEnabled && methods.length > 0 ? methods.map((m) => <div key={m.code} className="rounded-lg border border-border p-3 text-sm"><p className="font-semibold">{m.label}</p>{m.instructions ? <p className="mt-1 whitespace-pre-line text-muted-foreground">{m.instructions}</p> : null}{m.receiving_details ? <p className="mt-1 whitespace-pre-line font-mono text-xs">{m.receiving_details}</p> : null}</div>)
             : <p className="text-sm text-muted-foreground sm:col-span-2">1. USDT · 2. Nigerian Naira (NGN) — currently unavailable.</p>}
+          {depositsEnabled && goal ? <RecordPayment userId={userId} goalId={goal.id} goalCurrency={goal.currency} methods={methods.filter((m) => m.code.toUpperCase() === goal.currency)} onDone={reload} /> : null}
         </CardContent>
       </Card>
+
 
       <Card>
         <CardHeader><CardTitle className="text-lg">Approved history</CardTitle></CardHeader>
@@ -118,7 +127,7 @@ export function TxList({ txs }: { txs: Tx[] }) {
   return <ul className="divide-y divide-border text-sm">{txs.map((t) => (
     <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
       <span><span className="font-medium capitalize">{t.kind}</span> · {t.method_code.toUpperCase()}{t.reference ? ` · Ref ${t.reference}` : ""}<span className="block text-xs text-muted-foreground">{new Date(t.created_at).toLocaleString()}</span></span>
-      <span className="text-end"><span className={t.kind === "refund" ? "text-destructive" : ""}>{t.kind === "refund" ? "−" : ""}{money(t.amount, t.currency)}</span><span className="block text-xs capitalize text-muted-foreground">{t.status}</span></span>
+      <span className="text-end"><span className={t.kind === "refund" ? "text-destructive" : ""}>{t.kind === "refund" ? "−" : ""}{money(t.amount, t.currency)}</span><span className="block text-xs capitalize text-muted-foreground">{t.status}</span>{t.receipt_path ? <button type="button" className="text-xs text-primary underline" onClick={() => openReceipt(t.receipt_path!)}>View receipt</button> : null}</span>
     </li>
   ))}</ul>;
 }
@@ -144,4 +153,50 @@ export function UmrahRecordsPanel({ userId }: { userId: string }) {
 
 function Stat({ label, value }: { label: string; value: string }) {
   return <div className="rounded-xl border border-border bg-card p-4 shadow-sm"><p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p><p className="mt-1 font-display text-xl font-bold">{value}</p></div>;
+}
+
+const RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
+
+/** Shown only while Live Deposits AND a matching method are enabled by Super Admin. */
+function RecordPayment({ userId, goalId, goalCurrency, methods, onDone }: { userId: string; goalId: string; goalCurrency: string; methods: Method[]; onDone: () => void }) {
+  const [method, setMethod] = useState(methods[0]?.code ?? "");
+  const [amount, setAmount] = useState("");
+  const [reference, setReference] = useState("");
+  const [file, setFile] = useState<File | null>(null);
+  const [busy, setBusy] = useState(false);
+  if (methods.length === 0) return <p className="text-sm text-muted-foreground sm:col-span-2">No {goalCurrency} payment method is available right now.</p>;
+  const submit = async () => {
+    const n = Number(amount);
+    if (!(n > 0)) { toast.error("Enter the amount you sent."); return; }
+    if (!reference.trim()) { toast.error("Enter the transaction reference."); return; }
+    if (!file) { toast.error("Attach your payment receipt."); return; }
+    if (!RECEIPT_TYPES.includes(file.type) || file.size > 10 * 1024 * 1024) { toast.error("Receipt must be a JPG, PNG, WEBP or PDF under 10MB."); return; }
+    setBusy(true);
+    const path = `${userId}/umrah-receipts/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, "_")}`;
+    const up = await supabase.storage.from("member-documents").upload(path, file, { contentType: file.type, upsert: false });
+    if (up.error) { setBusy(false); toast.error(up.error.message); return; }
+    const { error } = await db.from("umrah_transactions").insert({ user_id: userId, goal_id: goalId, method_code: method, kind: "payment", amount: n, currency: goalCurrency, reference: reference.trim(), receipt_path: path, status: "pending" });
+    setBusy(false);
+    if (error) { await supabase.storage.from("member-documents").remove([path]); toast.error(error.message); return; }
+    toast.success("Payment recorded. It stays pending until an administrator verifies it.");
+    setAmount(""); setReference(""); setFile(null); onDone();
+  };
+  return (
+    <div className="grid gap-3 rounded-lg border border-border p-4 sm:col-span-2">
+      <p className="font-semibold">Record a payment you have sent</p>
+      <div className="flex flex-wrap gap-2">{methods.map((m) => <Button key={m.code} type="button" size="sm" variant={method === m.code ? "default" : "outline"} onClick={() => setMethod(m.code)}>{m.label}</Button>)}</div>
+      <div className="grid gap-3 sm:grid-cols-2">
+        <div className="grid gap-1"><Label htmlFor="pay-amount">Amount ({goalCurrency})</Label><Input id="pay-amount" inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} /></div>
+        <div className="grid gap-1"><Label htmlFor="pay-ref">Transaction reference / hash</Label><Input id="pay-ref" value={reference} onChange={(e) => setReference(e.target.value)} /></div>
+      </div>
+      <div className="grid gap-1"><Label htmlFor="pay-receipt">Receipt (JPG, PNG, WEBP or PDF, max 10MB)</Label><Input id="pay-receipt" type="file" accept={RECEIPT_TYPES.join(",")} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div>
+      <Button className="w-fit" onClick={submit} disabled={busy}>{busy ? "Submitting…" : "Submit payment record"}</Button>
+    </div>
+  );
+}
+
+export async function openReceipt(path: string) {
+  const { data, error } = await supabase.storage.from("member-documents").createSignedUrl(path, 120);
+  if (error || !data) { toast.error(error?.message ?? "Receipt unavailable"); return; }
+  window.open(data.signedUrl, "_blank", "noopener,noreferrer");
 }
