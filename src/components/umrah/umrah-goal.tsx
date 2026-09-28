@@ -56,7 +56,7 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
     if (amount != null && (!Number.isFinite(amount) || amount <= 0)) { toast.error("Enter a valid target amount."); return; }
     setSaving(true);
     const row: Record<string, unknown> = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
-    if (!currencyLocked) row.currency = currency;
+    if (!currencyLocked) row["currency"] = currency;
     const { error } = goal ? await db.from("umrah_goals").update(row).eq("id", goal.id) : await db.from("umrah_goals").insert(row);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
