@@ -456,6 +456,10 @@ function PartnersManager() {
           sortOrder: Number(value("sortOrder") || 0),
           contactEmail: value("contactEmail"),
           contactPhone: value("contactPhone"),
+          whatsapp: value("whatsapp"),
+          showPhone: form.get("showPhone") === "on",
+          showWhatsapp: form.get("showWhatsapp") === "on",
+          showEmail: form.get("showEmail") === "on",
           websiteUrl: value("websiteUrl"),
           services: value("services"),
           verificationStatus: value("verificationStatus") as never,
@@ -584,6 +588,14 @@ function PartnersManager() {
               <Input name="contactEmail" type="email" placeholder="name@example.com" defaultValue={editing?.["contact_email"] ?? ""} maxLength={160} /></div>
             <div className="grid gap-2"><Label>Contact phone</Label>
               <Input name="contactPhone" placeholder="+234…" defaultValue={editing?.["contact_phone"] ?? ""} maxLength={40} /></div>
+            <div className="grid gap-2"><Label>WhatsApp</Label>
+              <Input name="whatsapp" placeholder="+234…" defaultValue={(editing as Record<string, unknown> | null)?.["whatsapp"] as string ?? ""} maxLength={40} /></div>
+            <fieldset className="grid gap-2 rounded-md border border-border p-3 text-sm">
+              <legend className="px-1 font-medium">Show on public website</legend>
+              {([["showEmail", "show_email", "Email"], ["showPhone", "show_phone", "Phone"], ["showWhatsapp", "show_whatsapp", "WhatsApp"]] as const).map(([name, col, label]) => (
+                <label key={name} className="flex items-center gap-3"><input type="checkbox" name={name} defaultChecked={Boolean((editing as Record<string, unknown> | null)?.[col])} className="size-4" />{label}</label>
+              ))}
+            </fieldset>
             <div className="grid gap-2"><Label>Website</Label>
               <Input name="websiteUrl" type="url" placeholder="https://example.com" defaultValue={editing?.["website_url"] ?? ""} /></div>
             <div className="grid gap-2"><Label>Services offered</Label>

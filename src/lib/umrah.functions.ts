@@ -570,6 +570,10 @@ const partnerInput = z.object({
   sortOrder: z.coerce.number().int().min(0).max(100000).default(0),
   contactEmail: z.string().trim().max(160).email().or(z.literal("")).default(""),
   contactPhone: z.string().trim().max(40).default(""),
+  whatsapp: z.string().trim().max(40).default(""),
+  showPhone: z.boolean().default(false),
+  showWhatsapp: z.boolean().default(false),
+  showEmail: z.boolean().default(false),
   websiteUrl: z.string().trim().url().or(z.literal("")).default(""),
   services: z.string().trim().max(1000).default(""),
   verificationStatus: z.enum(["unverified", "pending", "verified"]).default("unverified"),
@@ -628,6 +632,10 @@ export const saveUmrahPartner = createServerFn({ method: "POST" })
       sort_order: data.sortOrder,
       contact_email: data.contactEmail || null,
       contact_phone: data.contactPhone || null,
+      whatsapp: data.whatsapp || null,
+      show_phone: data.showPhone,
+      show_whatsapp: data.showWhatsapp,
+      show_email: data.showEmail,
       website_url: data.websiteUrl || null,
       services: data.services || null,
       verification_status: data.verificationStatus,
@@ -696,7 +704,7 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" })
       .limit(60),
     client
       .from("umrah_partners")
-      .select("id,name,country,state_region,city,logo_path,website_url,services,sort_order" as "*")
+      .select("id,name,country,state_region,city,logo_path,website_url,services,sort_order,contact_email,contact_phone,whatsapp,show_phone,show_whatsapp,show_email" as "*")
       .eq("verification_status", "verified")
       .eq("is_visible", true)
       .order("sort_order" as never, { ascending: true })
@@ -705,7 +713,14 @@ export const getPublicUmrahInfo = createServerFn({ method: "GET" })
   ]);
 
   const contentRows = entries ?? [];
-  const rows = (partners ?? []) as unknown as Array<{ id: string; name: string; country: string | null; state_region: string | null; city: string | null; logo_path: string | null; website_url: string | null; services: string | null }>;
+  type RawPartner = { id: string; name: string; country: string | null; state_region: string | null; city: string | null; logo_path: string | null; website_url: string | null; services: string | null; contact_email: string | null; contact_phone: string | null; whatsapp: string | null; show_phone: boolean; show_whatsapp: boolean; show_email: boolean };
+  // Only contact details the Super Admin approved for public viewing leave the server.
+  const rows = ((partners ?? []) as unknown as RawPartner[]).map(({ contact_email, contact_phone, whatsapp, show_phone, show_whatsapp, show_email, ...row }) => ({
+    ...row,
+    phone: show_phone ? contact_phone : null,
+    whatsapp: show_whatsapp ? whatsapp : null,
+    email: show_email ? contact_email : null,
+  }));
   const { signSiteMedia, mediaUrl } = await import("@/lib/public-content.server");
   const signed = await signSiteMedia([...contentRows.map((row) => row.image_path), ...rows.map((row) => row.logo_path)]);
   const translated = await applyTranslations(client as never, contentRows, data.language);
