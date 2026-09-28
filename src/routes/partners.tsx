@@ -1,5 +1,5 @@
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { ArrowLeft, Globe, Handshake, Info, MapPin } from "lucide-react";
+import { ArrowLeft, Globe, Handshake, Info, Mail, MapPin, MessageCircle, Phone } from "lucide-react";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 import { getPublicUmrahInfo } from "@/lib/umrah.functions";
 import { pageHead } from "@/lib/seo";
@@ -43,6 +43,9 @@ function PartnersPage() {
                     <h2 className="font-display text-lg font-bold">{p.name}</h2>
                     {location ? <p className="flex items-center gap-2 text-sm text-muted-foreground"><MapPin className="size-4" />{location}</p> : null}
                     {p.services ? <p className="text-sm text-muted-foreground">{p.services}</p> : null}
+                    {p.phone ? <a href={`tel:${p.phone.replace(/[^+\d]/g, "")}`} className="inline-flex items-center gap-2 text-sm"><Phone className="size-4" />{p.phone}</a> : null}
+                    {p.whatsapp ? <a href={`https://wa.me/${p.whatsapp.replace(/\D/g, "")}`} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm"><MessageCircle className="size-4" />WhatsApp</a> : null}
+                    {p.email ? <a href={`mailto:${p.email}`} className="inline-flex items-center gap-2 text-sm"><Mail className="size-4" />{p.email}</a> : null}
                     {p.website_url ? <a href={p.website_url} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 text-sm font-semibold text-primary underline"><Globe className="size-4" />Visit website</a> : null}
                   </div>
                 </article>
