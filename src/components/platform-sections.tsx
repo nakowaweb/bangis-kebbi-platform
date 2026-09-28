@@ -103,7 +103,7 @@ const quickActions: Array<{
   { slug: "quick-nav-projects", label: "nav.projects", href: "/projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
   { slug: "quick-nav-blog", label: "nav.blog", href: "/blog", image: quickNavBlog, imageAlt: "Article document with pen" },
   { slug: "quick-nav-foundation", label: "nav.foundation", href: "/foundation", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
-  { slug: "quick-nav-community", label: "nav.verifiedPartners", href: "/umrah", hash: "verified-partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
+  { slug: "quick-nav-community", label: "nav.verifiedPartners", href: "/partners", hash: undefined, image: quickNavCommunity, imageAlt: "Verified professional partners" },
   { slug: "quick-nav-cv", label: "nav.cv", href: "/cv", image: quickNavCv, imageAlt: "Professional résumé document" },
 ];
 
