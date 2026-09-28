@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { openReceipt } from "@/components/umrah/umrah-goal";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -85,14 +86,14 @@ export function AdminTransactions() {
     <Card><CardHeader><CardTitle className="text-base">Transactions</CardTitle><CardDescription>Approve only payments you have genuinely received and verified. Each can be reviewed once.</CardDescription></CardHeader><CardContent>
       {rows.length === 0 ? <p className="text-sm text-muted-foreground">No transactions recorded.</p> : <ul className="divide-y divide-border text-sm">{rows.map((t) => (
         <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
-          <span><span className="font-medium capitalize">{t.kind}</span> · {t.method_code.toUpperCase()} · {t.currency} {Number(t.amount).toLocaleString()}{t.reference ? ` · Ref ${t.reference}` : ""}<span className="block text-xs text-muted-foreground">Member {t.user_id} · {new Date(t.created_at).toLocaleString()}</span></span>
+          <span><span className="font-medium capitalize">{t.kind}</span> · {t.method_code.toUpperCase()} · {t.currency} {Number(t.amount).toLocaleString()}{t.reference ? ` · Ref ${t.reference}` : ""}{t.receipt_path ? <button type="button" className="ms-2 text-xs text-primary underline" onClick={() => openReceipt(t.receipt_path)}>View receipt</button> : null}<span className="block text-xs text-muted-foreground">Member {t.user_id} · {new Date(t.created_at).toLocaleString()}</span></span>
           {t.status === "pending" ? <span className="flex gap-2"><Button size="sm" onClick={() => review(t.id, true)}>Approve</Button><Button size="sm" variant="outline" onClick={() => review(t.id, false)}>Reject</Button></span> : <Badge variant="secondary" className="capitalize">{t.status}</Badge>}
         </li>))}</ul>}
     </CardContent></Card>
     <Card><CardHeader><CardTitle className="text-base">Record a refund</CardTitle><CardDescription>Deducted from the member's recorded balance and logged in the audit trail.</CardDescription></CardHeader><CardContent className="grid gap-3 sm:grid-cols-2">
       <div className="grid gap-1"><Label>Member ID</Label><Input value={refund.user_id} onChange={(e) => setRefund({ ...refund, user_id: e.target.value })} /></div>
       <div className="grid gap-1"><Label>Amount</Label><Input inputMode="decimal" value={refund.amount} onChange={(e) => setRefund({ ...refund, amount: e.target.value })} /></div>
-      <div className="grid gap-1"><Label>Method (usdt / ngn)</Label><Input value={refund.method} onChange={(e) => setRefund({ ...refund, method: e.target.value.toLowerCase() })} /></div>
+      <div className="grid gap-1"><Label>Method</Label><div className="flex gap-2">{["usdt","ngn"].map((c) => <Button key={c} type="button" size="sm" variant={refund.method === c ? "default" : "outline"} onClick={() => setRefund({ ...refund, method: c })}>{c.toUpperCase()}</Button>)}</div><p className="text-xs text-muted-foreground">Refund is recorded in the member goal currency; no conversion.</p></div>
       <div className="grid gap-1"><Label>Note</Label><Input value={refund.note} onChange={(e) => setRefund({ ...refund, note: e.target.value })} /></div>
       <Button className="w-fit" onClick={doRefund} disabled={!refund.user_id || !(Number(refund.amount) > 0)}>Record refund</Button>
     </CardContent></Card>
