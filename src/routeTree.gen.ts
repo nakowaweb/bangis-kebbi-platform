@@ -20,6 +20,7 @@ import { Route as CvRouteImport } from './routes/cv'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as FoundationRouteImport } from './routes/foundation'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as PartnersRouteImport } from './routes/partners'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProjectsRouteImport } from './routes/projects'
 import { Route as RefundPolicyRouteImport } from './routes/refund-policy'
@@ -92,6 +93,11 @@ const FoundationRoute = FoundationRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PartnersRoute = PartnersRouteImport.update({
+  id: '/partners',
+  path: '/partners',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -201,6 +207,7 @@ export interface FileRoutesByFullPath {
   '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
+  '/partners': typeof PartnersRoute
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/refund-policy': typeof RefundPolicyRoute
@@ -230,6 +237,7 @@ export interface FileRoutesByTo {
   '/cv': typeof CvRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/partners': typeof PartnersRoute
   '/privacy': typeof PrivacyRoute
   '/refund-policy': typeof RefundPolicyRoute
   '/register': typeof RegisterRoute
@@ -261,6 +269,7 @@ export interface FileRoutesById {
   '/forgot-password': typeof ForgotPasswordRoute
   '/foundation': typeof FoundationRouteWithChildren
   '/login': typeof LoginRoute
+  '/partners': typeof PartnersRoute
   '/privacy': typeof PrivacyRoute
   '/projects': typeof ProjectsRouteWithChildren
   '/refund-policy': typeof RefundPolicyRoute
@@ -294,6 +303,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/foundation'
     | '/login'
+    | '/partners'
     | '/privacy'
     | '/projects'
     | '/refund-policy'
@@ -323,6 +333,7 @@ export interface FileRouteTypes {
     | '/cv'
     | '/forgot-password'
     | '/login'
+    | '/partners'
     | '/privacy'
     | '/refund-policy'
     | '/register'
@@ -353,6 +364,7 @@ export interface FileRouteTypes {
     | '/forgot-password'
     | '/foundation'
     | '/login'
+    | '/partners'
     | '/privacy'
     | '/projects'
     | '/refund-policy'
@@ -386,6 +398,7 @@ export interface RootRouteChildren {
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   FoundationRoute: typeof FoundationRouteWithChildren
   LoginRoute: typeof LoginRoute
+  PartnersRoute: typeof PartnersRoute
   PrivacyRoute: typeof PrivacyRoute
   ProjectsRoute: typeof ProjectsRouteWithChildren
   RefundPolicyRoute: typeof RefundPolicyRoute
@@ -474,6 +487,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/partners': {
+      id: '/partners'
+      path: '/partners'
+      fullPath: '/partners'
+      preLoaderRoute: typeof PartnersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -691,6 +711,7 @@ const rootRouteChildren: RootRouteChildren = {
   ForgotPasswordRoute: ForgotPasswordRoute,
   FoundationRoute: FoundationRouteWithChildren,
   LoginRoute: LoginRoute,
+  PartnersRoute: PartnersRoute,
   PrivacyRoute: PrivacyRoute,
   ProjectsRoute: ProjectsRouteWithChildren,
   RefundPolicyRoute: RefundPolicyRoute,

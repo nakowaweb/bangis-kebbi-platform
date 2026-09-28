@@ -170,3 +170,4 @@
 - [x] Translate long content without truncation/key mismatches and back off safely during provider failures
 - [x] Preserve the active language automatically across every internal navigation
 - [x] Verify Japanese and Portuguese on desktop/mobile, Arabic RTL, active-language display, navigation and refresh
+- [x] Umrah landing page from approved design + /partners page (real member data only, payments off)
