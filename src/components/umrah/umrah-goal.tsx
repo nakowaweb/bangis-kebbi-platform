@@ -51,12 +51,12 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
 
   const save = async () => {
     const amount = target ? Number(target) : null;
-    if (amount != null && (!Number.isFinite(amount) || amount <= 0)) return toast.error("Enter a valid target amount.");
+    if (amount != null && (!Number.isFinite(amount) || amount <= 0)) { toast.error("Enter a valid target amount."); return; }
     setSaving(true);
     const row = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
     const { error } = goal ? await db.from("umrah_goals").update(row).eq("id", goal.id) : await db.from("umrah_goals").insert(row);
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Your Umrah goal was saved.");
     setEditing(false);
     void reload();

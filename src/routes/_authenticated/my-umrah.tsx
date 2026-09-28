@@ -6,7 +6,7 @@ import { UmrahGoalPanel, UmrahRecordsPanel } from "@/components/umrah/umrah-goal
 type Tab = "application" | "goal" | "records";
 
 export const Route = createFileRoute("/_authenticated/my-umrah")({
-  validateSearch: (s: Record<string, unknown>): { tab?: Tab } => ({ tab: (["application", "goal", "records"] as const).find((t) => t === s.tab) }),
+  validateSearch: (s: Record<string, unknown>): { tab?: Tab | undefined } => ({ tab: (["application", "goal", "records"] as const).find((t) => t === s["tab"]) }),
   head: () => ({ meta: [
     { title: "My Umrah — Bangis Kebbi" },
     { name: "description", content: "Your private Umrah application, personal goal and records." },

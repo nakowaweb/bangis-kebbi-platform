@@ -27,9 +27,9 @@ function PackageForm({ p, onSaved }: { p: any; onSaved: () => void }) {
   const [f, setF] = useState({ name: p.name, description: p.description ?? "", price: p.price ?? "", currency: p.currency, is_available: p.is_available });
   const save = async () => {
     const price = f.price === "" ? null : Number(f.price);
-    if (price != null && !(price > 0)) return toast.error("Enter a valid price or leave it empty.");
+    if (price != null && !(price > 0)) { toast.error("Enter a valid price or leave it empty."); return; }
     const { error } = await db.from("umrah_packages").update({ ...f, price, description: f.description || null }).eq("id", p.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(`${f.name} saved`); onSaved();
   };
   return <Card><CardHeader><CardTitle className="text-base uppercase">{p.tier}</CardTitle></CardHeader><CardContent className="grid gap-3 sm:grid-cols-2">
@@ -48,7 +48,7 @@ export function AdminPaymentMethods() {
   const toggle = async (v: boolean) => {
     if (v && !window.confirm("Only enable live deposits once legal authorisation and approved payment/custody arrangements are confirmed. Continue?")) return;
     const { error } = await db.from("umrah_settings").update({ deposits_enabled: v }).eq("id", 1);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setEnabled(v); toast.success(v ? "Live deposits enabled" : "Live deposits disabled");
   };
   return <div className="grid gap-4">
@@ -58,7 +58,7 @@ export function AdminPaymentMethods() {
 }
 function MethodForm({ m, onSaved }: { m: any; onSaved: () => void }) {
   const [f, setF] = useState({ label: m.label, instructions: m.instructions ?? "", receiving_details: m.receiving_details ?? "", is_enabled: m.is_enabled });
-  const save = async () => { const { error } = await db.from("umrah_payment_methods").update(f).eq("id", m.id); if (error) return toast.error(error.message); toast.success("Saved"); onSaved(); };
+  const save = async () => { const { error } = await db.from("umrah_payment_methods").update(f).eq("id", m.id); if (error) { toast.error(error.message); return; } toast.success("Saved"); onSaved(); };
   return <Card><CardHeader><CardTitle className="text-base">{m.sort_order}. {m.label}</CardTitle></CardHeader><CardContent className="grid gap-3">
     <div className="grid gap-1"><Label>Display label</Label><Input value={f.label} onChange={(e) => setF({ ...f, label: e.target.value })} /></div>
     <div className="grid gap-1"><Label>Payment instructions</Label><Textarea value={f.instructions} onChange={(e) => setF({ ...f, instructions: e.target.value })} /></div>
@@ -73,12 +73,12 @@ export function AdminTransactions() {
   const review = async (id: string, approve: boolean) => {
     const note = window.prompt(approve ? "Approval note (receipt/reference checked)" : "Reason for rejection") ?? null;
     const { error } = await db.rpc("review_umrah_transaction", { _id: id, _approve: approve, _note: note });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(approve ? "Approved and credited once" : "Rejected"); void reload();
   };
   const doRefund = async () => {
     const { error } = await db.rpc("record_umrah_refund", { _user_id: refund.user_id.trim(), _amount: Number(refund.amount), _method: refund.method, _note: refund.note || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Refund recorded"); setRefund({ user_id: "", amount: "", method: "ngn", note: "" }); void reload();
   };
   return <div className="grid gap-4">
