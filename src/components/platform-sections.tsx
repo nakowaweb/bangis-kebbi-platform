@@ -92,7 +92,7 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
 const quickActions: Array<{
   slug: string;
   label: TranslationKey;
-  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/cv";
+  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/cv" | "/partners";
   hash?: string;
   image: string;
   imageAlt: string;
