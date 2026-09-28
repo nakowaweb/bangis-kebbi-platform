@@ -30,12 +30,18 @@ export const partnerSlideFallbacks = [
 
 /** Resolve CMS-managed slides (by slug) with bundled fallbacks, keeping CMS order when set. */
 export function resolveSlides(entries: LandingEntry[], fallbacks: typeof umrahHeroFallbacks) {
-  return fallbacks
-    .map((f, i) => {
-      const e = entries.find((x) => x.slug === f.slug);
-      return { src: e?.imageUrl || f.image, fallbackSrc: f.image, alt: e?.image_alt || f.alt, order: e?.sort_order ?? i };
-    })
-    .sort((a, b) => a.order - b.order);
+  // When Super Admin has slides in Website Content, show exactly those (enabled, in their order).
+  const prefix = fallbacks[0]!.slug.replace(/-\d+$/, "-");
+  const managed = entries
+    .filter((e) => e.slug.startsWith(prefix) && /-\d+$/.test(e.slug) && e.imageUrl)
+    .sort((a, b) => (a.sort_order ?? 0) - (b.sort_order ?? 0));
+  if (managed.length > 0) {
+    return managed.map((e) => {
+      const f = fallbacks.find((x) => x.slug === e.slug) ?? fallbacks[0]!;
+      return { src: e.imageUrl as string, fallbackSrc: f.image, alt: e.image_alt || e.title || f.alt };
+    });
+  }
+  return fallbacks.map((f) => ({ src: f.image, fallbackSrc: f.image, alt: f.alt }));
 }
 
 export function intervalFrom(entries: LandingEntry[], slug: string) {
