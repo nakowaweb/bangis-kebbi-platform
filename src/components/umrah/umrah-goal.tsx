@@ -37,9 +37,10 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
   const { loading, goal, packages, txs, methods, depositsEnabled, reload } = useUmrahMemberData(userId);
   const [pkg, setPkg] = useState<string>("");
   const [target, setTarget] = useState("");
+  const [currency, setCurrency] = useState<"NGN" | "USDT">("NGN");
   const [editing, setEditing] = useState(false);
   const [saving, setSaving] = useState(false);
-  useEffect(() => { setPkg(goal?.package_id ?? ""); setTarget(goal?.target_amount ? String(goal.target_amount) : ""); }, [goal]);
+  useEffect(() => { setPkg(goal?.package_id ?? ""); setTarget(goal?.target_amount ? String(goal.target_amount) : ""); setCurrency(goal?.currency === "USDT" ? "USDT" : "NGN"); }, [goal]);
 
   if (loading) return <p className="text-sm text-muted-foreground">Loading your Umrah goal…</p>;
   const balance = Number(goal?.balance ?? 0);
@@ -48,12 +49,14 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
   const tgt = goal?.target_amount ? Number(goal.target_amount) : null;
   const pct = tgt ? Math.min(100, Math.round((balance / tgt) * 100)) : 0;
   const approved = txs.filter((t) => t.status === "approved");
+  const currencyLocked = balance !== 0;
 
   const save = async () => {
     const amount = target ? Number(target) : null;
     if (amount != null && (!Number.isFinite(amount) || amount <= 0)) { toast.error("Enter a valid target amount."); return; }
     setSaving(true);
-    const row = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
+    const row: Record<string, unknown> = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
+    if (!currencyLocked) row.currency = currency;
     const { error } = goal ? await db.from("umrah_goals").update(row).eq("id", goal.id) : await db.from("umrah_goals").insert(row);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
@@ -61,6 +64,7 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
     setEditing(false);
     void reload();
   };
+
 
   return (
     <div className="grid gap-5">
@@ -91,7 +95,10 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
                   ))}
                 </div>
               </div>
-              <div className="grid max-w-xs gap-2"><Label htmlFor="goal-target">Personal target amount (NGN)</Label><Input id="goal-target" inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="e.g. your own target" /></div>
+              <div className="flex flex-wrap gap-4">
+                <div className="grid gap-2"><Label>Goal currency</Label><div className="flex gap-2">{(["NGN", "USDT"] as const).map((c) => <Button key={c} type="button" size="sm" variant={currency === c ? "default" : "outline"} disabled={currencyLocked} onClick={() => setCurrency(c)}>{c}</Button>)}</div>{currencyLocked ? <p className="text-xs text-muted-foreground">Locked because a balance is recorded.</p> : null}</div>
+                <div className="grid max-w-xs gap-2"><Label htmlFor="goal-target">Personal target amount ({currency})</Label><Input id="goal-target" inputMode="decimal" value={target} onChange={(e) => setTarget(e.target.value)} placeholder="e.g. your own target" /></div>
+              </div>
               <div className="flex gap-2"><Button onClick={save} disabled={saving}>{saving ? "Saving…" : "Save goal"}</Button><Button variant="outline" onClick={() => setEditing(false)}>Cancel</Button></div>
             </div>
           )}
@@ -103,8 +110,10 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
         <CardContent className="grid gap-3 sm:grid-cols-2">
           {depositsEnabled && methods.length > 0 ? methods.map((m) => <div key={m.code} className="rounded-lg border border-border p-3 text-sm"><p className="font-semibold">{m.label}</p>{m.instructions ? <p className="mt-1 whitespace-pre-line text-muted-foreground">{m.instructions}</p> : null}{m.receiving_details ? <p className="mt-1 whitespace-pre-line font-mono text-xs">{m.receiving_details}</p> : null}</div>)
             : <p className="text-sm text-muted-foreground sm:col-span-2">1. USDT · 2. Nigerian Naira (NGN) — currently unavailable.</p>}
+          {depositsEnabled && goal ? <RecordPayment userId={userId} goalId={goal.id} goalCurrency={goal.currency} methods={methods.filter((m) => m.code.toUpperCase() === goal.currency)} onDone={reload} /> : null}
         </CardContent>
       </Card>
+
 
       <Card>
         <CardHeader><CardTitle className="text-lg">Approved history</CardTitle></CardHeader>
