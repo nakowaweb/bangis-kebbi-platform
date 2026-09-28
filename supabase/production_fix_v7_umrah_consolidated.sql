@@ -287,7 +287,7 @@ EXCEPTION WHEN duplicate_object THEN NULL; END $$;
 ALTER TABLE public.umrah_transactions DROP CONSTRAINT IF EXISTS umrah_tx_receipt_path_chk;
 ALTER TABLE public.umrah_transactions ADD CONSTRAINT umrah_tx_receipt_path_chk CHECK (
   receipt_path IS NULL OR (
-    receipt_path ~ '^[0-9a-f-]{36}/umrah-receipts/[A-Za-z0-9._-]{1,200}$'
+    receipt_path ~ '^[0-9a-f-]{36}/umrah-receipts/[A-Za-z0-9._-]{1,255}$'
     AND split_part(receipt_path,'/',1) = user_id::text
     AND position('..' IN receipt_path) = 0));
 -- Reviewed rows must carry reviewer + time; pending rows must not.
