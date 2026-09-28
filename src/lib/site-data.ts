@@ -30,7 +30,7 @@ export const navItems = [
   { labelKey: "projects", label: "Projects", href: "/projects", hash: undefined },
   { labelKey: "business", label: "Business", href: "/business", hash: undefined },
   { labelKey: "umrah", label: "Umrah", href: "/umrah", hash: undefined },
-  { labelKey: "verifiedPartners", label: "Verified Partners", href: "/umrah", hash: "verified-partners" },
+  { labelKey: "verifiedPartners", label: "Verified Partners", href: "/partners", hash: undefined },
   { labelKey: "foundation", label: "Community Support", href: "/foundation", hash: undefined },
   { labelKey: "blog", label: "Blog", href: "/blog", hash: undefined },
   { labelKey: "contact", label: "Contact", href: "/contact", hash: undefined },

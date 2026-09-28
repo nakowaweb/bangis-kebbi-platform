@@ -68,6 +68,7 @@
   --color-brand-cyan-soft: var(--brand-cyan-soft);
   --color-brand-green: var(--brand-green);
   --color-brand-gold: var(--brand-gold);
+  --color-success: var(--success);
 }
 
 :root {
@@ -113,6 +114,7 @@
   --brand-cyan-soft: oklch(0.83 0.12 214);
   --brand-green: oklch(0.58 0.15 149);
   --brand-gold: oklch(0.78 0.13 83);
+  --success: oklch(0.6 0.16 150);
   --brand-blue: oklch(0.55 0.19 251);
   --shadow-platform: 0 18px 50px -28px color-mix(in oklab, var(--brand-ink) 55%, transparent);
   --shadow-glow: 0 18px 38px -24px color-mix(in oklab, var(--brand-cyan) 70%, transparent);
