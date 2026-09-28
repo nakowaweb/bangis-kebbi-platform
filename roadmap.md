@@ -171,3 +171,6 @@
 - [x] Preserve the active language automatically across every internal navigation
 - [x] Verify Japanese and Portuguese on desktop/mobile, Arabic RTL, active-language display, navigation and refresh
 - [x] Umrah landing page from approved design + /partners page (real member data only, payments off)
+- [x] Partner WhatsApp + per-field public visibility (phone/WhatsApp/email)
+- [x] Umrah + Partners slides and carousel intervals registered in Website Content and Media Library
+- [ ] Admin editing walkthrough — blocked: no Super Admin account exists in this backend
