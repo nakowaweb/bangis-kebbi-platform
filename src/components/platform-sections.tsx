@@ -42,6 +42,8 @@ import appIconAssetSrc from "@/assets/bangis-app-icon.png";
 const appIconAsset = { url: appIconAssetSrc };
 import communityImageAssetSrc from "@/assets/bangis-official-community.webp";
 const communityImageAsset = { url: communityImageAssetSrc };
+import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
+const portraitAsset = { url: portraitAssetSrc };
 import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
 import communitySupportHero from "@/assets/hero-community-support.jpg";
 import communitySupportBanner from "@/assets/homepage-community-support-banner.png";
