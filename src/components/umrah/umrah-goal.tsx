@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import QRCode from "react-qr-code";
 import { Banknote, Check, Copy, Info, Landmark, LockKeyhole, ShieldCheck, Target, UserRound, WalletCards } from "lucide-react";
@@ -60,15 +60,15 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
   const currencyLocked = balance !== 0;
   const initials = (profile?.fullName ?? "Member").split(/\s+/).slice(0, 2).map((part) => part[0]).join("").toUpperCase();
 
-  const save = async () => {
+  const save = async (): Promise<void> => {
     const amount = target ? Number(target) : null;
-    if (amount != null && (!Number.isFinite(amount) || amount <= 0)) return toast.error("Enter a valid target amount.");
+    if (amount != null && (!Number.isFinite(amount) || amount <= 0)) { toast.error("Enter a valid target amount."); return; }
     setSaving(true);
     const row: Record<string, unknown> = { user_id: userId, package_id: pkg || null, target_amount: amount, status: status === "not_started" ? "active" : status };
     if (!currencyLocked) row["currency"] = currency;
     const { error } = goal ? await db.from("umrah_goals").update(row).eq("id", goal.id) : await db.from("umrah_goals").insert(row);
     setSaving(false);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Your Umrah goal was saved.");
     setEditing(false);
     void reload();
@@ -102,8 +102,8 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
         {!depositsEnabled ? <div className="flex gap-3 rounded-lg border border-primary/20 bg-primary/5 p-4"><Info className="mt-0.5 size-5 shrink-0 text-primary" /><div><p className="font-semibold">Payment collection is not active yet</p><p className="mt-1 text-sm text-muted-foreground">Payment destinations below are locked previews. No account number, wallet address, scannable QR, or payment submission is available.</p></div></div> : null}
 
         <div className="grid gap-5 lg:grid-cols-2">
-          <PaymentMethodCard method={methods.find((m) => m.code === "ngn")} memberId={profile?.memberId ?? null} depositsEnabled={depositsEnabled} goal={goal} userId={userId} onDone={reload} />
-          <PaymentMethodCard method={methods.find((m) => m.code === "usdt")} memberId={profile?.memberId ?? null} depositsEnabled={depositsEnabled} goal={goal} userId={userId} onDone={reload} />
+          <PaymentMethodCard method={methods.find((m) => m.code === "ngn")} memberId={profile?.memberId ?? null} depositsEnabled={depositsEnabled} goal={goal} userId={userId} onDone={() => { void reload(); }} />
+          <PaymentMethodCard method={methods.find((m) => m.code === "usdt")} memberId={profile?.memberId ?? null} depositsEnabled={depositsEnabled} goal={goal} userId={userId} onDone={() => { void reload(); }} />
         </div>
 
         <Card>
@@ -123,15 +123,15 @@ export function UmrahGoalPanel({ userId }: { userId: string }) {
   );
 }
 
-function PaymentMethodCard({ method, memberId, depositsEnabled, goal, userId, onDone }: { method?: Method; memberId: string | null; depositsEnabled: boolean; goal: Goal | null; userId: string; onDone: () => void }) {
+function PaymentMethodCard({ method, memberId, depositsEnabled, goal, userId, onDone }: { method: Method | undefined; memberId: string | null; depositsEnabled: boolean; goal: Goal | null; userId: string; onDone: () => void }) {
   const code = method?.code ?? "ngn";
   const active = depositsEnabled && Boolean(method?.available);
   const destination = code === "ngn" ? method?.accountNumber : method?.walletAddress;
   return <Card className="overflow-hidden border-primary/15">
     <CardHeader className="border-b border-border bg-card"><div className="flex items-start justify-between gap-3"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">{code === "ngn" ? <Landmark className="size-5" /> : <Banknote className="size-5" />}</span><div><CardTitle className="text-lg">{code === "ngn" ? "NGN Bank Transfer" : "USDT Transfer"}</CardTitle><CardDescription>{code === "ngn" ? "Nigerian Naira bank transfer" : "Send USDT using the TRC20 network"}</CardDescription></div></div><span className="rounded-md bg-secondary px-2 py-1 text-xs font-semibold text-muted-foreground">{active ? "AVAILABLE" : "PREVIEW"}</span></div></CardHeader>
     <CardContent className="grid gap-4 pt-5">
-      {code === "ngn" ? <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Bank name" value={active ? method?.bankName : null} /><DetailRow label="Account name" value={active ? method?.accountName : null} /><DetailRow label="Account number" value={active ? method?.accountNumber : null} copy={active} /></div> : <>
-        <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Network" value="TRC20 ONLY" /><DetailRow label="Wallet address" value={active ? method?.walletAddress : null} copy={active} /></div>
+      {code === "ngn" ? <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Bank name" value={active ? method?.bankName ?? null : null} /><DetailRow label="Account name" value={active ? method?.accountName ?? null : null} /><DetailRow label="Account number" value={active ? method?.accountNumber ?? null : null} copy={active} /></div> : <>
+        <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Network" value="TRC20 ONLY" /><DetailRow label="Wallet address" value={active ? method?.walletAddress ?? null : null} copy={active} /></div>
         <div className="grid gap-3 sm:grid-cols-[145px_1fr]"><div className="grid min-h-36 place-items-center rounded-md border border-dashed border-border bg-card p-3">{active && destination ? <QRCode value={destination} size={112} bgColor="transparent" fgColor="currentColor" aria-label="Payment destination QR code" /> : <div className="text-center text-muted-foreground"><LockKeyhole className="mx-auto size-8" /><span className="mt-2 block text-xs font-semibold">QR LOCKED</span><span className="mt-1 block text-[10px]">NOT SCANNABLE</span></div>}</div><div className="rounded-md border border-brand-gold/30 bg-brand-gold/10 p-4 text-sm"><p className="font-semibold">USDT — TRC20 ONLY</p><p className="mt-2 text-muted-foreground">Only use the TRC20 network after this method has been enabled. Other networks may result in loss of funds.</p></div></div>
       </>}
       {!active ? <div className="rounded-md bg-primary/5 p-3 text-sm text-muted-foreground"><ShieldCheck className="mr-2 inline size-4 text-primary" />Details stay private until the Super Admin configures and enables this method.</div> : memberId ? <p className="rounded-md bg-primary/5 p-3 text-sm">Use your Member ID <strong>{memberId}</strong> as the payment reference.</p> : null}
@@ -140,7 +140,7 @@ function PaymentMethodCard({ method, memberId, depositsEnabled, goal, userId, on
   </Card>;
 }
 
-function DetailRow({ label, value, copy = false }: { label: string; value?: string | null; copy?: boolean }) {
+function DetailRow({ label, value, copy = false }: { label: string; value: string | null; copy?: boolean }) {
   return <div className="grid min-h-11 grid-cols-[7rem_1fr_auto] items-center gap-2 py-2"><span className="text-muted-foreground">{label}</span><strong className="min-w-0 truncate">{value || "Not available"}</strong>{copy && value ? <CopyAction value={value} label={`Copy ${label}`} /> : <LockKeyhole className="size-4 text-muted-foreground" />}</div>;
 }
 
@@ -166,15 +166,15 @@ export function UmrahRecordsPanel({ userId }: { userId: string }) {
 
 const RECEIPT_TYPES = ["image/jpeg", "image/png", "image/webp", "application/pdf"];
 
-function RecordPayment({ userId, goalId, goalCurrency, method, onDone }: { userId: string; goalId: string; goalCurrency: string; method?: Method; onDone: () => void }) {
+function RecordPayment({ userId, goalId, goalCurrency, method, onDone }: { userId: string; goalId: string; goalCurrency: string; method: Method | undefined; onDone: () => void }) {
   const [amount, setAmount] = useState(""); const [reference, setReference] = useState(""); const [file, setFile] = useState<File | null>(null); const [busy, setBusy] = useState(false);
   if (!method?.available) return null;
-  const submit = async () => {
-    const n = Number(amount); if (!(n > 0)) return toast.error("Enter the amount you sent."); if (!reference.trim()) return toast.error("Enter the transaction reference."); if (!file) return toast.error("Attach your payment receipt."); if (!RECEIPT_TYPES.includes(file.type) || file.size > 10 * 1024 * 1024) return toast.error("Receipt must be a JPG, PNG, WEBP or PDF under 10MB.");
+  const submit = async (): Promise<void> => {
+    const n = Number(amount); if (!(n > 0)) { toast.error("Enter the amount you sent."); return; } if (!reference.trim()) { toast.error("Enter the transaction reference."); return; } if (!file) { toast.error("Attach your payment receipt."); return; } if (!RECEIPT_TYPES.includes(file.type) || file.size > 10 * 1024 * 1024) { toast.error("Receipt must be a JPG, PNG, WEBP or PDF under 10MB."); return; }
     setBusy(true); const path = `${userId}/umrah-receipts/${crypto.randomUUID()}-${file.name.replace(/[^\w.-]/g, "_")}`; const up = await supabase.storage.from("member-documents").upload(path, file, { contentType: file.type, upsert: false });
-    if (up.error) { setBusy(false); return toast.error(up.error.message); }
+    if (up.error) { setBusy(false); toast.error(up.error.message); return; }
     const { error } = await db.from("umrah_transactions").insert({ user_id: userId, goal_id: goalId, method_code: method.code, kind: "payment", amount: n, currency: goalCurrency, reference: reference.trim(), receipt_path: path, status: "pending" }); setBusy(false);
-    if (error) { await supabase.storage.from("member-documents").remove([path]); return toast.error(error.message); }
+    if (error) { await supabase.storage.from("member-documents").remove([path]); toast.error(error.message); return; }
     toast.success("Payment recorded. It remains pending until verified."); setAmount(""); setReference(""); setFile(null); onDone();
   };
   return <div className="grid gap-3 rounded-md border border-border p-3"><p className="font-semibold">Record a payment already sent</p><div className="grid gap-3 sm:grid-cols-2"><div className="grid gap-1"><Label>Amount ({goalCurrency})</Label><Input inputMode="decimal" value={amount} onChange={(e) => setAmount(e.target.value)} /></div><div className="grid gap-1"><Label>Reference / hash</Label><Input value={reference} onChange={(e) => setReference(e.target.value)} /></div></div><div className="grid gap-1"><Label>Receipt</Label><Input type="file" accept={RECEIPT_TYPES.join(",")} onChange={(e) => setFile(e.target.files?.[0] ?? null)} /></div><Button onClick={submit} disabled={busy}>{busy ? "Submitting…" : "Submit payment record"}</Button></div>;
@@ -183,6 +183,6 @@ function RecordPayment({ userId, goalId, goalCurrency, method, onDone }: { userI
 export async function openReceipt(path: string) {
   if (!path) return;
   const { data, error } = await supabase.storage.from("member-documents").createSignedUrl(path, 120);
-  if (error || !data) return toast.error(error?.message ?? "Receipt unavailable");
+  if (error || !data) { toast.error(error?.message ?? "Receipt unavailable"); return; }
   window.open(data.signedUrl, "_blank", "noopener,noreferrer");
 }
