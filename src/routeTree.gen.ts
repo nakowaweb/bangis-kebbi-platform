@@ -33,6 +33,7 @@ import { Route as UmrahRouteImport } from './routes/umrah'
 import { Route as AuthenticatedAdminRouteImport } from './routes/_authenticated/admin'
 import { Route as AuthenticatedDashboardRouteImport } from './routes/_authenticated/dashboard'
 import { Route as AuthenticatedMyUmrahRouteImport } from './routes/_authenticated/my-umrah'
+import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as FoundationIndexRouteImport } from './routes/foundation.index'
@@ -161,6 +162,11 @@ const AuthenticatedMyUmrahRoute = AuthenticatedMyUmrahRouteImport.update({
   path: '/my-umrah',
   getParentRoute: () => AuthenticatedRouteRoute,
 } as any)
+const AuthCallbackRoute = AuthCallbackRouteImport.update({
+  id: '/auth/callback',
+  path: '/auth/callback',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BlogIndexRoute = BlogIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -226,6 +232,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-umrah': typeof AuthenticatedMyUmrahRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -255,6 +262,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminRoute
   '/dashboard': typeof AuthenticatedDashboardRoute
   '/my-umrah': typeof AuthenticatedMyUmrahRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -290,6 +298,7 @@ export interface FileRoutesById {
   '/_authenticated/admin': typeof AuthenticatedAdminRoute
   '/_authenticated/dashboard': typeof AuthenticatedDashboardRoute
   '/_authenticated/my-umrah': typeof AuthenticatedMyUmrahRoute
+  '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
@@ -325,6 +334,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/my-umrah'
+    | '/auth/callback'
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
@@ -354,6 +364,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/dashboard'
     | '/my-umrah'
+    | '/auth/callback'
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
@@ -388,6 +399,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin'
     | '/_authenticated/dashboard'
     | '/_authenticated/my-umrah'
+    | '/auth/callback'
     | '/blog/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
@@ -420,6 +432,7 @@ export interface RootRouteChildren {
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   TermsRoute: typeof TermsRoute
   UmrahRoute: typeof UmrahRoute
+  AuthCallbackRoute: typeof AuthCallbackRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -592,6 +605,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedMyUmrahRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
+    '/auth/callback': {
+      id: '/auth/callback'
+      path: '/auth/callback'
+      fullPath: '/auth/callback'
+      preLoaderRoute: typeof AuthCallbackRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/blog/': {
       id: '/blog/'
       path: '/'
@@ -742,6 +762,7 @@ const rootRouteChildren: RootRouteChildren = {
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   TermsRoute: TermsRoute,
   UmrahRoute: UmrahRoute,
+  AuthCallbackRoute: AuthCallbackRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
