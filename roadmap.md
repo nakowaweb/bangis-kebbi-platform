@@ -174,3 +174,11 @@
 - [x] Partner WhatsApp + per-field public visibility (phone/WhatsApp/email)
 - [x] Umrah + Partners slides and carousel intervals registered in Website Content and Media Library
 - [ ] Admin editing walkthrough — blocked: no Super Admin account exists in this backend
+
+## Umrah Goal reference-matched member page
+- [x] Implement permanent server-generated Member IDs without changing internal UUIDs
+- [x] Match the approved navy/blue goal dashboard using real saved amounts only
+- [x] Add locked NGN/USDT previews and reveal configured destinations only when enabled
+- [x] Add Super Admin messaging for active goal members with audit logging
+- [x] Verify desktop/mobile, disabled-payment security and available authenticated flows
+- [ ] Apply the reviewed database migration — blocked pending explicit production approval

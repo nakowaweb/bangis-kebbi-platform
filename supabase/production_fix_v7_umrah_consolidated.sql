@@ -73,7 +73,50 @@ REVOKE EXECUTE ON FUNCTION public.umrah_admin() FROM PUBLIC, anon;
 GRANT  EXECUTE ON FUNCTION public.umrah_admin() TO authenticated;
 
 -- ---------------------------------------------------------------------
--- 1. Travel Partners: optional contacts, PRIVATE by default.
+-- 1. Permanent public-facing Member IDs. UUIDs remain unchanged/internal.
+-- ---------------------------------------------------------------------
+CREATE SEQUENCE IF NOT EXISTS public.member_id_seq START WITH 1;
+REVOKE ALL ON SEQUENCE public.member_id_seq FROM PUBLIC, anon, authenticated;
+GRANT ALL ON SEQUENCE public.member_id_seq TO service_role;
+
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS member_id text;
+
+CREATE OR REPLACE FUNCTION public.member_id_prefix(_full_name text)
+RETURNS text LANGUAGE sql IMMUTABLE SET search_path = public AS $$
+  SELECT upper(left(regexp_replace(coalesce(_full_name, ''), '[^A-Za-z]', '', 'g') || 'XXX', 3));
+$$;
+REVOKE EXECUTE ON FUNCTION public.member_id_prefix(text) FROM PUBLIC, anon, authenticated;
+
+DO $$
+DECLARE r record;
+BEGIN
+  FOR r IN SELECT id, full_name FROM public.profiles WHERE member_id IS NULL ORDER BY created_at, id LOOP
+    UPDATE public.profiles
+       SET member_id = public.member_id_prefix(r.full_name) || lpad(nextval('public.member_id_seq')::text, 4, '0')
+     WHERE id = r.id AND member_id IS NULL;
+  END LOOP;
+END $$;
+
+CREATE UNIQUE INDEX IF NOT EXISTS profiles_member_id_unique ON public.profiles (member_id);
+ALTER TABLE public.profiles ALTER COLUMN member_id SET NOT NULL;
+
+CREATE OR REPLACE FUNCTION public.guard_profile_member_id()
+RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+BEGIN
+  IF TG_OP = 'INSERT' THEN
+    NEW.member_id := public.member_id_prefix(NEW.full_name) || lpad(nextval('public.member_id_seq')::text, 4, '0');
+  ELSE
+    NEW.member_id := OLD.member_id;
+  END IF;
+  RETURN NEW;
+END $$;
+REVOKE EXECUTE ON FUNCTION public.guard_profile_member_id() FROM PUBLIC, anon, authenticated;
+DROP TRIGGER IF EXISTS profiles_guard_member_id ON public.profiles;
+CREATE TRIGGER profiles_guard_member_id BEFORE INSERT OR UPDATE ON public.profiles
+  FOR EACH ROW EXECUTE FUNCTION public.guard_profile_member_id();
+
+-- ---------------------------------------------------------------------
+-- 2. Travel Partners: optional contacts, PRIVATE by default.
 --    New columns default to false for every existing partner. Re-running
 --    never changes a value the Super Admin has already approved.
 --    Existing partner grants and RLS policies are NOT changed here.
@@ -89,7 +132,7 @@ ALTER TABLE public.umrah_partners
   ALTER COLUMN show_email SET DEFAULT false;
 
 -- ---------------------------------------------------------------------
--- 2. Packages (planning categories; no price; unavailable)
+-- 3. Packages (planning categories; no price; unavailable)
 -- ---------------------------------------------------------------------
 DO $$ BEGIN CREATE TYPE public.umrah_tier AS ENUM ('economy','classic','vip');
 EXCEPTION WHEN duplicate_object THEN NULL; END $$;
@@ -125,7 +168,7 @@ VALUES ('economy','Economy',1), ('classic','Classic',2), ('vip','VIP',3)
 ON CONFLICT (tier) DO NOTHING;
 
 -- ---------------------------------------------------------------------
--- 3. Goals (one per member). Balance changes ONLY inside the two audited
+-- 4. Goals (one per member). Balance changes ONLY inside the two audited
 --    SECURITY DEFINER functions in section 7.
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.umrah_goals (
@@ -202,7 +245,7 @@ CREATE TRIGGER umrah_goals_updated_at BEFORE UPDATE ON public.umrah_goals
   FOR EACH ROW EXECUTE FUNCTION public.set_updated_at();
 
 -- ---------------------------------------------------------------------
--- 4. Payment methods (USDT first, NGN second; both OFF)
+-- 5. Payment methods (USDT first, NGN second; both OFF)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.umrah_payment_methods (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -215,6 +258,11 @@ CREATE TABLE IF NOT EXISTS public.umrah_payment_methods (
   created_at timestamptz NOT NULL DEFAULT now(),
   updated_at timestamptz NOT NULL DEFAULT now()
 );
+ALTER TABLE public.umrah_payment_methods
+  ADD COLUMN IF NOT EXISTS bank_name text,
+  ADD COLUMN IF NOT EXISTS account_name text,
+  ADD COLUMN IF NOT EXISTS account_number text,
+  ADD COLUMN IF NOT EXISTS wallet_address text;
 REVOKE ALL ON public.umrah_payment_methods FROM anon, authenticated;
 GRANT SELECT, INSERT, UPDATE ON public.umrah_payment_methods TO authenticated;
 GRANT ALL ON public.umrah_payment_methods TO service_role;
@@ -235,7 +283,7 @@ ON CONFLICT (code) DO NOTHING;
 UPDATE public.umrah_payment_methods SET is_enabled = false WHERE is_enabled;
 
 -- ---------------------------------------------------------------------
--- 5. Settings: master "Live deposits" switch (forced OFF)
+-- 6. Settings: master "Live deposits" switch (forced OFF)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.umrah_settings (
   id integer PRIMARY KEY DEFAULT 1 CHECK (id = 1),
@@ -256,7 +304,7 @@ INSERT INTO public.umrah_settings (id, deposits_enabled) VALUES (1, false) ON CO
 UPDATE public.umrah_settings SET deposits_enabled = false, updated_at = now() WHERE id = 1 AND deposits_enabled;
 
 -- ---------------------------------------------------------------------
--- 6. Transactions (manual records, pending until an Umrah admin reviews)
+-- 7. Transactions (manual records, pending until an Umrah admin reviews)
 -- ---------------------------------------------------------------------
 CREATE TABLE IF NOT EXISTS public.umrah_transactions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -337,7 +385,7 @@ CREATE TRIGGER umrah_transactions_stamp BEFORE INSERT ON public.umrah_transactio
   FOR EACH ROW EXECUTE FUNCTION public.stamp_umrah_transaction();
 
 -- ---------------------------------------------------------------------
--- 7. Review / refund — authorized, atomic, once only, audited.
+-- 8. Review / refund — authorized, atomic, once only, audited.
 --    Locks: goal row first, then transaction row, in BOTH functions, so
 --    concurrent approvals/refunds serialize instead of double-processing.
 -- ---------------------------------------------------------------------
@@ -411,8 +459,38 @@ REVOKE EXECUTE ON FUNCTION public.record_umrah_refund(uuid, numeric, text, text)
 GRANT  EXECUTE ON FUNCTION public.review_umrah_transaction(uuid, boolean, text) TO authenticated;
 GRANT  EXECUTE ON FUNCTION public.record_umrah_refund(uuid, numeric, text, text) TO authenticated;
 
+-- Atomic Super Admin message to members whose Umrah goal is active.
+CREATE OR REPLACE FUNCTION public.send_active_umrah_goal_message(_title text, _body text)
+RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE recipients uuid[]; message_id uuid; recipient_count integer;
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.has_role(auth.uid(), 'super_admin') THEN
+    RAISE EXCEPTION 'Super Admin access is required';
+  END IF;
+  IF length(trim(coalesce(_title,''))) < 2 OR length(_title) > 160 THEN RAISE EXCEPTION 'Invalid title'; END IF;
+  IF length(trim(coalesce(_body,''))) < 2 OR length(_body) > 2000 THEN RAISE EXCEPTION 'Invalid message'; END IF;
+
+  SELECT array_agg(DISTINCT user_id), count(DISTINCT user_id)
+    INTO recipients, recipient_count FROM public.umrah_goals WHERE status = 'active';
+  IF recipient_count IS NULL OR recipient_count = 0 THEN RAISE EXCEPTION 'There are no active Umrah goal members to message'; END IF;
+
+  INSERT INTO public.notification_messages
+    (title, body, category, link_path, status, audience, created_by, published_at)
+  VALUES (trim(_title), trim(_body), 'umrah', '/my-umrah?tab=goal', 'published', 'umrah_active', auth.uid(), now())
+  RETURNING id INTO message_id;
+  INSERT INTO public.notification_recipients (message_id, user_id)
+  SELECT message_id, unnest(recipients);
+  INSERT INTO public.admin_audit_logs (admin_id, action, content_type, content_id, content_label, metadata)
+  VALUES (auth.uid(), 'sent Umrah goal message to '||recipient_count||' active member(s)',
+          'notification', message_id, trim(_title),
+          jsonb_build_object('audience','umrah_active','recipient_count',recipient_count));
+  RETURN recipient_count;
+END $$;
+REVOKE EXECUTE ON FUNCTION public.send_active_umrah_goal_message(text,text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.send_active_umrah_goal_message(text,text) TO authenticated;
+
 -- ---------------------------------------------------------------------
--- 8. Private receipts in the existing PRIVATE member-documents bucket at
+-- 9. Private receipts in the existing PRIVATE member-documents bucket at
 --    <user_id>/umrah-receipts/<file>. Existing v3/v6 storage policies are
 --    kept. Added (all restrictive = narrowing only):
 --      * receipts cannot be overwritten or deleted by API users once
@@ -430,7 +508,7 @@ CREATE POLICY "umrah receipts: no delete" ON storage.objects AS RESTRICTIVE FOR 
   USING (NOT (bucket_id = 'member-documents' AND (storage.foldername(name))[2] = 'umrah-receipts'));
 
 -- ---------------------------------------------------------------------
--- 9. Security warnings (SECURITY DEFINER functions callable by signed-in users)
+-- 10. Security warnings (SECURITY DEFINER functions callable by signed-in users)
 -- ---------------------------------------------------------------------
 -- 9a. Members can never claim Super Admin.
 DO $$ BEGIN

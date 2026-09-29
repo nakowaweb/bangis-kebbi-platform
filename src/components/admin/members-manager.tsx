@@ -21,7 +21,7 @@ import {
 } from "@/lib/members.functions";
 
 type Member = {
-  id: string; full_name: string; email: string; phone: string | null; country: string | null; city: string | null;
+  id: string; member_id: string | null; full_name: string; email: string; phone: string | null; country: string | null; city: string | null;
   preferred_language: string; is_active: boolean; created_at: string; roles: string[]; modules: string[];
 };
 
@@ -64,6 +64,7 @@ export function MembersManager({ isSuperAdmin }: { isSuperAdmin: boolean }) {
             <div key={m.id} className="grid gap-3 border-b border-border p-4 last:border-b-0 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
               <div className="min-w-0">
                 <strong className="block truncate text-sm">{m.full_name || "Unnamed member"}</strong>
+                {m.member_id ? <span className="block text-xs font-semibold text-primary">{m.member_id}</span> : null}
                 <p className="mt-1 truncate text-xs text-muted-foreground">{m.email}{m.country ? ` · ${m.city ? `${m.city}, ` : ""}${m.country}` : ""} · Joined {new Date(m.created_at).toLocaleDateString()}</p>
                 <div className="mt-2 flex flex-wrap gap-1.5">
                   <Badge variant={m.is_active ? "default" : "secondary"}>{m.is_active ? "Active" : "Deactivated"}</Badge>

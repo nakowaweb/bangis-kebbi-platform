@@ -59,18 +59,18 @@ export const listMembers = createServerFn({ method: "GET" })
     const pageSize = 20;
     let query = ctx.supabase
       .from("profiles")
-      .select("id,full_name,email,phone,country,city,preferred_language,is_active,created_at", { count: "exact" })
+      .select("id,member_id,full_name,email,phone,country,city,preferred_language,is_active,created_at", { count: "exact" })
       .order("created_at", { ascending: false })
       .range(data.page * pageSize, data.page * pageSize + pageSize - 1);
     if (data.search) {
       const term = `%${data.search.replaceAll("%", "").replaceAll(",", " ")}%`;
-      query = query.or(`full_name.ilike.${term},email.ilike.${term},country.ilike.${term},city.ilike.${term}`);
+      query = query.or(`member_id.ilike.${term},full_name.ilike.${term},email.ilike.${term},country.ilike.${term},city.ilike.${term}`);
     }
     if (data.status !== "all") query = query.eq("is_active", data.status === "active");
     const { data: members, count, error } = await query;
     if (error) throw new Error(error.message);
 
-    type MemberRow = { id: string; full_name: string; email: string; phone: string | null; country: string | null; city: string | null; preferred_language: string; is_active: boolean; created_at: string };
+    type MemberRow = { id: string; member_id: string | null; full_name: string; email: string; phone: string | null; country: string | null; city: string | null; preferred_language: string; is_active: boolean; created_at: string };
     const rows = (members ?? []) as MemberRow[];
     const ids = rows.map((m) => m.id);
     const [{ data: roleRows }, { data: permRows }] = ids.length

@@ -226,7 +226,7 @@ export const publishNotification = createServerFn({ method: "POST" })
     z
       .object({
         id: z.string().uuid(),
-        audience: z.enum(["all", "active", "selected"]).default("active"),
+        audience: z.enum(["all", "active", "umrah_active", "selected"]).default("active"),
         memberIds: z.array(z.string().uuid()).max(500).default([]),
       })
       .parse(input),
@@ -243,7 +243,13 @@ export const publishNotification = createServerFn({ method: "POST" })
     if (message.status === "published") throw new Error("This notification was already published.");
 
     let targets: string[] = data.memberIds;
-    if (data.audience !== "selected") {
+    if (data.audience === "umrah_active") {
+      const { data: isSuperAdmin, error: roleError } = await context.supabase.rpc("has_role", { _user_id: context.userId, _role: "super_admin" });
+      if (roleError || !isSuperAdmin) throw new Error("Super Admin access is required for Umrah goal messages.");
+      const { data: rows, error } = await context.supabase.from("umrah_goals").select("user_id").eq("status", "active");
+      if (error) throw new Error(error.message);
+      targets = Array.from(new Set(((rows ?? []) as { user_id: string }[]).map((row) => row.user_id)));
+    } else if (data.audience !== "selected") {
       let query = context.supabase.from("profiles").select("id");
       if (data.audience === "active") query = query.eq("is_active", true);
       const { data: rows, error } = await query;

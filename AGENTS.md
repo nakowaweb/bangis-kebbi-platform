@@ -16,3 +16,5 @@
 - Legacy built-in page copy falls back to English when a newer locale has no static translation; CMS translations remain authoritative when published.
 - The homepage hero uses exactly three CMS-managed slots (`hero-feature-1` through `hero-feature-3`) in a full-width stage; keep the three-second accessible carousel and bundled fallbacks without changing founder imagery.
 - Approved built-in fallback visuals are bundled through Vite imports rather than Lovable-only asset paths, so self-hosted deployments retain them while CMS media remains replaceable.
+- Permanent Member IDs are assigned and frozen by a database trigger; UUIDs remain the only internal relationship and authorization key.
+- Member payment destinations are returned only when both Live Deposits and the individual method are enabled, preventing disabled details from reaching the browser.
