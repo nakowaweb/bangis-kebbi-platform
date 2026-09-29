@@ -503,3 +503,50 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
   const colors = tone === "gold" ? "bg-brand-gold/15 text-brand-gold" : tone === "green" ? "bg-brand-green/10 text-brand-green" : "bg-brand-cyan/10 text-primary";
   return <section className="border-b border-border bg-background py-5"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className={`grid gap-5 overflow-hidden rounded-lg border border-border bg-card shadow-sm ${image ? "md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-center" : "p-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"}`}>{image ? <SafeImage src={image} alt={imageAlt ?? ""} loading="lazy" width={720} height={720} className="aspect-[16/10] h-full max-h-52 w-full object-cover object-top md:aspect-square md:max-h-none" /> : <span className={`m-5 grid h-16 w-16 place-items-center rounded-full ${colors}`}><Icon className="h-8 w-8" /></span>}<div className={`min-w-0 ${image ? "px-5 md:px-0" : ""}`}><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-1 font-display text-xl font-bold">{title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p></div><Button variant="outline" className={`shrink-0 ${image ? "mx-5 mb-5 md:my-5 md:ml-0" : ""}`} asChild><Link to={href}>{action} <ArrowRight /></Link></Button></div></div></section>;
 }
+
+export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null }> | undefined }) {
+  const { t } = useLanguage();
+  const scroller = useRef<HTMLDivElement>(null);
+  const [filter, setFilter] = useState("all");
+  const projects = (items ?? []).map((item) => {
+    const payload = typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) ? (item.payload as Record<string, unknown>) : {};
+    return { slug: item.slug, name: item.title, category: item.category ?? (typeof payload["category"] === "string" ? String(payload["category"]) : ""), image: item.imageUrl, alt: item.image_alt ?? item.title };
+  });
+  const categories = Array.from(new Set(projects.map((p) => p.category).filter(Boolean)));
+  const visible = filter === "all" ? projects : projects.filter((p) => p.category === filter);
+  const scroll = (dir: number) => scroller.current?.scrollBy({ left: dir * scroller.current.clientWidth * 0.8, behavior: "smooth" });
+  if (!projects.length) return null;
+  return (
+    <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
+      <div className="mx-auto max-w-7xl px-4 sm:px-6">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 lg:flex lg:flex-wrap">
+          <div className="flex min-w-0 items-center gap-4 lg:flex-1">
+            <h2 id="selected-work-title" className="shrink-0 font-display text-2xl font-bold sm:text-3xl">{t("home.projectsTitle")}</h2>
+            <span className="hidden h-px flex-1 bg-gradient-to-r from-brand-gold to-transparent sm:block" aria-hidden="true" />
+          </div>
+          <div className="flex shrink-0 items-center gap-2">
+            <Link to="/community" className="inline-flex min-h-10 items-center gap-2 rounded-md border border-brand-cyan/40 bg-primary-foreground/5 px-3 text-sm font-semibold hover:bg-primary-foreground/10"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" />Media Gallery</Link>
+            <button type="button" onClick={() => scroll(-1)} aria-label="Previous projects" className="grid size-10 place-items-center rounded-full border border-primary-foreground/30 hover:bg-primary-foreground/10"><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></button>
+            <button type="button" onClick={() => scroll(1)} aria-label="Next projects" className="grid size-10 place-items-center rounded-full border border-primary-foreground/30 hover:bg-primary-foreground/10"><ArrowRight className="size-4 rtl:rotate-180" /></button>
+          </div>
+        </div>
+        {categories.length > 1 && <div className="mt-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter projects">
+          {["all", ...categories].map((c) => <button key={c} type="button" aria-pressed={filter === c} onClick={() => setFilter(c)} className={`min-h-9 shrink-0 rounded-md border px-3 text-sm font-semibold transition ${filter === c ? "border-brand-cyan bg-brand-cyan text-brand-ink" : "border-primary-foreground/25 hover:bg-primary-foreground/10"}`}>{c === "all" ? "All" : c}</button>)}
+        </div>}
+        <div ref={scroller} className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 motion-reduce:scroll-auto">
+          {visible.map((p) => (
+            <article key={p.slug} className="w-[85%] shrink-0 snap-start overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 sm:w-[46%] lg:w-[32%]">
+              <Link to="/projects/$slug" params={{ slug: p.slug }} className="block aspect-[16/9] overflow-hidden bg-brand-ink" aria-label={`${t("common.viewProject")}: ${p.name}`}>
+                {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={540} className="size-full object-cover transition duration-500 hover:scale-[1.03] motion-reduce:transition-none" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
+              </Link>
+              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
+                <h3 className="truncate font-display text-base font-bold">{p.name}</h3>
+                <Link to="/projects/$slug" params={{ slug: p.slug }} className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md border border-brand-cyan/50 px-3 text-xs font-semibold hover:bg-primary-foreground/10">View Case Study <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  );
+}
