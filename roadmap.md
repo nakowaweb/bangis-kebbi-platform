@@ -198,8 +198,9 @@
 - [x] Capture desktop, tablet and phone review screenshots without deploying production
 - [ ] Apply and verify Media Gallery review metadata — blocked pending explicit production migration approval and Super Admin session
 ## Homepage approved-reference correction (Sep 29, 2026)
-- [ ] Remove the foreground hero portrait card at every width while preserving the source media
-- [ ] Match the approved responsive hero, four feature cards, and Selected Work strip
-- [ ] Verify EN/AR/HA, carousel controls, links, gallery access, reduced motion, and overlap-free laptop/tablet/phone layouts
-- [ ] Capture final review screenshots and report differences without deploying or changing production data
+- [x] Remove the foreground hero portrait card at every width while preserving the source media
+- [x] Match the approved responsive hero and exact four-card order; keep Selected Work CMS-only and hidden when no real published projects exist
+- [x] Verify EN/AR/HA, carousel controls, links, reduced motion, and overlap-free laptop/tablet/phone layouts
+- [x] Capture final review screenshots and report differences without deploying or changing production data
+- [ ] Verify Media Gallery review/reorder controls — blocked pending the approved V8 production migration and a Super Admin session
 
