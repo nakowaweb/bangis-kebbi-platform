@@ -190,9 +190,10 @@
 - [ ] Publish the reviewed changes — blocked pending explicit production approval
 
 ## Approved cinematic homepage review
-- [ ] Match the approved navy/cyan/green/gold homepage reference on laptop, tablet and phone
-- [ ] Keep the approved portrait, three managed slides, exact four-card order and working destinations
-- [ ] Show only published CMS case studies and approved media; never publish reference placeholders as claims
-- [ ] Add draft/published media captions and lifecycle controls with safe replacement/deletion
-- [ ] Verify navigation, carousel, gallery, dashboard, EN/AR/HA, RTL and reduced motion
-- [ ] Capture desktop, tablet and phone review screenshots without deploying production
+- [x] Match the approved navy/cyan/green/gold homepage reference on laptop, tablet and phone
+- [x] Keep the approved portrait, three managed slides, exact four-card order and working destinations
+- [x] Show only published CMS case studies and approved media; never publish reference placeholders as claims
+- [x] Prepare draft/published media captions and lifecycle controls with safe replacement/deletion
+- [x] Verify navigation, carousel, dashboard, EN/AR/HA, RTL and reduced motion
+- [x] Capture desktop, tablet and phone review screenshots without deploying production
+- [ ] Apply and verify Media Gallery review metadata — blocked pending explicit production migration approval and Super Admin session
