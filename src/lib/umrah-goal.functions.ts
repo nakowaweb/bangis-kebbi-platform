@@ -68,49 +68,10 @@ export const sendActiveUmrahGoalMessage = createServerFn({ method: "POST" })
   )
   .handler(async ({ data, context }) => {
     const ctx = context as unknown as Context;
-    const { data: isSuperAdmin, error: roleError } = await ctx.supabase.rpc("has_role", {
-      _user_id: ctx.userId,
-      _role: "super_admin",
+    const { data: sent, error } = await ctx.supabase.rpc("send_active_umrah_goal_message", {
+      _title: data.title,
+      _body: data.body,
     });
-    if (roleError || !isSuperAdmin) throw new Error("Super Admin access is required.");
-
-    const { data: goalRows, error: goalsError } = await ctx.supabase
-      .from("umrah_goals")
-      .select("user_id")
-      .eq("status", "active");
-    if (goalsError) throw new Error(goalsError.message);
-    const recipients = Array.from(new Set((goalRows ?? []).map((row: { user_id: string }) => row.user_id)));
-    if (recipients.length === 0) throw new Error("There are no active Umrah goal members to message.");
-
-    const { data: message, error: messageError } = await ctx.supabase
-      .from("notification_messages")
-      .insert({
-        title: data.title,
-        body: data.body,
-        category: "umrah",
-        link_path: "/my-umrah?tab=goal",
-        status: "published",
-        audience: "umrah_active",
-        created_by: ctx.userId,
-        published_at: new Date().toISOString(),
-      })
-      .select("id")
-      .single();
-    if (messageError) throw new Error(messageError.message);
-
-    const { error: recipientsError } = await ctx.supabase.from("notification_recipients").insert(
-      recipients.map((userId) => ({ message_id: message.id, user_id: userId })),
-    );
-    if (recipientsError) throw new Error(recipientsError.message);
-
-    const { error: auditError } = await ctx.supabase.from("admin_audit_logs").insert({
-      admin_id: ctx.userId,
-      action: `sent Umrah goal message to ${recipients.length} active member(s)`,
-      content_type: "notification",
-      content_id: message.id,
-      content_label: data.title,
-      metadata: { audience: "umrah_active", recipient_count: recipients.length },
-    });
-    if (auditError) throw new Error(auditError.message);
-    return { sent: recipients.length };
+    if (error) throw new Error(error.message);
+    return { sent: Number(sent ?? 0) };
   });

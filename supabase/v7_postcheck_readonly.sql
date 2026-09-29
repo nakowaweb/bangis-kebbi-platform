@@ -61,7 +61,8 @@ SELECT
   has_function_privilege('anon','public.record_umrah_refund(uuid,numeric,text,text)','EXECUTE') AS refund_anon,
   has_function_privilege('anon','public.is_platform_admin(uuid)','EXECUTE') AS isadmin_anon,
   has_function_privilege('anon','public.umrah_admin()','EXECUTE') AS umrahadmin_anon,
-  has_function_privilege('anon','public.admin_can(text)','EXECUTE') AS admincan_anon;
+  has_function_privilege('anon','public.admin_can(text)','EXECUTE') AS admincan_anon,
+  has_function_privilege('anon','public.send_active_umrah_goal_message(text,text)','EXECUTE') AS goal_message_anon;
 
 -- C9. Constraints and triggers present
 SELECT conname FROM pg_constraint WHERE conname IN

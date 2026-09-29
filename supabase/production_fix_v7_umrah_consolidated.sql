@@ -459,6 +459,36 @@ REVOKE EXECUTE ON FUNCTION public.record_umrah_refund(uuid, numeric, text, text)
 GRANT  EXECUTE ON FUNCTION public.review_umrah_transaction(uuid, boolean, text) TO authenticated;
 GRANT  EXECUTE ON FUNCTION public.record_umrah_refund(uuid, numeric, text, text) TO authenticated;
 
+-- Atomic Super Admin message to members whose Umrah goal is active.
+CREATE OR REPLACE FUNCTION public.send_active_umrah_goal_message(_title text, _body text)
+RETURNS integer LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
+DECLARE recipients uuid[]; message_id uuid; recipient_count integer;
+BEGIN
+  IF auth.uid() IS NULL OR NOT public.has_role(auth.uid(), 'super_admin') THEN
+    RAISE EXCEPTION 'Super Admin access is required';
+  END IF;
+  IF length(trim(coalesce(_title,''))) < 2 OR length(_title) > 160 THEN RAISE EXCEPTION 'Invalid title'; END IF;
+  IF length(trim(coalesce(_body,''))) < 2 OR length(_body) > 2000 THEN RAISE EXCEPTION 'Invalid message'; END IF;
+
+  SELECT array_agg(DISTINCT user_id), count(DISTINCT user_id)
+    INTO recipients, recipient_count FROM public.umrah_goals WHERE status = 'active';
+  IF recipient_count IS NULL OR recipient_count = 0 THEN RAISE EXCEPTION 'There are no active Umrah goal members to message'; END IF;
+
+  INSERT INTO public.notification_messages
+    (title, body, category, link_path, status, audience, created_by, published_at)
+  VALUES (trim(_title), trim(_body), 'umrah', '/my-umrah?tab=goal', 'published', 'umrah_active', auth.uid(), now())
+  RETURNING id INTO message_id;
+  INSERT INTO public.notification_recipients (message_id, user_id)
+  SELECT message_id, unnest(recipients);
+  INSERT INTO public.admin_audit_logs (admin_id, action, content_type, content_id, content_label, metadata)
+  VALUES (auth.uid(), 'sent Umrah goal message to '||recipient_count||' active member(s)',
+          'notification', message_id, trim(_title),
+          jsonb_build_object('audience','umrah_active','recipient_count',recipient_count));
+  RETURN recipient_count;
+END $$;
+REVOKE EXECUTE ON FUNCTION public.send_active_umrah_goal_message(text,text) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.send_active_umrah_goal_message(text,text) TO authenticated;
+
 -- ---------------------------------------------------------------------
 -- 9. Private receipts in the existing PRIVATE member-documents bucket at
 --    <user_id>/umrah-receipts/<file>. Existing v3/v6 storage policies are
