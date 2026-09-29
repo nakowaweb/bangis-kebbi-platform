@@ -51,7 +51,7 @@ export function AdminNotificationManager() {
   const removeDraft = useServerFn(deleteNotificationDraft);
 
   const [draft, setDraft] = useState<DraftState>(emptyDraft);
-  const [audience, setAudience] = useState<"all" | "active" | "selected">("active");
+  const [audience, setAudience] = useState<"all" | "active" | "umrah_active" | "selected">("active");
   const [search, setSearch] = useState("");
   const [selected, setSelected] = useState<string[]>([]);
   const [pendingDelete, setPendingDelete] = useState<{ id: string; title: string; published: boolean } | null>(null);
@@ -178,6 +178,7 @@ export function AdminNotificationManager() {
             <SelectTrigger><SelectValue /></SelectTrigger>
             <SelectContent>
               <SelectItem value="active">Active members</SelectItem>
+              <SelectItem value="umrah_active">Active Umrah goal members</SelectItem>
               <SelectItem value="all">All members</SelectItem>
               <SelectItem value="selected">Selected members</SelectItem>
             </SelectContent>

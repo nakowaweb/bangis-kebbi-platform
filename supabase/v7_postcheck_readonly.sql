@@ -82,8 +82,21 @@ SELECT indexname, indexdef FROM pg_indexes
 -- C12. No finance audit entries yet (nothing approved)
 SELECT action, count(*) FROM public.admin_audit_logs WHERE action ILIKE '%umrah%' GROUP BY 1;
 
+-- C13. Every profile has one immutable-format Member ID (expect missing=0, duplicates=0, bad_format=0)
+SELECT count(*) FILTER (WHERE member_id IS NULL) AS missing,
+       count(*) - count(DISTINCT member_id) AS duplicates,
+       count(*) FILTER (WHERE member_id !~ '^[A-Z]{3}[0-9]{4,}$') AS bad_format
+  FROM public.profiles;
+SELECT indexname, indexdef FROM pg_indexes WHERE schemaname='public' AND tablename='profiles' AND indexname='profiles_member_id_unique';
+SELECT tgname FROM pg_trigger WHERE tgname='profiles_guard_member_id';
+
+-- C14. Structured destinations exist, but collection remains OFF (values omitted)
+SELECT column_name, is_nullable FROM information_schema.columns
+ WHERE table_schema='public' AND table_name='umrah_payment_methods'
+   AND column_name IN ('bank_name','account_name','account_number','wallet_address') ORDER BY 1;
+
 -- =====================================================================
--- C13. OPTIONAL ROLLED-BACK SIMULATION as a MEMBER (changes nothing:
+-- C15. OPTIONAL ROLLED-BACK SIMULATION as a MEMBER (changes nothing:
 --      ends in ROLLBACK). Replace MEMBER_EMAIL. Run only with approval.
 -- =====================================================================
 -- BEGIN;

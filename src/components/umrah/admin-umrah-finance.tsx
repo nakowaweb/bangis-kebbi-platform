@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
 import { openReceipt } from "@/components/umrah/umrah-goal";
@@ -9,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
+import { sendActiveUmrahGoalMessage } from "@/lib/umrah-goal.functions";
 
 const db = supabase as any;
 
@@ -58,12 +60,26 @@ export function AdminPaymentMethods() {
   </div>;
 }
 function MethodForm({ m, onSaved }: { m: any; onSaved: () => void }) {
-  const [f, setF] = useState({ label: m.label, instructions: m.instructions ?? "", receiving_details: m.receiving_details ?? "", is_enabled: m.is_enabled });
+  const [f, setF] = useState({
+    label: m.label,
+    instructions: m.instructions ?? "",
+    receiving_details: m.receiving_details ?? "",
+    bank_name: m.bank_name ?? "",
+    account_name: m.account_name ?? "",
+    account_number: m.account_number ?? "",
+    wallet_address: m.wallet_address ?? "",
+    is_enabled: m.is_enabled,
+  });
   const save = async () => { const { error } = await db.from("umrah_payment_methods").update(f).eq("id", m.id); if (error) { toast.error(error.message); return; } toast.success("Saved"); onSaved(); };
   return <Card><CardHeader><CardTitle className="text-base">{m.sort_order}. {m.label}</CardTitle></CardHeader><CardContent className="grid gap-3">
     <div className="grid gap-1"><Label>Display label</Label><Input value={f.label} onChange={(e) => setF({ ...f, label: e.target.value })} /></div>
     <div className="grid gap-1"><Label>Payment instructions</Label><Textarea value={f.instructions} onChange={(e) => setF({ ...f, instructions: e.target.value })} /></div>
-    <div className="grid gap-1"><Label>Receiving details (wallet / account)</Label><Textarea value={f.receiving_details} onChange={(e) => setF({ ...f, receiving_details: e.target.value })} /></div>
+    {m.code === "ngn" ? <div className="grid gap-3 sm:grid-cols-3">
+      <div className="grid gap-1"><Label>Bank name</Label><Input value={f.bank_name} onChange={(e) => setF({ ...f, bank_name: e.target.value })} /></div>
+      <div className="grid gap-1"><Label>Account name</Label><Input value={f.account_name} onChange={(e) => setF({ ...f, account_name: e.target.value })} /></div>
+      <div className="grid gap-1"><Label>Account number</Label><Input value={f.account_number} onChange={(e) => setF({ ...f, account_number: e.target.value })} /></div>
+    </div> : <div className="grid gap-1"><Label>USDT wallet address (TRC20 only)</Label><Input value={f.wallet_address} onChange={(e) => setF({ ...f, wallet_address: e.target.value })} /></div>}
+    <div className="grid gap-1"><Label>Additional receiving details</Label><Textarea value={f.receiving_details} onChange={(e) => setF({ ...f, receiving_details: e.target.value })} /></div>
     <div className="flex items-center justify-between"><label className="flex items-center gap-2 text-sm"><Switch checked={f.is_enabled} onCheckedChange={(v) => setF({ ...f, is_enabled: v })} />Method available</label><Button onClick={save}>Save</Button></div>
   </CardContent></Card>;
 }
@@ -102,7 +118,27 @@ export function AdminTransactions() {
 
 export function AdminGoals() {
   const { rows } = useRows<any>("umrah_goals", "created_at", false);
-  return <Card><CardHeader><CardTitle className="text-base">Member goals</CardTitle></CardHeader><CardContent>
+  const sendMessage = useServerFn(sendActiveUmrahGoalMessage);
+  const [message, setMessage] = useState({ title: "", body: "" });
+  const [sending, setSending] = useState(false);
+  const send = async () => {
+    setSending(true);
+    try {
+      const result = await sendMessage({ data: message });
+      toast.success(`Message sent to ${result.sent} active Umrah goal member(s).`);
+      setMessage({ title: "", body: "" });
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Message could not be sent.");
+    } finally {
+      setSending(false);
+    }
+  };
+  return <div className="grid gap-4"><Card><CardHeader><CardTitle className="text-base">Member goals</CardTitle></CardHeader><CardContent>
     {rows.length === 0 ? <p className="text-sm text-muted-foreground">No member goals yet.</p> : <ul className="divide-y divide-border text-sm">{rows.map((g) => <li key={g.id} className="flex flex-wrap justify-between gap-2 py-2"><span>Member {g.user_id}<span className="block text-xs capitalize text-muted-foreground">{String(g.status).replace("_", " ")}</span></span><span>{g.currency} {Number(g.balance).toLocaleString()} / {g.target_amount ? Number(g.target_amount).toLocaleString() : "—"}</span></li>)}</ul>}
-  </CardContent></Card>;
+  </CardContent></Card>
+  <Card><CardHeader><CardTitle className="text-base">Message active goal members</CardTitle><CardDescription>Only the Super Admin can send this in-app message. The recipient count and message are recorded in the audit log.</CardDescription></CardHeader><CardContent className="grid gap-3">
+    <div className="grid gap-1"><Label>Title</Label><Input value={message.title} maxLength={160} onChange={(e) => setMessage({ ...message, title: e.target.value })} /></div>
+    <div className="grid gap-1"><Label>Message</Label><Textarea value={message.body} maxLength={2000} onChange={(e) => setMessage({ ...message, body: e.target.value })} /></div>
+    <Button className="w-fit" disabled={sending || message.title.trim().length < 2 || message.body.trim().length < 2} onClick={send}>{sending ? "Sending…" : "Send to active members"}</Button>
+  </CardContent></Card></div>;
 }

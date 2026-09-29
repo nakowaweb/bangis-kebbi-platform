@@ -112,3 +112,16 @@ SELECT CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns WHERE table_sc
                           AND table_name='umrah_partners' AND column_name='show_email')
        THEN query_to_xml('SELECT count(*) FILTER (WHERE show_phone OR show_whatsapp OR show_email) AS c FROM public.umrah_partners', false, true, '')
        END AS partners_showing_contacts;
+
+-- P11. Permanent Member ID readiness (existing IDs must be unique if present)
+SELECT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='member_id') AS member_id_column_exists,
+       to_regclass('public.member_id_seq') IS NOT NULL AS member_id_sequence_exists,
+       to_regprocedure('public.guard_profile_member_id()') IS NOT NULL AS member_id_guard_exists;
+SELECT CASE WHEN EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public' AND table_name='profiles' AND column_name='member_id')
+       THEN query_to_xml('SELECT count(*) FILTER (WHERE member_id IS NULL) AS missing, count(*) - count(DISTINCT member_id) AS duplicates FROM public.profiles', false, true, '')
+       END AS existing_member_id_quality;
+
+-- P12. Structured payment destinations (values are intentionally not selected)
+SELECT column_name FROM information_schema.columns
+ WHERE table_schema='public' AND table_name='umrah_payment_methods'
+   AND column_name IN ('bank_name','account_name','account_number','wallet_address') ORDER BY 1;
