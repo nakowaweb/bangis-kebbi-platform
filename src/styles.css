@@ -243,6 +243,14 @@
 }
 
 .hero-founder-portrait { filter: drop-shadow(0 24px 42px color-mix(in oklab, var(--brand-ink) 75%, transparent)); }
+.hero-portrait-blend {
+  border: 1px solid color-mix(in oklab, var(--brand-cyan) 24%, transparent);
+  border-radius: var(--radius);
+  background: color-mix(in oklab, var(--brand-ink) 44%, transparent);
+  box-shadow: 0 24px 70px -40px color-mix(in oklab, var(--brand-cyan) 70%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+  mask-image: linear-gradient(to bottom, black 82%, transparent 100%);
+}
 .hero-role-badge { box-shadow: inset 0 0 24px color-mix(in oklab, var(--brand-cyan) 8%, transparent), 0 10px 30px color-mix(in oklab, var(--brand-ink) 45%, transparent); }
 .platform-card-band { background-image: linear-gradient(180deg, color-mix(in oklab, var(--brand-navy) 30%, var(--brand-ink)), var(--brand-ink)); }
 .platform-entry-card { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--primary-foreground) 10%, transparent), 0 18px 44px -32px color-mix(in oklab, var(--brand-cyan) 65%, transparent); }
@@ -283,6 +291,17 @@
   }
   .hero-icon-chip { padding: 0.25rem 0.45rem; font-size: 0.56rem; }
   .hero-icon-ring { height: 1.35rem; width: 1.35rem; }
+}
+
+@media (min-width: 1024px) {
+  .hero-portrait-blend {
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    -webkit-mask-image: linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%);
+    mask-image: linear-gradient(to right, transparent 0%, black 13%, black 88%, transparent 100%);
+  }
 }
 
 @media (max-width: 1023px) {

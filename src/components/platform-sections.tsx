@@ -125,7 +125,7 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
     return () => window.clearInterval(timer);
   }, [move, paused, intervalMs]);
   return (
-    <div className="hero-stage relative min-h-[660px] w-full overflow-hidden sm:min-h-[700px] lg:min-h-[720px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
+    <div className="hero-stage relative w-full overflow-hidden" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
         <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
           <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-center" />
@@ -133,15 +133,13 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
-      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 hidden w-[53%] lg:block">
-        <img src={portraitAsset.url} alt="" width={720} height={900} className="hero-founder-portrait absolute bottom-0 right-[7%] h-[92%] w-auto max-w-[90%] object-contain object-bottom" />
-      </div>
-
-      <div className="relative z-20 mx-auto flex min-h-[660px] max-w-7xl items-end px-12 pb-20 pt-12 sm:min-h-[700px] sm:px-20 lg:min-h-[720px] lg:items-center lg:px-8 lg:pb-16">
-        <div className="hero-copy-enter max-w-[720px] lg:max-w-[58%]">
-          <img src={portraitAsset.url} alt={t("about.portraitAlt")} width={720} height={900} className="mb-4 ml-auto h-48 w-40 rounded-md border border-brand-cyan/30 object-cover object-top shadow-glow sm:h-56 sm:w-48 lg:hidden" />
+      <div className="relative z-20 mx-auto grid min-h-[760px] max-w-7xl grid-rows-[260px_auto] px-12 pb-20 pt-8 sm:min-h-[800px] sm:grid-rows-[300px_auto] sm:px-20 sm:pt-10 lg:min-h-[720px] lg:grid-cols-[minmax(0,1.04fr)_minmax(360px,0.96fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-16 lg:py-14 xl:gap-16 xl:px-20">
+        <div className="hero-portrait-blend hero-media-enter relative mx-auto h-full w-full max-w-[420px] overflow-hidden lg:order-2 lg:max-w-none lg:self-stretch">
+          <img src={portraitAsset.url} alt={t("about.portraitAlt")} width={720} height={900} className="hero-founder-portrait h-full w-full object-cover object-top lg:object-center" />
+        </div>
+        <div className="hero-copy-enter min-w-0 pt-5 sm:pt-6 lg:order-1 lg:pt-0">
           <div className="hero-role-badge inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-ink/70 px-4 py-2 text-xs font-bold uppercase text-brand-cyan backdrop-blur-md sm:text-sm"><Cpu className="size-4" />{eyebrow}</div>
-          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.06] sm:text-6xl lg:text-7xl">
+          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] sm:mt-6 sm:text-5xl xl:text-6xl">
             <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
             <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroBusinessTitleBottom")}</span>
           </h1>
@@ -156,8 +154,8 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
           </div>
         </div>
       </div>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-[18%] z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4 sm:top-[19%] lg:top-1/2" aria-label="Previous hero slide"><ChevronLeft /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-[18%] z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4 sm:top-[19%] lg:top-1/2" aria-label="Next hero slide"><ChevronRight /></Button>
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
