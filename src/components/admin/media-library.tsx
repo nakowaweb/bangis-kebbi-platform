@@ -1,5 +1,5 @@
 import { useServerFn } from "@tanstack/react-start";
-import { Archive, Film, Image as ImageIcon, Loader2, Play, RefreshCw, RotateCcw, Search, ShieldCheck, Trash2, Unlink, Upload } from "lucide-react";
+import { Archive, Eye, Film, Image as ImageIcon, Loader2, Play, RefreshCw, RotateCcw, Save, Search, ShieldCheck, Trash2, Unlink, Upload } from "lucide-react";
 import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import { toast } from "sonner";
 
@@ -9,8 +9,9 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
+import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { archiveMediaAsset, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, removeMediaFromContent, replaceMediaAsset, restoreMediaAsset } from "@/lib/content.functions";
+import { archiveMediaAsset, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, removeMediaFromContent, replaceMediaAsset, restoreMediaAsset, updateMediaAssetReview } from "@/lib/content.functions";
 
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"] as const;
 const IMAGE_MAX = 10 * 1024 * 1024;
@@ -18,6 +19,11 @@ const VIDEO_MAX = 50 * 1024 * 1024;
 
 type MediaItem = Awaited<ReturnType<typeof getAdminWorkspace>>["media"][number];
 type RegisterMedia = ReturnType<typeof useServerFn<typeof registerMediaAsset>>;
+type ReviewStatus = "draft" | "published";
+function reviewData(item: MediaItem) {
+  const record = item as MediaItem & { caption?: string | null; status?: string | null };
+  return { caption: record.caption ?? "", status: record.status === "draft" ? "draft" as const : "published" as const };
+}
 
 function mediaKind(type: string) { return type.startsWith("video/") ? "video" : "image"; }
 function validateFile(file: File, expected?: "image" | "video") {
@@ -51,12 +57,13 @@ export function MediaLibrary({ media, registerMedia, onChanged }: { media: Media
   const [uploading, setUploading] = useState(false);
   const [query, setQuery] = useState("");
   const [kind, setKind] = useState("all");
-  const [status, setStatus] = useState("active");
+  const [status, setStatus] = useState("all");
   const previews = useMediaPreviews(media);
   const visible = useMemo(() => media.filter((item) => {
     const matchesQuery = item.name.toLowerCase().includes(query.trim().toLowerCase());
     const matchesKind = kind === "all" || mediaKind(item.mime_type) === kind;
-    const matchesStatus = status === "all" || (status === "archived" ? Boolean(item.deleted_at) : !item.deleted_at);
+    const review = reviewData(item);
+    const matchesStatus = status === "all" || (status === "archived" ? Boolean(item.deleted_at) : status === "active" ? !item.deleted_at : !item.deleted_at && review.status === status);
     return matchesQuery && matchesKind && matchesStatus;
   }), [media, query, kind, status]);
 
@@ -77,7 +84,7 @@ export function MediaLibrary({ media, registerMedia, onChanged }: { media: Media
       const dimensions = await imageDimensions(file);
       await registerMedia({ data: { name: file.name, storagePath: path, mimeType: file.type as (typeof ACCEPTED)[number], altText: "", byteSize: file.size, ...dimensions } });
       form.reset();
-      toast.success("Media uploaded");
+      toast.success("Media uploaded as draft");
       onChanged();
     } catch (errorValue) {
       await supabase.storage.from("site-media").remove([path]);
@@ -93,7 +100,7 @@ export function MediaLibrary({ media, registerMedia, onChanged }: { media: Media
     <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px_180px]">
       <label className="relative min-w-0"><Search className="pointer-events-none absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" /><Input value={query} onChange={(event) => setQuery(event.target.value)} className="pl-9" placeholder="Search media by filename" aria-label="Search media" /></label>
       <Select value={kind} onValueChange={setKind}><SelectTrigger aria-label="Filter by media type"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">Images and videos</SelectItem><SelectItem value="image">Images</SelectItem><SelectItem value="video">Videos</SelectItem></SelectContent></Select>
-      <Select value={status} onValueChange={setStatus}><SelectTrigger aria-label="Filter by media status"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="active">Active</SelectItem><SelectItem value="archived">Archived</SelectItem><SelectItem value="all">All statuses</SelectItem></SelectContent></Select>
+      <Select value={status} onValueChange={setStatus}><SelectTrigger aria-label="Filter by media status"><SelectValue /></SelectTrigger><SelectContent><SelectItem value="all">All statuses</SelectItem><SelectItem value="draft">Draft review</SelectItem><SelectItem value="published">Published</SelectItem><SelectItem value="active">Active files</SelectItem><SelectItem value="archived">Archived</SelectItem></SelectContent></Select>
     </div>
     {visible.length === 0 ? <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">No media matches this view.</div> : <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {visible.map((item) => {
@@ -108,9 +115,13 @@ function MediaCard({ item, previewUrl, onChanged }: { item: MediaItem; previewUr
   const archiveMedia = useServerFn(archiveMediaAsset);
   const restoreMedia = useServerFn(restoreMediaAsset);
   const replaceMedia = useServerFn(replaceMediaAsset);
+  const saveReview = useServerFn(updateMediaAssetReview);
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const isVideo = mediaKind(item.mime_type) === "video";
+  const initialReview = reviewData(item);
+  const [caption, setCaption] = useState(initialReview.caption);
+  const [reviewStatus, setReviewStatus] = useState<ReviewStatus>(initialReview.status);
 
   async function replace(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]; event.target.value = "";
@@ -135,13 +146,27 @@ function MediaCard({ item, previewUrl, onChanged }: { item: MediaItem; previewUr
     finally { setBusy(false); }
   }
 
+  async function saveReviewState() {
+    setBusy(true);
+    try {
+      await saveReview({ data: { id: item.id, caption, status: reviewStatus } });
+      toast.success(reviewStatus === "published" ? "Media published" : "Media saved as draft");
+      onChanged();
+    } catch (error) { toast.error(error instanceof Error ? error.message : "Media review could not be saved"); }
+    finally { setBusy(false); }
+  }
+
   return <article className="group overflow-hidden rounded-lg border border-border bg-card shadow-sm">
     <div className="relative aspect-[4/3] overflow-hidden bg-secondary">
       {previewUrl ? isVideo ? <VideoPreview src={previewUrl} name={item.name} /> : <img src={previewUrl} alt={item.alt_text || item.name} className="size-full object-cover transition duration-300 group-hover:scale-[1.02]" loading="lazy" /> : <div className="grid size-full place-items-center text-muted-foreground">{isVideo ? <Film className="size-10" /> : <ImageIcon className="size-10" />}</div>}
-      <div className="absolute left-2 top-2 flex gap-2">{item.deleted_at ? <Badge variant="secondary">Archived</Badge> : null}{item.is_protected ? <Badge><ShieldCheck /> Protected</Badge> : null}</div>
+      <div className="absolute left-2 top-2 flex flex-wrap gap-2">{item.deleted_at ? <Badge variant="secondary">Archived</Badge> : <Badge variant={reviewStatus === "published" ? "default" : "secondary"}>{reviewStatus === "published" ? "Published" : "Draft"}</Badge>}{item.is_protected ? <Badge><ShieldCheck /> Protected</Badge> : null}</div>
+      {previewUrl ? <Button size="icon" variant="outline" className="absolute right-2 top-2 bg-card/90" asChild><a href={previewUrl} target="_blank" rel="noopener noreferrer" aria-label={`Preview ${item.name}`}><Eye /></a></Button> : null}
     </div>
     <div className="grid gap-3 p-4">
       <div className="min-w-0"><strong className="block truncate text-sm" title={item.name}>{item.name}</strong><span className="mt-1 block text-xs text-muted-foreground">{formatSize(item.byte_size)}</span></div>
+      <label className="grid gap-1.5"><span className="text-xs font-semibold">Caption</span><Textarea value={caption} maxLength={1000} onChange={(event) => setCaption(event.target.value)} placeholder="Describe this image for gallery use" disabled={Boolean(item.deleted_at)} /></label>
+      <label className="grid gap-1.5"><span className="text-xs font-semibold">Review status</span><Select value={reviewStatus} onValueChange={(value) => setReviewStatus(value as ReviewStatus)} disabled={Boolean(item.deleted_at)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="draft">Draft — private review</SelectItem><SelectItem value="published">Published — available for public content</SelectItem></SelectContent></Select></label>
+      <Button size="sm" disabled={busy || Boolean(item.deleted_at)} onClick={saveReviewState}><Save /> Save caption &amp; status</Button>
       <div className="grid grid-cols-2 gap-2">
         <input ref={inputRef} type="file" className="hidden" accept={isVideo ? "video/mp4,video/webm,video/quicktime" : "image/jpeg,image/png,image/webp,image/avif,image/svg+xml"} onChange={replace} aria-label={`Replace ${item.name}`} />
         <Button size="sm" variant="outline" disabled={busy || Boolean(item.deleted_at)} onClick={() => inputRef.current?.click()}><RefreshCw /> Replace</Button>
