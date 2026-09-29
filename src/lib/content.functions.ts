@@ -311,6 +311,24 @@ export const replaceMediaAsset = createServerFn({ method: "POST" })
     return saved;
   });
 
+export const updateMediaAssetReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({
+    id: z.string().uuid(),
+    caption: z.string().trim().max(1000),
+    status: z.enum(["draft", "published"]),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const { data: saved, error } = await context.supabase.rpc("update_media_asset_review", {
+      _id: data.id,
+      _caption: data.caption,
+      _status: data.status,
+    });
+    if (error) throw new Error(error.message);
+    return saved;
+  });
+
 export const removeMediaFromContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input) => z.object({ id: z.string().uuid(), confirmed: z.literal(true) }).parse(input))
@@ -426,6 +444,7 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
     storagePath: z.string().trim().min(1).max(500),
     mimeType: z.enum(["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"]),
     altText: z.string().trim().max(500),
+    caption: z.string().trim().max(1000).optional(),
     byteSize: z.number().int().positive().max(52428800),
     width: z.number().int().positive().optional(),
     height: z.number().int().positive().optional(),
@@ -437,6 +456,8 @@ export const registerMediaAsset = createServerFn({ method: "POST" })
       storage_path: data.storagePath,
       mime_type: data.mimeType,
       alt_text: data.altText,
+      caption: data.caption || null,
+      status: "draft",
       byte_size: data.byteSize,
       width: data.width ?? null,
       height: data.height ?? null,
