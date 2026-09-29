@@ -330,6 +330,17 @@ export const updateMediaAssetReview = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const reorderMediaAssets = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({ ids: z.array(z.string().uuid()).min(1).max(1000) }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const rpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+    const { error } = await rpc("reorder_media_assets", { _ids: data.ids });
+    if (error) throw new Error(error.message.includes("reorder_media_assets") ? "Reordering becomes available after the reviewed gallery update is approved." : error.message);
+    return { ok: true };
+  });
+
 export const removeMediaFromContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input) => z.object({ id: z.string().uuid(), confirmed: z.literal(true) }).parse(input))

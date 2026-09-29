@@ -6,7 +6,8 @@ BEGIN;
 
 ALTER TABLE public.media_assets
   ADD COLUMN IF NOT EXISTS caption text,
-  ADD COLUMN IF NOT EXISTS status text;
+  ADD COLUMN IF NOT EXISTS status text,
+  ADD COLUMN IF NOT EXISTS sort_order integer NOT NULL DEFAULT 0;
 
 UPDATE public.media_assets
 SET status = 'published'
@@ -61,6 +62,17 @@ $$;
 
 REVOKE ALL ON FUNCTION public.update_media_asset_review(uuid,text,text) FROM PUBLIC, anon;
 GRANT EXECUTE ON FUNCTION public.update_media_asset_review(uuid,text,text) TO authenticated, service_role;
+
+CREATE OR REPLACE FUNCTION public.reorder_media_assets(_ids uuid[])
+RETURNS void LANGUAGE plpgsql SECURITY INVOKER SET search_path = public AS $$
+BEGIN
+  IF NOT public.is_content_admin(auth.uid()) THEN RAISE EXCEPTION 'Content administrator access is required'; END IF;
+  UPDATE public.media_assets m SET sort_order = o.ord FROM unnest(_ids) WITH ORDINALITY AS o(id, ord) WHERE m.id = o.id;
+  INSERT INTO public.admin_audit_logs (admin_id, action, content_type, content_label, metadata)
+  VALUES (auth.uid(), 'reordered media', 'media', 'Media Library', jsonb_build_object('count', coalesce(array_length(_ids,1),0)));
+END $$;
+REVOKE ALL ON FUNCTION public.reorder_media_assets(uuid[]) FROM PUBLIC, anon;
+GRANT EXECUTE ON FUNCTION public.reorder_media_assets(uuid[]) TO authenticated, service_role;
 
 NOTIFY pgrst, 'reload schema';
 COMMIT;
