@@ -88,13 +88,10 @@ function Index() {
     .slice(0, 3)
     .map((entry, index) => ({ src: entry.imageUrl ?? heroFallbacks[index], fallbackSrc: heroFallbacks[index], alt: entry.image_alt ?? entry.title, label: entry.title }))
     .filter((entry): entry is { src: string; fallbackSrc: string; alt: string; label: string } => Boolean(entry.src && entry.fallbackSrc));
-  const quickNavigation = publicContent.entries
-    .filter((entry) => entry.content_type === "homepage" && /^quick-nav-(home|services|umrah|projects|blog|foundation|community|cv)$/.test(entry.slug))
-    .map((entry) => ({ slug: entry.slug, imageUrl: entry.imageUrl, image_alt: entry.image_alt, sort_order: entry.sort_order }));
   return (
     <main>
       <HeroSection intervalSeconds={typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : 3} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
-      <QuickActionsSection items={quickNavigation} />
+      <QuickActionsSection />
       <AboutPreview title={about?.title} description={about?.summary ?? undefined} items={aboutItems} />
       <ServicesSection items={services} />
       <ProjectsSection items={projects} />

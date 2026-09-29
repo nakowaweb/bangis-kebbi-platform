@@ -54,14 +54,6 @@ import businessGlobalOpportunities from "@/assets/business-global-opportunities.
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
-import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp";
-import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp";
-import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp";
-import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp";
-import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp";
-import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp";
-import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp";
-import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -83,24 +75,6 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
   { key: "umrah", title: "nav.umrah", detail: "card.umrahDetail", href: "/umrah", icon: Plane, tone: "platform-card-gold" },
   { key: "business", title: "card.business", detail: "card.businessDetail", href: "/business", icon: BriefcaseBusiness, tone: "platform-card-green" },
   { key: "community", title: "card.community", detail: "card.communityDetail", href: "/community", icon: UsersRound, tone: "platform-card-cyan" },
-];
-
-const quickActions: Array<{
-  slug: string;
-  label: TranslationKey;
-  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/cv" | "/partners";
-  hash?: string;
-  image: string;
-  imageAlt: string;
-}> = [
-  { slug: "quick-nav-home", label: "nav.home", href: "/", image: quickNavHome, imageAlt: "Premium house" },
-  { slug: "quick-nav-services", label: "nav.services", href: "/services", image: quickNavServices, imageAlt: "Professional gear and tools" },
-  { slug: "quick-nav-umrah", label: "nav.umrah", href: "/umrah", image: quickNavUmrah, imageAlt: "Kaaba at Masjid al-Haram" },
-  { slug: "quick-nav-projects", label: "nav.projects", href: "/projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
-  { slug: "quick-nav-blog", label: "nav.blog", href: "/blog", image: quickNavBlog, imageAlt: "Article document with pen" },
-  { slug: "quick-nav-foundation", label: "nav.foundation", href: "/foundation", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
-  { slug: "quick-nav-community", label: "nav.verifiedPartners", href: "/partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
-  { slug: "quick-nav-cv", label: "nav.cv", href: "/cv", image: quickNavCv, imageAlt: "Professional résumé document" },
 ];
 
 type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_alt?: string | null; sort_order: number };
@@ -163,6 +137,7 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
 
       <div className="relative z-20 mx-auto flex min-h-[660px] max-w-7xl items-end px-12 pb-20 pt-12 sm:min-h-[700px] sm:px-20 lg:min-h-[720px] lg:items-center lg:px-8 lg:pb-16">
         <div className="hero-copy-enter max-w-[720px] lg:max-w-[58%]">
+          <img src={portraitAsset.url} alt={t("about.portraitAlt")} width={720} height={900} className="mb-4 ml-auto h-48 w-40 rounded-md border border-brand-cyan/30 object-cover object-top shadow-glow sm:h-56 sm:w-48 lg:hidden" />
           <div className="hero-role-badge inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-ink/70 px-4 py-2 text-xs font-bold uppercase text-brand-cyan backdrop-blur-md sm:text-sm"><Cpu className="size-4" />{eyebrow}</div>
           <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.06] sm:text-6xl lg:text-7xl">
             <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
@@ -186,7 +161,7 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
   );
 }
 
-export function QuickActionsSection({ items = [] }: { items?: QuickActionManagedItem[] }) {
+export function QuickActionsSection() {
   const { t } = useLanguage();
   return (
     <section className="platform-card-band border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
