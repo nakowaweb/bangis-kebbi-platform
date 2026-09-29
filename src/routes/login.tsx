@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { pageHead } from "@/lib/seo";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
+import { authDestination, rememberAuthDestination } from "@/lib/auth-destination";
 
 const searchSchema = z.object({ redirect: z.string().optional() });
 
@@ -38,16 +39,6 @@ function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const [unconfirmedEmail, setUnconfirmedEmail] = useState<string | null>(null);
 
-  async function destinationFor(userId: string) {
-    const { data: profile } = await supabase.from("profiles").select("must_change_password").eq("id", userId).maybeSingle();
-    if ((profile as { must_change_password?: boolean } | null)?.must_change_password) return "/reset-password";
-    const target = safePath(search.redirect);
-    if (target) return target;
-    const { data } = await supabase.from("user_roles").select("role").eq("user_id", userId);
-    const roles = (data ?? []).map((row) => row.role as string);
-    return roles.includes("super_admin") || roles.includes("admin") ? "/admin" : "/dashboard";
-  }
-
   async function signIn(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
@@ -67,7 +58,7 @@ function LoginPage() {
         toast.error(message);
         return;
       }
-      const to = await destinationFor(data.session.user.id);
+      const to = await authDestination(data.session.user.id, safePath(search.redirect));
       await navigate({ to, replace: true });
     } catch (caught) {
       const message = caught instanceof Error ? caught.message : "Network error. Please check your connection and try again.";
@@ -95,11 +86,15 @@ function LoginPage() {
     setError(null);
     setBusy(true);
     try {
-      const result = await lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin });
+      rememberAuthDestination(safePath(search.redirect));
+      const result = await lovable.auth.signInWithOAuth("google", {
+        redirect_uri: `${window.location.origin}/auth/callback`,
+        extraParams: { prompt: "select_account" },
+      });
       if (result.error) { setError(result.error.message); toast.error(result.error.message); return; }
       if (result.redirected) return;
       const { data } = await supabase.auth.getUser();
-      const to = data.user ? await destinationFor(data.user.id) : "/dashboard";
+      const to = data.user ? await authDestination(data.user.id, safePath(search.redirect)) : "/dashboard";
       await navigate({ to, replace: true });
     } finally {
       setBusy(false);

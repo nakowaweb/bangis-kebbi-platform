@@ -182,3 +182,9 @@
 - [x] Add Super Admin messaging for active goal members with audit logging
 - [x] Verify desktop/mobile, disabled-payment security and available authenticated flows
 - [ ] Apply the reviewed database migration — blocked pending explicit production approval
+
+## Umrah Goal payment cards and Google return flow
+- [x] Replace payment symbols and reduce each disabled method to one Coming soon state
+- [x] Add a public Google callback with safe member/admin destination handling
+- [ ] Verify Google sign-in on bangiskebbi.com — blocked until the production callback is allow-listed and reviewed
+- [ ] Publish the reviewed changes — blocked pending explicit production approval

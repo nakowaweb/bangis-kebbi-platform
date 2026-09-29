@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import QRCode from "react-qr-code";
-import { Banknote, Check, Copy, Info, Landmark, LockKeyhole, ShieldCheck, Target, UserRound, WalletCards } from "lucide-react";
+import { Check, Copy, Info, LockKeyhole, Target, UserRound, WalletCards } from "lucide-react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -128,16 +128,30 @@ function PaymentMethodCard({ method, memberId, depositsEnabled, goal, userId, on
   const active = depositsEnabled && Boolean(method?.available);
   const destination = code === "ngn" ? method?.accountNumber : method?.walletAddress;
   return <Card className="overflow-hidden border-primary/15">
-    <CardHeader className="border-b border-border bg-card"><div className="flex items-start justify-between gap-3"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">{code === "ngn" ? <Landmark className="size-5" /> : <Banknote className="size-5" />}</span><div><CardTitle className="text-lg">{code === "ngn" ? "NGN Bank Transfer" : "USDT Transfer"}</CardTitle><CardDescription>{code === "ngn" ? "Nigerian Naira bank transfer" : "Send USDT using the TRC20 network"}</CardDescription></div></div><span className="rounded-md bg-secondary px-2 py-1 text-xs font-semibold text-muted-foreground">{active ? "AVAILABLE" : "PREVIEW"}</span></div></CardHeader>
+    <CardHeader className="border-b border-border bg-card"><div className="flex items-start justify-between gap-3"><div className="flex gap-3"><span className="grid size-10 shrink-0 place-items-center rounded-full bg-primary/10 text-primary">{code === "ngn" ? <NigeriaFlagIcon /> : <TetherIcon />}</span><div><CardTitle className="text-lg">{code === "ngn" ? "NGN Bank Transfer" : "USDT Transfer"}</CardTitle><CardDescription>{code === "ngn" ? "Nigerian Naira bank transfer" : "USDT · TRC20 ONLY"}</CardDescription></div></div><span className="rounded-md bg-secondary px-2 py-1 text-xs font-semibold text-muted-foreground">{active ? "AVAILABLE" : "COMING SOON"}</span></div></CardHeader>
     <CardContent className="grid gap-4 pt-5">
-      {code === "ngn" ? <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Bank name" value={active ? method?.bankName ?? null : null} /><DetailRow label="Account name" value={active ? method?.accountName ?? null : null} /><DetailRow label="Account number" value={active ? method?.accountNumber ?? null : null} copy={active} /></div> : <>
-        <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Network" value="TRC20 ONLY" /><DetailRow label="Wallet address" value={active ? method?.walletAddress ?? null : null} copy={active} /></div>
-        <div className="grid gap-3 sm:grid-cols-[145px_1fr]"><div className="grid min-h-36 place-items-center rounded-md border border-dashed border-border bg-card p-3">{active && destination ? <QRCode value={destination} size={112} bgColor="transparent" fgColor="currentColor" aria-label="Payment destination QR code" /> : <div className="text-center text-muted-foreground"><LockKeyhole className="mx-auto size-8" /><span className="mt-2 block text-xs font-semibold">QR LOCKED</span><span className="mt-1 block text-[10px]">NOT SCANNABLE</span></div>}</div><div className="rounded-md border border-brand-gold/30 bg-brand-gold/10 p-4 text-sm"><p className="font-semibold">USDT — TRC20 ONLY</p><p className="mt-2 text-muted-foreground">Only use the TRC20 network after this method has been enabled. Other networks may result in loss of funds.</p></div></div>
+      {!active ? <ComingSoonState method={code} /> : <>
+        {code === "ngn" ? <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Bank name" value={method?.bankName ?? null} /><DetailRow label="Account name" value={method?.accountName ?? null} /><DetailRow label="Account number" value={method?.accountNumber ?? null} copy /></div> : <>
+          <div className="divide-y divide-border rounded-md bg-secondary/60 px-4 text-sm"><DetailRow label="Network" value="TRC20 ONLY" /><DetailRow label="Wallet address" value={method?.walletAddress ?? null} copy /></div>
+          <div className="grid gap-3 sm:grid-cols-[145px_1fr]"><div className="grid min-h-36 place-items-center rounded-md border border-border bg-card p-3">{destination ? <QRCode value={destination} size={112} bgColor="transparent" fgColor="currentColor" aria-label="Payment destination QR code" /> : null}</div><div className="rounded-md border border-brand-gold/30 bg-brand-gold/10 p-4 text-sm"><p className="font-semibold">USDT — TRC20 ONLY</p><p className="mt-2 text-muted-foreground">Only use the TRC20 network. Other networks may result in loss of funds.</p></div></div>
+        </>}
+        {memberId ? <p className="rounded-md bg-primary/5 p-3 text-sm">Use your Member ID <strong>{memberId}</strong> as the payment reference.</p> : null}
+        {goal && goal.currency.toLowerCase() === code ? <RecordPayment userId={userId} goalId={goal.id} goalCurrency={goal.currency} method={method} onDone={onDone} /> : <Button disabled className="w-full"><LockKeyhole />Payment submission unavailable for this goal</Button>}
       </>}
-      {!active ? <div className="rounded-md bg-primary/5 p-3 text-sm text-muted-foreground"><ShieldCheck className="mr-2 inline size-4 text-primary" />Details stay private until the Super Admin configures and enables this method.</div> : memberId ? <p className="rounded-md bg-primary/5 p-3 text-sm">Use your Member ID <strong>{memberId}</strong> as the payment reference.</p> : null}
-      {active && goal && goal.currency.toLowerCase() === code ? <RecordPayment userId={userId} goalId={goal.id} goalCurrency={goal.currency} method={method} onDone={onDone} /> : <Button disabled className="w-full"><LockKeyhole />Payment submission currently disabled</Button>}
     </CardContent>
   </Card>;
+}
+
+function ComingSoonState({ method }: { method: "ngn" | "usdt" }) {
+  return <div className="grid min-h-48 place-items-center rounded-md border border-dashed border-primary/20 bg-primary/5 p-6 text-center"><div><LockKeyhole className="mx-auto size-8 text-primary" /><p className="mt-3 font-semibold">Coming soon</p><p className="mt-1 text-sm text-muted-foreground">{method === "usdt" ? "USDT transfers will use TRC20 ONLY." : "NGN bank transfer is not open yet."}</p></div></div>;
+}
+
+function NigeriaFlagIcon() {
+  return <svg viewBox="0 0 30 20" className="h-5 w-7 overflow-hidden rounded-sm shadow-sm" role="img" aria-label="Nigeria flag"><rect width="10" height="20" x="0" fill="currentColor" className="text-success" /><rect width="10" height="20" x="10" fill="currentColor" className="text-primary-foreground" /><rect width="10" height="20" x="20" fill="currentColor" className="text-success" /></svg>;
+}
+
+function TetherIcon() {
+  return <svg viewBox="0 0 32 32" className="size-7 text-success" role="img" aria-label="Tether USDT"><circle cx="16" cy="16" r="15" fill="currentColor" /><path fill="var(--card)" d="M18.1 17.8v-.1c-.1 0-.8.1-2.1.1-1 0-1.8 0-2.1-.1v.1c-3.9-.2-6.8-.9-6.8-1.8s2.9-1.6 6.8-1.8v2.8c.3 0 1.1.1 2.1.1 1.2 0 1.9-.1 2.1-.1v-2.8c3.9.2 6.8.9 6.8 1.8s-2.9 1.6-6.8 1.8Zm0-4.1v-2.5h4.8V7.4H9.1v3.8h4.8v2.5c-5.3.3-9.3 1.3-9.3 2.6s4 2.4 9.3 2.7v8.3h4.2V19c5.3-.3 9.3-1.4 9.3-2.7s-4-2.3-9.3-2.6Z" /></svg>;
 }
 
 function DetailRow({ label, value, copy = false }: { label: string; value: string | null; copy?: boolean }) {
