@@ -122,7 +122,7 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
         eyebrow={label(content?.eyebrow, "home.heroRole")}
         subtitle={content?.subtitle ?? t("home.heroBusinessSubtitle")}
         primaryCta={label(content?.primaryCta, "common.hireMe")}
-        secondaryCta={label(content?.secondaryCta, "common.exploreWork")}
+        secondaryCta={label(content?.secondaryCta, "common.viewMyWork")}
       />
     </section>
   );
