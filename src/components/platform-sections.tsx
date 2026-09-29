@@ -42,8 +42,6 @@ import appIconAssetSrc from "@/assets/bangis-app-icon.png";
 const appIconAsset = { url: appIconAssetSrc };
 import communityImageAssetSrc from "@/assets/bangis-official-community.webp";
 const communityImageAsset = { url: communityImageAssetSrc };
-import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
-const portraitAsset = { url: portraitAssetSrc };
 import digitalSolutionsHero from "@/assets/hero-digital-solutions.jpg";
 import communitySupportHero from "@/assets/hero-community-support.jpg";
 import communitySupportBanner from "@/assets/homepage-community-support-banner.png";
@@ -133,11 +131,8 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
-      <div className="relative z-20 mx-auto grid min-h-[760px] max-w-7xl grid-rows-[260px_auto] px-12 pb-20 pt-8 sm:min-h-[800px] sm:grid-rows-[300px_auto] sm:px-20 sm:pt-10 lg:min-h-[720px] lg:grid-cols-[minmax(0,1.04fr)_minmax(360px,0.96fr)] lg:grid-rows-1 lg:items-center lg:gap-10 lg:px-16 lg:py-14 xl:gap-16 xl:px-20">
-        <div className="hero-portrait-blend hero-media-enter relative mx-auto h-full w-full max-w-[420px] overflow-hidden lg:order-2 lg:max-w-none lg:self-stretch">
-          <img src={portraitAsset.url} alt={t("about.portraitAlt")} width={720} height={900} className="hero-founder-portrait h-full w-full object-cover object-top lg:object-center" />
-        </div>
-        <div className="hero-copy-enter min-w-0 pt-5 sm:pt-6 lg:order-1 lg:pt-0">
+      <div className="relative z-20 mx-auto flex min-h-[620px] max-w-7xl items-end px-12 pb-20 pt-52 sm:min-h-[660px] sm:px-20 sm:pb-24 sm:pt-64 lg:min-h-[650px] lg:items-center lg:px-16 lg:py-14 xl:min-h-[690px] xl:px-20">
+        <div className="hero-copy-enter min-w-0 max-w-[640px] lg:w-[55%]">
           <div className="hero-role-badge inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-ink/70 px-4 py-2 text-xs font-bold uppercase text-brand-cyan backdrop-blur-md sm:text-sm"><Cpu className="size-4" />{eyebrow}</div>
           <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] sm:mt-6 sm:text-5xl xl:text-6xl">
             <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
@@ -154,8 +149,8 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
           </div>
         </div>
       </div>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-[18%] z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4 sm:top-[19%] lg:top-1/2" aria-label="Previous hero slide"><ChevronLeft /></Button>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-[18%] z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4 sm:top-[19%] lg:top-1/2" aria-label="Next hero slide"><ChevronRight /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
@@ -523,13 +518,13 @@ export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slu
             <span className="hidden h-px flex-1 bg-gradient-to-r from-brand-gold to-transparent sm:block" aria-hidden="true" />
           </div>
           <div className="flex shrink-0 items-center gap-2">
-            <Link to="/community" className="inline-flex min-h-10 items-center gap-2 rounded-md border border-brand-cyan/40 bg-primary-foreground/5 px-3 text-sm font-semibold hover:bg-primary-foreground/10"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" />Media Gallery</Link>
-            <button type="button" onClick={() => scroll(-1)} aria-label="Previous projects" className="grid size-10 place-items-center rounded-full border border-primary-foreground/30 hover:bg-primary-foreground/10"><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></button>
-            <button type="button" onClick={() => scroll(1)} aria-label="Next projects" className="grid size-10 place-items-center rounded-full border border-primary-foreground/30 hover:bg-primary-foreground/10"><ArrowRight className="size-4 rtl:rotate-180" /></button>
+            <Button variant="outline" className="border-brand-cyan/40 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" />Media Gallery</Link></Button>
+            <Button type="button" variant="outline" size="icon" onClick={() => scroll(-1)} aria-label="Previous projects" className="rounded-full border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></Button>
+            <Button type="button" variant="outline" size="icon" onClick={() => scroll(1)} aria-label="Next projects" className="rounded-full border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><ArrowRight className="size-4 rtl:rotate-180" /></Button>
           </div>
         </div>
         {categories.length > 1 && <div className="mt-4 flex gap-2 overflow-x-auto pb-1" role="group" aria-label="Filter projects">
-          {["all", ...categories].map((c) => <button key={c} type="button" aria-pressed={filter === c} onClick={() => setFilter(c)} className={`min-h-9 shrink-0 rounded-md border px-3 text-sm font-semibold transition ${filter === c ? "border-brand-cyan bg-brand-cyan text-brand-ink" : "border-primary-foreground/25 hover:bg-primary-foreground/10"}`}>{c === "all" ? "All" : c}</button>)}
+          {["all", ...categories].map((c) => <Button key={c} type="button" size="sm" variant="outline" aria-pressed={filter === c} onClick={() => setFilter(c)} className={`shrink-0 ${filter === c ? "border-brand-cyan bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" : "border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"}`}>{c === "all" ? "All" : c}</Button>)}
         </div>}
         <div ref={scroller} className="mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-2 motion-reduce:scroll-auto">
           {visible.map((p) => (

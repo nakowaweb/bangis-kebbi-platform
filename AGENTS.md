@@ -14,7 +14,7 @@
 - Reviewed public languages are centralized in `src/lib/i18n/dictionary.ts`; worldwide provider-supported options and direction metadata live in `src/lib/i18n/world-languages.ts` so URL persistence never narrows to reviewed locales.
 - Live translation tracks in-flight strings separately from completed translations, because caching source placeholders can permanently prevent cold translations from reaching the rendered page.
 - Legacy built-in page copy falls back to English when a newer locale has no static translation; CMS translations remain authoritative when published.
-- The homepage hero overlays the approved founder portrait on exactly three CMS-managed background slots (`hero-feature-1` through `hero-feature-3`); keep the three-second accessible crossfade and bundled fallbacks.
+- The homepage hero uses exactly three CMS-managed full-background slots (`hero-feature-1` through `hero-feature-3`) with no separate foreground portrait panel; keep the three-second accessible crossfade and bundled fallbacks.
 - Approved built-in fallback visuals are bundled through Vite imports rather than Lovable-only asset paths, so self-hosted deployments retain them while CMS media remains replaceable.
 - Permanent Member IDs are assigned and frozen by a database trigger; UUIDs remain the only internal relationship and authorization key.
 - Member payment destinations are returned only when both Live Deposits and the individual method are enabled, preventing disabled details from reaching the browser.
