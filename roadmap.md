@@ -188,3 +188,12 @@
 - [x] Add a public Google callback with safe member/admin destination handling
 - [ ] Verify Google sign-in on bangiskebbi.com — blocked until the production callback is allow-listed and reviewed
 - [ ] Publish the reviewed changes — blocked pending explicit production approval
+
+## Approved cinematic homepage review
+- [x] Match the approved navy/cyan/green/gold homepage reference on laptop, tablet and phone
+- [x] Keep the approved portrait, three managed slides, exact four-card order and working destinations
+- [x] Show only published CMS case studies and approved media; never publish reference placeholders as claims
+- [x] Prepare draft/published media captions and lifecycle controls with safe replacement/deletion
+- [x] Verify navigation, carousel, dashboard, EN/AR/HA, RTL and reduced motion
+- [x] Capture desktop, tablet and phone review screenshots without deploying production
+- [ ] Apply and verify Media Gallery review metadata — blocked pending explicit production migration approval and Super Admin session

@@ -104,7 +104,7 @@ export function GalleryPicker({ value, onChange }: { value: string; onChange: (v
     setUploading(false);
     if (added.length) {
       set([...items, ...added.filter((p) => !items.includes(p))]);
-      toast.success(`${added.length} image${added.length > 1 ? "s" : ""} added. Save the content to apply.`);
+      toast.success(`${added.length} image${added.length > 1 ? "s" : ""} uploaded as draft. Publish in Media before selecting.`);
       if (open) void loadAssets();
     }
   }

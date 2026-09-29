@@ -311,6 +311,25 @@ export const replaceMediaAsset = createServerFn({ method: "POST" })
     return saved;
   });
 
+export const updateMediaAssetReview = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .validator((input) => z.object({
+    id: z.string().uuid(),
+    caption: z.string().trim().max(1000),
+    status: z.enum(["draft", "published"]),
+  }).parse(input))
+  .handler(async ({ data, context }) => {
+    await requireContentAdmin(context);
+    const reviewRpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+    const { error } = await reviewRpc("update_media_asset_review", {
+      _id: data.id,
+      _caption: data.caption,
+      _status: data.status,
+    });
+    if (error) throw new Error(error.message);
+    return { ok: true };
+  });
+
 export const removeMediaFromContent = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .validator((input) => z.object({ id: z.string().uuid(), confirmed: z.literal(true) }).parse(input))

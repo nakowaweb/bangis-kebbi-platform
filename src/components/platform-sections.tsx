@@ -1,10 +1,8 @@
 import { Link } from "@tanstack/react-router";
 import {
   ArrowRight,
-  Lightbulb,
+  Cpu,
   MapPin,
-  Settings,
-  Users,
   Blocks,
   ChevronLeft,
   ChevronRight,
@@ -13,12 +11,14 @@ import {
   Code2,
   Globe2,
   FileText,
+  FolderKanban,
   Handshake,
   HandHeart,
   Linkedin,
   Mail,
   MessageCircle,
   Network,
+  Newspaper,
   Plane,
   Play,
   Quote,
@@ -34,7 +34,7 @@ import { useCallback, useEffect, useRef, useState, type ReactNode } from "react"
 
 import { useLanguage } from "@/lib/language";
 import type { TranslationKey } from "@/lib/i18n/dictionary";
-import { articles as portfolioArticles, projects as portfolioProjects, services as portfolioServices, text } from "@/lib/portfolio-content";
+import { services as portfolioServices, text } from "@/lib/portfolio-content";
 import { SafeImage } from "@/components/safe-image";
 import { useContactLinks } from "@/components/contact-actions";
 
@@ -56,14 +56,6 @@ import businessGlobalOpportunities from "@/assets/business-global-opportunities.
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
-import quickNavHome from "@/assets/quick-nav/quick-nav-home.webp";
-import quickNavServices from "@/assets/quick-nav/quick-nav-services.webp";
-import quickNavUmrah from "@/assets/quick-nav/quick-nav-umrah.webp";
-import quickNavProjects from "@/assets/quick-nav/quick-nav-projects.webp";
-import quickNavBlog from "@/assets/quick-nav/quick-nav-blog.webp";
-import quickNavFoundation from "@/assets/quick-nav/quick-nav-foundation.webp";
-import quickNavCommunity from "@/assets/quick-nav/quick-nav-community.webp";
-import quickNavCv from "@/assets/quick-nav/quick-nav-cv.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -80,31 +72,11 @@ import {
   umrahStatuses,
 } from "@/lib/site-data";
 
-const categoryCards: Array<{ key: string; title: TranslationKey; detail: TranslationKey; href: "/services" | "/business" | "/community" | "/umrah" | "/foundation" | "/about"; icon: LucideIcon; tone: string }> = [
-  { key: "web", title: "card.webDesign", detail: "card.webDesignDetail", href: "/services", icon: Code2, tone: "bg-primary" },
-  { key: "business", title: "card.business", detail: "card.businessDetail", href: "/business", icon: BriefcaseBusiness, tone: "bg-brand-green" },
-  { key: "community", title: "card.community", detail: "card.communityDetail", href: "/community", icon: UsersRound, tone: "bg-primary" },
-  { key: "umrah", title: "nav.umrah", detail: "card.umrahDetail", href: "/umrah", icon: Plane, tone: "bg-brand-gold" },
-  { key: "foundation", title: "nav.foundation", detail: "card.foundationDetail", href: "/foundation", icon: HandHeart, tone: "bg-brand-green" },
-  { key: "global", title: "card.globalReach", detail: "card.globalReachDetail", href: "/about", icon: Globe2, tone: "bg-brand-ink" },
-];
-
-const quickActions: Array<{
-  slug: string;
-  label: TranslationKey;
-  href: "/" | "/services" | "/projects" | "/blog" | "/umrah" | "/foundation" | "/cv" | "/partners";
-  hash?: string;
-  image: string;
-  imageAlt: string;
-}> = [
-  { slug: "quick-nav-home", label: "nav.home", href: "/", image: quickNavHome, imageAlt: "Premium house" },
-  { slug: "quick-nav-services", label: "nav.services", href: "/services", image: quickNavServices, imageAlt: "Professional gear and tools" },
-  { slug: "quick-nav-umrah", label: "nav.umrah", href: "/umrah", image: quickNavUmrah, imageAlt: "Kaaba at Masjid al-Haram" },
-  { slug: "quick-nav-projects", label: "nav.projects", href: "/projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
-  { slug: "quick-nav-blog", label: "nav.blog", href: "/blog", image: quickNavBlog, imageAlt: "Article document with pen" },
-  { slug: "quick-nav-foundation", label: "nav.foundation", href: "/foundation", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
-  { slug: "quick-nav-community", label: "nav.verifiedPartners", href: "/partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
-  { slug: "quick-nav-cv", label: "nav.cv", href: "/cv", image: quickNavCv, imageAlt: "Professional résumé document" },
+const categoryCards: Array<{ key: string; title: TranslationKey; detail: TranslationKey; href: "/services" | "/business" | "/community" | "/umrah"; icon: LucideIcon; tone: string }> = [
+  { key: "web", title: "card.webDesignAi", detail: "card.webDesignAiDetail", href: "/services", icon: Cpu, tone: "platform-card-cyan" },
+  { key: "umrah", title: "nav.umrah", detail: "card.umrahDetail", href: "/umrah", icon: Plane, tone: "platform-card-gold" },
+  { key: "business", title: "card.business", detail: "card.businessDetail", href: "/business", icon: BriefcaseBusiness, tone: "platform-card-green" },
+  { key: "community", title: "card.community", detail: "card.communityDetail", href: "/community", icon: UsersRound, tone: "platform-card-cyan" },
 ];
 
 type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_alt?: string | null; sort_order: number };
@@ -123,21 +95,13 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
         location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}
         globalStatus={globalStatus}
         intervalMs={Math.min(30, Math.max(1, intervalSeconds)) * 1000}
-        eyebrow={label(content?.eyebrow, "home.heroEyebrow")}
-        subtitle={content?.subtitle ?? t("home.heroSubtitle")}
+        eyebrow={label(content?.eyebrow, "home.heroRole")}
+        subtitle={content?.subtitle ?? t("home.heroBusinessSubtitle")}
         primaryCta={label(content?.primaryCta, "common.hireMe")}
-        secondaryCta={label(content?.secondaryCta, "common.exploreWork")}
+        secondaryCta={t("common.viewMyWork")}
       />
     </section>
   );
-}
-
-function highlightSubtitle(text: string) {
-  const tones: Record<string, string> = { people: "text-brand-cyan", technology: "text-brand-gold", opportunities: "text-brand-green" };
-  return text.split(/(people|technology|opportunities)/i).map((part, i) => {
-    const tone = tones[part.toLowerCase()];
-    return tone ? <span key={i} className={`hero-word ${tone}`}>{part}</span> : part;
-  });
 }
 
 const fallbackHeroSlides: HeroSlideInput[] = [
@@ -161,79 +125,54 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
     return () => window.clearInterval(timer);
   }, [move, paused, intervalMs]);
   return (
-    <div className="hero-stage relative min-h-[590px] w-full overflow-hidden sm:min-h-[620px] lg:min-h-[650px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
+    <div className="hero-stage relative min-h-[660px] w-full overflow-hidden sm:min-h-[700px] lg:min-h-[720px]" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
         <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
-          <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-[62%_center] sm:object-center" />
+          <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-center" />
         </figure>
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
-      <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-20" />
+      <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
+      <div className="pointer-events-none absolute inset-y-0 right-0 z-20 hidden w-[53%] lg:block">
+        <img src={portraitAsset.url} alt="" width={720} height={900} className="hero-founder-portrait absolute bottom-0 right-[7%] h-[92%] w-auto max-w-[90%] object-contain object-bottom" />
+      </div>
 
-      <div className="relative z-20 mx-auto flex min-h-[600px] max-w-7xl items-end px-14 pb-20 pt-10 sm:min-h-[640px] sm:px-20 lg:min-h-[680px] lg:items-center lg:px-24 lg:pb-16">
-        <div className="hero-copy-enter max-w-[780px]">
-          <div className="flex flex-wrap gap-2 sm:gap-4" aria-label={eyebrow}>
-            <span className="hero-pill hero-pill-gold"><Lightbulb className="h-5 w-5 sm:h-6 sm:w-6" />{eyebrow.split("•")[0]?.trim()}</span>
-            <span className="hero-pill hero-pill-cyan" style={{ animationDelay: "0.8s" }}><Settings className="h-5 w-5 sm:h-6 sm:w-6" />{eyebrow.split("•")[1]?.trim()}</span>
-            <span className="hero-pill hero-pill-green" style={{ animationDelay: "1.6s" }}><Users className="h-5 w-5 sm:h-6 sm:w-6" />{eyebrow.split("•")[2]?.trim()}</span>
-          </div>
-          <h1 className="mt-8 font-display text-4xl font-extrabold leading-[1.05] drop-shadow-lg sm:mt-10 sm:text-6xl lg:text-7xl">
-            <span className="hero-line hero-line-1 hero-title-a block">{t("home.heroTitleLine1")}</span>
-            <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroTitleLine2")}</span>
+      <div className="relative z-20 mx-auto flex min-h-[660px] max-w-7xl items-end px-12 pb-20 pt-12 sm:min-h-[700px] sm:px-20 lg:min-h-[720px] lg:items-center lg:px-8 lg:pb-16">
+        <div className="hero-copy-enter max-w-[720px] lg:max-w-[58%]">
+          <img src={portraitAsset.url} alt={t("about.portraitAlt")} width={720} height={900} className="mb-4 ml-auto h-48 w-40 rounded-md border border-brand-cyan/30 object-cover object-top shadow-glow sm:h-56 sm:w-48 lg:hidden" />
+          <div className="hero-role-badge inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-ink/70 px-4 py-2 text-xs font-bold uppercase text-brand-cyan backdrop-blur-md sm:text-sm"><Cpu className="size-4" />{eyebrow}</div>
+          <h1 className="mt-6 font-display text-4xl font-extrabold leading-[1.06] sm:text-6xl lg:text-7xl">
+            <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
+            <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroBusinessTitleBottom")}</span>
           </h1>
-          <p className="hero-line hero-line-3 mt-5 max-w-2xl font-display text-lg font-semibold leading-snug drop-shadow sm:text-2xl">{highlightSubtitle(subtitle)}</p>
+          <p className="hero-line hero-line-3 mt-5 max-w-xl text-base font-medium leading-7 text-primary-foreground/80 sm:text-lg">{subtitle}</p>
           <div className="hero-cta-enter mt-7 flex flex-wrap gap-3">
             <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{primaryCta} <ArrowRight /></Link></Button>
             <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{secondaryCta}</Link></Button>
           </div>
-          <div className="hero-location location-badge-motion mt-6 inline-flex items-center gap-3 rounded-xl border border-primary-foreground/20 bg-brand-ink/70 px-4 py-3 backdrop-blur-md sm:px-5">
+          <div className="hero-location location-badge-motion mt-6 inline-flex items-center gap-3 rounded-md border border-primary-foreground/20 bg-brand-ink/70 px-4 py-3 backdrop-blur-md sm:px-5">
             <MapPin className="h-7 w-7 shrink-0 fill-primary-foreground text-brand-ink" aria-hidden="true" />
             <span><span className="flex items-center gap-2 text-sm font-bold sm:text-base">{location}<span className="inline-flex h-4 w-4 overflow-hidden rounded-full border border-primary-foreground/40" aria-hidden="true"><span className="w-1/3 bg-brand-green" /><span className="w-1/3 bg-primary-foreground" /><span className="w-1/3 bg-brand-green" /></span></span><span className="mt-0.5 flex items-center gap-1.5 text-xs text-primary-foreground/80 sm:text-sm"><Globe2 className="h-3.5 w-3.5 text-brand-cyan" aria-hidden="true" />{globalStatus}</span></span>
           </div>
         </div>
       </div>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-2 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-2 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
 }
 
-export function QuickActionsSection({ items = [] }: { items?: QuickActionManagedItem[] }) {
+export function QuickActionsSection() {
   const { t } = useLanguage();
-  const managed = new Map(items.map((item) => [item.slug, item]));
-  const visibleActions = quickActions
-    .filter((item) => items.length === 0 || managed.has(item.slug))
-    .map((item, fallbackOrder) => ({ item, managedItem: managed.get(item.slug), fallbackOrder }))
-    .sort((a, b) => (a.managedItem?.sort_order ?? a.fallbackOrder) - (b.managedItem?.sort_order ?? b.fallbackOrder));
   return (
-    <section className="border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
-      <nav className="mx-auto max-w-7xl px-3 py-5 sm:px-6 sm:py-6 lg:px-8" aria-label={t("nav.quickLinks")}>
-        <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-4 sm:gap-3 lg:grid-cols-8">
-          {visibleActions.map(({ item, managedItem }) => (
-            <Link
-              key={item.slug}
-              to={item.href}
-              {...(item.hash ? { hash: item.hash } : {})}
-              aria-label={t(item.label)}
-              activeOptions={{ exact: item.href === "/" }}
-              activeProps={{ className: "quick-nav-active border-brand-cyan bg-brand-cyan/10 text-brand-cyan shadow-glow" }}
-              inactiveProps={{ className: "border-primary-foreground/20 bg-primary-foreground/[0.035] text-primary-foreground hover:border-brand-cyan/60 hover:bg-primary-foreground/[0.07] hover:text-brand-cyan" }}
-              className="quick-nav-card group flex min-h-36 min-w-0 flex-col items-center justify-center gap-3 rounded-lg border px-2 py-4 text-center transition duration-300 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink active:scale-[0.98] sm:min-h-40"
-            >
-              <span className="block h-[72px] w-[72px] shrink-0 overflow-hidden rounded-lg border border-brand-cyan/35 bg-brand-navy shadow-platform sm:h-20 sm:w-20">
-                <SafeImage
-                  {...(managedItem ? (managedItem.imageUrl ? { src: managedItem.imageUrl, fallbackSrc: item.image } : {}) : { src: item.image })}
-                  alt={managedItem?.image_alt ?? item.imageAlt}
-                  width={178}
-                  height={178}
-                  loading="lazy"
-                  className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                />
-              </span>
-              <span className="w-full text-xs font-bold leading-tight sm:text-sm">{t(item.label)}</span>
-            </Link>
-          ))}
+    <section className="platform-card-band border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
+      <nav className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" aria-label={t("nav.quickLinks")}>
+        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+          {categoryCards.map((item) => <Link key={item.key} to={item.href} className="platform-entry-card group flex min-h-32 min-w-0 items-center gap-3 rounded-md border border-primary-foreground/15 bg-primary-foreground/[0.045] p-4 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-brand-cyan/55 hover:bg-primary-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:min-h-36 sm:p-5">
+            <span className={`grid size-12 shrink-0 place-items-center rounded-md ${item.tone}`}><item.icon className="size-6" /></span>
+            <span className="min-w-0"><strong className="block font-display text-base font-bold sm:text-lg">{t(item.title)}</strong><span className="mt-1 block text-xs leading-5 text-primary-foreground/65 sm:text-sm">{t(item.detail)}</span><ArrowRight className="mt-3 size-4 text-brand-cyan transition group-hover:translate-x-1" /></span>
+          </Link>)}
         </div>
       </nav>
     </section>
@@ -376,10 +315,9 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
   );
 }
 
-const projectImages = portfolioProjects.map((project) => project.image);
 export function ProjectsSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; category?: string | null; concept?: boolean; payload: unknown; imageUrl?: string | null; image_alt?: string | null }> | undefined }) {
-  const { t, language } = useLanguage();
-  const visibleProjects = items?.length ? items.map((item, index) => ({ slug: item.slug, name: item.title, category: item.category ?? (typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("home.projectFallbackCategory")), description: item.summary ?? t("home.projectFallbackSummary"), image: item.imageUrl ?? projectImages[index] ?? heroImage, imageAlt: item.image_alt ?? item.title, concept: item.concept ?? false })) : portfolioProjects.map((item) => ({ slug: item.slug, name: text(item.title, language), category: text(item.category, language), description: text(item.summary, language), image: item.image, imageAlt: text(item.imageAlt, language), concept: item.concept }));
+  const { t } = useLanguage();
+  const visibleProjects = (items ?? []).map((item) => ({ slug: item.slug, name: item.title, category: item.category ?? (typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("home.projectFallbackCategory")), description: item.summary ?? t("home.projectFallbackSummary"), image: item.imageUrl, imageAlt: item.image_alt ?? item.title, concept: item.concept ?? false }));
   return (
     <SectionShell eyebrow={t("home.projectsEyebrow")} title={t("home.projectsTitle")} description={t("home.projectsDescription")} action={!full ? { label: t("common.viewAllProjects"), href: "/projects" } : undefined}>
       {full && <div className="mb-5 flex flex-wrap gap-2">{projectCategories.map((category) => <Badge key={category} variant="outline">{category}</Badge>)}</div>}
@@ -387,7 +325,7 @@ export function ProjectsSection({ full = false, items }: { full?: boolean; items
         {visibleProjects.map((project) => (
           <article key={project.slug} className="motion-card group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
             <Link to="/projects/$slug" params={{ slug: project.slug }} aria-label={`${t("common.viewProject")}: ${project.name}`} className="relative block aspect-[8/5] overflow-hidden bg-brand-ink focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2">
-              <SafeImage src={project.image} alt={project.imageAlt} loading="lazy" width={1536} height={960} className="size-full object-cover transition duration-500 group-hover:scale-[1.035]" />
+              {project.image ? <SafeImage src={project.image} alt={project.imageAlt} loading="lazy" width={1536} height={960} className="size-full object-cover transition duration-500 group-hover:scale-[1.035]" /> : <span className="absolute inset-0 grid place-items-center text-primary-foreground/60"><FolderKanban className="size-10" /></span>}
             </Link>
             <div className="flex flex-1 flex-col p-5">
               {project.concept && <Badge variant="secondary" className="mb-3 w-fit">Concept / Demo</Badge>}
@@ -515,11 +453,11 @@ export function LatestActivitiesSection() {
 }
 
 export function BlogPreview({ items }: { items?: Array<{ id: string; slug: string; title: string; summary: string | null; payload: unknown; imageUrl?: string | null }> | undefined }) {
-  const { t, language } = useLanguage();
-  const visiblePosts = items?.length ? items.slice(0, 3).map((item, index) => ({ slug: item.slug, title: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("blog.updateLabel"), image: item.imageUrl ?? projectImages[index] ?? heroImage })) : portfolioArticles.map((item) => ({ slug: item.slug, title: text(item.title, language), category: text(item.category, language), image: item.image }));
+  const { t } = useLanguage();
+  const visiblePosts = (items ?? []).slice(0, 3).map((item) => ({ slug: item.slug, title: item.title, category: typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) && typeof (item.payload as Record<string, unknown>)["category"] === "string" ? String((item.payload as Record<string, unknown>)["category"]) : t("blog.updateLabel"), image: item.imageUrl }));
   return (
     <SectionShell eyebrow={t("home.blogEyebrow")} title={t("home.blogTitle")} description={t("home.blogDescription")} action={{ label: t("common.viewAllPosts"), href: "/blog" }}>
-      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post) => <article key={post.slug} className="motion-card grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card"><SafeImage src={post.image} alt={post.title} loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /><div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog/$slug" params={{ slug: post.slug }}>{t("common.readMore")} <ArrowRight /></Link></Button></div></article>)}</div>
+      <div className="grid gap-4 md:grid-cols-3">{visiblePosts.map((post) => <article key={post.slug} className="motion-card grid grid-cols-[96px_minmax(0,1fr)] overflow-hidden rounded-lg border border-border bg-card">{post.image ? <SafeImage src={post.image} alt={post.title} loading="lazy" width={1200} height={750} className="h-full min-h-32 w-24 object-cover" /> : <span className="grid min-h-32 w-24 place-items-center bg-brand-ink text-primary-foreground/60"><Newspaper className="size-7" /></span>}<div className="p-4"><p className="text-xs font-bold text-primary">{post.category}</p><h3 className="mt-1 font-display text-base font-bold leading-tight">{post.title}</h3><Button variant="link" className="mt-2 h-auto px-0 text-xs" asChild><Link to="/blog/$slug" params={{ slug: post.slug }}>{t("common.readMore")} <ArrowRight /></Link></Button></div></article>)}</div>
     </SectionShell>
   );
 }

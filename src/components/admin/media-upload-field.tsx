@@ -71,7 +71,7 @@ export function MediaUploadField({ label, value, onChange, kind = "image", hint 
       }
       await registerMedia({ data: { name: file.name, storagePath: path, mimeType: file.type as (typeof IMAGE_TYPES)[number] | (typeof VIDEO_TYPES)[number], altText: "", byteSize: file.size, ...(width ? { width } : {}), ...(height ? { height } : {}) } });
       onChange(path);
-      toast.success(`${kind === "image" ? "Image" : "Video"} uploaded. Save the content to apply it.`);
+      toast.success(`${kind === "image" ? "Image" : "Video"} uploaded as a draft. Publish it in Media before using it publicly.`);
     } catch (errorValue) {
       await supabase.storage.from("site-media").remove([path]);
       toast.error(errorValue instanceof Error ? errorValue.message : "Upload could not be recorded.");
