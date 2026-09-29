@@ -8,7 +8,7 @@ import {
   HeroSection,
   AboutPreview,
   BlogPreview,
-  ProjectsSection,
+
   SelectedWorkSection,
   QuickActionsSection,
   ServicesSection,
