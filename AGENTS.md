@@ -18,3 +18,4 @@
 - Approved built-in fallback visuals are bundled through Vite imports rather than Lovable-only asset paths, so self-hosted deployments retain them while CMS media remains replaceable.
 - Permanent Member IDs are assigned and frozen by a database trigger; UUIDs remain the only internal relationship and authorization key.
 - Member payment destinations are returned only when both Live Deposits and the individual method are enabled, preventing disabled details from reaching the browser.
+- Google sign-in returns through the public `/auth/callback` route; only validated same-origin paths may be restored after session hydration.
