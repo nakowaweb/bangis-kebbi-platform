@@ -197,3 +197,9 @@
 - [x] Verify navigation, carousel, dashboard, EN/AR/HA, RTL and reduced motion
 - [x] Capture desktop, tablet and phone review screenshots without deploying production
 - [ ] Apply and verify Media Gallery review metadata — blocked pending explicit production migration approval and Super Admin session
+## Homepage approved-reference correction (Sep 29, 2026)
+- [ ] Remove the foreground hero portrait card at every width while preserving the source media
+- [ ] Match the approved responsive hero, four feature cards, and Selected Work strip
+- [ ] Verify EN/AR/HA, carousel controls, links, gallery access, reduced motion, and overlap-free laptop/tablet/phone layouts
+- [ ] Capture final review screenshots and report differences without deploying or changing production data
+
