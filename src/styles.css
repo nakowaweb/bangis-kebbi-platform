@@ -69,6 +69,7 @@
   --color-brand-green: var(--brand-green);
   --color-brand-gold: var(--brand-gold);
   --color-success: var(--success);
+  --color-platform-glass: var(--platform-glass);
 }
 
 :root {
@@ -115,6 +116,7 @@
   --brand-green: oklch(0.58 0.15 149);
   --brand-gold: oklch(0.78 0.13 83);
   --success: oklch(0.6 0.16 150);
+  --platform-glass: oklch(0.24 0.055 252 / 78%);
   --brand-blue: oklch(0.55 0.19 251);
   --shadow-platform: 0 18px 50px -28px color-mix(in oklab, var(--brand-ink) 55%, transparent);
   --shadow-glow: 0 18px 38px -24px color-mix(in oklab, var(--brand-cyan) 70%, transparent);
@@ -233,12 +235,20 @@
 @keyframes hero-dot-pulse { 0%, 100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--brand-cyan) 45%, transparent); opacity: 0.8; } 50% { box-shadow: 0 0 0 5px color-mix(in oklab, var(--brand-cyan) 0%, transparent); opacity: 1; } }
 @keyframes hero-glow-drift { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(14px, -12px); } }
 
-.hero-slide { opacity: 0; transform: translateX(14px) scale(1.015); pointer-events: none; transition: opacity 480ms ease, transform 650ms ease; }
+.hero-slide { opacity: 0; transform: scale(1.025); pointer-events: none; transition: opacity 1100ms ease-in-out, transform 1800ms ease-in-out; }
 .hero-slide-active { opacity: 1; transform: translateX(0) scale(1); pointer-events: auto; z-index: 10; }
 
 @utility hero-reference-overlay {
-  background: linear-gradient(90deg, color-mix(in oklab, var(--brand-ink) 97%, transparent) 0%, color-mix(in oklab, var(--brand-ink) 88%, transparent) 38%, color-mix(in oklab, var(--brand-ink) 32%, transparent) 72%, color-mix(in oklab, var(--brand-ink) 52%, transparent) 100%);
+  background: linear-gradient(90deg, color-mix(in oklab, var(--brand-ink) 99%, transparent) 0%, color-mix(in oklab, var(--brand-ink) 94%, transparent) 42%, color-mix(in oklab, var(--brand-ink) 55%, transparent) 68%, color-mix(in oklab, var(--brand-ink) 72%, transparent) 100%);
 }
+
+.hero-founder-portrait { filter: drop-shadow(0 24px 42px color-mix(in oklab, var(--brand-ink) 75%, transparent)); }
+.hero-role-badge { box-shadow: inset 0 0 24px color-mix(in oklab, var(--brand-cyan) 8%, transparent), 0 10px 30px color-mix(in oklab, var(--brand-ink) 45%, transparent); }
+.platform-card-band { background-image: linear-gradient(180deg, color-mix(in oklab, var(--brand-navy) 30%, var(--brand-ink)), var(--brand-ink)); }
+.platform-entry-card { box-shadow: inset 0 1px 0 color-mix(in oklab, var(--primary-foreground) 10%, transparent), 0 18px 44px -32px color-mix(in oklab, var(--brand-cyan) 65%, transparent); }
+.platform-card-cyan { background: color-mix(in oklab, var(--brand-cyan) 16%, transparent); color: var(--brand-cyan); }
+.platform-card-green { background: color-mix(in oklab, var(--brand-green) 18%, transparent); color: oklch(0.78 0.16 149); }
+.platform-card-gold { background: color-mix(in oklab, var(--brand-gold) 18%, transparent); color: var(--brand-gold); }
 
 .hero-icon-chip {
   display: inline-flex;
@@ -273,6 +283,10 @@
   }
   .hero-icon-chip { padding: 0.25rem 0.45rem; font-size: 0.56rem; }
   .hero-icon-ring { height: 1.35rem; width: 1.35rem; }
+}
+
+@media (max-width: 1023px) {
+  .hero-stage .hero-slide-image { object-position: center; }
 }
 
 @media (prefers-reduced-motion: no-preference) {
