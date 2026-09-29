@@ -320,14 +320,14 @@ export const updateMediaAssetReview = createServerFn({ method: "POST" })
   }).parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
-    const reviewRpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ data: unknown; error: { message: string } | null }>;
-    const { data: saved, error } = await reviewRpc("update_media_asset_review", {
+    const reviewRpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+    const { error } = await reviewRpc("update_media_asset_review", {
       _id: data.id,
       _caption: data.caption,
       _status: data.status,
     });
     if (error) throw new Error(error.message);
-    return saved;
+    return { ok: true };
   });
 
 export const removeMediaFromContent = createServerFn({ method: "POST" })

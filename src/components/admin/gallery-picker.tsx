@@ -14,7 +14,7 @@ const IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/avif", "ima
 const IMAGE_MAX = 10 * 1024 * 1024;
 const MAX_ITEMS = 20;
 
-type Asset = { id: string; name: string; storage_path: string; alt_text: string; status?: string };
+type Asset = { id: string; name: string; storage_path: string; alt_text: string };
 
 function toPath(value: string) {
   return value.replace(/^.*\/storage\/v1\/object\/(?:public|sign|authenticated)\/site-media\//, "").split("?")[0] ?? value;
@@ -65,7 +65,7 @@ export function GalleryPicker({ value, onChange }: { value: string; onChange: (v
 
   async function loadAssets() {
     setLoadError(null);
-    const { data, error } = await supabase.from("media_assets").select("id,name,storage_path,alt_text,mime_type,status").is("deleted_at", null).eq("status", "published").like("mime_type", "image/%").order("created_at", { ascending: false }).limit(300);
+    const { data, error } = await supabase.from("media_assets").select("id,name,storage_path,alt_text,mime_type").is("deleted_at", null).like("mime_type", "image/%").order("created_at", { ascending: false }).limit(300);
     if (error) { setLoadError(error.message); setAssets([]); return; }
     setAssets(data ?? []);
   }
