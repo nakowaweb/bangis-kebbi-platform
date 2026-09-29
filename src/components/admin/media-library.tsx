@@ -11,7 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { supabase } from "@/integrations/supabase/client";
-import { archiveMediaAsset, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, removeMediaFromContent, replaceMediaAsset, restoreMediaAsset, updateMediaAssetReview } from "@/lib/content.functions";
+import { archiveMediaAsset, deleteMediaAssetPermanently, getAdminWorkspace, registerMediaAsset, removeMediaFromContent, replaceMediaAsset, restoreMediaAsset, updateMediaAssetReview, reorderMediaAssets } from "@/lib/content.functions";
 
 const ACCEPTED = ["image/jpeg", "image/png", "image/webp", "image/avif", "image/svg+xml", "video/mp4", "video/webm", "video/quicktime"] as const;
 const IMAGE_MAX = 10 * 1024 * 1024;
@@ -59,13 +59,22 @@ export function MediaLibrary({ media, registerMedia, onChanged }: { media: Media
   const [kind, setKind] = useState("all");
   const [status, setStatus] = useState("all");
   const previews = useMediaPreviews(media);
-  const visible = useMemo(() => media.filter((item) => {
+  const reorder = useServerFn(reorderMediaAssets);
+  const ordered = useMemo(() => [...media].sort((a, b) => (Number((a as Record<string, unknown>)["sort_order"] ?? 0) - Number((b as Record<string, unknown>)["sort_order"] ?? 0))), [media]);
+  async function move(id: string, dir: -1 | 1) {
+    const ids = ordered.map((m) => m.id);
+    const i = ids.indexOf(id); const j = i + dir;
+    if (i < 0 || j < 0 || j >= ids.length) return;
+    [ids[i], ids[j]] = [ids[j]!, ids[i]!];
+    try { await reorder({ data: { ids } }); onChanged(); } catch (e) { window.alert(e instanceof Error ? e.message : "Could not reorder"); }
+  }
+  const visible = useMemo(() => ordered.filter((item) => {
     const matchesQuery = item.name.toLowerCase().includes(query.trim().toLowerCase());
     const matchesKind = kind === "all" || mediaKind(item.mime_type) === kind;
     const review = reviewData(item);
     const matchesStatus = status === "all" || (status === "archived" ? Boolean(item.deleted_at) : status === "active" ? !item.deleted_at : !item.deleted_at && review.status === status);
     return matchesQuery && matchesKind && matchesStatus;
-  }), [media, query, kind, status]);
+  }), [ordered, query, kind, status]);
 
   async function upload(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -105,7 +114,7 @@ export function MediaLibrary({ media, registerMedia, onChanged }: { media: Media
     {visible.length === 0 ? <div className="rounded-lg border border-dashed border-border bg-card p-10 text-center text-sm text-muted-foreground">No media matches this view.</div> : <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
       {visible.map((item) => {
         const previewUrl = previews[storedPath(item.storage_path)];
-        return <MediaCard key={item.id} item={item} {...(previewUrl ? { previewUrl } : {})} onChanged={onChanged} />;
+        return <div key={item.id} className="flex flex-col gap-1"><div className="flex justify-end gap-1"><Button size="sm" variant="ghost" aria-label={`Move ${item.name} earlier`} onClick={() => void move(item.id, -1)}>↑</Button><Button size="sm" variant="ghost" aria-label={`Move ${item.name} later`} onClick={() => void move(item.id, 1)}>↓</Button></div><MediaCard item={item} {...(previewUrl ? { previewUrl } : {})} onChanged={onChanged} /></div>;
       })}
     </div>}
   </section>;
