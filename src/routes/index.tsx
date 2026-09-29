@@ -8,7 +8,8 @@ import {
   HeroSection,
   AboutPreview,
   BlogPreview,
-  ProjectsSection,
+
+  SelectedWorkSection,
   QuickActionsSection,
   ServicesSection,
   UmrahSection,
@@ -94,7 +95,7 @@ function Index() {
       <QuickActionsSection />
       <AboutPreview title={about?.title} description={about?.summary ?? undefined} items={aboutItems} />
       <ServicesSection items={services} />
-      <ProjectsSection items={projects} />
+      <SelectedWorkSection items={projects} />
       <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
       <UmrahSection title={section("umrah")?.title} description={section("umrah")?.summary ?? undefined} image={heroSlides[2]?.src} imageAlt={heroSlides[2]?.alt} />
       <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} image={section("foundation")?.imageUrl} imageAlt={section("foundation")?.image_alt} />
