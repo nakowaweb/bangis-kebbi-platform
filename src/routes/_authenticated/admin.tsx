@@ -33,6 +33,7 @@ import { languages, type LanguageCode } from "@/lib/i18n/dictionary";
 import { isWorldLanguage, worldLanguages } from "@/lib/i18n/world-languages";
 import { LanguageAvailability } from "@/components/admin/language-availability";
 import { MembersManager } from "@/components/admin/members-manager";
+import { SiteLayoutManager } from "@/components/admin/site-layout-manager";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
@@ -232,7 +233,7 @@ function AdminPage() {
               <ContentEditor editor={editor} setEditor={setEditor} saving={saveMutation.isPending} onSave={() => saveMutation.mutate()} onArchive={editor.id && editor.status !== "archived" ? () => archiveMutation.mutate(editor.id as string) : undefined} onRestore={editor.id && editor.status === "archived" ? () => restoreMutation.mutate(editor.id as string) : undefined} onDelete={editor.id && editor.status === "archived" ? () => deleteMutation.mutate(editor.id as string) : undefined} />
             </div>
           </TabsContent>
-          <TabsContent value="settings">{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
+          <TabsContent value="settings" className="grid gap-5"><SiteLayoutManager onChanged={refresh} />{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="languages"><AdminTranslationManager /></TabsContent>
           <TabsContent value="social"><AdminSocialManager /></TabsContent>
           <TabsContent value="credentials"><AdminCredentialManager entries={(workspace.data?.entries ?? []).filter((entry) => entry.content_type === "business" && entry.category === "company_credential")} onChanged={refresh} /></TabsContent>
