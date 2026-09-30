@@ -29,16 +29,22 @@ ALTER TABLE public.media_assets
   ADD CONSTRAINT media_assets_status_check CHECK (status IN ('draft', 'published'));
 
 -- Normalise a stored reference to a site-media object path.
--- 'folder/a.webp', '/folder/a.webp', 'site-media/folder/a.webp' and
--- 'https://x/storage/v1/object/{public|sign|authenticated/}site-media/folder/a.webp?token=..'
--- all become 'folder/a.webp'. URLs for other buckets / sites return NULL.
+-- 'folder/a.webp', '/folder/a.webp', 'site-media/folder/a.webp' and full
+-- storage URLs on OUR storage origin
+-- ('https://zeaircwpegicobsikabx.supabase.co/storage/v1/object/{public|sign|authenticated/}site-media/folder/a.webp?token=..')
+-- all become 'folder/a.webp'. URLs on any other host, other buckets, or other
+-- sites return NULL (a foreign host serving the same path is NOT our asset).
 CREATE OR REPLACE FUNCTION public.media_ref_key(_value text)
 RETURNS text LANGUAGE plpgsql IMMUTABLE SET search_path = public AS $$
-DECLARE v text;
+DECLARE
+  v text;
+  storage_origin constant text := 'https://zeaircwpegicobsikabx.supabase.co';
 BEGIN
   IF _value IS NULL THEN RETURN NULL; END IF;
   v := split_part(split_part(btrim(_value), '#', 1), '?', 1);
   IF v ~* '^[a-z][a-z0-9+.-]*://' OR v LIKE '%/storage/v1/object/%' THEN
+    -- Full URLs must belong to our own storage origin.
+    IF lower(v) NOT LIKE lower(storage_origin) || '/%' THEN RETURN NULL; END IF;
     IF v !~ '/storage/v1/object/(public/|sign/|authenticated/)?site-media/' THEN RETURN NULL; END IF;
     v := regexp_replace(v, '^.*?/storage/v1/object/(public/|sign/|authenticated/)?site-media/', '');
   END IF;
@@ -152,7 +158,7 @@ BEGIN
   FOR m IN
     UPDATE public.media_assets a SET status = 'published'
     WHERE a.status = 'draft' AND a.deleted_at IS NULL
-      AND a.storage_path IN (
+      AND public.media_ref_key(a.storage_path) IN (
         SELECT public.content_media_refs(NEW.image_path, NEW.og_image_path, NEW.gallery, NEW.payload))
     RETURNING a.id, a.name
   LOOP
