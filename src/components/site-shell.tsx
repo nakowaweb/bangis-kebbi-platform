@@ -88,7 +88,7 @@ function SiteHeader() {
               inactiveProps={{ className: "text-muted-foreground" }}
               className={`rounded-md px-1 py-2 text-[10px] font-semibold transition-colors hover:bg-secondary hover:text-foreground 2xl:text-xs ${item.labelKey === "foundation" || item.labelKey === "verifiedPartners" ? "max-w-[5rem] leading-[1.1] text-center" : "whitespace-nowrap"}`}
             >
-              {t(`nav.${item.labelKey}` as TranslationKey)}
+              {st(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
           ))}
         </nav>
@@ -239,7 +239,7 @@ function MobileMenu() {
                   activeOptions={{ exact: item.href === "/" }}
                   className="rounded-lg border border-border bg-card px-4 py-3 text-base font-semibold text-foreground shadow-sm"
                 >
-                  {t(`nav.${item.labelKey}` as TranslationKey)}
+                  {st(`nav.${item.labelKey}` as TranslationKey)}
                 </Link>
               </SheetClose>
             ))}
@@ -341,7 +341,7 @@ function SiteFooter() {
           <div className="mt-4 grid gap-2 text-sm">
             {groups.slice(0, 5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
-                {t(key)}
+                {st(key)}
               </Link>
             ))}
           </div>
@@ -351,7 +351,7 @@ function SiteFooter() {
           <div className="mt-4 grid gap-3 text-sm">
             {groups.slice(5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
-                {t(key)}
+                {st(key)}
               </Link>
             ))}
             <Link to="/cv" className="text-muted-foreground transition-colors hover:text-primary">CV</Link>
