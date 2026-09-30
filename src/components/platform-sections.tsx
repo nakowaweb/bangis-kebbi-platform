@@ -419,7 +419,7 @@ export function FoundationSection({ title, description, image, imageAlt }: { tit
             <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">{description ?? t("foundation.previewShort")}</p>
           </div>
           <div className="relative aspect-[16/9] overflow-hidden bg-secondary sm:aspect-[2/1] lg:aspect-auto lg:min-h-[320px]">
-            <SafeImage src={image ?? communitySupportBanner} fallbackSrc={communitySupportBanner} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="lazy" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center]" />
+            <SafeImage src={image ?? communitySupportBanner} fallbackSrc={communitySupportBanner} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="lazy" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[88%_center] lg:object-[68%_center]" />
           </div>
         </div>
       </div>
