@@ -1,5 +1,6 @@
 import { useNavigate, useRouterState } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import type React from "react";
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -38,7 +39,9 @@ type LanguageContextValue = {
   formatDate: (value: string | Date | null | undefined, withTime?: boolean) => string;
 };
 
-const LanguageContext = createContext<LanguageContextValue | undefined>(undefined);
+// Keep one context instance across hot reloads so providers and consumers never diverge.
+const contextStore = globalThis as typeof globalThis & { __bkLanguageContext?: React.Context<LanguageContextValue | undefined> };
+const LanguageContext = (contextStore.__bkLanguageContext ??= createContext<LanguageContextValue | undefined>(undefined));
 
 function useUrlLanguage(): string | null {
   return useRouterState({
