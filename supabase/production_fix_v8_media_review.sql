@@ -1,6 +1,12 @@
--- BangisKebbi.com V8 — Media review metadata (revised r3)
+-- BangisKebbi.com V8 — Media review metadata (revised r4)
 -- REVIEW ONLY: do not execute on production without explicit approval.
 -- Non-destructive: existing rows and files remain; existing assets are preserved as published.
+--
+-- r4 changes:
+--  * Auto-publication now normalises stored paths with public.media_ref_key(a.storage_path),
+--    the same normalisation the draft guard uses, so prefixed stored paths match too.
+--  * media_ref_key only accepts full URLs on our own storage origin
+--    (https://zeaircwpegicobsikabx.supabase.co); a foreign host serving the same path is ignored.
 --
 -- r3 changes:
 --  * Draft protection is enforced by a BEFORE trigger on media_assets, so a direct
