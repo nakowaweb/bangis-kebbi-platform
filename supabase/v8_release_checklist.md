@@ -5,7 +5,7 @@
 - Public listings: no public or anon policy on `media_assets`. Visitors never read that table; public pages load images through CMS content paths. Drafts cannot leak, and V8 adds no public access.
 - Existing uploads: set to `published` BEFORE the default changes to `draft`. Only new uploads start as drafts. That affects admin labels only, not how public pages show images.
 - Audit logs: inserts pass `Content admins can add audit logs` and V6 `rbac: audit insert` (`admin_id = auth.uid()`).
-- Required: the caption/publish and reorder buttons fail until V8 is applied. File: `production_fix_v8_media_review.sql` (unchanged).
+- Required: the caption/publish and reorder buttons fail until V8 is applied. File: `production_fix_v8_media_review.sql` (revised r3: draft guard trigger, exact URL-aware reference matching, advisory-lock serialisation; tested in an isolated Postgres 17 database).
 
 ## Step 1 — read-only preflight
 Live result 2026-09-30: V7 applied (do NOT rerun), V6 present, V8 not applied, NGN/USDT off.
@@ -20,7 +20,9 @@ SELECT
   to_regprocedure('public.reorder_media_assets(uuid[])') IS NOT NULL                   AS v8_reorder_fn,
   to_regprocedure('public.media_path_in_published_content(text)') IS NOT NULL          AS v8_in_use_fn,
   to_regprocedure('public.publish_media_used_by_content()') IS NOT NULL                AS v8_autopublish_fn,
-  EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='content_entries_publish_media')       AS v8_trigger;
+  EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='content_entries_publish_media')       AS v8_trigger,
+  EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='media_assets_guard_draft')            AS v8_guard_trigger,
+  to_regprocedure('public.media_ref_key(text)') IS NOT NULL                            AS v8_ref_key_fn;
 SELECT deposits_enabled FROM public.umrah_settings;          -- expect false
 ```
 
@@ -40,8 +42,12 @@ Run `supabase/production_fix_v8_media_review.sql` once. The same file ends with 
 ```sql
 BEGIN;
 DROP TRIGGER IF EXISTS content_entries_publish_media ON public.content_entries;
+DROP TRIGGER IF EXISTS media_assets_guard_draft ON public.media_assets;
 DROP FUNCTION IF EXISTS public.publish_media_used_by_content();
+DROP FUNCTION IF EXISTS public.guard_media_draft_in_use();
 DROP FUNCTION IF EXISTS public.media_path_in_published_content(text);
+DROP FUNCTION IF EXISTS public.content_media_refs(text,text,jsonb,jsonb);
+DROP FUNCTION IF EXISTS public.media_ref_key(text);
 DROP FUNCTION IF EXISTS public.reorder_media_assets(uuid[]);
 DROP FUNCTION IF EXISTS public.update_media_asset_review(uuid,text,text);
 ALTER TABLE public.media_assets DROP CONSTRAINT IF EXISTS media_assets_status_check;
