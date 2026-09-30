@@ -85,7 +85,6 @@ type HeroSlideInput = { src: string; alt: string; label: string; slot?: number; 
 
 export function HeroSection({ intervalSeconds = 3, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number }) {
   const { t } = useLanguage();
-  void content;
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
       <HeroCarousel
