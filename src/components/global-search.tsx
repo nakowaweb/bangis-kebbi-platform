@@ -16,7 +16,7 @@ import { getPublicSearchConfig, searchPublicSite, type SiteSearchResult } from "
 const staticResults: SiteSearchResult[] = [
   { id: "page-about", title: "About BangisKebbi.com", category: "Page", snippet: "Ideas, technology, business, people and the work of Abubakar Alhaji Abubakar.", url: "/about", imageUrl: portraitImage },
   { id: "page-umrah", title: "Umrah Support", category: "Umrah", snippet: "Respectful information, preparation guidance and member support for Umrah.", url: "/umrah", imageUrl: null },
-  { id: "page-foundation", title: "BK Community Support Initiative", category: "Community Support", snippet: "Practical community support and humanitarian initiatives.", url: "/foundation", imageUrl: communityImage },
+  { id: "page-foundation", title: "BK Foundation", category: "Community Support", snippet: "Practical community support and humanitarian initiatives.", url: "/foundation", imageUrl: communityImage },
   { id: "page-community", title: "Community", category: "Community", snippet: "Connect, learn, build and grow through the BangisKebbi.com community.", url: "/community", imageUrl: communityImage },
   { id: "page-cv", title: "Abubakar Alhaji Abubakar — CV", category: "CV", snippet: "AI Web Designer & Web Developer in Kebbi State, Nigeria. Experience since 2024.", url: "/cv", imageUrl: portraitImage },
   { id: "credential-cac", title: "CAC Certificate of Incorporation", category: "Company Credentials", snippet: "BANGISKEBBI GLOBAL LTD · RC 9884960 · Private Company Limited by Shares · Incorporated 24 September 2026.", url: "/#company-credentials", imageUrl: null },

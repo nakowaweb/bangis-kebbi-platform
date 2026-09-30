@@ -68,7 +68,7 @@ function currentSiteItems(): Item[] {
     { contentType: "about", slug: "about-quote", title: "“Technology gives you tools, but people give you opportunities.”", summary: "", sortOrder: 5 },
     ...[
       { src: heroDigitalSolutions, label: "Digital Solutions / Web Development", alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team" },
-      { src: heroCommunitySupport, label: "BK Community Support Initiative", alt: "Abubakar Alhaji Abubakar participating in dignified community support" },
+      { src: heroCommunitySupport, label: "BK Foundation", alt: "Abubakar Alhaji Abubakar participating in dignified community support" },
       { src: heroUmrahSupport, label: "Umrah Support Program", alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting" },
     ].map((h, i) => ({ contentType: "homepage" as const, slug: `hero-feature-${i + 1}`, title: h.label, summary: "", category: "hero_carousel", image: h.src, imageAlt: h.alt, sortOrder: i + 1 })),
     ...[
@@ -77,7 +77,7 @@ function currentSiteItems(): Item[] {
       { slug: "quick-nav-umrah", title: "Umrah", image: quickNavUmrah, imageAlt: "Kaaba at Masjid al-Haram" },
       { slug: "quick-nav-projects", title: "Projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
       { slug: "quick-nav-blog", title: "Blog", image: quickNavBlog, imageAlt: "Article document with pen" },
-      { slug: "quick-nav-foundation", title: "BK Community Support Initiative", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
+      { slug: "quick-nav-foundation", title: "BK Foundation", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
       { slug: "quick-nav-community", title: "Verified Partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
       { slug: "quick-nav-cv", title: "CV", image: quickNavCv, imageAlt: "Professional résumé document" },
     ].map((item, index) => ({ contentType: "homepage" as const, ...item, summary: "", category: "quick_navigation", sortOrder: index })),

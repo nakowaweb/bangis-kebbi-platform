@@ -106,7 +106,7 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
 
 const fallbackHeroSlides: HeroSlideInput[] = [
   { src: digitalSolutionsHero, alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team", label: "Digital Solutions / Web Development" },
-  { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Community Support Initiative" },
+  { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Foundation" },
   { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
 ];
 

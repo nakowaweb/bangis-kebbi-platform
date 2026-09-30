@@ -31,7 +31,7 @@ export function MemberFoundationPanel() {
     <section className="grid gap-5">
       <Card>
         <CardHeader className="pb-3">
-          <div className="flex items-center gap-2 text-brand-green"><HandHeart className="h-5 w-5" /><CardTitle className="text-lg">BK Community Support Initiative</CardTitle></div>
+          <div className="flex items-center gap-2 text-brand-green"><HandHeart className="h-5 w-5" /><CardTitle className="text-lg">BK Foundation</CardTitle></div>
           <CardDescription>
             Community support projects and published updates focused on practical help and accountable delivery.
           </CardDescription>

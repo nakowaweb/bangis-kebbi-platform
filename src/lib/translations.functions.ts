@@ -176,7 +176,7 @@ export const generateTranslationDraft = createServerFn({ method: "POST" })
             content:
               `You translate website content from English into ${languageNames[data.language]}. ` +
               "Translate faithfully. Never invent facts, claims, statistics, testimonials or promises that are not in the source. " +
-              "Keep brand names such as BangisKebbi.com, Bangis Kebbi and BK Community Support Initiative unchanged. Keep the same paragraph breaks. " +
+              "Keep brand names such as BangisKebbi.com, Bangis Kebbi and BK Foundation unchanged. Keep the same paragraph breaks. " +
               "Leave a field as an empty string if the source field is empty. " +
               'Reply with JSON only, using exactly these keys: title, summary, body, imageAlt, seoTitle, seoDescription, ogTitle, ogDescription.',
           },
