@@ -6,7 +6,7 @@ import {
   ContactSection,
   FoundationSection,
   HeroSection,
-  AboutPreview,
+
   BlogPreview,
 
   SelectedWorkSection,
@@ -93,7 +93,7 @@ function Index() {
     <main>
       <HeroSection intervalSeconds={typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : 3} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
       <QuickActionsSection />
-      <AboutPreview title={about?.title} description={about?.summary ?? undefined} items={aboutItems} />
+
       <ServicesSection items={services} />
       <SelectedWorkSection items={projects} />
       <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />

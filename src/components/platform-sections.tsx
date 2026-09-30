@@ -303,8 +303,19 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
     : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), image: item.image, imageAlt: text(item.imageAlt, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} action={!full ? { label: t("common.viewAllServices"), href: "/services" } : undefined}>
-      {!full ? <div className="mb-6 overflow-hidden border-y border-border py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase text-muted-foreground">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span>{service.title}</span><span className="text-brand-cyan">•</span></span>)}</div></div> : null}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {!full ? <div className="service-strip mb-6 overflow-hidden rounded-xl border border-brand-cyan/25 py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase sm:text-sm">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span className="service-strip-text">{service.title}</span><span className="text-brand-green">•</span></span>)}</div></div> : null}
+      <ul className="grid gap-2.5 md:hidden">
+        {visibleServices.map((service) => {
+          const Icon = service.icon;
+          const sub = serviceSubtitles[service.slug];
+          return <li key={service.slug}><Link to="/services/$slug" params={{ slug: service.slug }} className="group grid min-h-[68px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5 shadow-sm transition active:scale-[0.99] hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-primary/10 text-primary"><Icon className="size-5" aria-hidden="true" /></span>
+            <span className="min-w-0"><strong className="block truncate font-display text-sm font-bold">{service.title}</strong><span className="block truncate text-xs text-muted-foreground">{sub ? (language === "ar" ? sub.ar : language === "ha" ? sub.ha : sub.en) : service.description}</span></span>
+            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-primary">{t("common.viewMore")} <ArrowRight className="shortcut-arrow size-3.5 rtl:rotate-180" aria-hidden="true" /></span>
+          </Link></li>;
+        })}
+      </ul>
+      <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {visibleServices.map((service) => {
           const Icon = service.icon;
           return <article key={service.slug} className="motion-card group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">

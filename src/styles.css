@@ -303,7 +303,7 @@
   .hero-slide-active .hero-slide-image { animation: hero-slide-pan 7s ease-in-out alternate infinite; }
   .location-badge-motion { animation: badge-float 6s 1.2s ease-in-out infinite; }
   .workspace-grid { animation: hero-grid-drift 32s linear infinite; }
-  .service-strip-track { animation: service-strip-move 42s linear infinite; }
+  .service-strip-track { animation: service-strip-move 60s linear infinite; }
   .motion-card, .social-card { transition-duration: 260ms; }
   .motion-card:hover, .social-card:hover { transform: translateY(-3px); }
   .quick-nav-card { animation: quick-nav-enter 420ms ease-out both; }
@@ -349,3 +349,20 @@
   .cv-page { padding: 0 !important; }
   body { background: white !important; color: black !important; }
 }
+
+/* Homepage shortcuts, hero accent and service strip */
+.hero-accent-text { background: linear-gradient(90deg, var(--brand-cyan), var(--brand-green), var(--brand-cyan)); background-size: 200% 100%; -webkit-background-clip: text; background-clip: text; color: transparent; }
+.shortcut-icon { box-shadow: 0 0 18px color-mix(in oklab, var(--brand-cyan) 22%, transparent); transition: box-shadow 300ms ease; }
+.shortcut-card:hover .shortcut-icon, .shortcut-card:focus-visible .shortcut-icon { box-shadow: 0 0 26px color-mix(in oklab, var(--brand-cyan) 45%, transparent); }
+.shortcut-arrow { transition: transform 300ms ease; }
+.group:hover .shortcut-arrow, .group:focus-visible .shortcut-arrow { transform: translateX(3px); }
+.service-strip { background: linear-gradient(90deg, color-mix(in oklab, var(--brand-ink) 92%, transparent), color-mix(in oklab, var(--brand-ink) 82%, var(--brand-cyan) 8%)); backdrop-filter: blur(10px); }
+.service-strip-text { color: var(--brand-cyan); }
+@keyframes accent-shift { to { background-position: 200% 0; } }
+@keyframes strip-tint { 50% { color: var(--brand-green); } }
+@media (prefers-reduced-motion: no-preference) {
+  .hero-accent-text { animation: accent-shift 8s linear infinite; }
+  .service-strip-text { animation: strip-tint 9s ease-in-out infinite; }
+  .shortcut-arrow { animation: arrow-nudge 3.2s ease-in-out infinite; }
+}
+@keyframes arrow-nudge { 50% { transform: translateX(2px); } }
