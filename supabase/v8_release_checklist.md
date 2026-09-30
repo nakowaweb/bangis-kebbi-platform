@@ -5,7 +5,7 @@
 - Public listings: no public or anon policy on `media_assets`. Visitors never read that table; public pages load images through CMS content paths. Drafts cannot leak, and V8 adds no public access.
 - Existing uploads: set to `published` BEFORE the default changes to `draft`. Only new uploads start as drafts. That affects admin labels only, not how public pages show images.
 - Audit logs: inserts pass `Content admins can add audit logs` and V6 `rbac: audit insert` (`admin_id = auth.uid()`).
-- Required: the caption/publish and reorder buttons fail until V8 is applied. File: `production_fix_v8_media_review.sql` (revised r3: draft guard trigger, exact URL-aware reference matching, advisory-lock serialisation; tested in an isolated Postgres 17 database).
+- Required: the caption/publish and reorder buttons fail until V8 is applied. File: `production_fix_v8_media_review.sql` (revised r4: draft guard trigger, exact URL-aware reference matching, advisory-lock serialisation; tested in an isolated Postgres 17 database).
 
 ## Step 1 — read-only preflight
 Live result 2026-09-30: V7 applied (do NOT rerun), V6 present, V8 not applied, NGN/USDT off.
