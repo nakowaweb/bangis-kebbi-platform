@@ -84,10 +84,8 @@ type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_al
 type HeroSlideInput = { src: string; alt: string; label: string; slot?: number; fallbackSrc?: string };
 
 export function HeroSection({ intervalSeconds = 3, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number }) {
-  const { t, language } = useLanguage();
-  // Short payload labels (eyebrow and buttons) are not part of the translatable CMS fields,
-  // so outside English the reviewed dictionary wording is used instead of the English payload.
-  const label = (value: string | undefined, key: Parameters<typeof t>[0]) => (language === "en" ? value ?? t(key) : t(key));
+  const { t } = useLanguage();
+  void content;
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
       <HeroCarousel
