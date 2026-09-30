@@ -68,7 +68,8 @@ GRANT EXECUTE ON FUNCTION public.content_media_refs(text,text,jsonb,jsonb) TO au
 
 -- Does any published, non-deleted content entry reference this storage path?
 CREATE OR REPLACE FUNCTION public.media_path_in_published_content(_path text)
-RETURNS boolean LANGUAGE sql STABLE SECURITY DEFINER SET search_path = public AS $$
+-- VOLATILE on purpose: takes a fresh snapshot after the advisory lock is acquired.
+RETURNS boolean LANGUAGE sql VOLATILE SECURITY DEFINER SET search_path = public AS $$
   SELECT EXISTS (
     SELECT 1 FROM public.content_entries c
     CROSS JOIN LATERAL public.content_media_refs(c.image_path, c.og_image_path, c.gallery, c.payload) r
