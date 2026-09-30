@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMotionPreference, useSiteText } from "@/lib/use-site-layout";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import * as FlagIcons from "country-flag-icons/react/3x2";
@@ -33,6 +34,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
 function ShellBody({ children }: { children: ReactNode }) {
   const { dir } = useLanguage();
+  useMotionPreference();
   return (
     <div dir={dir} className="min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -68,6 +70,7 @@ function useSocialLinks() {
 
 function SiteHeader() {
   const { t } = useLanguage();
+  const st = useSiteText();
   const signedIn = useSignedIn();
 
   return (
@@ -202,6 +205,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
 
 function MobileMenu() {
   const { t } = useLanguage();
+  const st = useSiteText();
   const signedIn = useSignedIn();
 
   return (
@@ -311,6 +315,7 @@ function SocialRow({ only }: { only?: string[] } = {}) {
 
 function SiteFooter() {
   const { t } = useLanguage();
+  const st = useSiteText();
   const groups: Array<[TranslationKey, "/services" | "/credentials" | "/projects" | "/business" | "/umrah" | "/foundation" | "/blog" | "/contact"]> = [
     ["nav.credentials", "/credentials"],
     ["nav.services", "/services"],
