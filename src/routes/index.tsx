@@ -75,12 +75,10 @@ export const Route = createFileRoute("/")({
 function Index() {
   const publicContent = Route.useLoaderData();
   const hero = publicContent.entries.find((entry) => entry.content_type === "homepage" && entry.slug === "hero");
-  const about = publicContent.entries.find((entry) => entry.content_type === "about" && entry.slug === "summary");
   const section = (type: string) => publicContent.entries.find((entry) => entry.content_type === type);
   const services = publicContent.entries.filter((entry) => entry.content_type === "service");
   const projects = publicContent.entries.filter((entry) => entry.content_type === "project");
   const posts = publicContent.entries.filter((entry) => entry.content_type === "blog_post");
-  const aboutItems = publicContent.entries.filter((entry) => entry.content_type === "about");
   const payload = hero?.payload && typeof hero.payload === "object" && !Array.isArray(hero.payload) ? hero.payload : {};
   const value = (key: string) => typeof payload[key] === "string" ? payload[key] : undefined;
   const heroSlides = publicContent.entries
@@ -91,7 +89,7 @@ function Index() {
     .filter((entry): entry is { src: string; fallbackSrc: string; alt: string; label: string } => Boolean(entry.src && entry.fallbackSrc));
   return (
     <main>
-      <HeroSection intervalSeconds={typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : 3} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
+      <HeroSection intervalSeconds={typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : 6} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
       <QuickActionsSection />
 
       <ServicesSection items={services} />
