@@ -26,6 +26,7 @@ import {
 export const navItems = [
   { labelKey: "home", label: "Home", href: "/", hash: undefined },
   { labelKey: "about", label: "About", href: "/about", hash: undefined },
+  { labelKey: "credentials", label: "Credentials", href: "/credentials", hash: undefined },
   { labelKey: "services", label: "Services", href: "/services", hash: undefined },
   { labelKey: "projects", label: "Projects", href: "/projects", hash: undefined },
   { labelKey: "business", label: "Business", href: "/business", hash: undefined },
