@@ -56,6 +56,10 @@ import businessGlobalOpportunities from "@/assets/business-global-opportunities.
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
+import shortcutWebAi from "@/assets/shortcuts/shortcut-web-ai.webp";
+import shortcutUmrah from "@/assets/shortcuts/shortcut-umrah.webp";
+import shortcutBusiness from "@/assets/shortcuts/shortcut-business.webp";
+import shortcutCommunity from "@/assets/shortcuts/shortcut-community.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -79,15 +83,23 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
   { key: "community", title: "card.community", detail: "card.communityDetail", href: "/community", icon: UsersRound, tone: "platform-card-cyan" },
 ];
 
+const shortcutIcons: Record<string, string> = { web: shortcutWebAi, umrah: shortcutUmrah, business: shortcutBusiness, community: shortcutCommunity };
+
+const serviceSubtitles: Record<string, { en: string; ar: string; ha: string }> = {
+  "ai-web-design": { en: "Modern, responsive websites.", ar: "مواقع حديثة ومتجاوبة.", ha: "Gidajen yanar gizo na zamani masu daidaituwa." },
+  "web-development": { en: "Custom websites and apps.", ar: "مواقع وتطبيقات مخصصة.", ha: "Gidajen yanar gizo da manhajoji na musamman." },
+  "ui-ux-design": { en: "Clear, accessible experiences.", ar: "تجارب واضحة وسهلة الوصول.", ha: "Kwarewa bayyananniya kuma mai sauƙin amfani." },
+  "wordpress-development": { en: "Easy-to-manage websites.", ar: "مواقع سهلة الإدارة.", ha: "Gidajen yanar gizo masu sauƙin gudanarwa." },
+  "digital-business-solutions": { en: "Practical systems for growth.", ar: "أنظمة عملية للنمو.", ha: "Tsare-tsare masu amfani don bunƙasa." },
+  "website-maintenance": { en: "Updates, monitoring and support.", ar: "تحديثات ومتابعة ودعم.", ha: "Sabuntawa, sa ido da tallafi." },
+};
+
 type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_alt?: string | null; sort_order: number };
 
 type HeroSlideInput = { src: string; alt: string; label: string; slot?: number; fallbackSrc?: string };
 
 export function HeroSection({ intervalSeconds = 3, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number }) {
-  const { t, language } = useLanguage();
-  // Short payload labels (eyebrow and buttons) are not part of the translatable CMS fields,
-  // so outside English the reviewed dictionary wording is used instead of the English payload.
-  const label = (value: string | undefined, key: Parameters<typeof t>[0]) => (language === "en" ? value ?? t(key) : t(key));
+  const { t } = useLanguage();
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
       <HeroCarousel
@@ -95,10 +107,10 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
         location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}
         globalStatus={globalStatus}
         intervalMs={Math.min(30, Math.max(1, intervalSeconds)) * 1000}
-        eyebrow={label(content?.eyebrow, "home.heroRole")}
+        eyebrow={t("home.heroAccent")}
         subtitle={content?.subtitle ?? t("home.heroBusinessSubtitle")}
-        primaryCta={label(content?.primaryCta, "common.hireMe")}
-        secondaryCta={t("common.viewMyWork")}
+        primaryCta={t("common.viewMyWork")}
+        secondaryCta={t("common.discussProject")}
       />
     </section>
   );
@@ -106,7 +118,7 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
 
 const fallbackHeroSlides: HeroSlideInput[] = [
   { src: digitalSolutionsHero, alt: "Abubakar Alhaji Abubakar collaborating with a professional web development team", label: "Digital Solutions / Web Development" },
-  { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Community Support Initiative" },
+  { src: communitySupportHero, alt: "Abubakar Alhaji Abubakar participating in dignified community support", label: "BK Foundation" },
   { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
 ];
 
@@ -135,15 +147,15 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
       <div className="relative z-20 mx-auto flex min-h-[620px] max-w-7xl items-end px-12 pb-20 pt-52 sm:min-h-[660px] sm:px-20 sm:pb-24 sm:pt-64 lg:min-h-[650px] lg:items-center lg:px-16 lg:py-14 xl:min-h-[690px] xl:px-20">
         <div className="hero-copy-enter min-w-0 max-w-[640px] lg:w-[55%]">
-          <div className="hero-role-badge inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-ink/70 px-4 py-2 text-xs font-bold uppercase text-brand-cyan backdrop-blur-md sm:text-sm"><Cpu className="size-4" />{eyebrow}</div>
-          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] sm:mt-6 sm:text-5xl xl:text-6xl">
+          <p className="hero-accent-text text-sm font-bold tracking-wide sm:text-base">{eyebrow}</p>
+          <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.06] sm:mt-4 sm:text-5xl xl:text-6xl">
             <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
             <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroBusinessTitleBottom")}</span>
           </h1>
           <p className="hero-line hero-line-3 mt-5 max-w-xl text-base font-medium leading-7 text-primary-foreground/80 sm:text-lg">{subtitle}</p>
           <div className="hero-cta-enter mt-7 flex flex-wrap gap-3">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{primaryCta} <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{secondaryCta}</Link></Button>
+            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{primaryCta} <ArrowRight /></Link></Button>
+            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{secondaryCta}</Link></Button>
           </div>
           <div className="hero-location location-badge-motion mt-6 inline-flex items-center gap-3 rounded-md border border-primary-foreground/20 bg-brand-ink/70 px-4 py-3 backdrop-blur-md sm:px-5">
             <MapPin className="h-7 w-7 shrink-0 fill-primary-foreground text-brand-ink" aria-hidden="true" />
@@ -163,10 +175,12 @@ export function QuickActionsSection() {
   return (
     <section className="platform-card-band border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
       <nav className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" aria-label={t("nav.quickLinks")}>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {categoryCards.map((item) => <Link key={item.key} to={item.href} className="platform-entry-card group flex min-h-32 min-w-0 items-center gap-3 rounded-md border border-primary-foreground/15 bg-primary-foreground/[0.045] p-4 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-brand-cyan/55 hover:bg-primary-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:min-h-36 sm:p-5">
-            <span className={`grid size-12 shrink-0 place-items-center rounded-md ${item.tone}`}><item.icon className="size-6" /></span>
-            <span className="min-w-0"><strong className="block font-display text-base font-bold sm:text-lg">{t(item.title)}</strong><span className="mt-1 block text-xs leading-5 text-primary-foreground/65 sm:text-sm">{t(item.detail)}</span><ArrowRight className="mt-3 size-4 text-brand-cyan transition group-hover:translate-x-1" /></span>
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
+          {categoryCards.map((item) => <Link key={item.key} to={item.href} className="shortcut-card group flex min-w-0 flex-col items-center rounded-xl border border-brand-cyan/35 bg-primary-foreground/[0.05] px-2 py-3 text-center backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-brand-cyan/70 hover:bg-primary-foreground/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan active:scale-[0.98] sm:px-3 sm:py-4">
+            <span className={`shortcut-icon grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg sm:size-14 ${item.tone}`}><img src={shortcutIcons[item.key]} alt="" width={200} height={200} loading="lazy" className="size-full object-contain p-1" /></span>
+            <strong className="mt-2 block font-display text-sm font-bold leading-tight sm:text-base">{t(item.title)}</strong>
+            <span className="mt-0.5 block text-xs leading-4 text-primary-foreground/70 sm:text-sm">{t(item.detail)}</span>
+            <span className="mt-1.5 inline-flex min-h-6 items-center gap-1 text-xs font-semibold text-brand-cyan sm:text-sm">{t("common.viewMore")} <ArrowRight className="shortcut-arrow size-3.5 rtl:rotate-180" aria-hidden="true" /></span>
           </Link>)}
         </div>
       </nav>
@@ -289,8 +303,19 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
     : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), image: item.image, imageAlt: text(item.imageAlt, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} action={!full ? { label: t("common.viewAllServices"), href: "/services" } : undefined}>
-      {!full ? <div className="mb-6 overflow-hidden border-y border-border py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase text-muted-foreground">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span>{service.title}</span><span className="text-brand-cyan">•</span></span>)}</div></div> : null}
-      <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
+      {!full ? <div className="service-strip mb-6 overflow-hidden rounded-xl border border-brand-cyan/25 py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase sm:text-sm">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span className="service-strip-text">{service.title}</span><span className="text-brand-green">•</span></span>)}</div></div> : null}
+      <ul className="grid gap-2.5 md:hidden">
+        {visibleServices.map((service) => {
+          const Icon = service.icon;
+          const sub = serviceSubtitles[service.slug];
+          return <li key={service.slug}><Link to="/services/$slug" params={{ slug: service.slug }} className="group grid min-h-[68px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-border bg-card px-3 py-2.5 shadow-sm transition active:scale-[0.99] hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <span className="grid size-11 shrink-0 place-items-center rounded-md bg-primary/10 text-primary"><Icon className="size-5" aria-hidden="true" /></span>
+            <span className="min-w-0"><strong className="block truncate font-display text-sm font-bold">{service.title}</strong><span className="block truncate text-xs text-muted-foreground">{sub ? (language === "ar" ? sub.ar : language === "ha" ? sub.ha : sub.en) : service.description}</span></span>
+            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-primary">{t("common.viewMore")} <ArrowRight className="shortcut-arrow size-3.5 rtl:rotate-180" aria-hidden="true" /></span>
+          </Link></li>;
+        })}
+      </ul>
+      <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {visibleServices.map((service) => {
           const Icon = service.icon;
           return <article key={service.slug} className="motion-card group flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
