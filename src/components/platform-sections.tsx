@@ -511,7 +511,9 @@ function ContactSocials() {
     const href = row?.url ?? (platform === "whatsapp" ? contact.whatsapp : platform === "linkedin" ? contact.linkedin : undefined);
     return href ? [{ key: platform, href, label: row?.display_label || platformLabels[platform] || platform, external: true }] : [];
   });
-  if (!items.length) return null;
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+  if (!mounted || !items.length) return null;
   return (
     <ul className="flex max-w-3xl flex-wrap justify-center gap-2" aria-label="Contact and social links">
       {items.map((item) => {
