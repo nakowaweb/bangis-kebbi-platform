@@ -117,7 +117,7 @@ const en = {
   // Footer
   "footer.tagline": "More than a website — a global platform for ideas, technology, business and people.",
   "footer.company": "BangisKebbi Global Ltd",
-  "footer.foundation": "BK COMMUNITY SUPPORT INITIATIVE",
+  "footer.foundation": "BK FOUNDATION",
   "footer.foundationLine": "People • Support • Community",
   "footer.rights": "All Rights Reserved.",
   "footer.privacy": "Privacy Policy",
@@ -514,7 +514,7 @@ const ha: Record<TranslationKey, string> = {
 
   "footer.tagline": "Fiye da gidan yanar gizo — dandamali na duniya don ra’ayoyi, fasaha, kasuwanci da mutane.",
   "footer.company": "BangisKebbi Global Ltd",
-  "footer.foundation": "BK COMMUNITY SUPPORT INITIATIVE",
+  "footer.foundation": "BK FOUNDATION",
   "footer.foundationLine": "Mutane • Tallafi • Al’umma",
   "footer.rights": "Duk haƙƙoƙi na kariya ne.",
   "footer.privacy": "Manufar Sirri",

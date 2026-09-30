@@ -35,7 +35,7 @@ export function CompanyCredentials() {
         <p className="text-xs font-bold uppercase text-primary">Credentials</p>
         <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Company certificates, licences and awards.</h1>
         <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Official documents published by BANGISKEBBI GLOBAL LTD. Open any card to preview the document.</p>
-        {query.isSuccess && !query.data?.length ? <p className="mt-6 rounded-lg border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">No additional certificates, licences or awards have been published yet.</p> : null}
+        {query.isSuccess && !query.data?.length ? <p className="mt-6 rounded-lg border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">No additional certificates, licences or awards have been published yet. The CAC registration below remains available.</p> : null}
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {credentials.map((credential) => <CredentialCard key={credential.id} credential={credential} />)}
         </div>
