@@ -1194,7 +1194,7 @@ const ar: Record<TranslationKey, string> = {
   "umrah.previewTitle": "رحلة دعم بسيطة ومنظمة.",
   "umrah.previewDescription": "نساعد الأعضاء على فهم ومتابعة عملية طلب العمرة والتنسيق. لا ندّعي صلاحية إصدار التأشيرات أو صفة المشغّل.",
   "umrah.previewAction": "استكشف دعم العمرة",
-  "foundation.previewEyebrow": "مبادرة BK لدعم المجتمع",
+  "foundation.previewEyebrow": "مؤسسة BK",
   "foundation.previewTitle": "دعم الناس والمجتمعات.",
   "foundation.previewDescription": "مبادرات مساهمة مجتمعية مصممة للدعم الشفاف—وليست استثمارًا أو تقاسم أرباح أو عوائد موعودة.",
   "foundation.previewAction": "ادعم مبادرة",
