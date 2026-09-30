@@ -43,6 +43,18 @@ BEGIN
   IF NOT public.is_content_admin(auth.uid()) THEN
     RAISE EXCEPTION 'Content administrator access is required';
   END IF;
+  -- Draft cannot hide an image that published content already shows
+  -- (public pages sign referenced storage paths directly). Block it.
+  IF _status = 'draft' AND EXISTS (
+    SELECT 1 FROM public.content_entries c, public.media_assets m
+    WHERE m.id = _id AND c.status = 'published' AND c.deleted_at IS NULL
+      AND (c.image_path = m.storage_path OR c.og_image_path = m.storage_path
+           OR c.gallery::text LIKE '%' || m.storage_path || '%'
+           OR c.payload::text LIKE '%' || m.storage_path || '%')
+  ) THEN
+    RAISE EXCEPTION 'Image is used on published content; remove it from content before setting draft';
+  END IF;
+
 
   UPDATE public.media_assets
   SET caption = NULLIF(btrim(_caption), ''), status = _status
