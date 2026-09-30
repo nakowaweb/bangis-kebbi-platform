@@ -320,6 +320,20 @@ export const updateMediaAssetReview = createServerFn({ method: "POST" })
   }).parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
+    if (data.status === "draft") {
+      // Public pages sign any storage path referenced by published content, so a
+      // "draft" label cannot hide an image already in use. Block it instead.
+      const { data: media, error: readError } = await context.supabase.from("media_assets").select("storage_path").eq("id", data.id).single();
+      if (readError) throw new Error(readError.message);
+      const path = media.storage_path;
+      const { data: entries, error: refError } = await context.supabase.from("content_entries")
+        .select("title,image_path,og_image_path,gallery,payload").eq("status", "published").is("deleted_at", null);
+      if (refError) throw new Error(refError.message);
+      const inUse = (entries ?? []).filter((e) => e.image_path === path || e.og_image_path === path || JSON.stringify(e.gallery ?? []).includes(path) || JSON.stringify(e.payload ?? {}).includes(path));
+      if (inUse.length > 0) {
+        throw new Error(`This image is shown on published content (${inUse.slice(0, 3).map((e) => e.title).join(", ")}${inUse.length > 3 ? "…" : ""}). Use "Remove from content" first, then set it to draft.`);
+      }
+    }
     const reviewRpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
     const { error } = await reviewRpc("update_media_asset_review", {
       _id: data.id,
