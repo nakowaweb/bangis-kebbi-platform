@@ -7,20 +7,22 @@
 - Audit logs: inserts pass `Content admins can add audit logs` and V6 `rbac: audit insert` (`admin_id = auth.uid()`).
 - Required: the caption/publish and reorder buttons fail until V8 is applied. File: `production_fix_v8_media_review.sql` (unchanged).
 
-## Step 1 — read-only preflight (run in the production SQL editor)
+## Step 1 — read-only preflight
+Live result 2026-09-30: V7 applied (do NOT rerun), V6 present, V8 not applied, NGN/USDT off.
+
+Full V8 check (all true = V8 fully applied; any mix = partial, stop and report):
 ```sql
-SELECT to_regclass('public.umrah_transactions') IS NOT NULL AS v7_transactions,
-       to_regclass('public.umrah_settings')     IS NOT NULL AS v7_settings,
-       to_regprocedure('public.review_umrah_transaction(uuid,boolean,text)') IS NOT NULL AS v7_review_fn,
-       to_regprocedure('public.admin_can(text)') IS NOT NULL AS v6_admin_can,
-       EXISTS (SELECT 1 FROM information_schema.columns WHERE table_schema='public'
-               AND table_name='media_assets' AND column_name='status') AS v8_already_applied;
+SELECT
+  (SELECT count(*) FROM information_schema.columns WHERE table_schema='public' AND table_name='media_assets'
+     AND column_name IN ('caption','status','sort_order')) = 3                         AS v8_columns,
+  EXISTS (SELECT 1 FROM pg_constraint WHERE conname='media_assets_status_check')       AS v8_status_check,
+  to_regprocedure('public.update_media_asset_review(uuid,text,text)') IS NOT NULL      AS v8_review_fn,
+  to_regprocedure('public.reorder_media_assets(uuid[])') IS NOT NULL                   AS v8_reorder_fn,
+  to_regprocedure('public.media_path_in_published_content(text)') IS NOT NULL          AS v8_in_use_fn,
+  to_regprocedure('public.publish_media_used_by_content()') IS NOT NULL                AS v8_autopublish_fn,
+  EXISTS (SELECT 1 FROM pg_trigger WHERE tgname='content_entries_publish_media')       AS v8_trigger;
 SELECT deposits_enabled FROM public.umrah_settings;          -- expect false
-SELECT code, is_enabled FROM public.umrah_payment_methods;   -- expect all false
 ```
-- If all V7 values are true, V7 is already applied. Do NOT rerun it.
-- If `v6_admin_can` is false, stop. V6 must be applied before V8.
-- If `v8_already_applied` is true, skip Step 2.
 
 ## Step 2 — apply V8 (after approval)
 Run `supabase/production_fix_v8_media_review.sql` once. The same file ends with read-only postchecks.
@@ -37,6 +39,9 @@ Run `supabase/production_fix_v8_media_review.sql` once. The same file ends with 
 - Database (only if V8 must be undone; this is safe and does not delete media or files):
 ```sql
 BEGIN;
+DROP TRIGGER IF EXISTS content_entries_publish_media ON public.content_entries;
+DROP FUNCTION IF EXISTS public.publish_media_used_by_content();
+DROP FUNCTION IF EXISTS public.media_path_in_published_content(text);
 DROP FUNCTION IF EXISTS public.reorder_media_assets(uuid[]);
 DROP FUNCTION IF EXISTS public.update_media_asset_review(uuid,text,text);
 ALTER TABLE public.media_assets DROP CONSTRAINT IF EXISTS media_assets_status_check;
