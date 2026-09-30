@@ -37,6 +37,10 @@ import type { TranslationKey } from "@/lib/i18n/dictionary";
 import { services as portfolioServices, text } from "@/lib/portfolio-content";
 import { SafeImage } from "@/components/safe-image";
 import { useContactLinks } from "@/components/contact-actions";
+import { useQuery } from "@tanstack/react-query";
+import { useServerFn } from "@tanstack/react-start";
+import { listPublicSocialLinks } from "@/lib/social.functions";
+import { socialIcons, platformLabels } from "@/components/social-icons";
 
 import appIconAssetSrc from "@/assets/bangis-app-icon.png";
 const appIconAsset = { url: appIconAssetSrc };
@@ -402,31 +406,20 @@ export function UmrahSection({ title, description, image, imageAlt }: { title?: 
 
 export function FoundationSection({ title, description, image, imageAlt }: { title?: string | undefined; description?: string | undefined; image?: string | null | undefined; imageAlt?: string | null | undefined } = {}) {
   const { t } = useLanguage();
-  const points = [
-    { label: t("foundation.previewPeople"), icon: UsersRound, tone: "bg-brand-cyan/10 text-primary" },
-    { label: t("foundation.previewDevelopment"), icon: Sprout, tone: "bg-brand-green/10 text-brand-green" },
-    { label: t("foundation.previewTransparency"), icon: ShieldCheck, tone: "bg-brand-gold/15 text-brand-gold" },
-    { label: t("foundation.previewDignity"), icon: HeartHandshake, tone: "bg-secondary text-primary" },
-  ];
   return (
-    <section className="section-reveal border-b border-border bg-secondary/50 py-10 sm:py-14">
+    <section className="section-reveal border-b border-border bg-secondary/50 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="group grid overflow-hidden rounded-lg border border-border bg-card shadow-platform transition duration-300 hover:-translate-y-0.5 hover:shadow-glow lg:grid-cols-[minmax(0,1.08fr)_minmax(420px,.92fr)]">
-          <div className="flex min-w-0 flex-col justify-center p-6 sm:p-9 lg:p-12">
-            <div className="flex items-center gap-3">
-              <span className="grid size-12 shrink-0 place-items-center rounded-full bg-brand-green/10 text-brand-green"><HandHeart className="size-6" /></span>
-              <p className="text-xs font-bold uppercase text-primary">{t("foundation.previewEyebrow")}</p>
+        <div className="grid overflow-hidden rounded-lg border border-border bg-card shadow-platform lg:grid-cols-[minmax(0,1fr)_minmax(380px,.9fr)]">
+          <div className="flex min-w-0 flex-col justify-center p-5 sm:p-8 lg:p-10">
+            <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+              <span className="inline-flex items-center gap-2"><span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-green/10 text-brand-green"><HandHeart className="size-5" aria-hidden="true" /></span><span className="text-xs font-bold uppercase text-primary">{t("foundation.previewEyebrow")}</span></span>
+              <Link to="/foundation" className="premium-action group inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-bold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{t("foundation.exploreAction")} <ArrowRight className="shortcut-arrow size-4 text-primary rtl:rotate-180" aria-hidden="true" /></Link>
             </div>
-            <h2 className="mt-5 max-w-xl font-display text-3xl font-extrabold leading-tight text-foreground sm:text-4xl">{title ?? t("foundation.previewTitle")}</h2>
-            <p className="mt-4 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">{description ?? t("foundation.previewDescription")}</p>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2">
-              {points.map((point) => <div key={point.label} className="flex min-w-0 items-center gap-3 rounded-md border border-border bg-background p-3 transition duration-300 group-hover:border-primary/20"><span className={`grid size-10 shrink-0 place-items-center rounded-full ${point.tone}`}><point.icon className="size-5" /></span><span className="text-sm font-semibold leading-5 text-foreground">{point.label}</span></div>)}
-            </div>
-            <Button className="mt-7 h-12 w-full font-bold sm:w-fit sm:px-7" asChild><Link to="/foundation">{t("foundation.previewAction")} <ArrowRight /></Link></Button>
+            <h2 className="mt-4 max-w-xl font-display text-2xl font-extrabold leading-tight text-foreground sm:text-3xl">{title ?? t("foundation.previewTitle")}</h2>
+            <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground sm:text-base">{description ?? t("foundation.previewShort")}</p>
           </div>
-          <div className="relative min-h-64 overflow-hidden bg-secondary sm:min-h-80 lg:min-h-[520px]">
-            <SafeImage src={image ?? communitySupportBanner} fallbackSrc={communitySupportBanner} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="eager" fetchPriority="high" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center] transition duration-700 group-hover:scale-[1.015]" />
-            <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-card/35 to-transparent lg:hidden" />
+          <div className="relative aspect-[16/9] overflow-hidden bg-secondary sm:aspect-[2/1] lg:aspect-auto lg:min-h-[320px]">
+            <SafeImage src={image ?? communitySupportBanner} fallbackSrc={communitySupportBanner} alt={imageAlt ?? "Nigerian Muslim community members sharing educational support with children"} loading="lazy" decoding="async" width={1920} height={640} className="absolute inset-0 size-full object-cover object-[68%_center]" />
           </div>
         </div>
       </div>
@@ -499,9 +492,33 @@ export function ContactSection() {
       <div className="absolute inset-0 workspace-grid opacity-35" />
       <div className="relative mx-auto grid max-w-7xl gap-7 px-4 text-center sm:px-6 lg:px-8">
         <div><p className="text-xs font-bold uppercase text-brand-cyan">{t("home.contactEyebrow")}</p><h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">{t("home.contactTitle")}</h2><p className="mx-auto mt-3 max-w-2xl text-sm text-primary-foreground/75">{t("home.contactDescription")}</p></div>
-        <div className="flex flex-col justify-center gap-3 sm:flex-row"><Button className="bg-background text-foreground hover:bg-secondary" asChild><Link to="/contact">{t("common.contactMe")} <ArrowRight /></Link></Button>{links.linkedin ? <Button className="bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild><a href={links.linkedin} target="_blank" rel="noopener noreferrer"><Linkedin /> LinkedIn</a></Button> : null}<Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>{links.whatsapp ? <a href={links.whatsapp} target="_blank" rel="noopener noreferrer"><MessageCircle /> {t("common.whatsapp")}</a> : <Link to="/contact"><MessageCircle /> {t("common.whatsapp")}</Link>}</Button><Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>{links.email ? <a href={links.email}><Mail /> {t("common.email")}</a> : <Link to="/contact"><Mail /> {t("common.email")}</Link>}</Button></div>
+        <div className="grid justify-items-center gap-5"><Button className="h-12 bg-background px-7 font-bold text-foreground hover:bg-secondary" asChild><Link to="/contact">{t("common.contactMe")} <ArrowRight className="rtl:rotate-180" /></Link></Button><ContactSocials /></div>
       </div>
     </section>
+  );
+}
+
+const contactPlatformOrder = ["linkedin", "whatsapp", "email", "facebook", "tiktok", "youtube", "instagram"] as const;
+
+function ContactSocials() {
+  const load = useServerFn(listPublicSocialLinks);
+  const social = useQuery({ queryKey: ["public-social-links"], queryFn: () => load(), staleTime: 1000 * 60 * 30 });
+  const contact = useContactLinks();
+  const configured = new Map((social.data ?? []).map((item) => [item.platform, item]));
+  const items = contactPlatformOrder.flatMap((platform) => {
+    if (platform === "email") return contact.email ? [{ key: "email", href: contact.email, label: "Email", external: false }] : [];
+    const row = configured.get(platform);
+    const href = row?.url ?? (platform === "whatsapp" ? contact.whatsapp : platform === "linkedin" ? contact.linkedin : undefined);
+    return href ? [{ key: platform, href, label: row?.display_label || platformLabels[platform] || platform, external: true }] : [];
+  });
+  if (!items.length) return null;
+  return (
+    <ul className="flex max-w-3xl flex-wrap justify-center gap-2" aria-label="Contact and social links">
+      {items.map((item) => {
+        const Icon = item.key === "email" ? null : socialIcons[item.key];
+        return <li key={item.key}><a href={item.href} {...(item.external ? { target: "_blank", rel: "noopener noreferrer me" } : {})} aria-label={item.label} className="contact-social inline-flex min-h-11 items-center gap-2 rounded-full border border-primary-foreground/25 bg-primary-foreground/5 px-4 text-sm font-semibold text-primary-foreground hover:bg-primary-foreground/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan">{Icon ? <Icon className="size-4 text-brand-cyan" /> : <Mail className="size-4 text-brand-cyan" aria-hidden="true" />}<span>{item.label}</span></a></li>;
+      })}
+    </ul>
   );
 }
 
@@ -516,9 +533,11 @@ export function SectionShell({ eyebrow, title, description, action, children }: 
   return (
     <section className="section-reveal border-b border-border bg-background py-12 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div className="mb-7 grid grid-cols-[minmax(0,1fr)_auto] items-end gap-4"><div className="min-w-0"><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-2 max-w-3xl font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl">{title}</h2>{description && <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>}</div>{action && <Button variant="outline" className="hidden shrink-0 sm:inline-flex" asChild><Link to={action.href}>{action.label} <ArrowRight /></Link></Button>}</div>
+        <div className="mb-7 min-w-0">
+          <div className="flex flex-wrap items-center gap-x-4 gap-y-2"><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p>{action && <Link to={action.href} className="premium-action group inline-flex min-h-10 items-center gap-2 rounded-full px-4 text-sm font-bold text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">{action.label} <ArrowRight className="shortcut-arrow size-4 text-primary rtl:rotate-180" aria-hidden="true" /></Link>}</div>
+          <h2 className="mt-2 max-w-3xl font-display text-2xl font-bold leading-tight text-foreground sm:text-3xl">{title}</h2>{description && <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">{description}</p>}
+        </div>
         {children}
-        {action && <Button variant="outline" className="mt-6 w-full sm:hidden" asChild><Link to={action.href}>{action.label} <ArrowRight /></Link></Button>}
       </div>
     </section>
   );
