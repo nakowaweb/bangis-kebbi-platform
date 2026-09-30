@@ -1,4 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { Fragment, type ReactNode } from "react";
+import { useSiteLayout } from "@/lib/use-site-layout";
+import type { HomepageSection } from "@/lib/site-layout";
 import type { LanguageCode } from "@/lib/i18n/dictionary";
 
 import {
@@ -85,17 +88,22 @@ function Index() {
     .slice(0, 3)
     .map((entry, index) => ({ src: entry.imageUrl ?? heroFallbacks[index], fallbackSrc: heroFallbacks[index], alt: entry.image_alt ?? entry.title, label: entry.title }))
     .filter((entry): entry is { src: string; fallbackSrc: string; alt: string; label: string } => Boolean(entry.src && entry.fallbackSrc));
+  const layout = useSiteLayout();
+  // Homepage Foundation copy comes from the approved short text (Super Admin editable in Settings),
+  // not from the full Foundation page entry, so long saved page titles no longer override it.
+  const blocks: Record<HomepageSection, ReactNode> = {
+    quickActions: <QuickActionsSection />,
+    services: <ServicesSection items={services} />,
+    selectedWork: <SelectedWorkSection items={projects} />,
+    community: <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />,
+    foundation: <FoundationSection image={section("foundation")?.imageUrl} imageAlt={section("foundation")?.image_alt} />,
+    blog: <BlogPreview items={posts} />,
+    contact: <ContactSection />,
+  };
   return (
     <main>
       <HeroSection intervalSeconds={typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : 6} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
-      <QuickActionsSection />
-
-      <ServicesSection items={services} />
-      <SelectedWorkSection items={projects} />
-      <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />
-      <FoundationSection title={section("foundation")?.title} description={section("foundation")?.summary ?? undefined} image={section("foundation")?.imageUrl} imageAlt={section("foundation")?.image_alt} />
-      <BlogPreview items={posts} />
-      <ContactSection />
+      {layout.order.filter((key) => layout.sections[key]).map((key) => <Fragment key={key}>{blocks[key]}</Fragment>)}
     </main>
   );
 }

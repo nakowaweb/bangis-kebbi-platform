@@ -380,3 +380,7 @@
 @media (prefers-reduced-motion: reduce) {
   .service-mini, .contact-social, .contact-social svg, .premium-action { transition: none; transform: none !important; }
 }
+
+/* Super Admin motion setting */
+html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
+html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 150ms !important; }

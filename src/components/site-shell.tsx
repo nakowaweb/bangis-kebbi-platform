@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { useMotionPreference, useSiteText } from "@/lib/use-site-layout";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import * as FlagIcons from "country-flag-icons/react/3x2";
@@ -33,6 +34,7 @@ export function SiteShell({ children }: { children: ReactNode }) {
 
 function ShellBody({ children }: { children: ReactNode }) {
   const { dir } = useLanguage();
+  useMotionPreference();
   return (
     <div dir={dir} className="min-h-screen bg-background text-foreground">
       <SiteHeader />
@@ -68,6 +70,7 @@ function useSocialLinks() {
 
 function SiteHeader() {
   const { t } = useLanguage();
+  const st = useSiteText();
   const signedIn = useSignedIn();
 
   return (
@@ -88,7 +91,7 @@ function SiteHeader() {
               inactiveProps={{ className: "text-muted-foreground" }}
               className={`rounded-md px-1 py-2 text-[10px] font-semibold transition-colors hover:bg-secondary hover:text-foreground 2xl:text-xs ${item.labelKey === "foundation" || item.labelKey === "verifiedPartners" ? "max-w-[5rem] leading-[1.1] text-center" : "whitespace-nowrap"}`}
             >
-              {t(`nav.${item.labelKey}` as TranslationKey)}
+              {st(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
           ))}
         </nav>
@@ -202,6 +205,7 @@ function LanguageSelector({ compact = false }: { compact?: boolean }) {
 
 function MobileMenu() {
   const { t } = useLanguage();
+  const st = useSiteText();
   const signedIn = useSignedIn();
 
   return (
@@ -239,7 +243,7 @@ function MobileMenu() {
                   activeOptions={{ exact: item.href === "/" }}
                   className="rounded-lg border border-border bg-card px-4 py-3 text-base font-semibold text-foreground shadow-sm"
                 >
-                  {t(`nav.${item.labelKey}` as TranslationKey)}
+                  {st(`nav.${item.labelKey}` as TranslationKey)}
                 </Link>
               </SheetClose>
             ))}
@@ -311,6 +315,7 @@ function SocialRow({ only }: { only?: string[] } = {}) {
 
 function SiteFooter() {
   const { t } = useLanguage();
+  const st = useSiteText();
   const groups: Array<[TranslationKey, "/services" | "/credentials" | "/projects" | "/business" | "/umrah" | "/foundation" | "/blog" | "/contact"]> = [
     ["nav.credentials", "/credentials"],
     ["nav.services", "/services"],
@@ -341,7 +346,7 @@ function SiteFooter() {
           <div className="mt-4 grid gap-2 text-sm">
             {groups.slice(0, 5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
-                {t(key)}
+                {st(key)}
               </Link>
             ))}
           </div>
@@ -351,7 +356,7 @@ function SiteFooter() {
           <div className="mt-4 grid gap-3 text-sm">
             {groups.slice(5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
-                {t(key)}
+                {st(key)}
               </Link>
             ))}
             <Link to="/cv" className="text-muted-foreground transition-colors hover:text-primary">CV</Link>
