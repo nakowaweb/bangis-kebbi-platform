@@ -272,10 +272,10 @@ function MobileMenu() {
 }
 
 /** Official links configured by the Super Admin, with canonical launch fallbacks. */
-function SocialRow() {
+function SocialRow({ only }: { only?: string[] } = {}) {
   const links = useSocialLinks();
   const contact = useContactLinks();
-  const items = links.data ?? [];
+  const items = (links.data ?? []).filter((item) => !only || only.includes(item.platform));
   return (
     <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Follow Us">
       {items.map((item) => {
@@ -296,7 +296,7 @@ function SocialRow() {
           </a>
         );
       })}
-      <a
+      {only ? null : <a
         href={contact.email}
         aria-label="Email"
         title="Email"
@@ -304,14 +304,15 @@ function SocialRow() {
       >
         <Mail className="h-5 w-5" />
         <span className="truncate text-xs font-semibold sm:sr-only">Email</span>
-      </a>
+      </a>}
     </div>
   );
 }
 
 function SiteFooter() {
   const { t } = useLanguage();
-  const groups: Array<[TranslationKey, "/services" | "/projects" | "/business" | "/umrah" | "/foundation" | "/blog" | "/contact"]> = [
+  const groups: Array<[TranslationKey, "/services" | "/credentials" | "/projects" | "/business" | "/umrah" | "/foundation" | "/blog" | "/contact"]> = [
+    ["nav.credentials", "/credentials"],
     ["nav.services", "/services"],
     ["nav.projects", "/projects"],
     ["nav.business", "/business"],
@@ -338,7 +339,7 @@ function SiteFooter() {
         <div>
           <h2 className="text-sm font-bold uppercase text-primary">{t("common.quickLinks")}</h2>
           <div className="mt-4 grid gap-2 text-sm">
-            {groups.slice(0, 4).map(([key, href]) => (
+            {groups.slice(0, 5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {t(key)}
               </Link>
@@ -348,7 +349,7 @@ function SiteFooter() {
         <div>
           <h2 className="text-sm font-bold uppercase text-primary">{t("common.platforms")}</h2>
           <div className="mt-4 grid gap-3 text-sm">
-            {groups.slice(4).map(([key, href]) => (
+            {groups.slice(5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {t(key)}
               </Link>
@@ -358,7 +359,7 @@ function SiteFooter() {
         </div>
         <div>
           <h2 className="text-sm font-bold uppercase text-primary">{t("common.followUs")}</h2>
-          <div className="mt-4"><SocialRow /></div>
+          <div className="mt-4"><SocialRow only={["facebook", "youtube"]} /></div>
           <p className="mt-5 text-sm font-bold">{t("footer.foundation")}</p>
           <p className="mt-1 text-xs text-muted-foreground">{t("footer.foundationLine")}</p>
         </div>

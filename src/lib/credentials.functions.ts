@@ -19,6 +19,7 @@ export type PublicCredential = {
   verificationUrl: string;
   documentUrl: string | null;
   documentMime: string;
+  allowDownload: boolean;
 };
 
 const credentialInput = z.object({
@@ -36,6 +37,7 @@ const credentialInput = z.object({
   documentMime: z.enum(["", "application/pdf", "image/jpeg", "image/png", "image/webp"]),
   status: z.enum(["draft", "published", "unpublished", "archived"]),
   isEnabled: z.boolean(),
+  allowDownload: z.boolean().optional().default(false),
   sortOrder: z.number().int().min(-100000).max(100000),
   scheduledFor: z.union([z.literal(""), z.null(), z.string().datetime()]).optional().transform((value) => value || undefined),
 });
@@ -76,6 +78,7 @@ export const listPublicCredentials = createServerFn({ method: "GET" }).handler(a
       verificationUrl: payloadValue(row.payload, "verificationUrl"),
       documentUrl: mediaUrl(payloadValue(row.payload, "documentPath"), signed),
       documentMime: payloadValue(row.payload, "documentMime"),
+      allowDownload: payloadValue(row.payload, "allowDownload") === "true",
     }));
   } catch {
     return [];
@@ -104,6 +107,7 @@ export const saveCredential = createServerFn({ method: "POST" })
         verificationUrl: data.verificationUrl,
         documentPath: data.documentPath,
         documentMime: data.documentMime,
+        allowDownload: data.allowDownload ? "true" : "false",
       } as Json,
       status: data.status,
       is_enabled: data.isEnabled,

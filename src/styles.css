@@ -366,3 +366,17 @@
   .shortcut-arrow { animation: arrow-nudge 3.2s ease-in-out infinite; }
 }
 @keyframes arrow-nudge { 50% { transform: translateX(2px); } }
+
+/* Service miniatures, premium inline actions, contact socials */
+.service-mini { transition: transform 300ms ease; }
+.group:hover .service-mini, .group:focus-visible .service-mini { transform: translateY(-3px) scale(1.04); }
+.premium-action { border: 1px solid color-mix(in oklab, var(--brand-cyan) 55%, transparent); background: color-mix(in oklab, var(--background) 70%, transparent); box-shadow: 0 0 16px color-mix(in oklab, var(--brand-cyan) 18%, transparent); backdrop-filter: blur(8px); transition: box-shadow 250ms ease, border-color 250ms ease, transform 200ms ease; }
+.premium-action:hover, .premium-action:focus-visible { border-color: var(--brand-green); box-shadow: 0 0 24px color-mix(in oklab, var(--brand-green) 30%, transparent); }
+.premium-action:active { transform: scale(0.98); }
+.contact-social { transition: transform 250ms ease, background-color 250ms ease, border-color 250ms ease; }
+.contact-social:hover, .contact-social:focus-visible { transform: translateY(-2px); border-color: var(--brand-cyan); }
+.contact-social:hover svg, .contact-social:focus-visible svg { transform: scale(1.1); }
+.contact-social svg { transition: transform 250ms ease; }
+@media (prefers-reduced-motion: reduce) {
+  .service-mini, .contact-social, .contact-social svg, .premium-action { transition: none; transform: none !important; }
+}

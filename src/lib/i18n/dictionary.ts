@@ -46,6 +46,9 @@ export function isLanguageCode(value: unknown): value is LanguageCode {
 const en = {
   // Navigation
   "nav.home": "Home",
+  "nav.credentials": "Credentials",
+  "foundation.previewShort": "Practical support through community initiatives.",
+  "foundation.exploreAction": "Explore Foundation",
   "nav.about": "About",
   "nav.services": "Services",
   "nav.projects": "Projects",
@@ -114,7 +117,7 @@ const en = {
   // Footer
   "footer.tagline": "More than a website — a global platform for ideas, technology, business and people.",
   "footer.company": "BangisKebbi Global Ltd",
-  "footer.foundation": "BK COMMUNITY SUPPORT INITIATIVE",
+  "footer.foundation": "BK FOUNDATION",
   "footer.foundationLine": "People • Support • Community",
   "footer.rights": "All Rights Reserved.",
   "footer.privacy": "Privacy Policy",
@@ -442,6 +445,9 @@ export type TranslationKey = keyof typeof en;
 
 const ha: Record<TranslationKey, string> = {
   "nav.home": "Gida",
+  "nav.credentials": "Takardun Shaida",
+  "foundation.previewShort": "Tallafi na zahiri ta hanyar shirye-shiryen al’umma.",
+  "foundation.exploreAction": "Duba Gidauniya",
   "nav.about": "Game da mu",
   "nav.services": "Ayyuka",
   "nav.projects": "Ayyukan da aka yi",
@@ -508,7 +514,7 @@ const ha: Record<TranslationKey, string> = {
 
   "footer.tagline": "Fiye da gidan yanar gizo — dandamali na duniya don ra’ayoyi, fasaha, kasuwanci da mutane.",
   "footer.company": "BangisKebbi Global Ltd",
-  "footer.foundation": "BK COMMUNITY SUPPORT INITIATIVE",
+  "footer.foundation": "BK FOUNDATION",
   "footer.foundationLine": "Mutane • Tallafi • Al’umma",
   "footer.rights": "Duk haƙƙoƙi na kariya ne.",
   "footer.privacy": "Manufar Sirri",
@@ -820,6 +826,9 @@ const ha: Record<TranslationKey, string> = {
 
 const ar: Record<TranslationKey, string> = {
   "nav.home": "الرئيسية",
+  "nav.credentials": "الشهادات",
+  "foundation.previewShort": "دعم عملي من خلال مبادرات مجتمعية.",
+  "foundation.exploreAction": "استكشف المؤسسة",
   "nav.about": "من نحن",
   "nav.services": "الخدمات",
   "nav.projects": "الأعمال",
