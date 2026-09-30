@@ -39,6 +39,9 @@ Run `supabase/production_fix_v8_media_review.sql` once. The same file ends with 
 - Database (only if V8 must be undone; this is safe and does not delete media or files):
 ```sql
 BEGIN;
+DROP TRIGGER IF EXISTS content_entries_publish_media ON public.content_entries;
+DROP FUNCTION IF EXISTS public.publish_media_used_by_content();
+DROP FUNCTION IF EXISTS public.media_path_in_published_content(text);
 DROP FUNCTION IF EXISTS public.reorder_media_assets(uuid[]);
 DROP FUNCTION IF EXISTS public.update_media_asset_review(uuid,text,text);
 ALTER TABLE public.media_assets DROP CONSTRAINT IF EXISTS media_assets_status_check;
