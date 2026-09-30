@@ -56,6 +56,10 @@ import businessGlobalOpportunities from "@/assets/business-global-opportunities.
 import heroImage from "@/assets/global-city-hero.webp";
 import resortImage from "@/assets/resort-concept.webp";
 import businessImage from "@/assets/business-website.webp";
+import shortcutWebAi from "@/assets/shortcuts/shortcut-web-ai.webp";
+import shortcutUmrah from "@/assets/shortcuts/shortcut-umrah.webp";
+import shortcutBusiness from "@/assets/shortcuts/shortcut-business.webp";
+import shortcutCommunity from "@/assets/shortcuts/shortcut-community.webp";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -78,6 +82,17 @@ const categoryCards: Array<{ key: string; title: TranslationKey; detail: Transla
   { key: "business", title: "card.business", detail: "card.businessDetail", href: "/business", icon: BriefcaseBusiness, tone: "platform-card-green" },
   { key: "community", title: "card.community", detail: "card.communityDetail", href: "/community", icon: UsersRound, tone: "platform-card-cyan" },
 ];
+
+const shortcutIcons: Record<string, string> = { web: shortcutWebAi, umrah: shortcutUmrah, business: shortcutBusiness, community: shortcutCommunity };
+
+const serviceSubtitles: Record<string, { en: string; ar: string; ha: string }> = {
+  "ai-web-design": { en: "Modern, responsive websites.", ar: "مواقع حديثة ومتجاوبة.", ha: "Gidajen yanar gizo na zamani masu daidaituwa." },
+  "web-development": { en: "Custom websites and apps.", ar: "مواقع وتطبيقات مخصصة.", ha: "Gidajen yanar gizo da manhajoji na musamman." },
+  "ui-ux-design": { en: "Clear, accessible experiences.", ar: "تجارب واضحة وسهلة الوصول.", ha: "Kwarewa bayyananniya kuma mai sauƙin amfani." },
+  "wordpress-development": { en: "Easy-to-manage websites.", ar: "مواقع سهلة الإدارة.", ha: "Gidajen yanar gizo masu sauƙin gudanarwa." },
+  "digital-business-solutions": { en: "Practical systems for growth.", ar: "أنظمة عملية للنمو.", ha: "Tsare-tsare masu amfani don bunƙasa." },
+  "website-maintenance": { en: "Updates, monitoring and support.", ar: "تحديثات ومتابعة ودعم.", ha: "Sabuntawa, sa ido da tallafi." },
+};
 
 type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_alt?: string | null; sort_order: number };
 
@@ -160,10 +175,12 @@ export function QuickActionsSection() {
   return (
     <section className="platform-card-band border-y border-primary-foreground/10 bg-brand-ink text-primary-foreground" aria-label={t("nav.quickAccess")}>
       <nav className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8" aria-label={t("nav.quickLinks")}>
-        <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
-          {categoryCards.map((item) => <Link key={item.key} to={item.href} className="platform-entry-card group flex min-h-32 min-w-0 items-center gap-3 rounded-md border border-primary-foreground/15 bg-primary-foreground/[0.045] p-4 backdrop-blur-md transition duration-300 hover:-translate-y-1 hover:border-brand-cyan/55 hover:bg-primary-foreground/[0.08] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:min-h-36 sm:p-5">
-            <span className={`grid size-12 shrink-0 place-items-center rounded-md ${item.tone}`}><item.icon className="size-6" /></span>
-            <span className="min-w-0"><strong className="block font-display text-base font-bold sm:text-lg">{t(item.title)}</strong><span className="mt-1 block text-xs leading-5 text-primary-foreground/65 sm:text-sm">{t(item.detail)}</span><ArrowRight className="mt-3 size-4 text-brand-cyan transition group-hover:translate-x-1" /></span>
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 md:grid-cols-4">
+          {categoryCards.map((item) => <Link key={item.key} to={item.href} className="shortcut-card group flex min-w-0 flex-col items-center rounded-xl border border-brand-cyan/35 bg-primary-foreground/[0.05] px-2 py-3 text-center backdrop-blur-md transition duration-300 hover:-translate-y-0.5 hover:border-brand-cyan/70 hover:bg-primary-foreground/[0.09] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan active:scale-[0.98] sm:px-3 sm:py-4">
+            <span className={`shortcut-icon grid size-12 shrink-0 place-items-center overflow-hidden rounded-lg sm:size-14 ${item.tone}`}><img src={shortcutIcons[item.key]} alt="" width={200} height={200} loading="lazy" className="size-full object-contain p-1" /></span>
+            <strong className="mt-2 block font-display text-sm font-bold leading-tight sm:text-base">{t(item.title)}</strong>
+            <span className="mt-0.5 block text-xs leading-4 text-primary-foreground/70 sm:text-sm">{t(item.detail)}</span>
+            <span className="mt-1.5 inline-flex min-h-6 items-center gap-1 text-xs font-semibold text-brand-cyan sm:text-sm">{t("common.viewMore")} <ArrowRight className="shortcut-arrow size-3.5 rtl:rotate-180" aria-hidden="true" /></span>
           </Link>)}
         </div>
       </nav>
