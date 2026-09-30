@@ -95,10 +95,10 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
         location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}
         globalStatus={globalStatus}
         intervalMs={Math.min(30, Math.max(1, intervalSeconds)) * 1000}
-        eyebrow={label(content?.eyebrow, "home.heroRole")}
+        eyebrow={t("home.heroAccent")}
         subtitle={content?.subtitle ?? t("home.heroBusinessSubtitle")}
-        primaryCta={label(content?.primaryCta, "common.hireMe")}
-        secondaryCta={t("common.viewMyWork")}
+        primaryCta={t("common.viewMyWork")}
+        secondaryCta={t("common.discussProject")}
       />
     </section>
   );
@@ -135,15 +135,15 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
       <div className="relative z-20 mx-auto flex min-h-[620px] max-w-7xl items-end px-12 pb-20 pt-52 sm:min-h-[660px] sm:px-20 sm:pb-24 sm:pt-64 lg:min-h-[650px] lg:items-center lg:px-16 lg:py-14 xl:min-h-[690px] xl:px-20">
         <div className="hero-copy-enter min-w-0 max-w-[640px] lg:w-[55%]">
-          <div className="hero-role-badge inline-flex items-center gap-2 rounded-full border border-brand-cyan/40 bg-brand-ink/70 px-4 py-2 text-xs font-bold uppercase text-brand-cyan backdrop-blur-md sm:text-sm"><Cpu className="size-4" />{eyebrow}</div>
-          <h1 className="mt-5 font-display text-4xl font-extrabold leading-[1.06] sm:mt-6 sm:text-5xl xl:text-6xl">
+          <p className="hero-accent-text text-sm font-bold tracking-wide sm:text-base">{eyebrow}</p>
+          <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.06] sm:mt-4 sm:text-5xl xl:text-6xl">
             <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
             <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroBusinessTitleBottom")}</span>
           </h1>
           <p className="hero-line hero-line-3 mt-5 max-w-xl text-base font-medium leading-7 text-primary-foreground/80 sm:text-lg">{subtitle}</p>
           <div className="hero-cta-enter mt-7 flex flex-wrap gap-3">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{primaryCta} <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{secondaryCta}</Link></Button>
+            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{primaryCta} <ArrowRight /></Link></Button>
+            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{secondaryCta}</Link></Button>
           </div>
           <div className="hero-location location-badge-motion mt-6 inline-flex items-center gap-3 rounded-md border border-primary-foreground/20 bg-brand-ink/70 px-4 py-3 backdrop-blur-md sm:px-5">
             <MapPin className="h-7 w-7 shrink-0 fill-primary-foreground text-brand-ink" aria-hidden="true" />
