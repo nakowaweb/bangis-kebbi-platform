@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { ExternalLink, FileBadge2, Search } from "lucide-react";
+import { Download, ExternalLink, FileBadge2, FileText, Search } from "lucide-react";
 import { useServerFn } from "@tanstack/react-start";
 
 import cacCredentialDesign from "@/assets/cac-credential-reference.png";
@@ -21,6 +21,7 @@ const launchCredential: PublicCredential = {
   verificationUrl: CAC_SEARCH_URL,
   documentUrl: null,
   documentMime: "",
+  allowDownload: false,
 };
 
 export function CompanyCredentials() {
@@ -31,8 +32,10 @@ export function CompanyCredentials() {
   return (
     <section id="company-credentials" className="section-reveal scroll-mt-24 border-b border-border bg-secondary py-12 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="text-xs font-bold uppercase text-primary">Company Credentials</p>
-        <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Official company registration and professional credentials.</h2>
+        <p className="text-xs font-bold uppercase text-primary">Credentials</p>
+        <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Company certificates, licences and awards.</h1>
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Official documents published by BANGISKEBBI GLOBAL LTD. Open any card to preview the document.</p>
+        {query.isSuccess && !query.data?.length ? <p className="mt-6 rounded-lg border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">No additional certificates, licences or awards have been published yet.</p> : null}
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {credentials.map((credential) => <CredentialCard key={credential.id} credential={credential} />)}
         </div>
@@ -49,6 +52,7 @@ function CredentialCard({ credential }: { credential: PublicCredential }) {
     <DialogContent className="h-[90vh] max-w-5xl grid-rows-[auto_minmax(0,1fr)] overflow-hidden">
       <DialogHeader><DialogTitle>{credential.title}</DialogTitle><DialogDescription>{credential.organization}</DialogDescription></DialogHeader>
       {credential.documentUrl ? (image ? <img src={credential.documentUrl} alt={credential.title} className="h-full w-full object-contain" /> : <iframe title={credential.title} src={credential.documentUrl} className="h-full min-h-0 w-full border-0" />) : <div className="grid h-full place-items-center rounded-md border border-dashed border-border bg-secondary p-8 text-center"><div><FileBadge2 className="mx-auto h-10 w-10 text-primary" /><p className="mt-4 font-semibold">The official certificate document has not been uploaded yet.</p><p className="mt-2 text-sm text-muted-foreground">Use the independent CAC public search to check the registration information.</p></div></div>}
+      {credential.documentUrl && credential.allowDownload ? <a href={credential.documentUrl} download className="absolute right-20 top-4 text-muted-foreground" aria-label="Download document" title="Download"><Download className="h-4 w-4" /></a> : null}
       {credential.documentUrl ? <a href={credential.documentUrl} target="_blank" rel="noopener noreferrer" className="absolute right-12 top-4 text-muted-foreground" aria-label="Open certificate in a new tab" title="Open in a new tab"><ExternalLink className="h-4 w-4" /></a> : null}
     </DialogContent>
   );
@@ -80,8 +84,9 @@ function CredentialCard({ credential }: { credential: PublicCredential }) {
 
   return (
     <article className="motion-card flex h-full flex-col rounded-lg border border-border bg-card p-5 shadow-sm">
-      <span className="grid h-11 w-11 place-items-center rounded-md bg-brand-cyan/10 text-primary"><FileBadge2 className="h-5 w-5" /></span>
-      <h3 className="mt-4 font-display text-lg font-bold">{credential.title}</h3>
+      <div className="-mx-5 -mt-5 mb-1 grid aspect-[4/3] place-items-center overflow-hidden rounded-t-lg bg-secondary">{credential.documentUrl && image ? <img src={credential.documentUrl} alt="" loading="lazy" className="size-full object-cover" /> : credential.documentUrl ? <span className="grid justify-items-center gap-2 text-primary"><FileText className="h-10 w-10" /><span className="text-xs font-bold uppercase">PDF</span></span> : <FileBadge2 className="h-10 w-10 text-primary" />}</div>
+      {credential.documentType ? <p className="mt-3 text-xs font-bold uppercase text-primary">{credential.documentType}</p> : null}
+      <h3 className="mt-1 font-display text-lg font-bold">{credential.title}</h3>
       <dl className="mt-4 grid gap-2 text-sm">
         <div><dt className="text-xs font-bold uppercase text-muted-foreground">Company Name</dt><dd className="mt-0.5 font-semibold">{credential.companyName || "BANGISKEBBI GLOBAL LTD"}</dd></div>
         {credential.number ? <div><dt className="text-xs font-bold uppercase text-muted-foreground">RC Number</dt><dd className="mt-0.5">{credential.number}</dd></div> : null}
@@ -89,9 +94,10 @@ function CredentialCard({ credential }: { credential: PublicCredential }) {
       <span className="flex-1" />
       <div className="mt-5 flex flex-wrap gap-2">
         <Dialog>
-            <DialogTrigger asChild><Button><FileBadge2 /> View Certificate</Button></DialogTrigger>
+            <DialogTrigger asChild><Button disabled={!credential.documentUrl}><FileBadge2 /> View Document</Button></DialogTrigger>
             {certificateViewer}
           </Dialog>
+        {credential.documentUrl && credential.allowDownload ? <Button variant="outline" asChild><a href={credential.documentUrl} download><Download /> Download</a></Button> : null}
         {credential.verificationUrl ? <Button variant="outline" asChild><a href={credential.verificationUrl} target="_blank" rel="noopener noreferrer"><Search /> Verify</a></Button> : null}
       </div>
     </article>
