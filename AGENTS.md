@@ -19,3 +19,4 @@
 - Permanent Member IDs are assigned and frozen by a database trigger; UUIDs remain the only internal relationship and authorization key.
 - Member payment destinations are returned only when both Live Deposits and the individual method are enabled, preventing disabled details from reaching the browser.
 - Google sign-in returns through the public `/auth/callback` route; only validated same-origin paths may be restored after session hydration.
+- Homepage section visibility/order, motion level, EN/AR/HA text overrides and service illustration paths live in one `content_entries` row (homepage/site-layout) read via `getSiteLayout`; avoids a schema change and keeps edits in the existing CMS.
