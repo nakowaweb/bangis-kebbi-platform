@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { useSiteLayout, useSiteText } from "@/lib/use-site-layout";
 import {
   ArrowRight,
   Cpu,
@@ -307,6 +308,7 @@ export function AboutPreview({ title, description, items }: { title?: string | u
 
 export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; imageUrl?: string | null }> | undefined }) {
   const { t, language } = useLanguage();
+  const { miniUrls } = useSiteLayout();
   const fallbackBySlug = new Map(portfolioServices.map((item) => [item.slug, item]));
   const visibleServices = items?.length
     ? items.map((item, index) => {
@@ -319,7 +321,7 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
       {!full ? <div className="service-strip mb-6 overflow-hidden rounded-xl border border-brand-cyan/25 py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase sm:text-sm">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span className="service-strip-text">{service.title}</span><span className="text-brand-green">•</span></span>)}</div></div> : null}
       <ul className="grid gap-2.5 md:hidden">
         {visibleServices.map((service, index) => {
-          const mini = serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
+          const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
           const sub = serviceSubtitles[service.slug];
           return <li key={service.slug}><Link to="/services/$slug" params={{ slug: service.slug }} className="group grid min-h-[72px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition active:scale-[0.99] active:bg-secondary hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <img src={mini} alt="" aria-hidden="true" loading="lazy" width={256} height={256} className="service-mini size-14 shrink-0 object-contain" />
@@ -330,7 +332,7 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
       </ul>
       <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         {visibleServices.map((service, index) => {
-          const mini = serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
+          const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
           return <article key={service.slug} className="motion-card group relative flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
             <div className="relative aspect-[8/5] overflow-hidden bg-secondary">
               <SafeImage src={service.image} alt={service.imageAlt} loading="lazy" width={1200} height={752} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
@@ -405,7 +407,7 @@ export function UmrahSection({ title, description, image, imageAlt }: { title?: 
 }
 
 export function FoundationSection({ title, description, image, imageAlt }: { title?: string | undefined; description?: string | undefined; image?: string | null | undefined; imageAlt?: string | null | undefined } = {}) {
-  const { t } = useLanguage();
+  const t = useSiteText();
   return (
     <section className="section-reveal border-b border-border bg-secondary/50 py-8 sm:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -505,12 +507,12 @@ function ContactSocials() {
   const social = useQuery({ queryKey: ["public-social-links"], queryFn: () => load(), staleTime: 1000 * 60 * 30 });
   const contact = useContactLinks();
   const configured = new Map((social.data ?? []).map((item) => [item.platform, item]));
-  const items = contactPlatformOrder.flatMap((platform) => {
-    if (platform === "email") return contact.email ? [{ key: "email", href: contact.email, label: "Email", external: false }] : [];
-    const row = configured.get(platform);
-    const href = row?.url ?? (platform === "whatsapp" ? contact.whatsapp : platform === "linkedin" ? contact.linkedin : undefined);
-    return href ? [{ key: platform, href, label: row?.display_label || platformLabels[platform] || platform, external: true }] : [];
-  });
+  const allowed = new Set<string>(contactPlatformOrder);
+  // Follow the Super Admin's saved platform order; fall back to confirmed links when a row is missing.
+  const rows = (social.data ?? []).filter((item) => allowed.has(item.platform)).map((item) => ({ key: item.platform, href: item.url, label: item.display_label || platformLabels[item.platform] || item.platform, external: true }));
+  const present = new Set(rows.map((row) => row.key));
+  const fallbacks = ([["linkedin", contact.linkedin], ["whatsapp", contact.whatsapp]] as const).filter(([key, href]) => !present.has(key) && href).map(([key, href]) => ({ key, href: href as string, label: platformLabels[key] || key, external: true }));
+  const items = [...rows, ...fallbacks, ...(contact.email ? [{ key: "email", href: contact.email, label: "Email", external: false }] : [])];
   const [mounted, setMounted] = useState(false);
   useEffect(() => setMounted(true), []);
   if (!mounted || !items.length) return null;
