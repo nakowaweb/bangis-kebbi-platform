@@ -165,7 +165,7 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
-      <div className="relative z-20 mx-auto flex max-w-7xl items-end px-12 pb-12 pt-28 sm:px-20 sm:pb-16 sm:pt-36 lg:min-h-[560px] lg:items-center lg:px-16 lg:py-16 xl:px-20">
+      <div className="relative z-20 mx-auto flex max-w-7xl items-end px-5 pb-12 pt-24 sm:px-20 sm:pb-16 sm:pt-36 lg:min-h-[560px] lg:items-center lg:px-16 lg:py-16 xl:px-20">
         <div className="hero-copy-enter min-w-0 max-w-[640px] lg:w-[58%]">
           <p className="inline-flex rounded-full border border-brand-cyan/60 bg-brand-ink/40 px-3 py-1 text-xs font-bold text-brand-cyan backdrop-blur sm:text-sm">{eyebrow}</p>
           <h1 className="mt-3 font-display text-[2rem] font-extrabold leading-[1.08] sm:text-5xl xl:text-6xl">
@@ -180,8 +180,8 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
           </div>
         </div>
       </div>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
