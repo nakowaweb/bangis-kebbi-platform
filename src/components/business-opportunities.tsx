@@ -1,6 +1,5 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ExternalLink, LayoutGrid } from "lucide-react";
-import { useState } from "react";
 
 import { SafeImage } from "@/components/safe-image";
 import { useLanguage } from "@/lib/language";
