@@ -26,15 +26,15 @@ import {
 export const navItems = [
   { labelKey: "home", label: "Home", href: "/", hash: undefined },
   { labelKey: "about", label: "About", href: "/about", hash: undefined },
-  { labelKey: "credentials", label: "Credentials", href: "/credentials", hash: undefined },
+  { labelKey: "umrah", label: "Umrah", href: "/umrah", hash: undefined },
   { labelKey: "services", label: "Services", href: "/services", hash: undefined },
   { labelKey: "projects", label: "Projects", href: "/projects", hash: undefined },
   { labelKey: "business", label: "Business", href: "/business", hash: undefined },
-  { labelKey: "umrah", label: "Umrah", href: "/umrah", hash: undefined },
   { labelKey: "verifiedPartners", label: "Verified Partners", href: "/partners", hash: undefined },
-  { labelKey: "foundation", label: "Community Support", href: "/foundation", hash: undefined },
-  { labelKey: "blog", label: "Blog", href: "/blog", hash: undefined },
+  { labelKey: "foundation", label: "BK Foundation", href: "/foundation", hash: undefined },
+  { labelKey: "blog", label: "Blog & News", href: "/blog", hash: undefined },
   { labelKey: "contact", label: "Contact", href: "/contact", hash: undefined },
+  { labelKey: "credentials", label: "Credentials", href: "/credentials", hash: undefined },
 ] as const;
 
 export const serviceCards: Array<{
