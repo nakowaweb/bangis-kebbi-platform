@@ -18,7 +18,7 @@ const FacebookIcon = () => (
 
 export function SharePost({ title, url, image, label = "Share" }: { title: string; url?: string; image?: string | null; label?: string }) {
   const [open, setOpen] = useState(false);
-  const link = () => url || (typeof window !== "undefined" ? window.location.href.split("?")[0] : "");
+  const link = (): string => url || (typeof window !== "undefined" ? (window.location.href.split("?")[0] ?? "") : "");
 
   const copy = async () => {
     try {
