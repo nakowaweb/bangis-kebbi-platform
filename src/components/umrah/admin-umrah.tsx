@@ -5,6 +5,7 @@ import { MediaUploadField } from "@/components/admin/media-upload-field";
 import { CountryRegionFields } from "@/components/umrah/country-region-select";
 import { useEffect, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import { supabase as supabaseClient } from "@/integrations/supabase/client";
 
 import {
   AlertDialog,

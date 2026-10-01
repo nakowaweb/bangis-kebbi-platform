@@ -392,3 +392,9 @@ html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-
 @keyframes service-marquee { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
 @media (prefers-reduced-motion: reduce) { .service-marquee-track { animation: none; } }
 html[data-motion="reduced"] .service-marquee-track, html[data-motion="off"] .service-marquee-track { animation: none !important; transform: none !important; }
+
+/* Connect Hub: gentle floating image movement */
+@keyframes hub-float { 0%,100% { transform: scale(1.04) translate3d(0,0,0); } 50% { transform: scale(1.07) translate3d(0,-1.5%,0); } }
+.hub-float { animation: hub-float 9s ease-in-out infinite; will-change: transform; }
+html[data-motion="reduced"] .hub-float, html[data-motion="off"] .hub-float { animation: none; }
+@media (prefers-reduced-motion: reduce) { .hub-float { animation: none; } }

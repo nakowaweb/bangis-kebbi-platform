@@ -139,8 +139,11 @@ const fallbackHeroSlides: HeroSlideInput[] = [
   { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
 ];
 
-function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus, eyebrow, subtitle, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string; intervalMs: number; transitionMs: number }) {
-  const { t } = useLanguage();
+function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string; intervalMs: number; transitionMs: number }) {
+  const t = useSiteText();
+  const eyebrow = t("home.heroAccent");
+  const subtitle = t("home.heroBusinessSubtitle");
+  const shortLocation = location.replace(/\s*State\b/i, "");
   const heroSlides = slides?.length ? slides.slice(0, 8) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
@@ -162,26 +165,23 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
       <div className="pointer-events-none absolute inset-0 z-10 workspace-grid opacity-25" />
-      <div className="relative z-20 mx-auto flex min-h-[620px] max-w-7xl items-end px-12 pb-20 pt-52 sm:min-h-[660px] sm:px-20 sm:pb-24 sm:pt-64 lg:min-h-[650px] lg:items-center lg:px-16 lg:py-14 xl:min-h-[690px] xl:px-20">
-        <div className="hero-copy-enter min-w-0 max-w-[640px] lg:w-[55%]">
-          <p className="hero-accent-text text-sm font-bold tracking-wide sm:text-base">{eyebrow}</p>
-          <h1 className="mt-3 font-display text-4xl font-extrabold leading-[1.06] sm:mt-4 sm:text-5xl xl:text-6xl">
+      <div className="relative z-20 mx-auto flex max-w-7xl items-end px-5 pb-12 pt-24 sm:px-20 sm:pb-16 sm:pt-36 lg:min-h-[560px] lg:items-center lg:px-16 lg:py-16 xl:px-20">
+        <div className="hero-copy-enter min-w-0 max-w-[640px] lg:w-[58%]">
+          <p className="inline-flex rounded-full border border-brand-cyan/60 bg-brand-ink/40 px-3 py-1 text-xs font-bold text-brand-cyan backdrop-blur sm:text-sm">{eyebrow}</p>
+          <h1 className="mt-3 font-display text-[2rem] font-extrabold leading-[1.08] sm:text-5xl xl:text-6xl">
             <span className="hero-line hero-line-1 block text-primary-foreground">{t("home.heroBusinessTitleTop")}</span>
             <span className="hero-line hero-line-2 hero-title-b block">{t("home.heroBusinessTitleBottom")}</span>
           </h1>
-          <p className="hero-line hero-line-3 mt-5 max-w-xl text-base font-medium leading-7 text-primary-foreground/80 sm:text-lg">{subtitle}</p>
-          <div className="hero-cta-enter mt-7 flex flex-wrap gap-3">
-            <Button className="h-12 bg-brand-cyan px-7 text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{primaryCta} <ArrowRight /></Link></Button>
-            <Button variant="outline" className="h-12 border-primary-foreground/40 bg-brand-ink/45 px-7 text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{secondaryCta}</Link></Button>
-          </div>
-          <div className="hero-location location-badge-motion mt-6 inline-flex items-center gap-3 rounded-md border border-primary-foreground/20 bg-brand-ink/70 px-4 py-3 backdrop-blur-md sm:px-5">
-            <MapPin className="h-7 w-7 shrink-0 fill-primary-foreground text-brand-ink" aria-hidden="true" />
-            <span><span className="flex items-center gap-2 text-sm font-bold sm:text-base">{location}<span className="inline-flex h-4 w-4 overflow-hidden rounded-full border border-primary-foreground/40" aria-hidden="true"><span className="w-1/3 bg-brand-green" /><span className="w-1/3 bg-primary-foreground" /><span className="w-1/3 bg-brand-green" /></span></span><span className="mt-0.5 flex items-center gap-1.5 text-xs text-primary-foreground/80 sm:text-sm"><Globe2 className="h-3.5 w-3.5 text-brand-cyan" aria-hidden="true" />{globalStatus}</span></span>
+          <p className="hero-line hero-line-3 mt-3 max-w-xl text-sm font-medium leading-6 text-primary-foreground/85 sm:mt-4 sm:text-lg sm:leading-7">{subtitle}</p>
+          <p className="hero-location mt-3 flex items-center gap-2 text-sm text-primary-foreground/85 sm:mt-4 sm:text-base"><MapPin className="size-4 shrink-0 text-primary-foreground" aria-hidden="true" /><span>{shortLocation} <span aria-hidden="true">•</span> {globalStatus}</span></p>
+          <div className="hero-cta-enter mt-4 grid grid-cols-2 gap-2 sm:mt-5 sm:flex sm:gap-3">
+            <Button className="h-auto min-h-12 whitespace-normal bg-brand-cyan px-3 py-2 text-center text-sm leading-tight text-brand-ink shadow-glow hover:bg-brand-cyan-soft sm:min-h-14 sm:px-9 sm:text-base" asChild><Link to="/projects">{primaryCta} <ArrowRight className="rtl:rotate-180" /></Link></Button>
+            <Button variant="outline" className="h-auto min-h-12 whitespace-normal border-primary-foreground/40 bg-brand-ink/45 px-3 py-2 text-center text-sm leading-tight text-primary-foreground backdrop-blur hover:bg-primary-foreground/10 sm:min-h-14 sm:px-9 sm:text-base" asChild><Link to="/contact">{secondaryCta}</Link></Button>
           </div>
         </div>
       </div>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
-      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
+      <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
       <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
@@ -557,8 +557,9 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
   return <section className="border-b border-border bg-background py-5"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className={`grid gap-5 overflow-hidden rounded-lg border border-border bg-card shadow-sm ${image ? "md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-center" : "p-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"}`}>{image ? <SafeImage src={image} alt={imageAlt ?? ""} loading="lazy" width={720} height={720} className="aspect-[16/10] h-full max-h-52 w-full object-cover object-top md:aspect-square md:max-h-none" /> : <span className={`m-5 grid h-16 w-16 place-items-center rounded-full ${colors}`}><Icon className="h-8 w-8" /></span>}<div className={`min-w-0 ${image ? "px-5 md:px-0" : ""}`}><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-1 font-display text-xl font-bold">{title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p></div><Button variant="outline" className={`shrink-0 ${image ? "mx-5 mb-5 md:my-5 md:ml-0" : ""}`} asChild><Link to={href}>{action} <ArrowRight /></Link></Button></div></div></section>;
 }
 
-export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null }> | undefined }) {
-  const { t } = useLanguage();
+type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null };
+export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | undefined; updates?: HubItem[] | undefined }) {
+  const t = useSiteText();
   const { carouselSeconds } = useSiteLayout();
   const scroller = useRef<HTMLDivElement>(null);
   const animating = useRef(0);
@@ -568,7 +569,10 @@ export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slu
   const [canAuto, setCanAuto] = useState(false);
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState(1);
-  const projects = (items ?? []).map((item) => ({ slug: item.slug, name: item.title, image: item.imageUrl, alt: item.image_alt ?? item.title }));
+  const seen = new Set<string>();
+  const newsCards = [...(updates ?? [])].sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? "")).map((item) => ({ kind: "update" as const, id: item.id, slug: item.slug, name: item.title, excerpt: item.summary, image: item.imageUrl, alt: item.image_alt ?? item.title }));
+  const projectCards = (items ?? []).map((item) => ({ kind: "project" as const, id: item.id, slug: item.slug, name: item.title, excerpt: null as string | null, image: item.imageUrl, alt: item.image_alt ?? item.title }));
+  const projects = [...newsCards, ...projectCards].filter((c) => (seen.has(c.id) ? false : (seen.add(c.id), true)));
   const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   /** Eased ~0.9s glide by one card (snap is lifted during the glide so it cannot jerk the motion). */
   const glideTo = useCallback((el: HTMLDivElement, target: number) => {
@@ -622,10 +626,10 @@ export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slu
   return (
     <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap">
           <h2 id="selected-work-title" className="min-w-0 flex-1 font-display text-[1.65rem] font-bold leading-tight sm:text-3xl">{t("home.projectsTitle")}</h2>
           <div className="flex items-center gap-2">
-            <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" />Media Gallery</Link></Button>
+            <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" /><span className="hidden sm:inline">Media Gallery</span><span className="sr-only sm:hidden">Media Gallery</span></Link></Button>
             {canAuto ? <Button type="button" variant="outline" size="icon" onClick={() => setUserPaused((v) => !v)} aria-label={userPaused ? "Resume automatic scrolling" : "Pause automatic scrolling"} aria-pressed={userPaused} className={round}>{userPaused ? <Play className="size-4" /> : <Pause className="size-4" />}</Button> : null}
             <Button type="button" variant="outline" size="icon" onClick={() => scroll(-1)} aria-label="Previous projects" className={round}><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></Button>
             <Button type="button" variant="outline" size="icon" onClick={() => scroll(1)} aria-label="Next projects" className={`${round} bg-brand-cyan/15`}><ArrowRight className="size-4 rtl:rotate-180" /></Button>
@@ -633,17 +637,22 @@ export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slu
         </div>
         {/* Native horizontal scrolling: vertical swipes and the mouse wheel still scroll the page, and a drag never counts as a tap. */}
         <div ref={scroller} onScroll={onScroll} onMouseEnter={() => setHoverPaused(true)} onMouseLeave={() => setHoverPaused(false)} onFocusCapture={() => setHoverPaused(true)} onBlurCapture={() => setHoverPaused(false)} onTouchStart={() => { cancelAnimationFrame(animating.current); if (scroller.current) scroller.current.style.scrollSnapType = ""; setHoverPaused(true); }} onTouchEnd={() => window.setTimeout(() => setHoverPaused(false), 3500)} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none]">
-          {projects.map((p) => (
-            <article key={p.slug} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
-              <Link to="/projects/$slug" params={{ slug: p.slug }} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`View details: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={600} draggable={false} className="size-full object-cover transition duration-500 hover:scale-[1.03] motion-reduce:transition-none" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
+          {projects.map((p) => {
+            const linkProps = p.kind === "update" ? ({ to: "/blog/$slug", params: { slug: p.slug } } as const) : ({ to: "/projects/$slug", params: { slug: p.slug } } as const);
+            return (
+            <article key={`${p.kind}-${p.id}`} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
+              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`View details: ${p.name}`}>
+                {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
               </Link>
-              <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
-                <h3 className="min-w-0 flex-1 font-display text-base font-bold"><Link to="/projects/$slug" params={{ slug: p.slug }} className="hover:text-brand-cyan">{p.name}</Link></h3>
-                <Link to="/projects/$slug" params={{ slug: p.slug }} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">View Details <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
+              <div className="flex flex-col gap-2 p-4">
+                {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}
+                <h3 className="min-w-0 font-display text-base font-bold"><Link {...linkProps} className="hover:text-brand-cyan">{p.name}</Link></h3>
+                {p.excerpt ? <p className="line-clamp-2 text-sm text-primary-foreground/75">{p.excerpt}</p> : null}
+                <Link {...linkProps} className="inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">View Details <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
               </div>
             </article>
-          ))}
+            );
+          })}
         </div>
         {pages > 1 ? <div className="mt-4 flex justify-center gap-2" aria-hidden="true">{Array.from({ length: pages }, (_, i) => <span key={i} className={`size-2 rounded-full ${i === page ? "bg-brand-cyan" : "bg-primary-foreground/25"}`} />)}</div> : null}
       </div>
