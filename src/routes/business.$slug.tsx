@@ -10,7 +10,6 @@ import { useLanguage } from "@/lib/language";
 import { pageHead } from "@/lib/seo";
 
 export const Route = createFileRoute("/business/$slug")({
-  validateSearch: (search: Record<string, unknown>) => ({ lang: typeof search["lang"] === "string" ? search["lang"] as LanguageCode : undefined }),
   loaderDeps: ({ search }) => ({ lang: (search as { lang?: LanguageCode }).lang ?? "en" }),
   loader: async ({ params, deps }) => {
     const entry = await getPublicEntry({ data: { contentType: "business", language: deps.lang, slug: params.slug } });
