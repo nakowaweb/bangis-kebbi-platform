@@ -35,6 +35,8 @@ const layoutInput = z.object({
   sections: z.record(z.enum(HOMEPAGE_SECTIONS), z.boolean()),
   order: z.array(z.enum(HOMEPAGE_SECTIONS)).max(HOMEPAGE_SECTIONS.length),
   motion: z.enum(["full", "reduced", "off"]),
+  marqueeSeconds: z.number().min(6).max(60).optional(),
+  carouselSeconds: z.number().min(2).max(10).optional(),
   text: z.record(z.enum(TEXT_OVERRIDE_KEYS), langText),
   minis: z.record(z.enum(SERVICE_MINI_SLUGS), z.string().trim().max(500)),
   hero: z.object({

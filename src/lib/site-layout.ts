@@ -30,6 +30,10 @@ export type SiteLayout = {
   sections: Record<HomepageSection, boolean>;
   order: HomepageSection[];
   motion: "full" | "reduced" | "off";
+  /** Seconds for one full loop of the homepage service banner (lower = faster). */
+  marqueeSeconds: number;
+  /** Seconds between automatic Selected Work moves. */
+  carouselSeconds: number;
   text: Partial<Record<TextOverrideKey, LangText>>;
   minis: Partial<Record<string, string>>;
   hero: HeroSlideshow;
@@ -44,6 +48,8 @@ export const DEFAULT_LAYOUT: SiteLayout = {
   sections: Object.fromEntries(HOMEPAGE_SECTIONS.map((key) => [key, true])) as Record<HomepageSection, boolean>,
   order: [...HOMEPAGE_SECTIONS],
   motion: "full",
+  marqueeSeconds: 14,
+  carouselSeconds: 2.5,
   text: {},
   minis: {},
   hero: DEFAULT_HERO,
@@ -74,5 +80,7 @@ export function normalizeLayout(raw: unknown): SiteLayout {
     .slice(0, 8)
     .map((x) => ({ path: String(x["path"]), alt: String(x["alt"] ?? ""), label: String(x["label"] ?? ""), enabled: x["enabled"] !== false }));
   const hero: HeroSlideshow = { slides, intervalSeconds: num(h["intervalSeconds"], 2, 30, DEFAULT_HERO.intervalSeconds), transitionMs: num(h["transitionMs"], 300, 4000, DEFAULT_HERO.transitionMs) };
-  return { sections, order, motion, text, minis, hero };
+  const marqueeSeconds = num(source["marqueeSeconds"], 6, 60, 14);
+  const carouselSeconds = num(source["carouselSeconds"], 2, 10, 2.5);
+  return { sections, order, motion, marqueeSeconds, carouselSeconds, text, minis, hero };
 }

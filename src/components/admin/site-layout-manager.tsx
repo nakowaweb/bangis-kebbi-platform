@@ -51,7 +51,7 @@ export function SiteLayoutManager({ onChanged }: { onChanged?: () => void }) {
   async function persist(next: SiteLayout, message = "Site layout saved") {
     setBusy("save");
     try {
-      await save({ data: { sections: next.sections, order: next.order, motion: next.motion, text: next.text as never, minis: next.minis as never, hero: next.hero } });
+      await save({ data: { sections: next.sections, order: next.order, motion: next.motion, marqueeSeconds: next.marqueeSeconds, carouselSeconds: next.carouselSeconds, text: next.text as never, minis: next.minis as never, hero: next.hero } });
       toast.success(message);
       await query.refetch();
       onChanged?.();
@@ -121,6 +121,14 @@ export function SiteLayoutManager({ onChanged }: { onChanged?: () => void }) {
               <option value="off">Off (no animation)</option>
             </select>
           </label>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1 text-sm font-semibold">Service banner loop (seconds, lower = faster)
+              <input type="number" min={6} max={60} step={1} className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={layout.marqueeSeconds} onChange={(e) => setLayout({ ...layout, marqueeSeconds: Math.min(60, Math.max(6, Number(e.target.value) || 14)) })} />
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">Selected Work auto-advance (seconds)
+              <input type="number" min={2} max={10} step={0.5} className="h-10 rounded-md border border-input bg-background px-3 text-sm" value={layout.carouselSeconds} onChange={(e) => setLayout({ ...layout, carouselSeconds: Math.min(10, Math.max(2, Number(e.target.value) || 2.5)) })} />
+            </label>
+          </div>
           <p className="text-xs text-muted-foreground">Visitors who ask their device for reduced motion always get reduced motion. Social platform order is set in the Social links tab.</p>
         </CardContent>
       </Card>

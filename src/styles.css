@@ -384,3 +384,11 @@
 /* Super Admin motion setting */
 html[data-motion="off"] *, html[data-motion="off"] *::before, html[data-motion="off"] *::after { animation: none !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; }
 html[data-motion="reduced"] *, html[data-motion="reduced"] *::before, html[data-motion="reduced"] *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 150ms !important; }
+
+/* Homepage service banner: seamless loop (track = two identical halves, shifted by one half). */
+.service-marquee { mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent); }
+.service-marquee-track { animation: service-marquee var(--marquee-duration, 14s) linear infinite; will-change: transform; }
+.service-marquee:hover .service-marquee-track { animation-play-state: paused; }
+@keyframes service-marquee { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+@media (prefers-reduced-motion: reduce) { .service-marquee-track { animation: none; } }
+html[data-motion="reduced"] .service-marquee-track, html[data-motion="off"] .service-marquee-track { animation: none !important; transform: none !important; }
