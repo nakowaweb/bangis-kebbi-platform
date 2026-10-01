@@ -1,13 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, FileText, Handshake, Heart, Info, Landmark, Plane, ShieldCheck, Users } from "lucide-react";
+import { ArrowRight, FileText, Handshake, Heart, Info, Landmark, Plane, Pointer, ShieldCheck, Users, Wallet } from "lucide-react";
 import { SafeImage } from "@/components/safe-image";
 import heroKaaba from "@/assets/umrah/umrah-hero-kaaba.jpg";
 import heroMadinah from "@/assets/umrah/umrah-hero-madinah.jpg";
 import heroCity from "@/assets/umrah/umrah-hero-makkah-city.jpg";
 import heroTravel from "@/assets/umrah/umrah-hero-travel.jpg";
-import cardApply from "@/assets/umrah/journey-submit-documents.webp";
-import cardTravel from "@/assets/umrah/journey-coordinate-travel.webp";
 
 export type LandingEntry = { slug: string; title: string; summary: string | null; imageUrl?: string | null; image_alt?: string | null; sort_order?: number };
 
@@ -20,10 +18,12 @@ export const umrahHeroFallbacks = [
 
 export const partnerSlideFallbacks = [
   { slug: "partners-slide-1", image: heroMadinah, alt: "Madinah" },
-  { slug: "partners-slide-2", image: heroKaaba, alt: "Makkah" },
+  { slug: "partners-slide-2", image: heroKaaba, alt: "Makkah at sunset" },
   { slug: "partners-slide-3", image: heroCity, alt: "Makkah city" },
-  { slug: "partners-slide-4", image: heroTravel, alt: "Air travel" },
+  { slug: "partners-slide-4", image: heroTravel, alt: "Aircraft at sunset" },
 ];
+/** Owner selection: only the 2nd (Makkah at sunset) and 4th (aircraft) travel visuals show publicly; 1st and 3rd stay in the Media Gallery. */
+const HIDDEN_PARTNER_SLIDES = new Set(["partners-slide-1", "partners-slide-3"]);
 
 /** Resolve CMS-managed slides (by slug) with bundled fallbacks, keeping CMS order when set. */
 export function resolveSlides(entries: LandingEntry[], fallbacks: typeof umrahHeroFallbacks) {
@@ -63,18 +63,14 @@ export function FadeCarousel({ slides, interval, className = "" }: { slides: Arr
   );
 }
 
-const pill = "inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5";
+const pill = "inline-flex min-h-12 w-full items-center gap-3 rounded-lg px-5 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:w-auto [&>svg:last-child]:ms-auto";
 
 export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[]; partnerCount: number }) {
   const slides = resolveSlides(entries, umrahHeroFallbacks);
   const interval = intervalFrom(entries, "umrah-hero-settings");
-  const partnerSlides = resolveSlides(entries, partnerSlideFallbacks);
+  const partnerSlides = resolveSlides(entries.filter((e) => !HIDDEN_PARTNER_SLIDES.has(e.slug)), partnerSlideFallbacks.filter((f) => !HIDDEN_PARTNER_SLIDES.has(f.slug))).slice(0, 2);
   const text = (slug: string, fallback: string) => entries.find((e) => e.slug === slug)?.title || fallback;
 
-  const cards = [
-    { title: "Apply for Umrah", body: "Fill in your details and upload the required documents to register for Umrah support.", icon: FileText, image: cardApply, to: "/my-umrah", search: { tab: "application" }, tone: "bg-card" },
-    { title: "Travel Partners", body: "Explore travel partners who provide Umrah packages and travel services.", icon: Plane, image: cardTravel, to: "/partners", search: undefined, tone: "bg-brand-gold/10" },
-  ] as const;
 
   return (
     <div className="bg-background">
@@ -89,8 +85,9 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
             </h1>
             <p className="mt-4 text-base leading-7 text-primary-foreground/90 sm:text-lg">{text("umrah-landing-subtitle", "Preparation • Application Support • Travel Connections • Guidance & Support")}</p>
             <div className="mt-7 flex flex-wrap gap-3">
-              <Link to="/my-umrah" search={{ tab: "application" }} className={`${pill} bg-success text-primary-foreground shadow-lg`}><FileText className="size-5" />Apply for Umrah<ArrowRight className="size-4" /></Link>
-              <Link to="/partners" className={`${pill} border border-brand-cyan bg-card text-foreground`}><Handshake className="size-5" />Explore Travel Partners<ArrowRight className="size-4" /></Link>
+              <Link to="/my-umrah" search={{ tab: "application" }} className={`${pill} bg-success text-primary-foreground shadow-lg`}><FileText className="size-5" />Apply for Umrah<ArrowRight className="size-4 rtl:rotate-180" /></Link>
+              <Link to="/my-umrah" search={{ tab: "goal" }} className={`${pill} bg-brand-gold text-brand-ink shadow-lg`}><Wallet className="size-5" />My Goal<ArrowRight className="size-4 rtl:rotate-180" /></Link>
+              <Link to="/partners" className={`${pill} group border-2 border-brand-cyan bg-brand-ink text-primary-foreground shadow-lg`}><Pointer className="size-5 motion-safe:group-hover:animate-bounce" />Explore Travel Partners<ArrowRight className="size-4 rtl:rotate-180" /></Link>
             </div>
           </div>
           <ul className="hidden content-center gap-5 rounded-2xl border border-brand-gold/40 bg-brand-ink/60 p-6 backdrop-blur lg:grid">
@@ -103,15 +100,6 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
       </section>
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2">
-          {cards.map((c) => (
-            <Link key={c.title} to={c.to as "/my-umrah"} search={c.search as { tab?: "application" }} className={`group relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border ${c.tone} p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg`}>
-              <div className="flex items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><c.icon className="size-5" /></span><h2 className="font-display text-lg font-bold">{c.title}</h2><ChevronRight className="ms-auto size-5 transition group-hover:translate-x-1 rtl:rotate-180" /></div>
-              <p className="mt-3 text-sm leading-6 text-muted-foreground">{c.body}</p>
-              <SafeImage src={c.image} alt="" loading="lazy" width={200} height={140} className="mt-auto ms-auto h-28 w-auto object-contain" />
-            </Link>
-          ))}
-        </div>
 
         <section className="rounded-xl border border-border bg-secondary/40 p-5 sm:p-6">
           <div className="flex items-center gap-3"><Users className="size-7 text-primary" /><h2 className="font-display text-2xl font-bold">{text("umrah-how-it-works-title", "How It Works")}</h2></div>
@@ -119,12 +107,13 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
         </section>
 
         <section>
-          <div className="flex flex-wrap items-center gap-3"><Handshake className="size-8 text-primary" /><h2 className="font-display text-2xl font-bold">Our Travel Partners</h2><p className="text-sm text-muted-foreground">Travel partners who provide Umrah packages and related travel services.</p><Link to="/partners" className="ms-auto inline-flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-semibold">View All Partners<ArrowRight className="size-4 rtl:rotate-180" /></Link></div>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="flex flex-wrap items-center gap-3"><Handshake className="size-8 text-primary" /><h2 className="font-display text-2xl font-bold">Our Travel Partners</h2><p className="text-sm text-muted-foreground">Travel partners who provide Umrah packages and related travel services.</p><Link to="/partners" className="ms-auto inline-flex min-h-11 items-center gap-2 rounded-lg border border-brand-cyan/70 bg-brand-ink px-5 py-2 text-sm font-semibold text-primary-foreground shadow-md transition hover:-translate-y-0.5 hover:shadow-glow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan">View All Partners<ArrowRight className="size-4 text-brand-cyan rtl:rotate-180" /></Link></div>
+          {partnerCount === 0 ? <p className="mt-3 text-sm text-muted-foreground">No approved travel partners are listed yet. Verified partners will appear on the partner page once approved.</p> : null}
+          <div className="mt-4 grid max-w-3xl grid-cols-2 gap-3 sm:gap-4">
             {partnerSlides.map((s) => (
-              <Link key={s.src} to="/partners" className="group relative block h-40 overflow-hidden rounded-xl">
+              <Link key={s.src} to="/partners" className="group relative block h-28 overflow-hidden rounded-xl sm:h-44">
                 <SafeImage src={s.src} fallbackSrc={s.fallbackSrc} alt={s.alt} loading="lazy" width={480} height={272} className="size-full object-cover transition duration-500 group-hover:scale-105" />
-                <span className="absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-md bg-card/95 px-3 py-1.5 text-xs font-medium"><Info className="size-4 text-primary" />{partnerCount > 0 ? "View verified partner details" : "Partner details pending verification"}</span>
+                <span className="absolute inset-x-2 bottom-2 flex items-center gap-2 rounded-md bg-card/95 px-3 py-1.5 text-xs font-medium"><Info className="size-4 shrink-0 text-primary" /><span className="truncate">Illustrative travel image</span></span>
               </Link>
             ))}
           </div>
