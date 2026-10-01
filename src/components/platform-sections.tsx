@@ -23,6 +23,7 @@ import {
   Newspaper,
   Plane,
   Play,
+  Pause,
   Quote,
   ShieldCheck,
   Sprout,
