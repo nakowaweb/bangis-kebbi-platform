@@ -54,7 +54,7 @@ export const DEFAULT_LAYOUT: SiteLayout = {
   order: [...HOMEPAGE_SECTIONS],
   motion: "full",
   marqueeSeconds: 14,
-  carouselSeconds: 2.5,
+  carouselSeconds: 2,
   text: {},
   minis: {},
   hero: DEFAULT_HERO,
