@@ -37,6 +37,7 @@ import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
 import { Route as BusinessIndexRouteImport } from './routes/business.index'
+import { Route as BusinessSlugRouteImport } from './routes/business.$slug'
 import { Route as FoundationIndexRouteImport } from './routes/foundation.index'
 import { Route as FoundationSlugRouteImport } from './routes/foundation.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -183,6 +184,11 @@ const BusinessIndexRoute = BusinessIndexRouteImport.update({
   path: '/business/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const BusinessSlugRoute = BusinessSlugRouteImport.update({
+  id: '/business/$slug',
+  path: '/business/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FoundationIndexRoute = FoundationIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -240,6 +246,7 @@ export interface FileRoutesByFullPath {
   '/my-umrah': typeof AuthenticatedMyUmrahRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/business/$slug': typeof BusinessSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -271,6 +278,7 @@ export interface FileRoutesByTo {
   '/my-umrah': typeof AuthenticatedMyUmrahRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/business/$slug': typeof BusinessSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -308,6 +316,7 @@ export interface FileRoutesById {
   '/_authenticated/my-umrah': typeof AuthenticatedMyUmrahRoute
   '/auth/callback': typeof AuthCallbackRoute
   '/blog/$slug': typeof BlogSlugRoute
+  '/business/$slug': typeof BusinessSlugRoute
   '/foundation/$slug': typeof FoundationSlugRoute
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
@@ -345,6 +354,7 @@ export interface FileRouteTypes {
     | '/my-umrah'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/business/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
     | '/services/$slug'
@@ -376,6 +386,7 @@ export interface FileRouteTypes {
     | '/my-umrah'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/business/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
     | '/services/$slug'
@@ -412,6 +423,7 @@ export interface FileRouteTypes {
     | '/_authenticated/my-umrah'
     | '/auth/callback'
     | '/blog/$slug'
+    | '/business/$slug'
     | '/foundation/$slug'
     | '/projects/$slug'
     | '/services/$slug'
@@ -445,6 +457,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   UmrahRoute: typeof UmrahRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  BusinessSlugRoute: typeof BusinessSlugRoute
   BusinessIndexRoute: typeof BusinessIndexRoute
 }
 
@@ -646,6 +659,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BusinessIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/business/$slug': {
+      id: '/business/$slug'
+      path: '/business/$slug'
+      fullPath: '/business/$slug'
+      preLoaderRoute: typeof BusinessSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/foundation/': {
       id: '/foundation/'
       path: '/'
@@ -783,6 +803,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   UmrahRoute: UmrahRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  BusinessSlugRoute: BusinessSlugRoute,
   BusinessIndexRoute: BusinessIndexRoute,
 }
 export const routeTree = rootRouteImport
