@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, ClipboardList, FileText, Handshake, Heart, Info, Landmark, Plane, ShieldCheck, Users, Wallet } from "lucide-react";
+import { ArrowRight, ChevronRight, FileText, Handshake, Heart, Info, Landmark, Plane, ShieldCheck, Users } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { SafeImage } from "@/components/safe-image";
 import heroKaaba from "@/assets/umrah/umrah-hero-kaaba.jpg";
@@ -8,9 +8,7 @@ import heroMadinah from "@/assets/umrah/umrah-hero-madinah.jpg";
 import heroCity from "@/assets/umrah/umrah-hero-makkah-city.jpg";
 import heroTravel from "@/assets/umrah/umrah-hero-travel.jpg";
 import cardApply from "@/assets/umrah/journey-submit-documents.webp";
-import cardGoal from "@/assets/umrah/umrah-support-balance.webp";
 import cardTravel from "@/assets/umrah/journey-coordinate-travel.webp";
-import cardRecords from "@/assets/umrah/journey-review-dashboard.webp";
 
 export type LandingEntry = { slug: string; title: string; summary: string | null; imageUrl?: string | null; image_alt?: string | null; sort_order?: number };
 
@@ -79,7 +77,6 @@ function useSignedIn() {
 const pill = "inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5";
 
 export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[]; partnerCount: number }) {
-  const signedIn = useSignedIn();
   const slides = resolveSlides(entries, umrahHeroFallbacks);
   const interval = intervalFrom(entries, "umrah-hero-settings");
   const partnerSlides = resolveSlides(entries, partnerSlideFallbacks);
@@ -101,10 +98,9 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
             <h1 className="mt-5 font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               {text("umrah-landing-title", "Your Umrah Journey")}<br /><span className="text-brand-gold">{text("umrah-landing-title-2", "Starts With a Plan")}</span>
             </h1>
-            <p className="mt-4 text-base leading-7 text-primary-foreground/90 sm:text-lg">{text("umrah-landing-subtitle", "Preparation • Application Support • Personal Savings Goals • Travel Connections • Guidance & Support")}</p>
+            <p className="mt-4 text-base leading-7 text-primary-foreground/90 sm:text-lg">{text("umrah-landing-subtitle", "Preparation • Application Support • Travel Connections • Guidance & Support")}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link to="/my-umrah" search={{ tab: "application" }} className={`${pill} bg-success text-primary-foreground shadow-lg`}><FileText className="size-5" />Apply for Umrah<ArrowRight className="size-4" /></Link>
-              <Link to="/my-umrah" search={{ tab: "goal" }} className={`${pill} border border-primary-foreground/70 bg-brand-ink/30 backdrop-blur`}><Wallet className="size-5" />Start My Umrah Goal<ArrowRight className="size-4" /></Link>
               <Link to="/partners" className={`${pill} border border-brand-cyan bg-card text-foreground`}><Handshake className="size-5" />Explore Travel Partners<ArrowRight className="size-4" /></Link>
             </div>
           </div>
