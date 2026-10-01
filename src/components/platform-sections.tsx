@@ -324,7 +324,7 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
   const shownServices = full ? allServices : HOME_SERVICES.map((slug) => allServices.find((s) => s.slug === slug)).filter((s): s is (typeof allServices)[number] => Boolean(s));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} >
-      {!full ? <div className="mx-auto mb-6 flex max-w-2xl items-center justify-center rounded-xl bg-brand-ink px-3 py-3 text-xs font-bold uppercase text-brand-cyan sm:text-sm" aria-hidden="true">{shownServices.map((service, index) => <span key={service.slug} className="flex flex-1 items-center justify-center gap-2 text-center">{index > 0 ? <span className="me-3 h-6 w-px bg-brand-cyan/40" /> : null}{service.title}</span>)}</div> : null}
+      {!full ? <div className="mx-auto mb-6 flex max-w-2xl items-center justify-center rounded-xl bg-brand-ink px-3 py-3 text-[11px] font-bold uppercase leading-tight text-brand-cyan sm:text-sm" aria-hidden="true">{shownServices.map((service, index) => <span key={service.slug} className="flex flex-1 items-center justify-center gap-2 text-center">{index > 0 ? <span className="me-3 h-6 w-px bg-brand-cyan/40" /> : null}{service.title}</span>)}</div> : null}
       <ul className={full ? "grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" : "mx-auto grid max-w-2xl grid-cols-2 gap-3 sm:gap-5"}>
         {shownServices.map((service, index) => {
           const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
