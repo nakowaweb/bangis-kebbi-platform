@@ -528,7 +528,7 @@ function ContactSocials() {
 }
 
 export function DashboardPreviewSection() {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   return <SectionShell eyebrow={t("home.memberEyebrow")} title={t("home.memberTitle")} description={t("home.memberDescription")}><div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">{dashboardPreview.map((item) => <FeatureCard key={item.label} icon={item.icon} title={item.label} description={item.value} />)}</div></SectionShell>;
 }
 
@@ -560,6 +560,7 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
 type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null };
 export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | undefined; updates?: HubItem[] | undefined }) {
   const t = useSiteText();
+  const { language } = useLanguage();
   const { carouselSeconds } = useSiteLayout();
   const scroller = useRef<HTMLDivElement>(null);
   const animating = useRef(0);
