@@ -8,7 +8,7 @@ import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
 
-import logoAssetSrc from "@/assets/bangis-logo-lockup.png";
+import logoAssetSrc from "@/assets/bangis-logo-lockup.webp";
 const logoAsset = { url: logoAssetSrc };
 import iconAssetSrc from "@/assets/bangis-app-icon.png";
 const iconAsset = { url: iconAssetSrc };
