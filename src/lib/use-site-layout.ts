@@ -21,7 +21,10 @@ export function useSiteText() {
     if ((TEXT_OVERRIDE_KEYS as readonly string[]).includes(key)) {
       const entry = layout.text[key as TextOverrideKey];
       const value = entry ? (language === "ar" ? entry.ar : language === "ha" ? entry.ha : language === "en" ? entry.en : "") : "";
-      if (value.trim()) return value.trim();
+      if (value.trim()) {
+        const normalized = value.trim().replace(/^News and Update$/i, "NEWS & UPDATE");
+        return normalized;
+      }
     }
     return t(key);
   };

@@ -21,6 +21,7 @@ import {
   MessageCircle,
   Network,
   Newspaper,
+  Megaphone,
   Plane,
   Play,
   Pause,
@@ -577,11 +578,12 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const looped = projects.length >= 3;
   const track = looped ? [...projects.map((p) => ({ ...p, copy: 0 })), ...projects.map((p) => ({ ...p, copy: 1 }))] : projects.map((p) => ({ ...p, copy: 0 }));
   const imageKey = projects.map((p) => p.image ?? "").join("|");
-  // Warm the browser cache for every upcoming card picture once the section is near, so slides arrive complete.
+  // Warm only the next few unique pictures once this section is visible. This avoids downloading
+  // every card and both carousel copies while the hero and first viewport still need bandwidth.
   useEffect(() => {
-    if (!imageKey) return;
-    // Start shortly after the page settles so the hero picture keeps priority.
-    const timer = window.setTimeout(() => imageKey.split("|").filter(Boolean).forEach((src) => { const img = new Image(); img.decoding = "async"; img.src = src; }), visible ? 0 : 1200);
+    if (!visible || !imageKey) return;
+    const upcoming = [...new Set(imageKey.split("|").filter(Boolean))].slice(0, 3);
+    const timer = window.setTimeout(() => upcoming.forEach((src) => { const img = new Image(); img.decoding = "async"; img.src = src; }), 150);
     return () => window.clearTimeout(timer);
   }, [visible, imageKey]);
   const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -646,7 +648,10 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
     <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap">
-          <h2 id="selected-work-title" className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-tight tracking-wide sm:text-3xl">{t("home.projectsTitle")}</h2>
+          <h2 id="selected-work-title" className="flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap font-display text-[clamp(0.9rem,4.4vw,1.25rem)] font-bold uppercase leading-none tracking-wide text-primary-foreground sm:text-3xl">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full border border-brand-cyan/50 bg-brand-cyan/10 text-brand-cyan shadow-glow sm:size-9"><Megaphone className="size-3.5 sm:size-4.5" aria-hidden="true" /></span>
+            <span className="min-w-0">{t("home.projectsTitle")}</span>
+          </h2>
           <div className="flex items-center gap-2">
             <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" /><span className="hidden sm:inline">Media Gallery</span><span className="sr-only sm:hidden">Media Gallery</span></Link></Button>
             {canAuto ? <Button type="button" variant="outline" size="icon" onClick={() => setUserPaused((v) => !v)} aria-label={userPaused ? "Resume automatic scrolling" : "Pause automatic scrolling"} aria-pressed={userPaused} className={round}>{userPaused ? <Play className="size-4" /> : <Pause className="size-4" />}</Button> : null}
@@ -662,7 +667,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
             return (
             <article key={`${p.kind}-${p.id}-${p.copy}`} aria-hidden={clone || undefined} inert={clone || undefined} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
               <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-primary-foreground/10" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading={index < 3 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
+                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading="lazy" fetchPriority="low" decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
               </Link>
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}

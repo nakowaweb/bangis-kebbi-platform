@@ -3,7 +3,7 @@ import { useMotionPreference, useSiteText } from "@/lib/use-site-layout";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import * as FlagIcons from "country-flag-icons/react/3x2";
-import { Check, ChevronDown, Globe, Languages, Mail, Menu, UserRound } from "lucide-react";
+import { Check, ChevronDown, Gauge, Globe, Languages, Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -75,12 +75,12 @@ function SiteHeader() {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
-      <div className="mx-auto grid min-h-20 max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-2 px-4 py-2 sm:px-6 lg:flex lg:gap-x-1 lg:px-3 xl:gap-x-2 xl:px-5">
-        <Link to="/" className="flex shrink-0 items-center gap-3 pr-5 lg:border-r lg:border-border/70 lg:pr-7" aria-label="BangisKebbi.com home">
-          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-10 w-auto max-w-[185px] shrink-0 object-contain sm:max-w-[210px] lg:max-w-[150px] xl:max-w-[175px]" />
+      <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-2 px-4 py-2 sm:gap-x-3 sm:px-6 lg:gap-y-1.5 lg:px-8">
+        <Link to="/" className="flex min-w-0 items-center lg:self-stretch lg:border-r lg:border-border/70 lg:pr-7" aria-label="BangisKebbi.com home">
+          <img src={logoAsset.url} alt="BangisKebbi.com" width={440} height={100} fetchPriority="high" className="h-9 w-auto max-w-[130px] shrink-0 object-contain min-[400px]:max-w-[165px] sm:h-10 sm:max-w-[210px] lg:max-w-[190px]" />
         </Link>
 
-        <nav className="hidden min-w-0 flex-1 items-center justify-center gap-0.5 lg:flex" aria-label={t("nav.main")}>
+        <nav className="order-3 col-span-2 hidden min-w-0 flex-wrap items-center justify-center gap-x-0.5 border-t border-border/60 pt-1.5 lg:flex" aria-label={t("nav.main")}>
           {navItems.map((item) => (
             <Link
               key={`${item.href}-${item.hash ?? "top"}`}
@@ -89,14 +89,14 @@ function SiteHeader() {
               activeOptions={{ exact: item.href === "/" }}
               activeProps={{ className: "text-brand-cyan" }}
               inactiveProps={{ className: "text-muted-foreground" }}
-              className={`rounded-md px-1 py-2 text-[10px] font-semibold transition-colors hover:bg-secondary hover:text-foreground 2xl:text-xs ${item.labelKey === "foundation" || item.labelKey === "verifiedPartners" ? "max-w-[5rem] leading-[1.1] text-center" : "whitespace-nowrap"}`}
+              className={`rounded-md px-2 py-1.5 text-[11px] font-semibold transition-colors hover:bg-secondary hover:text-foreground xl:text-xs ${item.labelKey === "foundation" || item.labelKey === "verifiedPartners" ? "max-w-[6.5rem] leading-[1.15] text-center" : "whitespace-nowrap"}`}
             >
               {st(`nav.${item.labelKey}` as TranslationKey)}
             </Link>
           ))}
         </nav>
 
-        <div className="hidden shrink-0 items-center gap-1 lg:flex xl:gap-2">
+        <div className="hidden min-w-0 shrink-0 items-center justify-end gap-1 lg:flex xl:gap-2">
           <GlobalSearch />
           {signedIn ? (
             <Button size="sm" className="bg-brand-cyan text-brand-ink shadow-glow hover:bg-brand-cyan-soft" asChild>
@@ -121,7 +121,15 @@ function SiteHeader() {
           <LanguageSelector />
         </div>
 
-        <div className="flex shrink-0 items-center gap-2 lg:hidden">
+        <div className="flex shrink-0 items-center gap-1 lg:hidden">
+          {signedIn ? (
+            <Button size="icon" className="size-9 bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft sm:w-auto sm:px-3" asChild>
+              <Link to="/dashboard" aria-label={t("common.dashboard")} title={t("common.dashboard")}>
+                <Gauge className="size-4" />
+                <span className="hidden sm:inline">{t("common.dashboard")}</span>
+              </Link>
+            </Button>
+          ) : null}
           <GlobalSearch />
           <MobileMenu />
         </div>
@@ -207,6 +215,10 @@ function MobileMenu() {
   const { t } = useLanguage();
   const st = useSiteText();
   const signedIn = useSignedIn();
+  const credentialsIndex = navItems.findIndex((item) => item.labelKey === "credentials");
+  const mobileItems = navItems.flatMap((item, index) => index === credentialsIndex
+    ? [item, { labelKey: "refundPolicy" as const, label: "Refund Policy", href: "/refund-policy" as const, hash: undefined }]
+    : [item]);
 
   return (
     <Sheet>
@@ -235,7 +247,7 @@ function MobileMenu() {
               </SheetClose>
             ) : null}
             <GlobalSearch mobile />
-            {navItems.map((item) => (
+            {mobileItems.map((item) => (
               <SheetClose asChild key={`${item.href}-${item.hash ?? "top"}`}>
                 <Link
                   to={item.href}
@@ -243,7 +255,7 @@ function MobileMenu() {
                   activeOptions={{ exact: item.href === "/" }}
                   className="rounded-lg border border-border bg-card px-4 py-3 text-base font-semibold text-foreground shadow-sm"
                 >
-                  {st(`nav.${item.labelKey}` as TranslationKey)}
+                  {item.labelKey === "refundPolicy" ? t("footer.refund") : st(`nav.${item.labelKey}` as TranslationKey)}
                 </Link>
               </SheetClose>
             ))}
@@ -360,6 +372,7 @@ function SiteFooter() {
               </Link>
             ))}
             <Link to="/cv" className="text-muted-foreground transition-colors hover:text-primary">CV</Link>
+            <Link to="/refund-policy" className="text-muted-foreground transition-colors hover:text-primary">{t("footer.refund")}</Link>
           </div>
         </div>
         <div className="min-w-0 break-words">
