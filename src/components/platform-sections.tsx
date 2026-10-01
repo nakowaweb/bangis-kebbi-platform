@@ -594,10 +594,18 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
     const rtl = getComputedStyle(el).direction === "rtl";
     const card = el.firstElementChild as HTMLElement | null;
     const stepPx = card ? card.offsetWidth + 16 : el.clientWidth * 0.8;
+    const looped = el.dataset["loop"] === "1";
+    // The track holds the cards twice; jumping between identical positions is invisible, so the loop never rewinds.
+    const half = looped ? (el.scrollWidth + 16) / 2 : 0;
     const max = el.scrollWidth - el.clientWidth;
-    const pos = Math.abs(el.scrollLeft);
-    if (dir > 0 && pos >= max - 4) { glideTo(el, 0); return; }
-    if (dir < 0 && pos <= 4) { glideTo(el, rtl ? -max : max); return; }
+    let pos = Math.abs(el.scrollLeft);
+    if (looped) {
+      if (dir > 0 && pos >= half - 4) { pos -= half; el.style.scrollSnapType = "none"; el.scrollLeft = rtl ? -pos : pos; }
+      if (dir < 0 && pos <= 4) { pos += half; el.style.scrollSnapType = "none"; el.scrollLeft = rtl ? -pos : pos; }
+    } else {
+      if (dir > 0 && pos >= max - 4) { glideTo(el, 0); return; }
+      if (dir < 0 && pos <= 4) { glideTo(el, rtl ? -max : max); return; }
+    }
     const next = Math.min(max, Math.max(0, pos + dir * stepPx));
     glideTo(el, rtl ? -next : next);
   }, [glideTo]);
