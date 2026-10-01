@@ -50,7 +50,7 @@ function UmrahPage() {
   const requirements = group("umrah_requirement");
   const faqs = group("umrah_faq");
   const notices = group("umrah_notice");
-  const info = [...group("umrah"), ...group("umrah_information")];
+  // "Program information" (info cards + Support Balance) removed from the public page; records stay in the CMS.
   const contact = group("umrah_contact");
   const fallback = umrahCopy[language === "ar" || language === "ha" ? language : "en"];
   const sectionLabels = language === "ar"
@@ -66,7 +66,7 @@ function UmrahPage() {
 
       <section className="mx-auto max-w-6xl px-4 pb-14 sm:px-6 lg:px-8">
         <div className="grid gap-10">
-           {info.length > 0 ? <Block title={fallback.information} items={info} /> : null}
+
            {requirements.length > 0 ? <Block title={fallback.requirements} items={requirements} /> : null}
            {notices.length > 0 ? <Block title={fallback.notices} items={notices} /> : null}
            {faqs.length > 0 ? <Block title={fallback.questions} items={faqs} /> : null}
