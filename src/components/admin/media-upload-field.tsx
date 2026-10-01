@@ -159,17 +159,20 @@ function LibraryChooser({ onPick }: { onPick: (path: string) => void }) {
         <DialogContent className="max-w-3xl">
           <DialogHeader><DialogTitle>Choose from Media Library</DialogTitle></DialogHeader>
           <Input placeholder="Search images" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search images" />
-          <div className="grid max-h-[55vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-4">
+          {/* Scroll on an outer box: a height-capped grid squeezes its rows (overflow-hidden cards have no minimum height), turning thumbnails into thin strips. */}
+          <div className="max-h-[55vh] overflow-y-auto p-1">
+          <div className="grid auto-rows-max grid-cols-2 content-start gap-3 sm:grid-cols-3 md:grid-cols-4">
             {assets === null ? <Loader2 className="size-5 animate-spin text-muted-foreground" /> : null}
             {error ? <p className="col-span-full text-sm text-destructive">{error}</p> : null}
             {assets && !error && filtered.length === 0 ? <p className="col-span-full text-sm text-muted-foreground">No images found.</p> : null}
             {filtered.map((a) => (
-              <button key={a.id} type="button" aria-pressed={picked === a.storage_path} onClick={() => setPicked(a.storage_path)} className={`relative overflow-hidden rounded-md border-2 text-left ${picked === a.storage_path ? "border-primary" : "border-transparent"}`}>
-                <div className="aspect-square bg-secondary">{urls[a.storage_path] ? <img src={urls[a.storage_path]} alt={a.alt_text} loading="lazy" className="size-full object-cover" /> : null}</div>
+              <button key={a.id} type="button" aria-pressed={picked === a.storage_path} onClick={() => setPicked(a.storage_path)} className={`relative flex flex-col overflow-hidden rounded-md border-2 text-left transition ${picked === a.storage_path ? "border-primary ring-2 ring-primary/40" : "border-border hover:border-primary/50"}`}>
+                <div className="aspect-square w-full shrink-0 bg-secondary">{urls[a.storage_path] ? <img src={urls[a.storage_path]} alt={a.alt_text} loading="lazy" decoding="async" className="block size-full object-cover" /> : null}</div>
                 <p className="truncate p-1 text-xs">{a.name}</p>
                 {picked === a.storage_path ? <span className="absolute right-1 top-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground"><Check className="size-4" /></span> : null}
               </button>
             ))}
+          </div>
           </div>
           <DialogFooter>
             <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
