@@ -3,7 +3,7 @@ import { SafeImage } from "@/components/safe-image";
 import { useQuery } from "@tanstack/react-query";
 import { Link, createFileRoute } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { ArrowRight, BookOpen, CalendarDays, Compass, Gift, HandHeart, HeartHandshake, HeartPulse, Home, MapPin, PackageCheck, ShieldCheck, Siren, Target, Utensils, UsersRound } from "lucide-react";
+import { ArrowRight, BookOpen, CalendarDays, Compass, Gift, HandHeart, HeartHandshake, HeartPulse, Home, Pointer, MapPin, PackageCheck, ShieldCheck, Siren, Target, Utensils, UsersRound } from "lucide-react";
 
 import { ContactSection } from "@/components/platform-sections";
 import { Badge } from "@/components/ui/badge";
@@ -11,6 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { foundationCategoryLabels, foundationStatusLabels, getFoundationOverview, type FoundationProject } from "@/lib/foundation.functions";
 import { pageHead } from "@/lib/seo";
+import { useSiteText } from "@/lib/use-site-layout";
 import supportCommunityRelief from "@/assets/support-community-relief.jpg";
 import supportEmergencyRelief from "@/assets/support-emergency-relief.jpg";
 import supportEssentialEducation from "@/assets/support-essential-education.jpg";
@@ -58,6 +59,7 @@ const supportPrograms = [
 
 function FoundationPage() {
   const { language } = useLanguage();
+  const st = useSiteText();
   const fcopy = foundationCopy[language === "ar" || language === "ha" ? language : "en"];
   const load = useServerFn(getFoundationOverview);
   const overview = useQuery({ queryKey: ["foundation-public"], queryFn: () => load() });
@@ -86,15 +88,12 @@ function FoundationPage() {
             {intro?.title ?? fcopy.headline}
           </h1>
           <p className="mt-4 max-w-2xl text-sm leading-6 text-primary-foreground/80">
-            {intro?.summary ?? fcopy.description}
+            {st("foundation.heroBody")}
           </p>
           {intro?.body ? <p className="mt-3 max-w-3xl whitespace-pre-line text-sm leading-6 text-primary-foreground/70">{intro.body}</p> : null}
-          <div className="mt-6 flex flex-wrap gap-3">
-            <Button className="bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" asChild>
-              <Link to="/register">{fcopy.join} <ArrowRight /></Link>
-            </Button>
-            <Button variant="outline" className="border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10" asChild>
-              <Link to="/contact">{fcopy.contact}</Link>
+          <div className="mt-6">
+            <Button size="lg" className="group bg-brand-cyan text-brand-ink shadow-platform hover:bg-brand-cyan-soft" asChild>
+              <Link to="/contact"><Pointer className="motion-safe:group-hover:translate-x-0.5 transition-transform" /> {st("foundation.contactAction")} <ArrowRight className="rtl:rotate-180 transition-transform motion-safe:group-hover:translate-x-1" /></Link>
             </Button>
           </div>
         </div>
@@ -149,49 +148,21 @@ function FoundationPage() {
         </div>
       </section>
 
-      <ProjectGrid
-        eyebrow="Community support projects"
-        title="Current and planned community projects."
-        description="Only published projects appear here."
-        loading={overview.isPending}
-        projects={active}
-        emptyText="No community support projects have been published yet."
-      />
-
-      <section className="border-b border-border bg-background py-10"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><p className="text-xs font-bold uppercase text-primary">{fcopy.processLabel}</p><h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">{fcopy.processTitle}</h2><ol className="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{fcopy.steps.map((step, index) => <li key={step} className="flex gap-3 rounded-lg border border-border bg-card p-5 text-sm leading-6"><span className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-primary font-bold text-primary-foreground">{index + 1}</span>{step}</li>)}</ol></div></section>
-
-      <section className="border-b border-border bg-secondary py-10"><div className="mx-auto grid max-w-7xl gap-4 px-4 sm:px-6 lg:grid-cols-3 lg:px-8"><Panel icon={HeartHandshake} eyebrow="Process" title="Need, review, coordinate, update." text="Requests and opportunities are reviewed, appropriate partners are identified, delivery is coordinated and verified updates are published when suitable." /><Panel icon={ShieldCheck} eyebrow="Impact and privacy" title="Dignity comes before publicity." text="Updates focus on the work delivered. Personal stories, identities and sensitive circumstances are not published without a clear, appropriate basis." /><Panel icon={UsersRound} eyebrow="Partners" title="Work with BK Foundation." text="Organizations and professionals with relevant capacity can contact the team to discuss a responsible partnership." /></div></section>
-
-      <section className="border-b border-border bg-secondary py-10">
+      <section className="border-b border-border bg-secondary py-8 sm:py-10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-          <p className="text-xs font-bold uppercase text-primary">Project updates</p>
-          <h2 className="mt-2 font-display text-2xl font-bold sm:text-3xl">Latest published updates.</h2>
-          <div className="mt-6 grid gap-3 md:grid-cols-2">
-            {updates.length === 0 ? (
-              <p className="rounded-lg border border-dashed border-border bg-card p-8 text-sm text-muted-foreground md:col-span-2">
-                No project updates have been published yet.
-              </p>
-            ) : (
-              updates.map((update: { id: string; title: string; body: string | null; created_at: string }) => (
-                <article key={update.id} className="rounded-lg border border-border bg-card p-5">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground"><CalendarDays className="h-4 w-4" />{new Date(update.created_at).toLocaleDateString()}</div>
-                  <h3 className="mt-2 font-display text-base font-bold">{update.title}</h3>
-                  {update.body ? <p className="mt-2 whitespace-pre-line text-sm leading-6 text-muted-foreground">{update.body}</p> : null}
-                </article>
-              ))
-            )}
-          </div>
+          <article className="relative grid items-center gap-5 overflow-hidden rounded-xl border border-border bg-card p-6 shadow-sm sm:grid-cols-[minmax(0,1fr)_auto] sm:p-9">
+            <div className="max-w-2xl">
+              <h2 className="font-display text-2xl font-bold sm:text-4xl">{st("foundation.howTitle")}</h2>
+              <p className="mt-3 text-sm leading-6 text-muted-foreground sm:text-base sm:leading-7">{st("foundation.howBody")}</p>
+              <Link to="/contact" className="mt-5 inline-flex items-center gap-2 font-semibold text-primary hover:underline">{st("foundation.contactAction")} <ArrowRight className="size-4 rtl:rotate-180" /></Link>
+            </div>
+            <div className="relative mx-auto grid size-28 place-items-center rounded-full bg-brand-cyan/10 sm:size-40" aria-hidden="true">
+              <HandHeart className="size-14 text-primary sm:size-20" strokeWidth={1.4} />
+            </div>
+          </article>
         </div>
       </section>
 
-      <ProjectGrid
-        eyebrow="Completed projects"
-        title="Community work already delivered."
-        description="Completed projects stay visible so the work can be checked."
-        loading={overview.isPending}
-        projects={completed}
-        emptyText="No completed projects have been published yet."
-      />
 
       <ContactSection />
     </main>
