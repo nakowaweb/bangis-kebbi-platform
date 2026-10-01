@@ -109,7 +109,29 @@ function currentSiteItems(): Item[] {
   ];
 }
 
-const fileName = (url: string) => (url.split("/").pop() ?? "image").split("?")[0]!.replace(/-[A-Za-z0-9_]{8}(\.\w+)$/, "$1");
+/**
+ * Media name for an imported picture. Small pictures are inlined by the build as `data:` URLs, so the
+ * old "last path segment" approach produced a base64 string longer than the 200-character name limit
+ * (e.g. "Submit information/documents"). Use the content slug for those and cap every name at 200.
+ */
+function fileName(url: string, slug: string) {
+  if (url.startsWith("data:")) {
+    const ext = (/^data:image\/(\w+)/.exec(url)?.[1] ?? "webp").replace("jpeg", "jpg").replace("svg+xml", "svg");
+    return `${slug}.${ext}`.slice(0, 200);
+  }
+  const base = (url.split("/").pop() ?? "image").split("?")[0]!.replace(/-[A-Za-z0-9_]{8}(\.\w+)$/, "$1");
+  return (base || `${slug}.webp`).slice(-200);
+}
+
+/** Turns validation errors (raw JSON arrays) into one readable sentence. */
+export function readableError(error: unknown) {
+  const message = error instanceof Error ? error.message : String(error ?? "failed");
+  try {
+    const issues = JSON.parse(message) as Array<{ path?: unknown[]; message?: string }>;
+    if (Array.isArray(issues) && issues.length) return issues.map((i) => `${(i.path ?? []).join(".") || "value"}: ${i.message ?? "invalid"}`).join("; ");
+  } catch { /* not JSON */ }
+  return message;
+}
 
 export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry[]; media: Media[]; onDone: () => void }) {
   const registerMedia = useServerFn(registerMediaAsset);
@@ -127,32 +149,35 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
 
   async function run() {
     setRunning(true);
-    const uploaded = new Map<string, string>(media.map((m) => [`imported/${m.name}`, m.storage_path]));
+    const uploaded = new Map<string, string>(media.flatMap((m) => [[`imported/${m.name}`, m.storage_path], [m.storage_path, m.storage_path]] as Array<[string, string]>));
     const failures: string[] = [];
     let done = 0;
     for (const item of missing) {
       setProgress(`${++done} / ${missing.length}: ${item.title}`);
       try {
         const existingEntry = existing.get(`${item.contentType}:${item.slug}`);
-        const name = item.image ? fileName(item.image) : null;
+        const name = item.image ? fileName(item.image, item.slug) : null;
         let path = name ? uploaded.get(`imported/${name}`) : undefined;
+        // Reuse a picture this content already points to instead of uploading a duplicate copy.
+        if (!path && existingEntry?.image_path && !oldBlogImages.test(existingEntry.image_path)) path = existingEntry.image_path;
         if (item.image && name && !path) {
           const blob = await (await fetch(item.image)).blob();
           const type = blob.type || (name.endsWith(".jpg") ? "image/jpeg" : "image/webp");
           path = `imported/${name}`;
           const { error } = await supabase.storage.from("site-media").upload(path, blob, { contentType: type, upsert: true });
           if (error) throw new Error(`Image upload: ${error.message}`);
-          await registerMedia({ data: { name, storagePath: path, mimeType: type as "image/jpeg", altText: item.imageAlt ?? item.title, byteSize: blob.size } });
+          // Retries reuse the same path (upsert) and skip registering a second gallery record for it.
+          if (!media.some((m) => m.storage_path === path)) await registerMedia({ data: { name, storagePath: path, mimeType: type as "image/jpeg", altText: (item.imageAlt ?? item.title).slice(0, 500), byteSize: blob.size } });
           uploaded.set(`imported/${name}`, path);
         }
         await saveEntry({ data: {
           ...(existingEntry ? { id: existingEntry.id } : {}),
-          contentType: item.contentType, slug: item.slug, title: item.title, summary: item.summary.slice(0, 1000) || undefined,
+          contentType: item.contentType, slug: item.slug, title: item.title.slice(0, 200), summary: item.summary.slice(0, 1000) || undefined,
           ...(item.body ? { body: item.body } : {}), ...(item.category ? { category: item.category } : {}), ...(item.author ? { author: item.author } : {}), ...(path ? { imagePath: path } : {}), ...(item.imageAlt ? { imageAlt: item.imageAlt } : {}),
           status: "published", isEnabled: true, isFeatured: false, sortOrder: item.sortOrder, payload: {}, ...(item.publishedAt ? { publishedAt: item.publishedAt } : {}),
         } });
       } catch (error) {
-        failures.push(`${item.title}: ${error instanceof Error ? error.message : "failed"}`);
+        failures.push(`${item.title}: ${readableError(error)}`);
       }
     }
     setRunning(false);

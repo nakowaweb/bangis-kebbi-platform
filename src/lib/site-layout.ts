@@ -32,7 +32,13 @@ export type SiteLayout = {
   motion: "full" | "reduced" | "off";
   text: Partial<Record<TextOverrideKey, LangText>>;
   minis: Partial<Record<string, string>>;
+  hero: HeroSlideshow;
 };
+
+export type HeroSlide = { path: string; alt: string; label: string; enabled: boolean };
+/** Settings → Homepage → Hero Slideshow. Empty slides = the approved CMS/bundled slides keep showing. */
+export type HeroSlideshow = { slides: HeroSlide[]; intervalSeconds: number; transitionMs: number };
+export const DEFAULT_HERO: HeroSlideshow = { slides: [], intervalSeconds: 6, transitionMs: 1100 };
 
 export const DEFAULT_LAYOUT: SiteLayout = {
   sections: Object.fromEntries(HOMEPAGE_SECTIONS.map((key) => [key, true])) as Record<HomepageSection, boolean>,
@@ -40,6 +46,7 @@ export const DEFAULT_LAYOUT: SiteLayout = {
   motion: "full",
   text: {},
   minis: {},
+  hero: DEFAULT_HERO,
 };
 
 const obj = (value: unknown): Record<string, unknown> => (value && typeof value === "object" && !Array.isArray(value) ? value as Record<string, unknown> : {});
@@ -60,5 +67,12 @@ export function normalizeLayout(raw: unknown): SiteLayout {
   }
   const minis: SiteLayout["minis"] = {};
   for (const [key, value] of Object.entries(obj(source["minis"]))) if ((SERVICE_MINI_SLUGS as readonly string[]).includes(key) && typeof value === "string" && value) minis[key] = value;
-  return { sections, order, motion, text, minis };
+  const h = obj(source["hero"]);
+  const num = (v: unknown, min: number, max: number, d: number) => (typeof v === "number" && Number.isFinite(v) ? Math.min(max, Math.max(min, v)) : d);
+  const slides: HeroSlide[] = (Array.isArray(h["slides"]) ? h["slides"] : []).map(obj)
+    .filter((x) => typeof x["path"] === "string" && x["path"])
+    .slice(0, 8)
+    .map((x) => ({ path: String(x["path"]), alt: String(x["alt"] ?? ""), label: String(x["label"] ?? ""), enabled: x["enabled"] !== false }));
+  const hero: HeroSlideshow = { slides, intervalSeconds: num(h["intervalSeconds"], 2, 30, DEFAULT_HERO.intervalSeconds), transitionMs: num(h["transitionMs"], 300, 4000, DEFAULT_HERO.transitionMs) };
+  return { sections, order, motion, text, minis, hero };
 }

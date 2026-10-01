@@ -10,7 +10,7 @@ import { getSiteLayout } from "@/lib/site-layout.functions";
 export function useSiteLayout() {
   const load = useServerFn(getSiteLayout);
   const query = useQuery({ queryKey: ["site-layout"], queryFn: () => load(), staleTime: 1000 * 60 * 5 });
-  return query.data ?? { ...DEFAULT_LAYOUT, miniUrls: {} as Record<string, string> };
+  return query.data ?? { ...DEFAULT_LAYOUT, miniUrls: {} as Record<string, string>, heroUrls: {} as Record<string, string> };
 }
 
 /** Translation lookup that prefers Super Admin EN/AR/HA overrides, then the reviewed dictionary. */
