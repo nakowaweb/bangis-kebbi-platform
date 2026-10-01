@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Switch } from "@/components/ui/switch";
+import { GalleryPicker } from "@/components/admin/gallery-picker";
 import { supabase } from "@/integrations/supabase/client";
 import { registerMediaAsset } from "@/lib/content.functions";
 import { DEFAULT_LAYOUT, SECTION_LABELS, SERVICE_MINI_SLUGS, TEXT_OVERRIDE_KEYS, TEXT_OVERRIDE_LABELS, type SiteLayout } from "@/lib/site-layout";
@@ -34,7 +35,7 @@ export function SiteLayoutManager({ onChanged }: { onChanged?: () => void }) {
 
   useEffect(() => {
     if (!query.data) return;
-    const { miniUrls, ...rest } = query.data;
+    const { miniUrls, heroUrls: _heroUrls, ...rest } = query.data;
     setLayout(rest);
     setPreviews(miniUrls);
   }, [query.data]);
@@ -50,7 +51,7 @@ export function SiteLayoutManager({ onChanged }: { onChanged?: () => void }) {
   async function persist(next: SiteLayout, message = "Site layout saved") {
     setBusy("save");
     try {
-      await save({ data: { sections: next.sections, order: next.order, motion: next.motion, text: next.text as never, minis: next.minis as never } });
+      await save({ data: { sections: next.sections, order: next.order, motion: next.motion, text: next.text as never, minis: next.minis as never, hero: next.hero } });
       toast.success(message);
       await query.refetch();
       onChanged?.();
@@ -135,6 +136,37 @@ export function SiteLayoutManager({ onChanged }: { onChanged?: () => void }) {
               <Input aria-label={`${TEXT_OVERRIDE_LABELS[key]} Hausa`} placeholder="Hausa" value={layout.text[key]?.ha ?? ""} onChange={(e) => setText(key, "ha", e.target.value)} />
             </fieldset>
           ))}
+        </CardContent>
+      </Card>
+
+      <Card id="hero-slideshow">
+        <CardHeader><CardTitle>Homepage → Hero Slideshow</CardTitle><CardDescription>The rotating background pictures behind the homepage headline. Choose from the Media Gallery or upload, then reorder, remove or switch slides off. With no slides here, the approved built-in slides keep showing.</CardDescription></CardHeader>
+        <CardContent className="grid gap-4">
+          <GalleryPicker
+            value={layout.hero.slides.map((slide) => slide.path).join(", ")}
+            onChange={(value) => {
+              const paths = value.split(",").map((v) => v.trim()).filter(Boolean);
+              const slides = paths.map((path, index) => layout.hero.slides.find((slide) => slide.path === path) ?? { path, alt: "", label: `Slide ${index + 1}`, enabled: true });
+              setLayout({ ...layout, hero: { ...layout.hero, slides } });
+            }}
+          />
+          {layout.hero.slides.map((slide, index) => (
+            <div key={slide.path} className="grid gap-2 rounded-md border border-border p-3 sm:grid-cols-[auto_1fr_1fr_auto] sm:items-center">
+              <span className="text-xs font-semibold text-muted-foreground">Slide {index + 1}</span>
+              <Input aria-label={`Slide ${index + 1} name`} placeholder="Slide name" value={slide.label} onChange={(e) => setLayout({ ...layout, hero: { ...layout.hero, slides: layout.hero.slides.map((s, i) => i === index ? { ...s, label: e.target.value } : s) } })} />
+              <Input aria-label={`Slide ${index + 1} description for screen readers`} placeholder="Picture description (alt text)" value={slide.alt} onChange={(e) => setLayout({ ...layout, hero: { ...layout.hero, slides: layout.hero.slides.map((s, i) => i === index ? { ...s, alt: e.target.value } : s) } })} />
+              <label className="flex items-center gap-2 text-sm">Show<Switch aria-label={`Show slide ${index + 1}`} checked={slide.enabled} onCheckedChange={(enabled) => setLayout({ ...layout, hero: { ...layout.hero, slides: layout.hero.slides.map((s, i) => i === index ? { ...s, enabled } : s) } })} /></label>
+            </div>
+          ))}
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1 text-sm font-semibold">Time on each slide (seconds, 2–30)
+              <Input type="number" min={2} max={30} step={0.5} value={layout.hero.intervalSeconds} onChange={(e) => setLayout({ ...layout, hero: { ...layout.hero, intervalSeconds: Math.min(30, Math.max(2, Number(e.target.value) || 6)) } })} />
+            </label>
+            <label className="grid gap-1 text-sm font-semibold">Fade speed (milliseconds, 300–4000)
+              <Input type="number" min={300} max={4000} step={100} value={layout.hero.transitionMs} onChange={(e) => setLayout({ ...layout, hero: { ...layout.hero, transitionMs: Math.min(4000, Math.max(300, Math.round(Number(e.target.value) || 1100))) } })} />
+            </label>
+          </div>
+          <p className="text-xs text-muted-foreground">Default: 6 seconds per slide with a 1100 ms crossfade. Visitors who ask for reduced motion see no automatic changes. Press "Save layout and text" below to apply.</p>
         </CardContent>
       </Card>
 
