@@ -334,7 +334,7 @@ export const updateMediaAssetReview = createServerFn({ method: "POST" })
         throw new Error(`This image is shown on published content (${inUse.slice(0, 3).map((e) => e.title).join(", ")}${inUse.length > 3 ? "…" : ""}). Use "Remove from content" first, then set it to draft.`);
       }
     }
-    const reviewRpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+    const reviewRpc = context.supabase.rpc.bind(context.supabase) as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
     const { error } = await reviewRpc("update_media_asset_review", {
       _id: data.id,
       _caption: data.caption,
@@ -349,7 +349,7 @@ export const reorderMediaAssets = createServerFn({ method: "POST" })
   .validator((input) => z.object({ ids: z.array(z.string().uuid()).min(1).max(1000) }).parse(input))
   .handler(async ({ data, context }) => {
     await requireContentAdmin(context);
-    const rpc = context.supabase.rpc as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
+    const rpc = context.supabase.rpc.bind(context.supabase) as unknown as (name: string, args: Record<string, unknown>) => Promise<{ error: { message: string } | null }>;
     const { error } = await rpc("reorder_media_assets", { _ids: data.ids });
     if (error) throw new Error(error.message.includes("reorder_media_assets") ? "Reordering becomes available after the reviewed gallery update is approved." : error.message);
     return { ok: true };
