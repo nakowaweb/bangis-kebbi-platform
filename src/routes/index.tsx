@@ -10,7 +10,6 @@ import {
   FoundationSection,
   HeroSection,
 
-  BlogPreview,
 
   SelectedWorkSection,
   QuickActionsSection,
@@ -98,10 +97,11 @@ function Index() {
   const blocks: Record<HomepageSection, ReactNode> = {
     quickActions: <QuickActionsSection />,
     services: <ServicesSection items={services} />,
-    selectedWork: <SelectedWorkSection items={projects} />,
+    selectedWork: <SelectedWorkSection items={projects} updates={posts} />,
     community: <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />,
     foundation: <FoundationSection image={section("foundation")?.imageUrl} imageAlt={section("foundation")?.image_alt} />,
-    blog: <BlogPreview items={posts} />,
+    // Latest Updates now live inside Bangis Connect Hub; the separate block is retired.
+    blog: null,,
     contact: <ContactSection />,
   };
   return (
