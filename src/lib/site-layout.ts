@@ -8,13 +8,19 @@ export const SECTION_LABELS: Record<HomepageSection, string> = {
 };
 
 /** Dictionary keys the Super Admin may override in English, Arabic and Hausa. */
-export const TEXT_OVERRIDE_KEYS = ["foundation.exploreAction", "nav.credentials", "foundation.previewTitle", "foundation.previewShort"] as const;
+export const TEXT_OVERRIDE_KEYS = ["foundation.exploreAction", "nav.credentials", "foundation.previewTitle", "foundation.previewShort", "credentials.title", "foundation.howTitle", "foundation.howBody", "foundation.contactAction", "foundation.heroBody", "nav.blog"] as const;
 export type TextOverrideKey = (typeof TEXT_OVERRIDE_KEYS)[number];
 export const TEXT_OVERRIDE_LABELS: Record<TextOverrideKey, string> = {
   "foundation.exploreAction": "“Explore Foundation” button",
   "nav.credentials": "“Credentials” menu label",
   "foundation.previewTitle": "Homepage Foundation title",
   "foundation.previewShort": "Homepage Foundation description",
+  "credentials.title": "Credentials page heading",
+  "foundation.howTitle": "“How BK Foundation Works” heading",
+  "foundation.howBody": "“How BK Foundation Works” text",
+  "foundation.contactAction": "“Contact BK Foundation” button",
+  "foundation.heroBody": "Foundation top section text",
+  "nav.blog": "“Blog & News” menu label",
 };
 
 export const SERVICE_MINI_SLUGS = ["ai-web-design", "web-development", "ui-ux-design", "wordpress-development", "digital-business-solutions", "website-maintenance"] as const;

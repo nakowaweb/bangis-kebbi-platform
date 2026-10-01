@@ -11,7 +11,8 @@ import { ContactActions } from "@/components/contact-actions";
 import { articleBySlug, articles, text } from "@/lib/portfolio-content";
 import { useLanguage } from "@/lib/language";
 import { Button } from "@/components/ui/button";
-import { Share2 } from "lucide-react";
+import { SharePost, EDITORIAL_AUTHOR } from "@/components/share-post";
+import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
 
 export const Route = createFileRoute("/blog/$slug")({
   errorComponent: RouteError,
@@ -50,7 +51,7 @@ export const Route = createFileRoute("/blog/$slug")({
             description,
             datePublished: loaderData.post?.published_at ?? undefined,
             dateModified: loaderData.post?.updated_at ?? undefined,
-            author: { "@type": "Person", name: loaderData.post?.author ?? loaderData.fallback?.author ?? "Abubakar Alhaji Abubakar" },
+            author: { "@type": "Person", name: "Abubakar Alhaji Abubakar" },
             image: loaderData.post?.ogImageUrl ?? undefined,
           }),
         },
@@ -79,11 +80,6 @@ function BlogPostPage() {
   const summary = post?.summary ?? (fallback ? text(fallback.summary, language) : undefined);
   const labels = language === "ar" ? { home: "الرئيسية", blog: "المقالات", share: "مشاركة", related: "مقالات ذات صلة", talk: "لنتحدث عن مشروعك" } : language === "ha" ? { home: "Gida", blog: "Rubuce-rubuce", share: "Raba", related: "Wasu rubuce-rubuce", talk: "Mu tattauna aikinka" } : { home: "Home", blog: "Blog", share: "Share", related: "Related posts", talk: "Let’s discuss your project" };
   const related = articles.filter((item) => item.slug !== fallback?.slug).slice(0, 2);
-  const share = async () => {
-    const data = { title, url: window.location.href };
-    if (navigator.share) await navigator.share(data);
-    else await navigator.clipboard.writeText(window.location.href);
-  };
   return (
     <main>
       <SectionShell eyebrow={post?.category ?? (fallback ? text(fallback.category, language) : "Article")} title={title} description={summary}>
@@ -92,9 +88,10 @@ function BlogPostPage() {
           <Link to="/blog" className="hover:underline">{labels.blog}</Link>
         </nav>
         {(post?.imageUrl || fallback?.image) && <SafeImage src={post?.imageUrl ?? fallback?.image ?? ""} alt={post?.image_alt ?? title} className="mb-6 aspect-[16/7] w-full rounded-lg border border-border object-cover" />}
-        <p className="mb-5 text-xs text-muted-foreground">
-          {post?.author ?? fallback?.author ?? ""}{post?.published_at || fallback?.publishedAt ? ` · ${new Date(post?.published_at ?? fallback?.publishedAt ?? "").toLocaleDateString()}` : ""}
-        </p>
+        <div className="mb-5 flex items-center gap-3">
+          <SafeImage src={portraitAssetSrc} alt="" width={44} height={44} className="size-11 shrink-0 rounded-full border border-border object-cover object-top" />
+          <p className="leading-5"><span className="block text-sm font-semibold text-foreground">{EDITORIAL_AUTHOR}</span>{post?.published_at || fallback?.publishedAt ? <time className="text-xs text-muted-foreground">{new Date(post?.published_at ?? fallback?.publishedAt ?? "").toLocaleDateString()}</time> : null}</p>
+        </div>
         <div className="grid max-w-3xl gap-4 text-sm leading-7 text-muted-foreground">
           {(post?.body ? post.body.split(/\n{2,}/).filter(Boolean) : fallback?.body[language] ?? fallback?.body.en ?? []).map((paragraph: string, index: number) => <p key={index}>{paragraph}</p>)}
         </div>
@@ -103,7 +100,7 @@ function BlogPostPage() {
             {post.tags.map((tag) => <li key={tag} className="rounded-full border border-border px-3 py-1 text-xs text-muted-foreground">{tag}</li>)}
           </ul>
         )}
-        <Button variant="outline" className="mt-7" onClick={() => void share()}><Share2 /> {labels.share}</Button>
+        <SharePost title={title} image={post?.ogImageUrl ?? post?.imageUrl ?? fallback?.image ?? null} label={labels.share} />
         <section className="mt-12 border-t border-border pt-8"><h2 className="font-display text-2xl font-bold">{labels.related}</h2><div className="mt-5 grid gap-4 sm:grid-cols-2">{related.map((item) => <Link key={item.slug} to="/blog/$slug" params={{ slug: item.slug }} className="rounded-lg border border-border bg-card p-5 transition hover:border-primary"><p className="text-xs font-bold text-primary">{text(item.category, language)}</p><h3 className="mt-2 font-display text-lg font-bold">{text(item.title, language)}</h3></Link>)}</div></section>
         {post ? <EntryVideo payload={post.payload} fileUrl={post.videoFileUrl} title={title} /> : null}
         <ContactActions />

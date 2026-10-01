@@ -5,6 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import cacCredentialDesign from "@/assets/cac-credential-reference.png";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { useSiteText } from "@/lib/use-site-layout";
 import { listPublicCredentials, type PublicCredential } from "@/lib/credentials.functions";
 
 const CAC_SEARCH_URL = "https://search.cac.gov.ng/home";
@@ -25,17 +26,16 @@ const launchCredential: PublicCredential = {
 };
 
 export function CompanyCredentials() {
+  const st = useSiteText();
   const load = useServerFn(listPublicCredentials);
   const query = useQuery({ queryKey: ["public-company-credentials"], queryFn: () => load(), staleTime: 1000 * 60 * 15 });
-  const credentials = query.data?.length ? query.data : [launchCredential];
+  const published = query.data ?? [];
+  const credentials = published.some((c) => c.number === "9884960") ? published : [launchCredential, ...published];
 
   return (
     <section id="company-credentials" className="section-reveal scroll-mt-24 border-b border-border bg-secondary py-12 sm:py-14">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <p className="text-xs font-bold uppercase text-primary">Credentials</p>
-        <h1 className="mt-2 font-display text-3xl font-bold sm:text-4xl">Company certificates, licences and awards.</h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-muted-foreground">Official documents published by BANGISKEBBI GLOBAL LTD. Open any card to preview the document.</p>
-        {query.isSuccess && !query.data?.length ? <p className="mt-6 rounded-lg border border-dashed border-border bg-card p-5 text-sm text-muted-foreground">No additional certificates, licences or awards have been published yet. The CAC registration below remains available.</p> : null}
+        <h1 className="font-display text-3xl font-bold sm:text-4xl">{st("credentials.title")}</h1>
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {credentials.map((credential) => <CredentialCard key={credential.id} credential={credential} />)}
         </div>

@@ -9,6 +9,7 @@ import { pageHead } from "@/lib/seo";
 import { RouteError } from "@/components/route-error";
 import { articles as fallbackArticles, text } from "@/lib/portfolio-content";
 import { useLanguage } from "@/lib/language";
+import { EDITORIAL_AUTHOR } from "@/components/share-post";
 import portraitAssetSrc from "@/assets/bangis-official-hero.webp";
 import { Button } from "@/components/ui/button";
 
@@ -28,7 +29,7 @@ export const Route = createFileRoute("/blog/")({
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-            { "@type": "ListItem", position: 2, name: "Blog", item: "/blog" },
+            { "@type": "ListItem", position: 2, name: "Blog & News", item: "/blog" },
           ],
         }),
       },
@@ -50,12 +51,12 @@ function BlogPage() {
   const { posts: loadedPosts, authorImage } = Route.useLoaderData();
   const { language } = useLanguage();
   const cmsSlugs = new Set(loadedPosts.map((item) => item.slug));
-  const posts = [...loadedPosts, ...fallbackArticles.filter((item) => !cmsSlugs.has(item.slug)).map((post) => ({ id: post.slug, slug: post.slug, title: text(post.title, language), category: text(post.category, language), summary: text(post.summary, language), imageUrl: post.image, image_alt: text(post.title, language), author: post.author, published_at: post.publishedAt }))];
+  const posts = [...loadedPosts, ...fallbackArticles.filter((item) => !cmsSlugs.has(item.slug)).map((post) => ({ id: post.slug, slug: post.slug, title: text(post.title, language), category: text(post.category, language), summary: text(post.summary, language), imageUrl: post.image, image_alt: text(post.title, language), author: post.author, published_at: post.publishedAt }))].sort((a, b) => (Date.parse(b.published_at ?? "") || 0) - (Date.parse(a.published_at ?? "") || 0));
 
   return (
     <main>
       {posts.length === 0 ? <BlogPreview /> : (
-        <SectionShell eyebrow="Blog" title="Insights, ideas and opportunities." description="Published articles from BangisKebbi.com.">
+        <SectionShell eyebrow="Blog & News" title="Insights, ideas and opportunities." description="Published articles from BangisKebbi.com.">
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article key={post.id} className="group relative flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
@@ -69,7 +70,7 @@ function BlogPage() {
                   {post.summary && <p className="mt-3 flex-1 text-sm leading-6 text-muted-foreground">{post.summary}</p>}
                   <div className="mt-5 flex min-w-0 items-center gap-3 text-xs text-muted-foreground">
                     {authorImage ? <SafeImage src={authorImage} alt="" width={40} height={40} className="size-10 shrink-0 rounded-full border border-border object-cover object-top" /> : null}
-                    <p className="min-w-0 leading-5"><span className="font-semibold text-foreground">{post.author ?? "Abubakar Alhaji Abubakar"}</span>{post.published_at ? <><span aria-hidden> · </span><time dateTime={post.published_at}>{new Date(post.published_at).toLocaleDateString()}</time></> : null}</p>
+                    <p className="min-w-0 leading-5"><span className="font-semibold text-foreground">{EDITORIAL_AUTHOR}</span>{post.published_at ? <><span aria-hidden> · </span><time dateTime={post.published_at}>{new Date(post.published_at).toLocaleDateString()}</time></> : null}</p>
                   </div>
                   <Button className="pointer-events-none mt-5 w-full sm:w-fit sm:min-w-52" tabIndex={-1}>Read Article <ArrowRight /></Button>
                 </div>

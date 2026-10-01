@@ -44,6 +44,11 @@ export function isLanguageCode(value: unknown): value is LanguageCode {
 }
 
 const en = {
+  "credentials.title": "Company Credentials",
+  "foundation.howTitle": "How BK Foundation Works",
+  "foundation.howBody": "We visit communities to provide practical support, including food, clothing, school supplies and medical essentials. Contributions help us reach people in need. With consent, we share photos, videos and updates in Blog & News.",
+  "foundation.contactAction": "Contact BK Foundation",
+  "foundation.heroBody": "Help us support people and families in need. Contribute food, clothing, school supplies, medical essentials or funds toward our community work.",
   // Navigation
   "nav.home": "Home",
   "nav.credentials": "Credentials",
@@ -55,7 +60,7 @@ const en = {
   "nav.business": "Business",
   "nav.umrah": "Umrah",
   "nav.foundation": "BK Foundation",
-  "nav.blog": "Blog",
+  "nav.blog": "Blog & News",
   "nav.contact": "Contact",
   "nav.community": "Community",
   "nav.verifiedPartners": "Verified Partners",
@@ -444,6 +449,11 @@ const en = {
 export type TranslationKey = keyof typeof en;
 
 const ha: Record<TranslationKey, string> = {
+  "credentials.title": "Takardun Shaidar Kamfani",
+  "foundation.howTitle": "Yadda BK Foundation ke Aiki",
+  "foundation.howBody": "Muna ziyartar al’ummomi don ba da tallafi mai amfani, ciki har da abinci, tufafi, kayan makaranta da magunguna masu muhimmanci. Gudummawa na taimaka mana mu kai ga mabuƙata. Da izini, muna raba hotuna, bidiyo da labarai a Rubuce-rubuce da Labarai.",
+  "foundation.contactAction": "Tuntuɓi BK Foundation",
+  "foundation.heroBody": "Taimaka mana mu tallafa wa mutane da iyalai masu buƙata. Ba da gudummawar abinci, tufafi, kayan makaranta, magunguna ko kuɗi don aikinmu na al’umma.",
   "nav.home": "Gida",
   "nav.credentials": "Takardun Shaida",
   "foundation.previewShort": "Tallafi na zahiri ta hanyar shirye-shiryen al’umma.",
@@ -454,7 +464,7 @@ const ha: Record<TranslationKey, string> = {
   "nav.business": "Kasuwanci",
   "nav.umrah": "Umrah",
   "nav.foundation": "BK Foundation",
-  "nav.blog": "Labarai",
+  "nav.blog": "Rubuce-rubuce da Labarai",
   "nav.contact": "Tuntuɓa",
   "nav.community": "Al’umma",
   "nav.verifiedPartners": "Abokan Hulɗa da Aka Tabbatar",
@@ -825,6 +835,11 @@ const ha: Record<TranslationKey, string> = {
 };
 
 const ar: Record<TranslationKey, string> = {
+  "credentials.title": "شهادات الشركة",
+  "foundation.howTitle": "كيف تعمل مؤسسة BK",
+  "foundation.howBody": "نزور المجتمعات لتقديم دعم عملي يشمل الغذاء والملابس واللوازم المدرسية والمستلزمات الطبية الأساسية. تساعدنا المساهمات على الوصول إلى المحتاجين. وبموافقتهم، نشارك الصور ومقاطع الفيديو والتحديثات في المدونة والأخبار.",
+  "foundation.contactAction": "تواصل مع مؤسسة BK",
+  "foundation.heroBody": "ساعدنا في دعم الأفراد والأسر المحتاجة. ساهم بالغذاء أو الملابس أو اللوازم المدرسية أو المستلزمات الطبية أو بالأموال لدعم عملنا المجتمعي.",
   "nav.home": "الرئيسية",
   "nav.credentials": "الشهادات",
   "foundation.previewShort": "دعم عملي من خلال مبادرات مجتمعية.",
@@ -835,7 +850,7 @@ const ar: Record<TranslationKey, string> = {
   "nav.business": "الأعمال التجارية",
   "nav.umrah": "العمرة",
   "nav.foundation": "مؤسسة BK",
-  "nav.blog": "المدونة",
+  "nav.blog": "المدونة والأخبار",
   "nav.contact": "اتصل بنا",
   "nav.community": "المجتمع",
   "nav.verifiedPartners": "الشركاء المعتمدون",
