@@ -66,7 +66,6 @@ export function BusinessOpportunities({ items }: { items: OpportunityItem[] }) {
                   <SafeImage src={item.imageUrl ?? cat?.icon} alt="" loading="lazy" width={640} height={360} className="size-full object-cover" />
                 </Link>
                 <div className="flex flex-1 flex-col p-5">
-                  {cat ? <p className="text-xs font-bold uppercase text-primary">{pick(cat.label, language)}</p> : null}
                   <h2 className="mt-1 font-display text-lg font-bold leading-6"><Link to="/business/$slug" params={{ slug: item.slug }} className="hover:underline">{item.title}</Link></h2>
                   {item.summary ? <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{item.summary}</p> : <span className="flex-1" />}
                   <Link to="/business/$slug" params={{ slug: item.slug }} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary">{pick(opportunityCopy.viewDetails, language)} <ArrowRight className="size-4 rtl:rotate-180" aria-hidden="true" /></Link>
