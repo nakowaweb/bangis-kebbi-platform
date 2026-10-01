@@ -795,7 +795,7 @@ const ha: Record<TranslationKey, string> = {
   "home.servicesDescription": "Aiki mai mayar da hankali ga kamfanoni, ’yan kasuwa da al’umma.",
   "home.serviceFallback": "Tallafin dijital na ƙwararru bisa buƙatu na gaske.",
   "home.projectsEyebrow": "Zaɓaɓɓun Ayyuka",
-  "home.projectsTitle": "NEWS AND UPDATE",
+  "home.projectsTitle": "LABARAI DA SABUNTAWA",
   "home.projectsDescription": "Zaɓaɓɓun dandali da gidajen yanar gizo, an yi musu alama har sai an tabbatar.",
   "home.projectFallbackCategory": "Aikin Dijital",
   "home.projectFallbackSummary": "Zaɓaɓɓen aikin dijital daga BangisKebbi.com.",

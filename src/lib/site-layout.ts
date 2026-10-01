@@ -4,7 +4,7 @@ export const HOMEPAGE_SECTIONS = ["quickActions", "services", "selectedWork", "c
 export type HomepageSection = (typeof HOMEPAGE_SECTIONS)[number];
 export const SECTION_LABELS: Record<HomepageSection, string> = {
   quickActions: "Homepage shortcuts", services: "Digital Services", selectedWork: "News and Update carousel (updates + projects)", community: "Community",
-  foundation: "BK Foundation", blog: "Latest Updates (shown inside Connect Hub)", contact: "Contact & social",
+  foundation: "BK Foundation", blog: "Latest Updates (shown inside News and Update)", contact: "Contact & social",
 };
 
 /** Dictionary keys the Super Admin may override in English, Arabic and Hausa. */
