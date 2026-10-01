@@ -654,7 +654,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const onScroll = () => { const el = scroller.current; if (!el) return; const width = looped ? (el.scrollWidth + 16) / 2 : el.scrollWidth; const n = Math.max(1, Math.ceil(width / el.clientWidth)); setPages(n); setPage(Math.min(n - 1, Math.round((Math.abs(el.scrollLeft) % width) / el.clientWidth))); };
   useEffect(() => { onScroll(); }, [projects.length]);
   if (!projects.length) return null;
-  const round = "size-11 rounded-full border-brand-cyan/50 bg-brand-ink text-primary-foreground hover:bg-brand-cyan/15 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink";
+  const round = "size-9 rounded-full border-brand-cyan/50 bg-brand-ink text-primary-foreground hover:bg-brand-cyan/15 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink sm:size-11";
   return (
     <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
@@ -663,7 +663,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
             <span className="grid size-7 shrink-0 place-items-center rounded-full border border-brand-cyan/50 bg-brand-cyan/10 text-brand-cyan shadow-glow sm:size-9"><Megaphone className="size-3.5 sm:size-4.5" aria-hidden="true" /></span>
             <span className="min-w-0">{t("home.projectsTitle")}</span>
           </h2>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" /><span className="hidden sm:inline">Media Gallery</span><span className="sr-only sm:hidden">Media Gallery</span></Link></Button>
             {canAuto ? <Button type="button" variant="outline" size="icon" onClick={() => setUserPaused((v) => !v)} aria-label={userPaused ? "Resume automatic scrolling" : "Pause automatic scrolling"} aria-pressed={userPaused} className={round}>{userPaused ? <Play className="size-4" /> : <Pause className="size-4" />}</Button> : null}
             <Button type="button" variant="outline" size="icon" onClick={() => scroll(-1)} aria-label="Previous projects" className={round}><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></Button>
