@@ -3,12 +3,12 @@ export const LAYOUT_SLUG = "site-layout";
 export const HOMEPAGE_SECTIONS = ["quickActions", "services", "selectedWork", "community", "foundation", "blog", "contact"] as const;
 export type HomepageSection = (typeof HOMEPAGE_SECTIONS)[number];
 export const SECTION_LABELS: Record<HomepageSection, string> = {
-  quickActions: "Homepage shortcuts", services: "Digital Services", selectedWork: "Selected Work", community: "Community",
-  foundation: "BK Foundation", blog: "Latest Updates", contact: "Contact & social",
+  quickActions: "Homepage shortcuts", services: "Digital Services", selectedWork: "Bangis Connect Hub (updates + projects)", community: "Community",
+  foundation: "BK Foundation", blog: "Latest Updates (shown inside Connect Hub)", contact: "Contact & social",
 };
 
 /** Dictionary keys the Super Admin may override in English, Arabic and Hausa. */
-export const TEXT_OVERRIDE_KEYS = ["foundation.exploreAction", "nav.credentials", "foundation.previewTitle", "foundation.previewShort", "credentials.title", "foundation.howTitle", "foundation.howBody", "foundation.contactAction", "foundation.heroBody", "nav.blog"] as const;
+export const TEXT_OVERRIDE_KEYS = ["foundation.exploreAction", "nav.credentials", "foundation.previewTitle", "foundation.previewShort", "credentials.title", "foundation.howTitle", "foundation.howBody", "foundation.contactAction", "foundation.heroBody", "nav.blog", "home.heroAccent", "home.heroBusinessTitleTop", "home.heroBusinessTitleBottom", "home.heroBusinessSubtitle", "home.projectsTitle"] as const;
 export type TextOverrideKey = (typeof TEXT_OVERRIDE_KEYS)[number];
 export const TEXT_OVERRIDE_LABELS: Record<TextOverrideKey, string> = {
   "foundation.exploreAction": "“Explore Foundation” button",
@@ -21,6 +21,11 @@ export const TEXT_OVERRIDE_LABELS: Record<TextOverrideKey, string> = {
   "foundation.contactAction": "“Contact BK Foundation” button",
   "foundation.heroBody": "Foundation top section text",
   "nav.blog": "“Blog & News” menu label",
+  "home.heroAccent": "Hero small label",
+  "home.heroBusinessTitleTop": "Hero headline line 1",
+  "home.heroBusinessTitleBottom": "Hero headline line 2",
+  "home.heroBusinessSubtitle": "Hero description",
+  "home.projectsTitle": "Bangis Connect Hub title",
 };
 
 export const SERVICE_MINI_SLUGS = ["ai-web-design", "web-development", "ui-ux-design", "wordpress-development", "digital-business-solutions", "website-maintenance"] as const;
@@ -81,6 +86,6 @@ export function normalizeLayout(raw: unknown): SiteLayout {
     .map((x) => ({ path: String(x["path"]), alt: String(x["alt"] ?? ""), label: String(x["label"] ?? ""), enabled: x["enabled"] !== false }));
   const hero: HeroSlideshow = { slides, intervalSeconds: num(h["intervalSeconds"], 2, 30, DEFAULT_HERO.intervalSeconds), transitionMs: num(h["transitionMs"], 300, 4000, DEFAULT_HERO.transitionMs) };
   const marqueeSeconds = num(source["marqueeSeconds"], 6, 60, 14);
-  const carouselSeconds = num(source["carouselSeconds"], 2, 10, 2.5);
+  const carouselSeconds = num(source["carouselSeconds"], 2, 10, 2);
   return { sections, order, motion, marqueeSeconds, carouselSeconds, text, minis, hero };
 }
