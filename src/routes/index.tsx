@@ -100,7 +100,7 @@ function Index() {
     selectedWork: <SelectedWorkSection items={projects} updates={posts} />,
     community: <CommunitySection title={section("community")?.title} description={section("community")?.summary ?? undefined} />,
     foundation: <FoundationSection image={section("foundation")?.imageUrl} imageAlt={section("foundation")?.image_alt} />,
-    blog: null,,
+    blog: null,
     contact: <ContactSection />,
   };
   return (
