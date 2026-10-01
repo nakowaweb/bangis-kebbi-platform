@@ -3,7 +3,7 @@ export const LAYOUT_SLUG = "site-layout";
 export const HOMEPAGE_SECTIONS = ["quickActions", "services", "selectedWork", "community", "foundation", "blog", "contact"] as const;
 export type HomepageSection = (typeof HOMEPAGE_SECTIONS)[number];
 export const SECTION_LABELS: Record<HomepageSection, string> = {
-  quickActions: "Homepage shortcuts", services: "Digital Services", selectedWork: "Bangis Connect Hub (updates + projects)", community: "Community",
+  quickActions: "Homepage shortcuts", services: "Digital Services", selectedWork: "News and Update carousel (updates + projects)", community: "Community",
   foundation: "BK Foundation", blog: "Latest Updates (shown inside Connect Hub)", contact: "Contact & social",
 };
 
@@ -20,12 +20,12 @@ export const TEXT_OVERRIDE_LABELS: Record<TextOverrideKey, string> = {
   "foundation.howBody": "“How BK Foundation Works” text",
   "foundation.contactAction": "“Contact BK Foundation” button",
   "foundation.heroBody": "Foundation top section text",
-  "nav.blog": "“Blog & News” menu label",
+  "nav.blog": "“News and Update” menu label",
   "home.heroAccent": "Hero small label",
   "home.heroBusinessTitleTop": "Hero headline line 1",
   "home.heroBusinessTitleBottom": "Hero headline line 2",
   "home.heroBusinessSubtitle": "Hero description",
-  "home.projectsTitle": "Bangis Connect Hub title",
+  "home.projectsTitle": "News and Update carousel title",
 };
 
 export const SERVICE_MINI_SLUGS = ["ai-web-design", "web-development", "ui-ux-design", "wordpress-development", "digital-business-solutions", "website-maintenance"] as const;
