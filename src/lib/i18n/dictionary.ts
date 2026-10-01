@@ -46,7 +46,7 @@ export function isLanguageCode(value: unknown): value is LanguageCode {
 const en = {
   "credentials.title": "Company Credentials",
   "foundation.howTitle": "How BK Foundation Works",
-  "foundation.howBody": "We visit communities to provide practical support, including food, clothing, school supplies and medical essentials. Contributions help us reach people in need. With consent, we share photos, videos and updates in News and Update.",
+  "foundation.howBody": "We visit communities to provide practical support, including food, clothing, school supplies and medical essentials. Contributions help us reach people in need. With consent, we share photos, videos and updates in NEWS & UPDATE.",
   "foundation.contactAction": "Contact BK Foundation",
   "foundation.heroBody": "Help us support people and families in need. Contribute food, clothing, school supplies, medical essentials or funds toward our community work.",
   // Navigation
@@ -60,7 +60,7 @@ const en = {
   "nav.business": "Business",
   "nav.umrah": "Umrah",
   "nav.foundation": "BK Foundation",
-  "nav.blog": "News and Update",
+  "nav.blog": "NEWS & UPDATE",
   "nav.contact": "Contact",
   "nav.community": "Community",
   "nav.verifiedPartners": "Verified Partners",
@@ -407,7 +407,7 @@ const en = {
   "home.servicesDescription": "Focused, responsive work for brands, businesses and communities.",
   "home.serviceFallback": "Professional digital support shaped around practical needs.",
   "home.projectsEyebrow": "Featured Projects",
-  "home.projectsTitle": "NEWS AND UPDATE",
+  "home.projectsTitle": "NEWS & UPDATE",
   "home.projectsDescription": "Selected platform and website concepts, clearly marked until verified.",
   "home.projectFallbackCategory": "Digital Project",
   "home.projectFallbackSummary": "A selected digital project from BangisKebbi.com.",

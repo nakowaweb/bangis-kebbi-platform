@@ -1,6 +1,9 @@
 # Roadmap
 
 ## Done
+- Final shared-header correction: dedicated logo space, compact two-row desktop navigation, phone dashboard/search/menu access, and visible EN/AR/HA controls without overflow.
+- NEWS & UPDATE naming, homepage megaphone accent, and Refund Policy links added to mobile navigation and the footer Platforms column.
+- Homepage carousel requests reduced to lazy, low-priority card images with only the first three unique upcoming images warmed after the section becomes visible.
 - Multilingual system (EN / AR / HA) with `?lang=` localized public URLs, controlled dictionary, Arabic RTL.
 - Language selector order: English, العربية, Hausa. hreflang mapping stays en / ar / ha.
 - Locale-aware public CMS reads (services, projects, blog, homepage, about, Umrah, BK Foundations) with English fallback.

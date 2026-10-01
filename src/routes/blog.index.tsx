@@ -29,7 +29,7 @@ export const Route = createFileRoute("/blog/")({
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Home", item: "/" },
-            { "@type": "ListItem", position: 2, name: "News and Update", item: "/blog" },
+            { "@type": "ListItem", position: 2, name: "NEWS & UPDATE", item: "/blog" },
           ],
         }),
       },
@@ -56,7 +56,7 @@ function BlogPage() {
   return (
     <main>
       {posts.length === 0 ? <BlogPreview /> : (
-        <SectionShell eyebrow="News and Update" title="Insights, ideas and opportunities." description="Published articles from BangisKebbi.com.">
+        <SectionShell eyebrow="NEWS & UPDATE" title="Insights, ideas and opportunities." description="Published articles from BangisKebbi.com.">
           <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
             {posts.map((post) => (
               <article key={post.id} className="group relative flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">

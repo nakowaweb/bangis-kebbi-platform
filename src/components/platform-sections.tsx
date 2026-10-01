@@ -21,6 +21,7 @@ import {
   MessageCircle,
   Network,
   Newspaper,
+  Megaphone,
   Plane,
   Play,
   Pause,
@@ -146,11 +147,22 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
   const shortLocation = location.replace(/\s*State\b/i, "");
   const heroSlides = slides?.length ? slides.slice(0, 8) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
+  const [readySlides, setReadySlides] = useState(() => new Set([0]));
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
   const reducedMotion = useRef(false);
   useEffect(() => { reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
-  const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), [heroSlides.length]);
+  const move = useCallback((step: number) => setActive((current) => {
+    const next = (current + step + heroSlides.length) % heroSlides.length;
+    setReadySlides((ready) => new Set(ready).add(next));
+    return next;
+  }), [heroSlides.length]);
+  // Keep the first visual as the only initial hero request. Load the remaining slides after
+  // the first viewport has settled, well before the automatic transition.
+  useEffect(() => {
+    const timer = window.setTimeout(() => setReadySlides(new Set(heroSlides.map((_, index) => index))), 900);
+    return () => window.clearTimeout(timer);
+  }, [heroSlides.length]);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
     const timer = window.setInterval(() => move(1), intervalMs);
@@ -160,7 +172,7 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
     <div style={{ ["--hero-fade" as string]: `${transitionMs}ms` }} className="hero-stage relative w-full overflow-hidden" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
         <figure key={`${index}-${slide.src}`} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
-          <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-center" />
+          {readySlides.has(index) ? <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : "low"} loading={index === 0 ? "eager" : "lazy"} decoding="async" className="hero-slide-image h-full w-full object-cover object-center" /> : null}
         </figure>
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
@@ -182,7 +194,7 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
       </div>
       <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
       <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
-      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
+      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => { setReadySlides((ready) => new Set(ready).add(index)); setActive(index); }} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
 }
@@ -577,11 +589,12 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const looped = projects.length >= 3;
   const track = looped ? [...projects.map((p) => ({ ...p, copy: 0 })), ...projects.map((p) => ({ ...p, copy: 1 }))] : projects.map((p) => ({ ...p, copy: 0 }));
   const imageKey = projects.map((p) => p.image ?? "").join("|");
-  // Warm the browser cache for every upcoming card picture once the section is near, so slides arrive complete.
+  // Warm only the next few unique pictures once this section is visible. This avoids downloading
+  // every card and both carousel copies while the hero and first viewport still need bandwidth.
   useEffect(() => {
-    if (!imageKey) return;
-    // Start shortly after the page settles so the hero picture keeps priority.
-    const timer = window.setTimeout(() => imageKey.split("|").filter(Boolean).forEach((src) => { const img = new Image(); img.decoding = "async"; img.src = src; }), visible ? 0 : 1200);
+    if (!visible || !imageKey) return;
+    const upcoming = [...new Set(imageKey.split("|").filter(Boolean))].slice(0, 3);
+    const timer = window.setTimeout(() => upcoming.forEach((src) => { const img = new Image(); img.decoding = "async"; img.src = src; }), 150);
     return () => window.clearTimeout(timer);
   }, [visible, imageKey]);
   const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
@@ -641,13 +654,16 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const onScroll = () => { const el = scroller.current; if (!el) return; const width = looped ? (el.scrollWidth + 16) / 2 : el.scrollWidth; const n = Math.max(1, Math.ceil(width / el.clientWidth)); setPages(n); setPage(Math.min(n - 1, Math.round((Math.abs(el.scrollLeft) % width) / el.clientWidth))); };
   useEffect(() => { onScroll(); }, [projects.length]);
   if (!projects.length) return null;
-  const round = "size-11 rounded-full border-brand-cyan/50 bg-brand-ink text-primary-foreground hover:bg-brand-cyan/15 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink";
+  const round = "size-9 rounded-full border-brand-cyan/50 bg-brand-ink text-primary-foreground hover:bg-brand-cyan/15 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink sm:size-11";
   return (
     <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap">
-          <h2 id="selected-work-title" className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-tight tracking-wide sm:text-3xl">{t("home.projectsTitle")}</h2>
-          <div className="flex items-center gap-2">
+          <h2 id="selected-work-title" className="flex min-w-0 flex-1 items-center gap-2 whitespace-nowrap font-display text-[clamp(0.9rem,4.4vw,1.25rem)] font-bold uppercase leading-none tracking-wide text-primary-foreground sm:text-3xl">
+            <span className="grid size-7 shrink-0 place-items-center rounded-full border border-brand-cyan/50 bg-brand-cyan/10 text-brand-cyan shadow-glow sm:size-9"><Megaphone className="size-3.5 sm:size-4.5" aria-hidden="true" /></span>
+            <span className="min-w-0">{t("home.projectsTitle")}</span>
+          </h2>
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" /><span className="hidden sm:inline">Media Gallery</span><span className="sr-only sm:hidden">Media Gallery</span></Link></Button>
             {canAuto ? <Button type="button" variant="outline" size="icon" onClick={() => setUserPaused((v) => !v)} aria-label={userPaused ? "Resume automatic scrolling" : "Pause automatic scrolling"} aria-pressed={userPaused} className={round}>{userPaused ? <Play className="size-4" /> : <Pause className="size-4" />}</Button> : null}
             <Button type="button" variant="outline" size="icon" onClick={() => scroll(-1)} aria-label="Previous projects" className={round}><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></Button>
@@ -662,7 +678,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
             return (
             <article key={`${p.kind}-${p.id}-${p.copy}`} aria-hidden={clone || undefined} inert={clone || undefined} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
               <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-primary-foreground/10" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading={index < 3 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
+                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading="lazy" fetchPriority="low" decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
               </Link>
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}

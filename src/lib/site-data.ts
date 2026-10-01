@@ -32,7 +32,7 @@ export const navItems = [
   { labelKey: "business", label: "Business", href: "/business", hash: undefined },
   { labelKey: "verifiedPartners", label: "Verified Partners", href: "/partners", hash: undefined },
   { labelKey: "foundation", label: "BK Foundation", href: "/foundation", hash: undefined },
-  { labelKey: "blog", label: "News and Update", href: "/blog", hash: undefined },
+  { labelKey: "blog", label: "NEWS & UPDATE", href: "/blog", hash: undefined },
   { labelKey: "contact", label: "Contact", href: "/contact", hash: undefined },
   { labelKey: "credentials", label: "Credentials", href: "/credentials", hash: undefined },
 ] as const;
