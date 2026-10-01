@@ -37,7 +37,7 @@ const seoText: Record<string, Partial<Record<LanguageCode, Entry>>> = {
     ha: { title: "Ayyukan Da Aka Yi — BangisKebbi.com", description: "Zaɓaɓɓun ayyukan BangisKebbi.com a fasaha, zane da kasuwancin dijital." },
   },
   "/blog": {
-    en: { title: "Blog & News — BangisKebbi.com", description: "Articles and updates from BangisKebbi.com on ideas, technology, business and people." },
+    en: { title: "News and Update — BangisKebbi.com", description: "Articles and updates from BangisKebbi.com on ideas, technology, business and people." },
     ar: { title: "المدونة والأخبار — بانجيس كيبي", description: "مقالات وتحديثات من بانجيس كيبي حول الأفكار والتقنية والأعمال والأشخاص." },
     ha: { title: "Bulogi da Labarai — BangisKebbi.com", description: "Labarai da sabuntawa daga BangisKebbi.com kan ra'ayoyi, fasaha, kasuwanci da mutane." },
   },

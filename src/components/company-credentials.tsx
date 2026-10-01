@@ -39,7 +39,6 @@ export function CompanyCredentials() {
         <div className="mt-6 grid gap-4 md:grid-cols-2 lg:grid-cols-3">
           {credentials.map((credential) => <CredentialCard key={credential.id} credential={credential} />)}
         </div>
-        <p className="mt-5 text-xs leading-5 text-muted-foreground">The official CAC public search remains the independent route for checking company registration information.</p>
       </div>
     </section>
   );
