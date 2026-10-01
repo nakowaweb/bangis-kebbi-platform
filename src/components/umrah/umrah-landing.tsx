@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
 import { ArrowRight, ChevronRight, FileText, Handshake, Heart, Info, Landmark, Plane, ShieldCheck, Users } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { SafeImage } from "@/components/safe-image";
 import heroKaaba from "@/assets/umrah/umrah-hero-kaaba.jpg";
 import heroMadinah from "@/assets/umrah/umrah-hero-madinah.jpg";
@@ -62,16 +61,6 @@ export function FadeCarousel({ slides, interval, className = "" }: { slides: Arr
       ))}
     </div>
   );
-}
-
-function useSignedIn() {
-  const [signedIn, setSignedIn] = useState<boolean | null>(null);
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => setSignedIn(Boolean(s)));
-    return () => data.subscription.unsubscribe();
-  }, []);
-  return signedIn;
 }
 
 const pill = "inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5";
