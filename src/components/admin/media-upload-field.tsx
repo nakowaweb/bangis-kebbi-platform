@@ -104,7 +104,7 @@ export function MediaUploadField({ label, value, onChange, kind = "image", hint 
         <div className="flex flex-wrap gap-2">
           <input ref={inputRef} type="file" className="hidden" accept={types.join(",")} onChange={handleFile} aria-label={`Upload ${label}`} />
           <Button type="button" size="sm" variant="outline" disabled={uploading} onClick={() => inputRef.current?.click()}>
-            {uploading ? <Loader2 className="animate-spin" /> : <Upload />} {uploading ? "Uploading…" : value ? "Upload from device" : "Upload from device"}
+            {uploading ? <Loader2 className="animate-spin" /> : <Upload />} {uploading ? "Uploading…" : "Upload from device"}
           </Button>
           {kind === "image" ? <LibraryChooser onPick={onChange} /> : null}
           {value ? (
