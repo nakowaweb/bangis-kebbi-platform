@@ -309,9 +309,21 @@ export function AboutPreview({ title, description, items }: { title?: string | u
   );
 }
 
+/** Seamless loop: two identical halves, the track slides by exactly one half (-50%) so the seam never shows. */
+function ServiceMarquee({ titles, seconds }: { titles: string[]; seconds: number }) {
+  if (!titles.length) return null;
+  const run = Array.from({ length: 4 }, () => titles).flat();
+  const half = (key: string) => <div className="flex shrink-0 items-center" aria-hidden={key === "b" ? true : undefined}>{run.map((title, i) => <span key={`${key}${i}`} className="flex shrink-0 items-center whitespace-nowrap px-5"><span className="me-5 size-1.5 rounded-full bg-brand-gold" aria-hidden="true" />{title}</span>)}</div>;
+  return (
+    <div dir="ltr" className="service-marquee mx-auto mb-6 max-w-2xl overflow-hidden rounded-xl bg-brand-ink py-3 text-[11px] font-bold uppercase leading-tight text-brand-cyan sm:text-sm" role="marquee" aria-label={titles.join(", ")}>
+      <div className="service-marquee-track flex w-max" style={{ ["--marquee-duration" as string]: `${seconds}s` }}>{half("a")}{half("b")}</div>
+    </div>
+  );
+}
+
 export function ServicesSection({ full = false, items }: { full?: boolean; items?: Array<{ id: string; slug: string; title: string; summary: string | null; imageUrl?: string | null }> | undefined }) {
   const { t, language } = useLanguage();
-  const { miniUrls } = useSiteLayout();
+  const { miniUrls, marqueeSeconds } = useSiteLayout();
   const fallbackBySlug = new Map(portfolioServices.map((item) => [item.slug, item]));
   const allServices = items?.length
     ? items.map((item, index) => {
@@ -324,7 +336,7 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
   const shownServices = full ? allServices : HOME_SERVICES.map((slug) => allServices.find((s) => s.slug === slug)).filter((s): s is (typeof allServices)[number] => Boolean(s));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} >
-      {!full ? <div className="mx-auto mb-6 flex max-w-2xl items-center justify-center rounded-xl bg-brand-ink px-3 py-3 text-[11px] font-bold uppercase leading-tight text-brand-cyan sm:text-sm" aria-hidden="true">{shownServices.map((service, index) => <span key={service.slug} className="flex flex-1 items-center justify-center gap-2 text-center">{index > 0 ? <span className="me-3 h-6 w-px bg-brand-cyan/40" /> : null}{service.title}</span>)}</div> : null}
+      {!full ? <ServiceMarquee titles={shownServices.map((s) => s.title)} seconds={marqueeSeconds} /> : null}
       <ul className={full ? "grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" : "mx-auto grid max-w-2xl grid-cols-2 gap-3 sm:gap-5"}>
         {shownServices.map((service, index) => {
           const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
@@ -547,22 +559,43 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
 
 export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null }> | undefined }) {
   const { t } = useLanguage();
+  const { carouselSeconds } = useSiteLayout();
   const scroller = useRef<HTMLDivElement>(null);
+  const animating = useRef(0);
   const [userPaused, setUserPaused] = useState(false);
   const [hoverPaused, setHoverPaused] = useState(false);
+  const [visible, setVisible] = useState(false);
   const [canAuto, setCanAuto] = useState(false);
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState(1);
   const projects = (items ?? []).map((item) => ({ slug: item.slug, name: item.title, image: item.imageUrl, alt: item.image_alt ?? item.title }));
   const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  /** Eased ~0.9s glide by one card (snap is lifted during the glide so it cannot jerk the motion). */
+  const glideTo = useCallback((el: HTMLDivElement, target: number) => {
+    cancelAnimationFrame(animating.current);
+    if (calm()) { el.scrollLeft = target; return; }
+    const start = el.scrollLeft; const dist = target - start; const t0 = performance.now(); const dur = 900;
+    el.style.scrollSnapType = "none";
+    const step = (now: number) => {
+      const p = Math.min(1, (now - t0) / dur);
+      const e = p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+      el.scrollLeft = start + dist * e;
+      if (p < 1) animating.current = requestAnimationFrame(step); else el.style.scrollSnapType = "";
+    };
+    animating.current = requestAnimationFrame(step);
+  }, []);
   const scroll = useCallback((dir: number) => {
     const el = scroller.current; if (!el) return;
     const rtl = getComputedStyle(el).direction === "rtl";
+    const card = el.firstElementChild as HTMLElement | null;
+    const stepPx = card ? card.offsetWidth + 16 : el.clientWidth * 0.8;
     const max = el.scrollWidth - el.clientWidth;
-    const atEnd = Math.abs(el.scrollLeft) >= max - 4;
-    if (dir > 0 && atEnd) { el.scrollTo({ left: 0, behavior: calm() ? "auto" : "smooth" }); return; }
-    el.scrollBy({ left: (rtl ? -dir : dir) * el.clientWidth * 0.8, behavior: calm() ? "auto" : "smooth" });
-  }, []);
+    const pos = Math.abs(el.scrollLeft);
+    if (dir > 0 && pos >= max - 4) { glideTo(el, 0); return; }
+    if (dir < 0 && pos <= 4) { glideTo(el, rtl ? -max : max); return; }
+    const next = Math.min(max, Math.max(0, pos + dir * stepPx));
+    glideTo(el, rtl ? -next : next);
+  }, [glideTo]);
   useEffect(() => {
     const check = () => setCanAuto(!calm());
     check();
@@ -571,10 +604,17 @@ export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slu
     return () => observer.disconnect();
   }, []);
   useEffect(() => {
-    if (!canAuto || userPaused || hoverPaused || projects.length < 2) return;
-    const timer = window.setInterval(() => scroll(1), 5000);
+    const el = scroller.current; if (!el) return;
+    const io = new IntersectionObserver(([entry]) => setVisible(Boolean(entry?.isIntersecting)), { threshold: 0.3 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [projects.length]);
+  useEffect(() => {
+    if (!canAuto || !visible || userPaused || hoverPaused || projects.length < 2) return;
+    const timer = window.setInterval(() => scroll(1), Math.round(carouselSeconds * 1000));
     return () => window.clearInterval(timer);
-  }, [canAuto, userPaused, hoverPaused, projects.length, scroll]);
+  }, [canAuto, visible, userPaused, hoverPaused, projects.length, scroll, carouselSeconds]);
+  useEffect(() => () => cancelAnimationFrame(animating.current), []);
   const onScroll = () => { const el = scroller.current; if (!el) return; const n = Math.max(1, Math.ceil(el.scrollWidth / el.clientWidth)); setPages(n); setPage(Math.min(n - 1, Math.round(Math.abs(el.scrollLeft) / el.clientWidth))); };
   useEffect(() => { onScroll(); }, [projects.length]);
   if (!projects.length) return null;
@@ -592,7 +632,7 @@ export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slu
           </div>
         </div>
         {/* Native horizontal scrolling: vertical swipes and the mouse wheel still scroll the page, and a drag never counts as a tap. */}
-        <div ref={scroller} onScroll={onScroll} onMouseEnter={() => setHoverPaused(true)} onMouseLeave={() => setHoverPaused(false)} onFocusCapture={() => setHoverPaused(true)} onBlurCapture={() => setHoverPaused(false)} onTouchStart={() => setHoverPaused(true)} onTouchEnd={() => window.setTimeout(() => setHoverPaused(false), 4000)} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none]">
+        <div ref={scroller} onScroll={onScroll} onMouseEnter={() => setHoverPaused(true)} onMouseLeave={() => setHoverPaused(false)} onFocusCapture={() => setHoverPaused(true)} onBlurCapture={() => setHoverPaused(false)} onTouchStart={() => { cancelAnimationFrame(animating.current); if (scroller.current) scroller.current.style.scrollSnapType = ""; setHoverPaused(true); }} onTouchEnd={() => window.setTimeout(() => setHoverPaused(false), 3500)} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none]">
           {projects.map((p) => (
             <article key={p.slug} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
               <Link to="/projects/$slug" params={{ slug: p.slug }} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`View details: ${p.name}`}>

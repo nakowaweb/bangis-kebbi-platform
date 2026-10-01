@@ -248,7 +248,31 @@ function ApplicationDetail({ id, onBack }: { id: string; onBack: () => void }) {
         <Button variant="outline" size="sm" onClick={onBack}>
           <ArrowLeft /> All applications
         </Button>
-        <StatusBadge status={application["status"]} />
+        <span className="flex flex-wrap items-center gap-2">
+          <Button variant="ghost" size="sm" onClick={async () => {
+            const fields: Record<string, string> = {};
+            for (const [key, label] of [["full_name", "Full name"], ["phone", "Phone"], ["email", "Email"], ["passport_number", "Passport number"], ["city", "City"]] as const) {
+              const value = window.prompt(`${label} (Super Admin correction)`, application[key] ?? "");
+              if (value === null) return;
+              if (value !== (application[key] ?? "")) fields[key] = value;
+            }
+            if (!Object.keys(fields).length) return;
+            const { error } = await (supabaseClient as any).rpc("admin_update_umrah_application_details", { _id: id, _fields: fields });
+            if (error) { toast.error(error.message); return; }
+            toast.success("Details corrected and logged"); refresh();
+          }}>Correct details</Button>
+          <Button variant="ghost" size="sm" className="text-destructive" onClick={async () => {
+            const number = application["application_number"];
+            const typed = window.prompt(`Permanently delete application ${number} (${application["full_name"]})?\nThis removes its documents, history, and the member's Umrah activity and notifications for it. Other members and records are not affected.\n\nType ${number} to confirm.`);
+            if (typed === null) return;
+            const { data, error } = await (supabaseClient as any).rpc("admin_delete_umrah_application", { _id: id, _confirm: typed.trim() });
+            if (error) { toast.error(error.message); return; }
+            if (Array.isArray(data) && data.length) await supabaseClient.storage.from("member-documents").remove(data);
+            toast.success(`Application ${number} deleted and logged`);
+            queryClient.invalidateQueries({ queryKey: ["umrah-applications"] }); onBack();
+          }}>Delete</Button>
+          <StatusBadge status={application["status"]} />
+        </span>
       </div>
 
       <Card>

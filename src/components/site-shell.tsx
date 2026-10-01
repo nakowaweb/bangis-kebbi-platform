@@ -276,12 +276,12 @@ function MobileMenu() {
 }
 
 /** Official links configured by the Super Admin, with canonical launch fallbacks. */
-function SocialRow({ only }: { only?: string[] } = {}) {
+function SocialRow({ only, compact = false }: { only?: string[]; compact?: boolean } = {}) {
   const links = useSocialLinks();
   const contact = useContactLinks();
   const items = (links.data ?? []).filter((item) => !only || only.includes(item.platform));
   return (
-    <div className="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap" aria-label="Follow Us">
+    <div className={compact ? "grid grid-cols-1 gap-1.5 sm:flex sm:flex-wrap sm:gap-2" : "grid grid-cols-2 gap-2 sm:flex sm:flex-wrap"} aria-label="Follow Us">
       {items.map((item) => {
         const Icon = socialIcons[item.platform];
         const label = item.display_label || platformLabels[item.platform] || item.platform;
@@ -293,7 +293,7 @@ function SocialRow({ only }: { only?: string[] } = {}) {
             rel="noopener noreferrer me"
             aria-label={label}
             title={label}
-            className="social-card flex h-11 min-w-0 items-center justify-center gap-2 rounded-md bg-primary px-3 text-primary-foreground transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:w-11 sm:px-0"
+            className={`social-card flex min-w-0 items-center justify-center rounded-md bg-primary text-primary-foreground ${compact ? "h-9 gap-1.5 px-2 sm:h-11 sm:gap-2 sm:px-3" : "h-11 gap-2 px-3"} transition hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan sm:w-11 sm:px-0`}
           >
             {Icon ? <Icon className="h-5 w-5" /> : <span className="text-xs font-bold uppercase">{label.slice(0, 2)}</span>}
             <span className="truncate text-xs font-semibold sm:sr-only">{label}</span>
@@ -334,16 +334,16 @@ function SiteFooter() {
 
   return (
     <footer className="border-t border-border bg-background text-foreground">
-      <div className="mx-auto grid max-w-7xl gap-9 px-4 py-10 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_0.8fr_1fr] lg:px-8">
-        <div>
+      <div className="mx-auto grid max-w-7xl grid-cols-3 gap-x-3 gap-y-7 px-4 py-8 sm:gap-9 sm:px-6 sm:py-10 md:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_0.8fr_1fr] lg:px-8">
+        <div className="col-span-3 md:col-span-1">
           <img src={logoAsset.url} alt="BangisKebbi.com" className="h-14 w-auto object-contain" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">{t("footer.tagline")}</p>
           <p className="mt-3 text-xs font-bold uppercase text-primary">{t("footer.company")}</p>
           <div className="mt-4"><FooterLanguage /></div>
         </div>
-        <div>
-          <h2 className="text-sm font-bold uppercase text-primary">{t("common.quickLinks")}</h2>
-          <div className="mt-4 grid gap-2 text-sm">
+        <div className="min-w-0 break-words">
+          <h2 className="text-[11px] font-bold uppercase leading-tight text-primary sm:text-sm">{t("common.quickLinks")}</h2>
+          <div className="mt-2.5 grid gap-1.5 text-xs leading-snug sm:mt-4 sm:gap-2 sm:text-sm">
             {groups.slice(0, 5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {st(key)}
@@ -351,9 +351,9 @@ function SiteFooter() {
             ))}
           </div>
         </div>
-        <div>
-          <h2 className="text-sm font-bold uppercase text-primary">{t("common.platforms")}</h2>
-          <div className="mt-4 grid gap-3 text-sm">
+        <div className="min-w-0 break-words">
+          <h2 className="text-[11px] font-bold uppercase leading-tight text-primary sm:text-sm">{t("common.platforms")}</h2>
+          <div className="mt-2.5 grid gap-1.5 text-xs leading-snug sm:mt-4 sm:gap-3 sm:text-sm">
             {groups.slice(5).map(([key, href]) => (
               <Link key={href} to={href} className="text-muted-foreground transition-colors hover:text-primary">
                 {st(key)}
@@ -362,11 +362,11 @@ function SiteFooter() {
             <Link to="/cv" className="text-muted-foreground transition-colors hover:text-primary">CV</Link>
           </div>
         </div>
-        <div>
-          <h2 className="text-sm font-bold uppercase text-primary">{t("common.followUs")}</h2>
-          <div className="mt-4"><SocialRow only={["facebook", "youtube"]} /></div>
-          <p className="mt-5 text-sm font-bold">{t("footer.foundation")}</p>
-          <p className="mt-1 text-xs text-muted-foreground">{t("footer.foundationLine")}</p>
+        <div className="min-w-0 break-words">
+          <h2 className="text-[11px] font-bold uppercase leading-tight text-primary sm:text-sm">{t("common.followUs")}</h2>
+          <div className="mt-2.5 sm:mt-4"><SocialRow compact only={["facebook", "youtube"]} /></div>
+          <p className="mt-3 text-xs font-bold leading-snug sm:mt-5 sm:text-sm">{t("footer.foundation")}</p>
+          <p className="mt-1 text-[11px] leading-snug text-muted-foreground sm:text-xs">{t("footer.foundationLine")}</p>
         </div>
       </div>
       <div className="border-t border-border bg-brand-ink px-4 py-5 text-center text-xs text-primary-foreground/70">

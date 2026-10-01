@@ -93,6 +93,24 @@ export function AdminTransactions() {
     if (error) { toast.error(error.message); return; }
     toast.success(approve ? "Approved and credited once" : "Rejected"); void reload();
   };
+  const correctTx = async (t: any) => {
+    const amount = t.status === "pending" ? window.prompt(`Amount (${t.currency})`, String(t.amount)) : null;
+    if (t.status === "pending" && amount === null) return;
+    const reference = window.prompt("Reference", t.reference ?? ""); if (reference === null) return;
+    const note = window.prompt("Note", t.note ?? ""); if (note === null) return;
+    const { error } = await db.rpc("admin_correct_umrah_transaction", { _id: t.id, _amount: amount ? Number(amount) : null, _reference: reference, _note: note });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Transaction corrected and logged"); void reload();
+  };
+  const deleteTx = async (t: any) => {
+    const code = String(t.id).slice(0, 8);
+    const typed = window.prompt(`Permanently delete this ${t.kind} of ${t.currency} ${Number(t.amount).toLocaleString()} (${t.status}) for member ${t.user_id}?${t.status === "approved" ? " Its effect on the balance will be reversed first." : ""}\n\nType ${code} to confirm.`);
+    if (typed === null) return;
+    const { data, error } = await db.rpc("admin_delete_umrah_transaction", { _id: t.id, _confirm: typed.trim() });
+    if (error) { toast.error(error.message); return; }
+    if (data) await supabase.storage.from("member-documents").remove([data as string]);
+    toast.success("Transaction deleted and logged"); void reload();
+  };
   const doRefund = async () => {
     const { error } = await db.rpc("record_umrah_refund", { _user_id: refund.user_id.trim(), _amount: Number(refund.amount), _method: refund.method, _note: refund.note || null });
     if (error) { toast.error(error.message); return; }
@@ -103,7 +121,8 @@ export function AdminTransactions() {
       {rows.length === 0 ? <p className="text-sm text-muted-foreground">No transactions recorded.</p> : <ul className="divide-y divide-border text-sm">{rows.map((t) => (
         <li key={t.id} className="flex flex-wrap items-center justify-between gap-2 py-2">
           <span><span className="font-medium capitalize">{t.kind}</span> · {t.method_code.toUpperCase()} · {t.currency} {Number(t.amount).toLocaleString()}{t.reference ? ` · Ref ${t.reference}` : ""}{t.receipt_path ? <button type="button" className="ms-2 text-xs text-primary underline" onClick={() => openReceipt(t.receipt_path)}>View receipt</button> : null}<span className="block text-xs text-muted-foreground">Member {t.user_id} · {new Date(t.created_at).toLocaleString()}</span></span>
-          {t.status === "pending" ? <span className="flex gap-2"><Button size="sm" onClick={() => review(t.id, true)}>Approve</Button><Button size="sm" variant="outline" onClick={() => review(t.id, false)}>Reject</Button></span> : <Badge variant="secondary" className="capitalize">{t.status}</Badge>}
+          <span className="flex flex-wrap items-center gap-2">{t.status === "pending" ? <><Button size="sm" onClick={() => review(t.id, true)}>Approve</Button><Button size="sm" variant="outline" onClick={() => review(t.id, false)}>Reject</Button></> : <Badge variant="secondary" className="capitalize">{t.status}</Badge>}
+            <Button size="sm" variant="ghost" onClick={() => correctTx(t)}>Correct</Button><Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteTx(t)}>Delete</Button></span>
         </li>))}</ul>}
     </CardContent></Card>
     <Card><CardHeader><CardTitle className="text-base">Record a refund</CardTitle><CardDescription>Deducted from the member's recorded balance and logged in the audit trail.</CardDescription></CardHeader><CardContent className="grid gap-3 sm:grid-cols-2">
@@ -117,7 +136,21 @@ export function AdminTransactions() {
 }
 
 export function AdminGoals() {
-  const { rows } = useRows<any>("umrah_goals", "created_at", false);
+  const { rows, reload } = useRows<any>("umrah_goals", "created_at", false);
+  const editGoal = async (g: any) => {
+    const target = window.prompt(`Target amount (${g.currency}); leave empty for none`, g.target_amount ?? ""); if (target === null) return;
+    const status = window.prompt("Status (not_started, active, completed, paused)", g.status); if (status === null) return;
+    const { error } = await db.rpc("admin_update_umrah_goal", { _user_id: g.user_id, _target: target.trim() ? Number(target) : null, _status: status.trim(), _package_id: g.package_id });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Goal corrected and logged"); void reload();
+  };
+  const deleteGoal = async (g: any) => {
+    const typed = window.prompt(`Permanently delete the Umrah goal of member ${g.user_id}? Only possible after its transactions are deleted.\n\nType DELETE GOAL to confirm.`);
+    if (typed === null) return;
+    const { error } = await db.rpc("admin_delete_umrah_goal", { _user_id: g.user_id, _confirm: typed.trim() });
+    if (error) { toast.error(error.message); return; }
+    toast.success("Goal deleted and logged"); void reload();
+  };
   const sendMessage = useServerFn(sendActiveUmrahGoalMessage);
   const [message, setMessage] = useState({ title: "", body: "" });
   const [sending, setSending] = useState(false);
@@ -134,7 +167,7 @@ export function AdminGoals() {
     }
   };
   return <div className="grid gap-4"><Card><CardHeader><CardTitle className="text-base">Member goals</CardTitle></CardHeader><CardContent>
-    {rows.length === 0 ? <p className="text-sm text-muted-foreground">No member goals yet.</p> : <ul className="divide-y divide-border text-sm">{rows.map((g) => <li key={g.id} className="flex flex-wrap justify-between gap-2 py-2"><span>Member {g.user_id}<span className="block text-xs capitalize text-muted-foreground">{String(g.status).replace("_", " ")}</span></span><span>{g.currency} {Number(g.balance).toLocaleString()} / {g.target_amount ? Number(g.target_amount).toLocaleString() : "—"}</span></li>)}</ul>}
+    {rows.length === 0 ? <p className="text-sm text-muted-foreground">No member goals yet.</p> : <ul className="divide-y divide-border text-sm">{rows.map((g) => <li key={g.id} className="flex flex-wrap justify-between gap-2 py-2"><span>Member {g.user_id}<span className="block text-xs capitalize text-muted-foreground">{String(g.status).replace("_", " ")}</span></span><span className="flex flex-wrap items-center gap-2">{g.currency} {Number(g.balance).toLocaleString()} / {g.target_amount ? Number(g.target_amount).toLocaleString() : "—"}<Button size="sm" variant="ghost" onClick={() => editGoal(g)}>Correct</Button><Button size="sm" variant="ghost" className="text-destructive" onClick={() => deleteGoal(g)}>Delete</Button></span></li>)}</ul>}
   </CardContent></Card>
   <Card><CardHeader><CardTitle className="text-base">Message active goal members</CardTitle><CardDescription>Only the Super Admin can send this in-app message. The recipient count and message are recorded in the audit log.</CardDescription></CardHeader><CardContent className="grid gap-3">
     <div className="grid gap-1"><Label>Title</Label><Input value={message.title} maxLength={160} onChange={(e) => setMessage({ ...message, title: e.target.value })} /></div>
