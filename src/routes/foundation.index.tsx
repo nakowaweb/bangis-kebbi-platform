@@ -72,10 +72,6 @@ function FoundationPage() {
   const whatWeDo = content.filter((entry) => entry.content_type === "foundation_what_we_do");
   const programs = supportPrograms.map((program, index) => ({ program, entry: whatWeDo.find((item) => item.slug === program.slug) ?? whatWeDo[index] }));
 
-  const projects = (overview.data?.projects ?? []) as FoundationProject[];
-  const active = projects.filter((project) => project.status === "planned" || project.status === "active");
-  const completed = projects.filter((project) => project.status === "completed");
-  const updates = overview.data?.updates ?? [];
 
   return (
     <main>
