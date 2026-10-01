@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useSiteLayout, useSiteText } from "@/lib/use-site-layout";
 import {
+  Pointer,
   ArrowRight,
   Cpu,
   MapPin,
@@ -319,33 +320,16 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} >
       {!full ? <div className="service-strip mb-6 overflow-hidden rounded-xl border border-brand-cyan/25 py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase sm:text-sm">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span className="service-strip-text">{service.title}</span><span className="text-brand-green">•</span></span>)}</div></div> : null}
-      <ul className="grid gap-2.5 md:hidden">
+      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
         {visibleServices.map((service, index) => {
           const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
-          const sub = serviceSubtitles[service.slug];
-          return <li key={service.slug}><Link to="/services/$slug" params={{ slug: service.slug }} className="group grid min-h-[72px] grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border border-border bg-card px-3 py-2 shadow-sm transition active:scale-[0.99] active:bg-secondary hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
-            <img src={mini} alt="" aria-hidden="true" loading="lazy" width={256} height={256} className="service-mini size-14 shrink-0 object-contain" />
-            <span className="min-w-0"><strong className="block truncate font-display text-sm font-bold">{service.title}</strong><span className="block truncate text-xs text-muted-foreground">{sub ? (language === "ar" ? sub.ar : language === "ha" ? sub.ha : sub.en) : service.description}</span></span>
-            <span className="inline-flex shrink-0 items-center gap-1 text-xs font-bold text-primary">{t("common.viewMore")} <ArrowRight className="shortcut-arrow size-3.5 rtl:rotate-180" aria-hidden="true" /></span>
+          return <li key={service.slug} className="min-w-0"><Link to="/services/$slug" params={{ slug: service.slug }} className="motion-card group flex h-full min-h-[168px] flex-col items-center justify-between gap-2 rounded-xl border border-border bg-card px-3 py-4 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-platform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
+            <img src={mini} alt="" aria-hidden="true" loading="lazy" width={256} height={256} className="service-mini size-16 shrink-0 object-contain drop-shadow-md sm:size-20" />
+            <strong className="font-display text-sm font-bold leading-5 sm:text-base">{service.title}</strong>
+            <span className="inline-flex items-center gap-1 whitespace-nowrap text-xs font-bold text-primary"><span aria-hidden="true">[</span><Pointer className="size-3.5" aria-hidden="true" />{t("common.viewMore")}<ArrowRight className="shortcut-arrow size-3.5 rtl:rotate-180" aria-hidden="true" /><span aria-hidden="true">]</span></span>
           </Link></li>;
         })}
       </ul>
-      <div className="hidden gap-4 md:grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
-        {visibleServices.map((service, index) => {
-          const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
-          return <article key={service.slug} className="motion-card group relative flex min-w-0 flex-col overflow-hidden rounded-lg border border-border bg-card shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-platform">
-            <div className="relative aspect-[8/5] overflow-hidden bg-secondary">
-              <SafeImage src={service.image} alt={service.imageAlt} loading="lazy" width={1200} height={752} className="size-full object-cover transition duration-500 group-hover:scale-[1.03]" />
-            </div>
-            <div className="relative flex flex-1 flex-col px-5 pb-5 pt-8">
-              <img src={mini} alt="" aria-hidden="true" loading="lazy" width={256} height={256} className="service-mini absolute -top-9 left-3 size-16 object-contain drop-shadow-md rtl:left-auto rtl:right-3" />
-              <h3 className="font-display text-lg font-bold leading-6">{service.title}</h3>
-              <p className="mt-2 flex-1 text-sm leading-6 text-muted-foreground">{service.description}</p>
-              <Link to="/services/$slug" params={{ slug: service.slug }} className="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-primary after:absolute after:inset-0 after:content-[''] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded-sm">{t("common.viewMore")} <ArrowRight className="shortcut-arrow size-4 rtl:rotate-180" aria-hidden="true" /></Link>
-            </div>
-          </article>;
-        })}
-      </div>
     </SectionShell>
   );
 }

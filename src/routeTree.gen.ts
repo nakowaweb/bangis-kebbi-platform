@@ -13,7 +13,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as BlogRouteImport } from './routes/blog'
-import { Route as BusinessRouteImport } from './routes/business'
 import { Route as CommunityRouteImport } from './routes/community'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as CredentialsRouteImport } from './routes/credentials'
@@ -37,6 +36,7 @@ import { Route as AuthenticatedMyUmrahRouteImport } from './routes/_authenticate
 import { Route as AuthCallbackRouteImport } from './routes/auth.callback'
 import { Route as BlogIndexRouteImport } from './routes/blog.index'
 import { Route as BlogSlugRouteImport } from './routes/blog.$slug'
+import { Route as BusinessIndexRouteImport } from './routes/business.index'
 import { Route as FoundationIndexRouteImport } from './routes/foundation.index'
 import { Route as FoundationSlugRouteImport } from './routes/foundation.$slug'
 import { Route as ProjectsIndexRouteImport } from './routes/projects.index'
@@ -61,11 +61,6 @@ const AboutRoute = AboutRouteImport.update({
 const BlogRoute = BlogRouteImport.update({
   id: '/blog',
   path: '/blog',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const BusinessRoute = BusinessRouteImport.update({
-  id: '/business',
-  path: '/business',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CommunityRoute = CommunityRouteImport.update({
@@ -183,6 +178,11 @@ const BlogSlugRoute = BlogSlugRouteImport.update({
   path: '/$slug',
   getParentRoute: () => BlogRoute,
 } as any)
+const BusinessIndexRoute = BusinessIndexRouteImport.update({
+  id: '/business/',
+  path: '/business/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FoundationIndexRoute = FoundationIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -218,7 +218,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/blog': typeof BlogRouteWithChildren
-  '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/credentials': typeof CredentialsRoute
@@ -245,6 +244,7 @@ export interface FileRoutesByFullPath {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/business/': typeof BusinessIndexRoute
   '/foundation/': typeof FoundationIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -252,7 +252,6 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
-  '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/credentials': typeof CredentialsRoute
@@ -276,6 +275,7 @@ export interface FileRoutesByTo {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog': typeof BlogIndexRoute
+  '/business': typeof BusinessIndexRoute
   '/foundation': typeof FoundationIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/services': typeof ServicesIndexRoute
@@ -286,7 +286,6 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/about': typeof AboutRoute
   '/blog': typeof BlogRouteWithChildren
-  '/business': typeof BusinessRoute
   '/community': typeof CommunityRoute
   '/contact': typeof ContactRoute
   '/credentials': typeof CredentialsRoute
@@ -313,6 +312,7 @@ export interface FileRoutesById {
   '/projects/$slug': typeof ProjectsSlugRoute
   '/services/$slug': typeof ServicesSlugRoute
   '/blog/': typeof BlogIndexRoute
+  '/business/': typeof BusinessIndexRoute
   '/foundation/': typeof FoundationIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/services/': typeof ServicesIndexRoute
@@ -323,7 +323,6 @@ export interface FileRouteTypes {
     | '/'
     | '/about'
     | '/blog'
-    | '/business'
     | '/community'
     | '/contact'
     | '/credentials'
@@ -350,6 +349,7 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/services/$slug'
     | '/blog/'
+    | '/business/'
     | '/foundation/'
     | '/projects/'
     | '/services/'
@@ -357,7 +357,6 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/about'
-    | '/business'
     | '/community'
     | '/contact'
     | '/credentials'
@@ -381,6 +380,7 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/services/$slug'
     | '/blog'
+    | '/business'
     | '/foundation'
     | '/projects'
     | '/services'
@@ -390,7 +390,6 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/about'
     | '/blog'
-    | '/business'
     | '/community'
     | '/contact'
     | '/credentials'
@@ -417,6 +416,7 @@ export interface FileRouteTypes {
     | '/projects/$slug'
     | '/services/$slug'
     | '/blog/'
+    | '/business/'
     | '/foundation/'
     | '/projects/'
     | '/services/'
@@ -427,7 +427,6 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AboutRoute: typeof AboutRoute
   BlogRoute: typeof BlogRouteWithChildren
-  BusinessRoute: typeof BusinessRoute
   CommunityRoute: typeof CommunityRoute
   ContactRoute: typeof ContactRoute
   CredentialsRoute: typeof CredentialsRoute
@@ -446,6 +445,7 @@ export interface RootRouteChildren {
   TermsRoute: typeof TermsRoute
   UmrahRoute: typeof UmrahRoute
   AuthCallbackRoute: typeof AuthCallbackRoute
+  BusinessIndexRoute: typeof BusinessIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -476,13 +476,6 @@ declare module '@tanstack/react-router' {
       path: '/blog'
       fullPath: '/blog'
       preLoaderRoute: typeof BlogRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/business': {
-      id: '/business'
-      path: '/business'
-      fullPath: '/business'
-      preLoaderRoute: typeof BusinessRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/community': {
@@ -646,6 +639,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof BlogSlugRouteImport
       parentRoute: typeof BlogRoute
     }
+    '/business/': {
+      id: '/business/'
+      path: '/business'
+      fullPath: '/business/'
+      preLoaderRoute: typeof BusinessIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/foundation/': {
       id: '/foundation/'
       path: '/'
@@ -765,7 +765,6 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AboutRoute: AboutRoute,
   BlogRoute: BlogRouteWithChildren,
-  BusinessRoute: BusinessRoute,
   CommunityRoute: CommunityRoute,
   ContactRoute: ContactRoute,
   CredentialsRoute: CredentialsRoute,
@@ -784,6 +783,7 @@ const rootRouteChildren: RootRouteChildren = {
   TermsRoute: TermsRoute,
   UmrahRoute: UmrahRoute,
   AuthCallbackRoute: AuthCallbackRoute,
+  BusinessIndexRoute: BusinessIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
