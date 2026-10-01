@@ -34,6 +34,7 @@ import { isWorldLanguage, worldLanguages } from "@/lib/i18n/world-languages";
 import { LanguageAvailability } from "@/components/admin/language-availability";
 import { MembersManager } from "@/components/admin/members-manager";
 import { SiteLayoutManager } from "@/components/admin/site-layout-manager";
+import { readableError } from "@/components/admin/current-site-importer";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { supabase } from "@/integrations/supabase/client";
 import { pageHead } from "@/lib/seo";
@@ -156,15 +157,15 @@ function AdminPage() {
       payload: { ...Object.fromEntries(Object.entries(editor.payloadExtra).filter(([k]) => !["videoUrl","videoPath","videoCaption","heroIntervalSeconds"].includes(k))), ...(editor.slug === "hero" && editor.heroInterval ? { heroIntervalSeconds: Math.min(30, Math.max(1, Number(editor.heroInterval) || 3)) } : {}), ...(editor.videoUrl ? { videoUrl: editor.videoUrl } : {}), ...(editor.videoPath ? { videoPath: editor.videoPath } : {}), ...(editor.videoCaption ? { videoCaption: editor.videoCaption } : {}) },
     } }),
     onSuccess: () => { toast.success(editor.id ? "Content updated" : "Content created"); setEditor(emptyEditor); refresh(); },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => toast.error(readableError(error)),
   });
   const archiveMutation = useMutation({
     mutationFn: (id: string) => archiveEntry({ data: { id } }),
     onSuccess: () => { toast.success("Content archived"); setEditor(emptyEditor); refresh(); },
-    onError: (error) => toast.error(error.message),
+    onError: (error) => toast.error(readableError(error)),
   });
-  const restoreMutation = useMutation({ mutationFn: (id: string) => restoreEntry({ data: { id } }), onSuccess: () => { toast.success("Content restored as a draft"); setEditor(emptyEditor); refresh(); }, onError: (error) => toast.error(error.message) });
-  const deleteMutation = useMutation({ mutationFn: (id: string) => deleteEntry({ data: { id } }), onSuccess: () => { toast.success("Content permanently deleted"); setEditor(emptyEditor); refresh(); }, onError: (error) => toast.error(error.message) });
+  const restoreMutation = useMutation({ mutationFn: (id: string) => restoreEntry({ data: { id } }), onSuccess: () => { toast.success("Content restored as a draft"); setEditor(emptyEditor); refresh(); }, onError: (error) => toast.error(readableError(error)) });
+  const deleteMutation = useMutation({ mutationFn: (id: string) => deleteEntry({ data: { id } }), onSuccess: () => { toast.success("Content permanently deleted"); setEditor(emptyEditor); refresh(); }, onError: (error) => toast.error(readableError(error)) });
 
   const entries = useMemo(() => (workspace.data?.entries ?? []).filter((entry) => (area === "all" || entry.content_type === area) && `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())), [workspace.data?.entries, query, area]);
 
@@ -233,7 +234,7 @@ function AdminPage() {
               <ContentEditor editor={editor} setEditor={setEditor} saving={saveMutation.isPending} onSave={() => saveMutation.mutate()} onArchive={editor.id && editor.status !== "archived" ? () => archiveMutation.mutate(editor.id as string) : undefined} onRestore={editor.id && editor.status === "archived" ? () => restoreMutation.mutate(editor.id as string) : undefined} onDelete={editor.id && editor.status === "archived" ? () => deleteMutation.mutate(editor.id as string) : undefined} />
             </div>
           </TabsContent>
-          <TabsContent value="settings" className="grid gap-5"><SiteLayoutManager onChanged={refresh} />{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(error instanceof Error ? error.message : "Settings could not be saved"); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
+          <TabsContent value="settings" className="grid gap-5"><SiteLayoutManager onChanged={refresh} />{workspace.data?.settings ? <SettingsEditor settings={workspace.data.settings} onSave={async (data) => { try { await saveSettings({ data }); toast.success("Website settings updated"); refresh(); } catch (error) { toast.error(readableError(error)); } }} /> : <EmptyState text="Website settings are unavailable." />}</TabsContent>
           <TabsContent value="languages"><AdminTranslationManager /></TabsContent>
           <TabsContent value="social"><AdminSocialManager /></TabsContent>
           <TabsContent value="credentials"><AdminCredentialManager entries={(workspace.data?.entries ?? []).filter((entry) => entry.content_type === "business" && entry.category === "company_credential")} onChanged={refresh} /></TabsContent>
@@ -270,7 +271,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
     </div>
     <Field label="Tags / tools (comma separated)"><Input value={editor.tags} onChange={(event) => update("tags", event.target.value)} /></Field>
     <MediaUploadField label="Main image" kind="image" value={editor.imagePath} onChange={(path) => update("imagePath", path)} />
-    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">Homepage hero slides use addresses hero-feature-1 through hero-feature-3 and category hero_carousel. Quick-navigation cards use addresses quick-nav-home, quick-nav-services, quick-nav-umrah, quick-nav-projects, quick-nav-blog, quick-nav-foundation, quick-nav-community and quick-nav-cv with category quick_navigation. Use Order to reorder; publish/unpublish or the visibility switch to show/hide; replace or remove the Main image below.</p> : null}
+    {editor.contentType === "homepage" ? <p className="text-xs text-muted-foreground">The rotating homepage background pictures are managed in Settings → Homepage → Hero Slideshow (these hero-feature-1 to hero-feature-3 entries are used only when that list is empty). Quick-navigation cards use addresses quick-nav-home, quick-nav-services, quick-nav-umrah, quick-nav-projects, quick-nav-blog, quick-nav-foundation, quick-nav-community and quick-nav-cv with category quick_navigation. Use Order to reorder; publish/unpublish or the visibility switch to show/hide; replace or remove the Main image below.</p> : null}
     <Field label="Image description (alt text)"><Input value={editor.imageAlt} maxLength={300} onChange={(event) => update("imageAlt", event.target.value)} /></Field>
     {editor.contentType === "homepage" && editor.slug === "hero" ? <Field label="Hero carousel interval (seconds, 1–30; default 3)"><Input type="number" min={1} max={30} step={0.5} value={editor.heroInterval} placeholder="3" onChange={(event) => update("heroInterval", event.target.value)} /></Field> : null}
     <GalleryPicker value={editor.gallery} onChange={(value) => update("gallery", value)} />
