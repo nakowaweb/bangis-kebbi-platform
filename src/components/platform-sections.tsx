@@ -547,45 +547,64 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
 export function SelectedWorkSection({ items }: { items?: Array<{ id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null }> | undefined }) {
   const { t } = useLanguage();
   const scroller = useRef<HTMLDivElement>(null);
-  const [filter, setFilter] = useState("all");
-  const projects = (items ?? []).map((item) => {
-    const payload = typeof item.payload === "object" && item.payload && !Array.isArray(item.payload) ? (item.payload as Record<string, unknown>) : {};
-    return { slug: item.slug, name: item.title, category: item.category ?? (typeof payload["category"] === "string" ? String(payload["category"]) : ""), image: item.imageUrl, alt: item.image_alt ?? item.title };
-  });
-  const categories = Array.from(new Set(projects.map((p) => p.category).filter(Boolean)));
-  const visible = filter === "all" ? projects : projects.filter((p) => p.category === filter);
-  const scroll = (dir: number) => { const el = scroller.current; if (!el) return; const rtl = getComputedStyle(el).direction === "rtl"; const calm = document.documentElement.dataset["motion"] !== "full" && document.documentElement.dataset["motion"] !== undefined || window.matchMedia("(prefers-reduced-motion: reduce)").matches; el.scrollBy({ left: (rtl ? -dir : dir) * el.clientWidth * 0.8, behavior: calm ? "auto" : "smooth" }); };
+  const [userPaused, setUserPaused] = useState(false);
+  const [hoverPaused, setHoverPaused] = useState(false);
+  const [canAuto, setCanAuto] = useState(false);
+  const [page, setPage] = useState(0);
+  const [pages, setPages] = useState(1);
+  const projects = (items ?? []).map((item) => ({ slug: item.slug, name: item.title, image: item.imageUrl, alt: item.image_alt ?? item.title }));
+  const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const scroll = useCallback((dir: number) => {
+    const el = scroller.current; if (!el) return;
+    const rtl = getComputedStyle(el).direction === "rtl";
+    const max = el.scrollWidth - el.clientWidth;
+    const atEnd = Math.abs(el.scrollLeft) >= max - 4;
+    if (dir > 0 && atEnd) { el.scrollTo({ left: 0, behavior: calm() ? "auto" : "smooth" }); return; }
+    el.scrollBy({ left: (rtl ? -dir : dir) * el.clientWidth * 0.8, behavior: calm() ? "auto" : "smooth" });
+  }, []);
+  useEffect(() => {
+    const check = () => setCanAuto(!calm());
+    check();
+    const observer = new MutationObserver(check);
+    observer.observe(document.documentElement, { attributes: true, attributeFilter: ["data-motion"] });
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
+    if (!canAuto || userPaused || hoverPaused || projects.length < 2) return;
+    const timer = window.setInterval(() => scroll(1), 5000);
+    return () => window.clearInterval(timer);
+  }, [canAuto, userPaused, hoverPaused, projects.length, scroll]);
+  const onScroll = () => { const el = scroller.current; if (!el) return; const n = Math.max(1, Math.ceil(el.scrollWidth / el.clientWidth)); setPages(n); setPage(Math.min(n - 1, Math.round(Math.abs(el.scrollLeft) / el.clientWidth))); };
+  useEffect(() => { onScroll(); }, [projects.length]);
   if (!projects.length) return null;
+  const round = "size-11 rounded-full border-brand-cyan/50 bg-brand-ink text-primary-foreground hover:bg-brand-cyan/15 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink";
   return (
     <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
-        <div className="flex flex-col gap-4 lg:flex-row lg:items-center">
-          <div className="flex min-w-0 items-center gap-4 lg:flex-1">
-            <h2 id="selected-work-title" className="min-w-0 font-display text-[1.65rem] font-bold leading-tight sm:text-3xl lg:shrink-0">{t("home.projectsTitle")}</h2>
-            <span className="hidden h-px flex-1 bg-gradient-to-r from-brand-gold to-transparent sm:block" aria-hidden="true" />
-          </div>
-          <div className="flex items-center justify-between gap-2 lg:shrink-0 lg:justify-start">
-            <Button variant="outline" className="me-auto lg:me-0 border-brand-cyan/40 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" />Media Gallery</Link></Button>
-            <Button type="button" variant="outline" size="icon" onClick={() => scroll(-1)} aria-label="Previous projects" className="rounded-full border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></Button>
-            <Button type="button" variant="outline" size="icon" onClick={() => scroll(1)} aria-label="Next projects" className="rounded-full border-primary-foreground/30 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"><ArrowRight className="size-4 rtl:rotate-180" /></Button>
+        <div className="flex flex-wrap items-center gap-3">
+          <h2 id="selected-work-title" className="min-w-0 flex-1 font-display text-[1.65rem] font-bold leading-tight sm:text-3xl">{t("home.projectsTitle")}</h2>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" />Media Gallery</Link></Button>
+            {canAuto ? <Button type="button" variant="outline" size="icon" onClick={() => setUserPaused((v) => !v)} aria-label={userPaused ? "Resume automatic scrolling" : "Pause automatic scrolling"} aria-pressed={userPaused} className={round}>{userPaused ? <Play className="size-4" /> : <Pause className="size-4" />}</Button> : null}
+            <Button type="button" variant="outline" size="icon" onClick={() => scroll(-1)} aria-label="Previous projects" className={round}><ArrowRight className="size-4 rotate-180 rtl:rotate-0" /></Button>
+            <Button type="button" variant="outline" size="icon" onClick={() => scroll(1)} aria-label="Next projects" className={`${round} bg-brand-cyan/15`}><ArrowRight className="size-4 rtl:rotate-180" /></Button>
           </div>
         </div>
-        {categories.length > 1 && <div className="mt-4 flex max-w-full gap-2 overflow-x-auto overscroll-x-contain pb-1 [scrollbar-width:none]" role="group" aria-label="Filter projects">
-          {["all", ...categories].map((c) => <Button key={c} type="button" size="sm" variant="outline" aria-pressed={filter === c} onClick={() => setFilter(c)} className={`shrink-0 ${filter === c ? "border-brand-cyan bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft" : "border-primary-foreground/25 bg-transparent text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground"}`}>{c === "all" ? "All" : c}</Button>)}
-        </div>}
-        <div ref={scroller} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain scroll-smooth pb-2 touch-pan-x motion-reduce:scroll-auto">
-          {visible.map((p) => (
-            <article key={p.slug} className="motion-card w-[85%] shrink-0 snap-start overflow-hidden rounded-lg border border-primary-foreground/15 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
-              <Link to="/projects/$slug" params={{ slug: p.slug }} className="block aspect-[16/9] overflow-hidden bg-brand-ink" aria-label={`${t("common.viewProject")}: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={540} className="size-full object-cover transition duration-500 hover:scale-[1.03] motion-reduce:transition-none" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
+        {/* Native horizontal scrolling: vertical swipes and the mouse wheel still scroll the page, and a drag never counts as a tap. */}
+        <div ref={scroller} onScroll={onScroll} onMouseEnter={() => setHoverPaused(true)} onMouseLeave={() => setHoverPaused(false)} onFocusCapture={() => setHoverPaused(true)} onBlurCapture={() => setHoverPaused(false)} onTouchStart={() => setHoverPaused(true)} onTouchEnd={() => window.setTimeout(() => setHoverPaused(false), 4000)} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none]">
+          {projects.map((p) => (
+            <article key={p.slug} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
+              <Link to="/projects/$slug" params={{ slug: p.slug }} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`View details: ${p.name}`}>
+                {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={600} draggable={false} className="size-full object-cover transition duration-500 hover:scale-[1.03] motion-reduce:transition-none" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
               </Link>
-              <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 p-4">
-                <h3 className="truncate font-display text-base font-bold">{p.name}</h3>
-                <Link to="/projects/$slug" params={{ slug: p.slug }} className="inline-flex min-h-9 shrink-0 items-center gap-1 rounded-md border border-brand-cyan/50 px-3 text-xs font-semibold hover:bg-primary-foreground/10">View Case Study <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
+              <div className="flex flex-col gap-3 p-4 sm:flex-row sm:items-center">
+                <h3 className="min-w-0 flex-1 font-display text-base font-bold"><Link to="/projects/$slug" params={{ slug: p.slug }} className="hover:text-brand-cyan">{p.name}</Link></h3>
+                <Link to="/projects/$slug" params={{ slug: p.slug }} className="inline-flex min-h-10 shrink-0 items-center justify-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">View Details <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
               </div>
             </article>
           ))}
         </div>
+        {pages > 1 ? <div className="mt-4 flex justify-center gap-2" aria-hidden="true">{Array.from({ length: pages }, (_, i) => <span key={i} className={`size-2 rounded-full ${i === page ? "bg-brand-cyan" : "bg-primary-foreground/25"}`} />)}</div> : null}
       </div>
     </section>
   );
