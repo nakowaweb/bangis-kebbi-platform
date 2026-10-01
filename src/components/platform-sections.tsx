@@ -560,6 +560,7 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
 type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null };
 export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | undefined; updates?: HubItem[] | undefined }) {
   const t = useSiteText();
+  const { language } = useLanguage();
   const { carouselSeconds } = useSiteLayout();
   const scroller = useRef<HTMLDivElement>(null);
   const animating = useRef(0);
@@ -641,14 +642,14 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
             const linkProps = p.kind === "update" ? ({ to: "/blog/$slug", params: { slug: p.slug } } as const) : ({ to: "/projects/$slug", params: { slug: p.slug } } as const);
             return (
             <article key={`${p.kind}-${p.id}`} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
-              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`View details: ${p.name}`}>
+              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
                 {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
               </Link>
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}
                 <h3 className="min-w-0 font-display text-base font-bold"><Link {...linkProps} className="hover:text-brand-cyan">{p.name}</Link></h3>
                 {p.excerpt ? <p className="line-clamp-2 text-sm text-primary-foreground/75">{p.excerpt}</p> : null}
-                <Link {...linkProps} className="inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">View Details <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
+                <Link {...linkProps} className="inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">{language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View Details"} <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
               </div>
             </article>
             );
