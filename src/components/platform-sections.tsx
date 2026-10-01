@@ -579,9 +579,10 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const imageKey = projects.map((p) => p.image ?? "").join("|");
   // Warm the browser cache for every upcoming card picture once the section is near, so slides arrive complete.
   useEffect(() => {
-    if (!visible || !imageKey) return;
-    const imgs = imageKey.split("|").filter(Boolean).map((src) => { const img = new Image(); img.decoding = "async"; img.src = src; return img; });
-    return () => { imgs.length = 0; };
+    if (!imageKey) return;
+    // Start shortly after the page settles so the hero picture keeps priority.
+    const timer = window.setTimeout(() => imageKey.split("|").filter(Boolean).forEach((src) => { const img = new Image(); img.decoding = "async"; img.src = src; }), visible ? 0 : 1200);
+    return () => window.clearTimeout(timer);
   }, [visible, imageKey]);
   const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   /** Eased ~0.9s glide by one card (snap is lifted during the glide so it cannot jerk the motion). */
@@ -637,7 +638,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
     return () => window.clearInterval(timer);
   }, [canAuto, visible, userPaused, hoverPaused, projects.length, scroll, carouselSeconds]);
   useEffect(() => () => cancelAnimationFrame(animating.current), []);
-  const onScroll = () => { const el = scroller.current; if (!el) return; const n = Math.max(1, Math.ceil(el.scrollWidth / el.clientWidth)); setPages(n); setPage(Math.min(n - 1, Math.round(Math.abs(el.scrollLeft) / el.clientWidth))); };
+  const onScroll = () => { const el = scroller.current; if (!el) return; const width = looped ? (el.scrollWidth + 16) / 2 : el.scrollWidth; const n = Math.max(1, Math.ceil(width / el.clientWidth)); setPages(n); setPage(Math.min(n - 1, Math.round((Math.abs(el.scrollLeft) % width) / el.clientWidth))); };
   useEffect(() => { onScroll(); }, [projects.length]);
   if (!projects.length) return null;
   const round = "size-11 rounded-full border-brand-cyan/50 bg-brand-ink text-primary-foreground hover:bg-brand-cyan/15 hover:text-primary-foreground focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-brand-ink";
@@ -645,7 +646,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
     <section className="bg-brand-ink py-10 text-primary-foreground sm:py-14" aria-labelledby="selected-work-title">
       <div className="mx-auto max-w-7xl px-4 sm:px-6">
         <div className="grid grid-cols-[minmax(0,1fr)_auto] items-center gap-3 sm:flex sm:flex-wrap">
-          <h2 id="selected-work-title" className="min-w-0 flex-1 font-display text-[1.65rem] font-bold leading-tight sm:text-3xl">{t("home.projectsTitle")}</h2>
+          <h2 id="selected-work-title" className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-tight tracking-wide sm:text-3xl">{t("home.projectsTitle")}</h2>
           <div className="flex items-center gap-2">
             <Button variant="outline" className="border-brand-cyan/50 bg-primary-foreground/5 text-primary-foreground hover:bg-primary-foreground/10 hover:text-primary-foreground" asChild><Link to="/projects"><FolderKanban className="size-4 text-brand-cyan" aria-hidden="true" /><span className="hidden sm:inline">Media Gallery</span><span className="sr-only sm:hidden">Media Gallery</span></Link></Button>
             {canAuto ? <Button type="button" variant="outline" size="icon" onClick={() => setUserPaused((v) => !v)} aria-label={userPaused ? "Resume automatic scrolling" : "Pause automatic scrolling"} aria-pressed={userPaused} className={round}>{userPaused ? <Play className="size-4" /> : <Pause className="size-4" />}</Button> : null}
@@ -654,13 +655,14 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
           </div>
         </div>
         {/* Native horizontal scrolling: vertical swipes and the mouse wheel still scroll the page, and a drag never counts as a tap. */}
-        <div ref={scroller} onScroll={onScroll} onMouseEnter={() => setHoverPaused(true)} onMouseLeave={() => setHoverPaused(false)} onFocusCapture={() => setHoverPaused(true)} onBlurCapture={() => setHoverPaused(false)} onTouchStart={() => { cancelAnimationFrame(animating.current); if (scroller.current) scroller.current.style.scrollSnapType = ""; setHoverPaused(true); }} onTouchEnd={() => window.setTimeout(() => setHoverPaused(false), 3500)} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none]">
-          {projects.map((p) => {
+        <div ref={scroller} data-loop={looped ? "1" : "0"} onScroll={onScroll} onMouseEnter={() => setHoverPaused(true)} onMouseLeave={() => setHoverPaused(false)} onFocusCapture={() => setHoverPaused(true)} onBlurCapture={() => setHoverPaused(false)} onTouchStart={() => { cancelAnimationFrame(animating.current); if (scroller.current) scroller.current.style.scrollSnapType = ""; setHoverPaused(true); }} onTouchEnd={() => window.setTimeout(() => setHoverPaused(false), 3500)} className="selected-work-track mt-5 flex snap-x snap-mandatory gap-4 overflow-x-auto overscroll-x-contain pb-2 [scrollbar-width:none]">
+          {track.map((p, index) => {
+            const clone = p.copy === 1;
             const linkProps = p.kind === "update" ? ({ to: "/blog/$slug", params: { slug: p.slug } } as const) : ({ to: "/projects/$slug", params: { slug: p.slug } } as const);
             return (
-            <article key={`${p.kind}-${p.id}`} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
-              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-brand-ink" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={p.alt} loading="lazy" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
+            <article key={`${p.kind}-${p.id}-${p.copy}`} aria-hidden={clone || undefined} inert={clone || undefined} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
+              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-primary-foreground/10" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
+                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading={index < 3 ? "eager" : "lazy"} fetchPriority={index < 2 ? "high" : "auto"} decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
               </Link>
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}
