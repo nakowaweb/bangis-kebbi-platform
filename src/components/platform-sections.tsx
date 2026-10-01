@@ -574,6 +574,15 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const newsCards = [...(updates ?? [])].sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? "")).map((item) => ({ kind: "update" as const, id: item.id, slug: item.slug, name: item.title, excerpt: item.summary, image: item.imageUrl, alt: item.image_alt ?? item.title }));
   const projectCards = (items ?? []).map((item) => ({ kind: "project" as const, id: item.id, slug: item.slug, name: item.title, excerpt: null as string | null, image: item.imageUrl, alt: item.image_alt ?? item.title }));
   const projects = [...newsCards, ...projectCards].filter((c) => (seen.has(c.id) ? false : (seen.add(c.id), true)));
+  const looped = projects.length >= 3;
+  const track = looped ? [...projects.map((p) => ({ ...p, copy: 0 })), ...projects.map((p) => ({ ...p, copy: 1 }))] : projects.map((p) => ({ ...p, copy: 0 }));
+  const imageKey = projects.map((p) => p.image ?? "").join("|");
+  // Warm the browser cache for every upcoming card picture once the section is near, so slides arrive complete.
+  useEffect(() => {
+    if (!visible || !imageKey) return;
+    const imgs = imageKey.split("|").filter(Boolean).map((src) => { const img = new Image(); img.decoding = "async"; img.src = src; return img; });
+    return () => { imgs.length = 0; };
+  }, [visible, imageKey]);
   const calm = () => (document.documentElement.dataset["motion"] ?? "full") !== "full" || window.matchMedia("(prefers-reduced-motion: reduce)").matches;
   /** Eased ~0.9s glide by one card (snap is lifted during the glide so it cannot jerk the motion). */
   const glideTo = useCallback((el: HTMLDivElement, target: number) => {
