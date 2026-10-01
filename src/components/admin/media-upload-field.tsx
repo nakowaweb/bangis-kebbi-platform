@@ -1,10 +1,12 @@
 import { useServerFn } from "@tanstack/react-start";
-import { ImageIcon, Loader2, Trash2, Upload, Video } from "lucide-react";
+import { Check, ImageIcon, Images, Loader2, Trash2, Upload, Video } from "lucide-react";
 import { useEffect, useRef, useState, type ChangeEvent } from "react";
 import { toast } from "sonner";
 
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
+import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { registerMediaAsset } from "@/lib/content.functions";
 
@@ -102,16 +104,79 @@ export function MediaUploadField({ label, value, onChange, kind = "image", hint 
         <div className="flex flex-wrap gap-2">
           <input ref={inputRef} type="file" className="hidden" accept={types.join(",")} onChange={handleFile} aria-label={`Upload ${label}`} />
           <Button type="button" size="sm" variant="outline" disabled={uploading} onClick={() => inputRef.current?.click()}>
-            {uploading ? <Loader2 className="animate-spin" /> : <Upload />} {uploading ? "Uploading…" : value ? `Replace ${kind}` : `Upload ${kind}`}
+            {uploading ? <Loader2 className="animate-spin" /> : <Upload />} {uploading ? "Uploading…" : "Upload from device"}
           </Button>
+          {kind === "image" ? <LibraryChooser onPick={onChange} /> : null}
           {value ? (
             <Button type="button" size="sm" variant="ghost" disabled={uploading} onClick={() => onChange("")}>
-              <Trash2 /> Remove
+              <Trash2 /> Remove from this content
             </Button>
           ) : null}
         </div>
         {hint ? <p className="text-xs text-muted-foreground">{hint}</p> : null}
       </div>
     </div>
+  );
+}
+
+type LibraryAsset = { id: string; name: string; storage_path: string; alt_text: string };
+
+/** Single-image chooser over the Media Library. Picking never moves or deletes the library file. */
+function LibraryChooser({ onPick }: { onPick: (path: string) => void }) {
+  const [open, setOpen] = useState(false);
+  const [assets, setAssets] = useState<LibraryAsset[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState("");
+  const [picked, setPicked] = useState<string | null>(null);
+  const [urls, setUrls] = useState<Record<string, string>>({});
+  const filtered = (assets ?? []).filter((a) => `${a.name} ${a.alt_text}`.toLowerCase().includes(query.toLowerCase())).slice(0, 60);
+  const key = filtered.map((a) => a.storage_path).join("|");
+
+  useEffect(() => {
+    if (!open || filtered.length === 0) return;
+    let alive = true;
+    supabase.storage.from("site-media").createSignedUrls(filtered.map((a) => a.storage_path), 600).then(({ data }) => {
+      if (!alive) return;
+      const next: Record<string, string> = {};
+      for (const item of data ?? []) if (item.path && item.signedUrl) next[item.path] = item.signedUrl;
+      setUrls((prev) => ({ ...prev, ...next }));
+    });
+    return () => { alive = false; };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, key]);
+
+  async function openChooser() {
+    setOpen(true); setPicked(null); setQuery(""); setError(null);
+    const { data, error: err } = await supabase.from("media_assets").select("id,name,storage_path,alt_text").is("deleted_at", null).like("mime_type", "image/%").order("created_at", { ascending: false }).limit(300);
+    if (err) { setError(err.message); setAssets([]); return; }
+    setAssets(data ?? []);
+  }
+
+  return (
+    <>
+      <Button type="button" size="sm" variant="outline" onClick={() => void openChooser()}><Images /> Choose from Media Library</Button>
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-3xl">
+          <DialogHeader><DialogTitle>Choose from Media Library</DialogTitle></DialogHeader>
+          <Input placeholder="Search images" value={query} onChange={(e) => setQuery(e.target.value)} aria-label="Search images" />
+          <div className="grid max-h-[55vh] grid-cols-2 gap-3 overflow-y-auto sm:grid-cols-4">
+            {assets === null ? <Loader2 className="size-5 animate-spin text-muted-foreground" /> : null}
+            {error ? <p className="col-span-full text-sm text-destructive">{error}</p> : null}
+            {assets && !error && filtered.length === 0 ? <p className="col-span-full text-sm text-muted-foreground">No images found.</p> : null}
+            {filtered.map((a) => (
+              <button key={a.id} type="button" aria-pressed={picked === a.storage_path} onClick={() => setPicked(a.storage_path)} className={`relative overflow-hidden rounded-md border-2 text-left ${picked === a.storage_path ? "border-primary" : "border-transparent"}`}>
+                <div className="aspect-square bg-secondary">{urls[a.storage_path] ? <img src={urls[a.storage_path]} alt={a.alt_text} loading="lazy" className="size-full object-cover" /> : null}</div>
+                <p className="truncate p-1 text-xs">{a.name}</p>
+                {picked === a.storage_path ? <span className="absolute right-1 top-1 grid size-6 place-items-center rounded-full bg-primary text-primary-foreground"><Check className="size-4" /></span> : null}
+              </button>
+            ))}
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button>
+            <Button type="button" disabled={!picked} onClick={() => { if (picked) { onPick(picked); setOpen(false); } }}>Use selected image</Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

@@ -281,7 +281,13 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
       <p className="text-xs text-muted-foreground">Remove both to take the video off the page. Upload a new file to replace it.</p>
     </div></div>
     <Field label="Publication date (optional)"><Input type="datetime-local" value={editor.publishedAt} onChange={(event) => update("publishedAt", event.target.value)} /></Field>
-    <Field label="Project link (optional)"><Input value={editor.projectUrl} maxLength={500} placeholder="https://" onChange={(event) => update("projectUrl", event.target.value)} /></Field>
+    <Field label={editor.contentType === "business" ? "Registration / referral link (opens the company's site)" : "Project link (optional)"}><Input value={editor.projectUrl} maxLength={500} placeholder="https://" onChange={(event) => update("projectUrl", event.target.value)} /></Field>
+    {editor.contentType === "business" ? <div className="grid gap-3 rounded-md border border-border bg-secondary/40 p-3">
+      <p className="text-xs font-bold uppercase text-primary">Business Opportunity</p>
+      <Field label="Opportunity category"><Select value={["digital-services","business-networking","technology","community","global-opportunities"].includes(editor.category) ? editor.category : "none"} onValueChange={(value) => update("category", value === "none" ? "" : value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Not an opportunity</SelectItem><SelectItem value="digital-services">Digital Services</SelectItem><SelectItem value="business-networking">Business Networking</SelectItem><SelectItem value="technology">Technology</SelectItem><SelectItem value="community">Community</SelectItem><SelectItem value="global-opportunities">Global Opportunities</SelectItem></SelectContent></Select></Field>
+      <Field label="Button wording (e.g. Register, Visit website)"><Input value={typeof editor.payloadExtra["ctaLabel"] === "string" ? String(editor.payloadExtra["ctaLabel"]) : ""} maxLength={60} onChange={(event) => update("payloadExtra", { ...editor.payloadExtra, ctaLabel: event.target.value })} /></Field>
+      <p className="text-xs text-muted-foreground">Title = company name, Main image = logo or photo, Short description = summary, Full content = your research, findings and considerations. Only published entries with a category appear on the Business page. Referral codes in the link are kept as entered.</p>
+    </div> : null}
     <div className="rounded-lg border border-dashed border-border p-4">
       <p className="mb-3 text-xs font-bold uppercase text-muted-foreground">Search &amp; social</p>
       <div className="grid gap-3">

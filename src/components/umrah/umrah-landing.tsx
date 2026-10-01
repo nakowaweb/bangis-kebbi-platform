@@ -1,16 +1,13 @@
 import { useEffect, useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { ArrowRight, ChevronRight, ClipboardList, FileText, Handshake, Heart, Info, Landmark, Plane, ShieldCheck, Users, Wallet } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { ArrowRight, ChevronRight, FileText, Handshake, Heart, Info, Landmark, Plane, ShieldCheck, Users } from "lucide-react";
 import { SafeImage } from "@/components/safe-image";
 import heroKaaba from "@/assets/umrah/umrah-hero-kaaba.jpg";
 import heroMadinah from "@/assets/umrah/umrah-hero-madinah.jpg";
 import heroCity from "@/assets/umrah/umrah-hero-makkah-city.jpg";
 import heroTravel from "@/assets/umrah/umrah-hero-travel.jpg";
 import cardApply from "@/assets/umrah/journey-submit-documents.webp";
-import cardGoal from "@/assets/umrah/umrah-support-balance.webp";
 import cardTravel from "@/assets/umrah/journey-coordinate-travel.webp";
-import cardRecords from "@/assets/umrah/journey-review-dashboard.webp";
 
 export type LandingEntry = { slug: string; title: string; summary: string | null; imageUrl?: string | null; image_alt?: string | null; sort_order?: number };
 
@@ -66,20 +63,9 @@ export function FadeCarousel({ slides, interval, className = "" }: { slides: Arr
   );
 }
 
-function useSignedIn() {
-  const [signedIn, setSignedIn] = useState<boolean | null>(null);
-  useEffect(() => {
-    supabase.auth.getSession().then(({ data }) => setSignedIn(Boolean(data.session)));
-    const { data } = supabase.auth.onAuthStateChange((_e, s) => setSignedIn(Boolean(s)));
-    return () => data.subscription.unsubscribe();
-  }, []);
-  return signedIn;
-}
-
 const pill = "inline-flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-semibold transition-transform hover:-translate-y-0.5";
 
 export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[]; partnerCount: number }) {
-  const signedIn = useSignedIn();
   const slides = resolveSlides(entries, umrahHeroFallbacks);
   const interval = intervalFrom(entries, "umrah-hero-settings");
   const partnerSlides = resolveSlides(entries, partnerSlideFallbacks);
@@ -87,9 +73,7 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
 
   const cards = [
     { title: "Apply for Umrah", body: "Fill in your details and upload the required documents to register for Umrah support.", icon: FileText, image: cardApply, to: "/my-umrah", search: { tab: "application" }, tone: "bg-card" },
-    { title: "My Umrah Savings Goal", body: "Set your personal savings goal to plan for your Umrah journey at your own pace.", icon: Wallet, image: cardGoal, to: "/my-umrah", search: { tab: "goal" }, tone: "bg-success/10", goal: true },
     { title: "Travel Partners", body: "Explore travel partners who provide Umrah packages and travel services.", icon: Plane, image: cardTravel, to: "/partners", search: undefined, tone: "bg-brand-gold/10" },
-    { title: "My Records", body: "View your application status, savings history and all your Umrah records.", icon: ClipboardList, image: cardRecords, to: "/my-umrah", search: { tab: "records" }, tone: "bg-secondary/60" },
   ] as const;
 
   return (
@@ -103,10 +87,9 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
             <h1 className="mt-5 font-display text-4xl font-bold leading-tight sm:text-5xl lg:text-6xl">
               {text("umrah-landing-title", "Your Umrah Journey")}<br /><span className="text-brand-gold">{text("umrah-landing-title-2", "Starts With a Plan")}</span>
             </h1>
-            <p className="mt-4 text-base leading-7 text-primary-foreground/90 sm:text-lg">{text("umrah-landing-subtitle", "Preparation • Application Support • Personal Savings Goals • Travel Connections • Guidance & Support")}</p>
+            <p className="mt-4 text-base leading-7 text-primary-foreground/90 sm:text-lg">{text("umrah-landing-subtitle", "Preparation • Application Support • Travel Connections • Guidance & Support")}</p>
             <div className="mt-7 flex flex-wrap gap-3">
               <Link to="/my-umrah" search={{ tab: "application" }} className={`${pill} bg-success text-primary-foreground shadow-lg`}><FileText className="size-5" />Apply for Umrah<ArrowRight className="size-4" /></Link>
-              <Link to="/my-umrah" search={{ tab: "goal" }} className={`${pill} border border-primary-foreground/70 bg-brand-ink/30 backdrop-blur`}><Wallet className="size-5" />Start My Umrah Goal<ArrowRight className="size-4" /></Link>
               <Link to="/partners" className={`${pill} border border-brand-cyan bg-card text-foreground`}><Handshake className="size-5" />Explore Travel Partners<ArrowRight className="size-4" /></Link>
             </div>
           </div>
@@ -120,34 +103,23 @@ export function UmrahLanding({ entries, partnerCount }: { entries: LandingEntry[
       </section>
 
       <div className="mx-auto grid max-w-7xl gap-6 px-4 py-8 sm:px-6 lg:px-8">
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:grid-cols-2">
           {cards.map((c) => (
-            <Link key={c.title} to={c.to as "/my-umrah"} search={c.search as { tab?: "application" }} className={`group relative flex min-h-64 flex-col overflow-hidden rounded-xl border border-border ${c.tone} p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg`}>
-              <div className="flex items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><c.icon className="size-5" /></span><h2 className="font-display text-lg font-bold">{c.title}</h2><ChevronRight className="ms-auto size-5 transition group-hover:translate-x-1" /></div>
+            <Link key={c.title} to={c.to as "/my-umrah"} search={c.search as { tab?: "application" }} className={`group relative flex min-h-56 flex-col overflow-hidden rounded-xl border border-border ${c.tone} p-5 shadow-sm transition hover:-translate-y-1 hover:shadow-lg`}>
+              <div className="flex items-center gap-3"><span className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-primary-foreground"><c.icon className="size-5" /></span><h2 className="font-display text-lg font-bold">{c.title}</h2><ChevronRight className="ms-auto size-5 transition group-hover:translate-x-1 rtl:rotate-180" /></div>
               <p className="mt-3 text-sm leading-6 text-muted-foreground">{c.body}</p>
-              {"goal" in c ? (
-                <div className="mt-auto rounded-lg border border-border bg-card p-3 text-sm">
-                  <p className="font-semibold">Your Goal Progress</p>
-                  <p className="mt-2 text-muted-foreground">{signedIn === null ? "…" : signedIn ? "Open your goal to see your real recorded balance." : "Sign in to view your Umrah Goal."}</p>
-                </div>
-              ) : (
-                <SafeImage src={c.image} alt="" loading="lazy" width={200} height={140} className="mt-auto ms-auto h-28 w-auto object-contain" />
-              )}
+              <SafeImage src={c.image} alt="" loading="lazy" width={200} height={140} className="mt-auto ms-auto h-28 w-auto object-contain" />
             </Link>
           ))}
         </div>
 
         <section className="rounded-xl border border-border bg-secondary/40 p-5 sm:p-6">
-          <div className="flex flex-wrap items-baseline gap-3"><Users className="size-7 self-center text-primary" /><h2 className="font-display text-2xl font-bold">How It Works</h2><p className="text-sm text-muted-foreground">A simple process to start your Umrah journey</p></div>
-          <ol className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-            {[["Register / Apply", "Create your account and fill in the Umrah form.", "bg-primary"], ["Set Your Goal", "Choose your savings goal and plan ahead.", "bg-success"], ["Get Guidance", "Receive support and recommended options.", "bg-brand-gold"], ["Travel with Partners", "Complete your journey through travel partners.", "bg-accent-foreground"]].map(([t, b, bg], i) => (
-              <li key={t} className="flex gap-3"><span className={`grid size-11 shrink-0 place-items-center rounded-full ${bg} font-bold text-primary-foreground`}>{i + 1}</span><div><p className="font-semibold">{t}</p><p className="text-sm text-muted-foreground">{b}</p></div></li>
-            ))}
-          </ol>
+          <div className="flex items-center gap-3"><Users className="size-7 text-primary" /><h2 className="font-display text-2xl font-bold">{text("umrah-how-it-works-title", "How It Works")}</h2></div>
+          <p className="mt-3 max-w-4xl text-sm leading-7 text-muted-foreground sm:text-base">{entries.find((e) => e.slug === "umrah-how-it-works-title")?.summary || "Create an account and apply for Umrah support. BangisKebbi.com offers guidance and shares business information to help members work toward their personal Umrah goals. Travel partners provide the packages and handle travel arrangements. BangisKebbi.com is not an investment service and does not guarantee income or a funded trip."}</p>
         </section>
 
         <section>
-          <div className="flex flex-wrap items-center gap-3"><Handshake className="size-8 text-primary" /><h2 className="font-display text-2xl font-bold">Our Travel Partners</h2><p className="text-sm text-muted-foreground">Travel partners who provide Umrah packages and related travel services.</p><Link to="/partners" className="ms-auto inline-flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-semibold">View All Partners<ArrowRight className="size-4" /></Link></div>
+          <div className="flex flex-wrap items-center gap-3"><Handshake className="size-8 text-primary" /><h2 className="font-display text-2xl font-bold">Our Travel Partners</h2><p className="text-sm text-muted-foreground">Travel partners who provide Umrah packages and related travel services.</p><Link to="/partners" className="ms-auto inline-flex items-center gap-2 rounded-lg border border-primary px-4 py-2 text-sm font-semibold">View All Partners<ArrowRight className="size-4 rtl:rotate-180" /></Link></div>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {partnerSlides.map((s) => (
               <Link key={s.src} to="/partners" className="group relative block h-40 overflow-hidden rounded-xl">
