@@ -20,3 +20,4 @@
 - Member payment destinations are returned only when both Live Deposits and the individual method are enabled, preventing disabled details from reaching the browser.
 - Google sign-in returns through the public `/auth/callback` route; only validated same-origin paths may be restored after session hydration.
 - Homepage section visibility/order, motion level, EN/AR/HA text overrides and service illustration paths live in one `content_entries` row (homepage/site-layout) read via `getSiteLayout`; avoids a schema change and keeps edits in the existing CMS.
+- Super Admin Umrah record corrections/deletions go through V9 SECURITY DEFINER functions (supabase/production_fix_v9_umrah_admin_records.sql): confirmation text, balance reversal and audit in one transaction; direct table UPDATE/DELETE stays denied.
