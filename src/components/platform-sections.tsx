@@ -113,7 +113,7 @@ type QuickActionManagedItem = { slug: string; imageUrl?: string | null; image_al
 
 type HeroSlideInput = { src: string; alt: string; label: string; slot?: number; fallbackSrc?: string };
 
-export function HeroSection({ intervalSeconds = 3, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number }) {
+export function HeroSection({ intervalSeconds = 3, transitionMs = 1100, content, slides, location = "Kebbi State, Nigeria", globalStatus = "Working globally" }: { content?: { eyebrow?: string | undefined; title?: string | undefined; subtitle?: string | undefined; description?: string | undefined; primaryCta?: string | undefined; secondaryCta?: string | undefined } | undefined; slides?: HeroSlideInput[]; location?: string; globalStatus?: string; intervalSeconds?: number; transitionMs?: number }) {
   const { t } = useLanguage();
   return (
     <section className="relative isolate overflow-hidden bg-brand-ink text-primary-foreground">
@@ -122,6 +122,7 @@ export function HeroSection({ intervalSeconds = 3, content, slides, location = "
         location={/abuja/i.test(location) ? "Kebbi State, Nigeria" : location}
         globalStatus={globalStatus}
         intervalMs={Math.min(30, Math.max(1, intervalSeconds)) * 1000}
+        transitionMs={transitionMs}
         eyebrow={t("home.heroAccent")}
         subtitle={content?.subtitle ?? t("home.heroBusinessSubtitle")}
         primaryCta={t("common.viewMyWork")}
@@ -137,9 +138,9 @@ const fallbackHeroSlides: HeroSlideInput[] = [
   { src: umrahSupportHero, alt: "Abubakar Alhaji Abubakar supporting a community group in a respectful Umrah setting", label: "Umrah Support Program" },
 ];
 
-function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, subtitle, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string; intervalMs: number }) {
+function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus, eyebrow, subtitle, primaryCta, secondaryCta }: { slides?: HeroSlideInput[] | undefined; location: string; globalStatus: string; eyebrow: string; subtitle: string; primaryCta: string; secondaryCta: string; intervalMs: number; transitionMs: number }) {
   const { t } = useLanguage();
-  const heroSlides = slides?.length ? slides.slice(0, 3) : fallbackHeroSlides;
+  const heroSlides = slides?.length ? slides.slice(0, 8) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
@@ -152,9 +153,9 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
     return () => window.clearInterval(timer);
   }, [move, paused, intervalMs]);
   return (
-    <div className="hero-stage relative w-full overflow-hidden" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
+    <div style={{ ["--hero-fade" as string]: `${transitionMs}ms` }} className="hero-stage relative w-full overflow-hidden" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
-        <figure key={slide.label} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
+        <figure key={`${index}-${slide.src}`} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
           <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-center" />
         </figure>
       ))}
@@ -180,7 +181,7 @@ function HeroCarousel({ intervalMs, slides, location, globalStatus, eyebrow, sub
       </div>
       <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
       <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
-      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={slide.label} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
+      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
 }

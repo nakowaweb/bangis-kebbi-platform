@@ -89,6 +89,10 @@ function Index() {
     .map((entry, index) => ({ src: entry.imageUrl ?? heroFallbacks[index], fallbackSrc: heroFallbacks[index], alt: entry.image_alt ?? entry.title, label: entry.title }))
     .filter((entry): entry is { src: string; fallbackSrc: string; alt: string; label: string } => Boolean(entry.src && entry.fallbackSrc));
   const layout = useSiteLayout();
+  // Settings → Homepage → Hero Slideshow overrides the CMS hero slots when it has enabled slides.
+  const managedSlides = layout.hero.slides
+    .filter((slide) => slide.enabled && layout.heroUrls[slide.path])
+    .map((slide, index) => ({ src: layout.heroUrls[slide.path]!, fallbackSrc: heroFallbacks[index % heroFallbacks.length]!, alt: slide.alt || slide.label || "Homepage slide", label: slide.label || `Slide ${index + 1}` }));
   // Homepage Foundation copy comes from the approved short text (Super Admin editable in Settings),
   // not from the full Foundation page entry, so long saved page titles no longer override it.
   const blocks: Record<HomepageSection, ReactNode> = {
@@ -102,7 +106,7 @@ function Index() {
   };
   return (
     <main>
-      <HeroSection intervalSeconds={typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : 6} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
+      <HeroSection transitionMs={layout.hero.transitionMs} intervalSeconds={managedSlides.length ? layout.hero.intervalSeconds : typeof payload["heroIntervalSeconds"] === "number" ? payload["heroIntervalSeconds"] : layout.hero.intervalSeconds} content={{ primaryCta: value("primaryCta"), secondaryCta: value("secondaryCta") }} slides={managedSlides.length ? managedSlides : heroSlides} location={publicContent.settings?.location ?? "Kebbi State, Nigeria"} globalStatus={publicContent.settings?.global_status ?? "Working globally"} />
       {layout.order.filter((key) => layout.sections[key]).map((key) => <Fragment key={key}>{blocks[key]}</Fragment>)}
     </main>
   );
