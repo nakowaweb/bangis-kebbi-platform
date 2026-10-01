@@ -147,11 +147,22 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
   const shortLocation = location.replace(/\s*State\b/i, "");
   const heroSlides = slides?.length ? slides.slice(0, 8) : fallbackHeroSlides;
   const [active, setActive] = useState(0);
+  const [readySlides, setReadySlides] = useState(() => new Set([0]));
   const [paused, setPaused] = useState(false);
   const touchStart = useRef<number | null>(null);
   const reducedMotion = useRef(false);
   useEffect(() => { reducedMotion.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches; }, []);
-  const move = useCallback((step: number) => setActive((current) => (current + step + heroSlides.length) % heroSlides.length), [heroSlides.length]);
+  const move = useCallback((step: number) => setActive((current) => {
+    const next = (current + step + heroSlides.length) % heroSlides.length;
+    setReadySlides((ready) => new Set(ready).add(next));
+    return next;
+  }), [heroSlides.length]);
+  // Keep the first visual as the only initial hero request. Load the remaining slides after
+  // the first viewport has settled, well before the automatic transition.
+  useEffect(() => {
+    const timer = window.setTimeout(() => setReadySlides(new Set(heroSlides.map((_, index) => index))), 900);
+    return () => window.clearTimeout(timer);
+  }, [heroSlides.length]);
   useEffect(() => {
     if (paused || reducedMotion.current) return;
     const timer = window.setInterval(() => move(1), intervalMs);
@@ -161,7 +172,7 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
     <div style={{ ["--hero-fade" as string]: `${transitionMs}ms` }} className="hero-stage relative w-full overflow-hidden" onMouseEnter={() => setPaused(true)} onMouseLeave={() => setPaused(false)} onFocusCapture={() => setPaused(true)} onBlurCapture={() => setPaused(false)} onTouchStart={(event) => { touchStart.current = event.touches[0]?.clientX ?? null; }} onTouchEnd={(event) => { const end = event.changedTouches[0]?.clientX; if (touchStart.current !== null && end !== undefined && Math.abs(end - touchStart.current) > 45) move(end < touchStart.current ? 1 : -1); touchStart.current = null; }} aria-roledescription="carousel" aria-label="BangisKebbi.com highlights">
       {heroSlides.map((slide, index) => (
         <figure key={`${index}-${slide.src}`} aria-hidden={active !== index} className={`hero-slide absolute inset-0 ${active === index ? "hero-slide-active" : ""}`}>
-          <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : undefined} loading={index === 0 ? "eager" : "lazy"} className="hero-slide-image h-full w-full object-cover object-center" />
+          {readySlides.has(index) ? <SafeImage src={slide.src} {...(slide.fallbackSrc ? { fallbackSrc: slide.fallbackSrc } : {})} alt={active === index ? slide.alt : ""} width={1264} height={848} fetchPriority={index === 0 ? "high" : "low"} loading={index === 0 ? "eager" : "lazy"} decoding="async" className="hero-slide-image h-full w-full object-cover object-center" /> : null}
         </figure>
       ))}
       <div className="pointer-events-none absolute inset-0 z-10 hero-reference-overlay" />
@@ -183,7 +194,7 @@ function HeroCarousel({ intervalMs, transitionMs, slides, location, globalStatus
       </div>
       <Button type="button" variant="outline" size="icon" onClick={() => move(-1)} className="absolute left-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:left-4" aria-label="Previous hero slide"><ChevronLeft /></Button>
       <Button type="button" variant="outline" size="icon" onClick={() => move(1)} className="absolute right-1 top-1/2 z-30 hidden sm:inline-flex -translate-y-1/2 border-primary-foreground/30 bg-brand-ink/75 text-primary-foreground backdrop-blur hover:bg-brand-ink sm:right-4" aria-label="Next hero slide"><ChevronRight /></Button>
-      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => setActive(index)} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
+      <div className="absolute bottom-4 left-1/2 z-30 flex -translate-x-1/2 items-center gap-0.5" aria-label="Choose hero slide">{heroSlides.map((slide, index) => <Button key={`${index}-${slide.src}`} type="button" variant="ghost" size="icon" onClick={() => { setReadySlides((ready) => new Set(ready).add(index)); setActive(index); }} className="h-8 w-8 text-primary-foreground hover:bg-primary-foreground/10" aria-label={`Show slide ${index + 1}: ${slide.label}`} aria-current={active === index ? "true" : undefined}><span className={`h-1.5 rounded-full transition-all ${active === index ? "w-8 bg-brand-cyan" : "w-5 bg-primary-foreground/45"}`} /></Button>)}</div>
     </div>
   );
 }

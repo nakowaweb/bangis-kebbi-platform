@@ -3,7 +3,7 @@ import { useMotionPreference, useSiteText } from "@/lib/use-site-layout";
 import { Link } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import * as FlagIcons from "country-flag-icons/react/3x2";
-import { Check, ChevronDown, Gauge, Globe, Languages, Mail, Menu, UserRound } from "lucide-react";
+import { Check, ChevronDown, Globe, Languages, Mail, Menu, UserRound } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -77,7 +77,7 @@ function SiteHeader() {
     <header className="sticky top-0 z-40 border-b border-border/70 bg-background/90 backdrop-blur-xl">
       <div className="mx-auto grid max-w-7xl grid-cols-[minmax(0,1fr)_auto] items-center gap-x-2 gap-y-2 px-4 py-2 sm:gap-x-3 sm:px-6 lg:gap-y-1.5 lg:px-8">
         <Link to="/" className="flex min-w-0 items-center lg:self-stretch lg:border-r lg:border-border/70 lg:pr-7" aria-label="BangisKebbi.com home">
-          <img src={logoAsset.url} alt="BangisKebbi.com" width={440} height={100} fetchPriority="high" className="h-9 w-auto max-w-[130px] shrink-0 object-contain min-[400px]:max-w-[165px] sm:h-10 sm:max-w-[210px] lg:max-w-[190px]" />
+          <img src={logoAsset.url} alt="BangisKebbi.com" width={655} height={195} fetchPriority="high" className="h-9 w-auto max-w-[112px] shrink-0 object-contain min-[400px]:max-w-[165px] sm:h-10 sm:max-w-[210px] lg:max-w-[190px]" />
         </Link>
 
         <nav className="order-3 col-span-2 hidden min-w-0 flex-wrap items-center justify-center gap-x-0.5 border-t border-border/60 pt-1.5 lg:flex" aria-label={t("nav.main")}>
@@ -123,10 +123,10 @@ function SiteHeader() {
 
         <div className="flex shrink-0 items-center gap-1 lg:hidden">
           {signedIn ? (
-            <Button size="icon" className="size-9 bg-brand-cyan text-brand-ink hover:bg-brand-cyan-soft sm:w-auto sm:px-3" asChild>
+            <Button size="sm" className="h-9 shrink-0 gap-1 bg-brand-cyan px-2 text-brand-ink hover:bg-brand-cyan-soft sm:px-3" asChild>
               <Link to="/dashboard" aria-label={t("common.dashboard")} title={t("common.dashboard")}>
-                <Gauge className="size-4" />
-                <span className="hidden sm:inline">{t("common.dashboard")}</span>
+                <UserRound className="size-3.5" />
+                <span className="max-w-[5.25rem] truncate text-[10px] sm:max-w-none sm:text-xs">{t("common.dashboard")}</span>
               </Link>
             </Button>
           ) : null}
@@ -348,7 +348,7 @@ function SiteFooter() {
     <footer className="border-t border-border bg-background text-foreground">
       <div className="mx-auto grid max-w-7xl grid-cols-3 gap-x-3 gap-y-7 px-4 py-8 sm:gap-9 sm:px-6 sm:py-10 md:grid-cols-2 lg:grid-cols-[1.25fr_0.8fr_0.8fr_1fr] lg:px-8">
         <div className="col-span-3 md:col-span-1">
-          <img src={logoAsset.url} alt="BangisKebbi.com" className="h-14 w-auto object-contain" />
+          <img src={logoAsset.url} alt="BangisKebbi.com" loading="lazy" decoding="async" width={655} height={195} className="h-14 w-auto object-contain" />
           <p className="mt-4 max-w-sm text-sm leading-6 text-muted-foreground">{t("footer.tagline")}</p>
           <p className="mt-3 text-xs font-bold uppercase text-primary">{t("footer.company")}</p>
           <div className="mt-4"><FooterLanguage /></div>
