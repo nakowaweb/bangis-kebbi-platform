@@ -312,17 +312,20 @@ export function ServicesSection({ full = false, items }: { full?: boolean; items
   const { t, language } = useLanguage();
   const { miniUrls } = useSiteLayout();
   const fallbackBySlug = new Map(portfolioServices.map((item) => [item.slug, item]));
-  const visibleServices = items?.length
+  const allServices = items?.length
     ? items.map((item, index) => {
       const fallback = fallbackBySlug.get(item.slug);
       return { slug: item.slug, title: item.title, description: item.summary ?? t("home.serviceFallback"), image: item.imageUrl ?? fallback?.image, imageAlt: fallback ? text(fallback.imageAlt, language) : item.title, icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 };
     })
     : portfolioServices.map((item, index) => ({ slug: item.slug, title: text(item.title, language), description: text(item.summary, language), image: item.image, imageAlt: text(item.imageAlt, language), icon: serviceCards[index % serviceCards.length]?.icon ?? Code2 }));
+  // Owner's final homepage selection: only these two services. Other services keep their detail pages.
+  const HOME_SERVICES = ["wordpress-development", "website-maintenance"];
+  const shownServices = full ? allServices : HOME_SERVICES.map((slug) => allServices.find((s) => s.slug === slug)).filter((s): s is (typeof allServices)[number] => Boolean(s));
   return (
     <SectionShell eyebrow={t("home.servicesEyebrow")} title={t("home.servicesTitle")} description={t("home.servicesDescription")} >
-      {!full ? <div className="service-strip mb-6 overflow-hidden rounded-xl border border-brand-cyan/25 py-3" aria-hidden="true"><div className="service-strip-track flex w-max items-center gap-8 whitespace-nowrap text-xs font-bold uppercase sm:text-sm">{[...visibleServices, ...visibleServices].map((service, index) => <span key={`${service.slug}-${index}`} className="inline-flex items-center gap-8"><span className="service-strip-text">{service.title}</span><span className="text-brand-green">•</span></span>)}</div></div> : null}
-      <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
-        {visibleServices.map((service, index) => {
+      {!full ? <div className="mx-auto mb-6 flex max-w-2xl items-center justify-center rounded-xl bg-brand-ink px-3 py-3 text-xs font-bold uppercase text-brand-cyan sm:text-sm" aria-hidden="true">{shownServices.map((service, index) => <span key={service.slug} className="flex flex-1 items-center justify-center gap-2 text-center">{index > 0 ? <span className="me-3 h-6 w-px bg-brand-cyan/40" /> : null}{service.title}</span>)}</div> : null}
+      <ul className={full ? "grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6" : "mx-auto grid max-w-2xl grid-cols-2 gap-3 sm:gap-5"}>
+        {shownServices.map((service, index) => {
           const mini = miniUrls[service.slug] ?? serviceMinis[service.slug] ?? serviceMiniOrder[index % serviceMiniOrder.length];
           return <li key={service.slug} className="min-w-0"><Link to="/services/$slug" params={{ slug: service.slug }} className="motion-card group flex h-full min-h-[168px] flex-col items-center justify-between gap-2 rounded-xl border border-border bg-card px-3 py-4 text-center shadow-sm transition duration-300 hover:-translate-y-1 hover:border-primary/40 hover:shadow-platform focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring">
             <img src={mini} alt="" aria-hidden="true" loading="lazy" width={256} height={256} className="service-mini size-16 shrink-0 object-contain drop-shadow-md sm:size-20" />
