@@ -1,3 +1,4 @@
+import { normalizeExternalUrl } from "@/lib/url-utils";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
 import { ArrowLeft } from "lucide-react";
 
@@ -35,7 +36,7 @@ export const Route = createFileRoute("/business/$slug")({
 function safeUrl(value: string | null | undefined) {
   if (!value) return null;
   try {
-    const url = new URL(value);
+    const url = new URL(normalizeExternalUrl(value));
     return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
   } catch {
     return null;
