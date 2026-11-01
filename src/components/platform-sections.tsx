@@ -676,16 +676,27 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
           {track.map((p, index) => {
             const clone = p.copy === 1;
             const linkProps = p.kind === "update" ? ({ to: "/blog/$slug", params: { slug: p.slug } } as const) : ({ to: "/projects/$slug", params: { slug: p.slug } } as const);
+            // Projects with a saved website link leave this site directly in a new tab; cards without
+            // one, and news updates, keep the internal detail page so the link never breaks.
+            const external = p.kind === "project" && p.url ? p.url : "";
+            const cardLink = (content: ReactNode, className: string, label?: string) => external
+              ? <a href={external} target="_blank" rel="noopener noreferrer" {...(label ? { "aria-label": label } : {})} className={className}>{content}</a>
+              : <Link {...linkProps} {...(label ? { "aria-label": label } : {})} className={className}>{content}</Link>;
             return (
             <article key={`${p.kind}-${p.id}-${p.copy}`} aria-hidden={clone || undefined} inert={clone || undefined} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
-              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-primary-foreground/10" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading="lazy" fetchPriority="low" decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
-              </Link>
+              {cardLink(
+                p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading="lazy" fetchPriority="low" decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>,
+                "block aspect-[16/10] overflow-hidden bg-primary-foreground/10",
+                `${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`,
+              )}
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}
-                <h3 className="min-w-0 font-display text-base font-bold"><Link {...linkProps} className="hover:text-brand-cyan">{p.name}</Link></h3>
+                <h3 className="min-w-0 font-display text-base font-bold">{cardLink(<span className="hover:text-brand-cyan">{p.name}</span>, "hover:text-brand-cyan")}</h3>
                 {p.excerpt ? <p className="line-clamp-2 text-sm text-primary-foreground/75">{p.excerpt}</p> : null}
-                <Link {...linkProps} className="inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">{language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View Details"} <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
+                {cardLink(
+                  <>{language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View Details"} <ArrowRight className="size-3.5 rtl:rotate-180" /></>,
+                  "inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10",
+                )}
               </div>
             </article>
             );
