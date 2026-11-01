@@ -2,6 +2,7 @@ import { isWorldLanguage } from "@/lib/i18n/world-languages";
 import { requireModule } from "@/lib/admin-access";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
+import { normalizeExternalUrl, resolveSlug } from "@/lib/url-utils";
 
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import type { Json } from "@/integrations/supabase/types";
@@ -21,7 +22,7 @@ const optionalText = (max: number) => z.string().trim().max(max).optional();
 const contentInput = z.object({
   id: z.string().uuid().optional(),
   contentType: z.enum(contentTypes),
-  slug: z.string().trim().min(1).max(160).regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/),
+  slug: z.string().trim().max(300).optional().default(""),
   title: z.string().trim().min(1).max(200),
   summary: z.string().trim().max(1000).optional(),
   body: z.string().trim().max(20000).optional(),
@@ -32,11 +33,11 @@ const contentInput = z.object({
   tags: z.array(z.string().trim().min(1).max(40)).max(20).optional(),
   language: z.enum(["en", "ar", "ha", "fr", "es", "tr", "de", "ur", "zh"]).optional(),
   gallery: z.array(z.string().trim().min(1).max(500)).max(20).optional(),
-  projectUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
+  projectUrl: z.string().trim().max(500).optional().transform((v) => normalizeExternalUrl(v)),
   completedOn: z.union([z.literal(""), z.string().trim().max(20)]).optional(),
   seoTitle: optionalText(180),
   seoDescription: optionalText(400),
-  canonicalUrl: z.union([z.literal(""), z.string().trim().url().max(500)]).optional(),
+  canonicalUrl: z.string().trim().max(500).optional().transform((v) => normalizeExternalUrl(v)),
   ogTitle: optionalText(180),
   ogDescription: optionalText(400),
   ogImagePath: optionalText(500),
@@ -47,7 +48,7 @@ const contentInput = z.object({
   scheduledFor: z.union([z.literal(""), z.null(), z.string().datetime()]).optional().transform((value) => value || undefined),
   publishedAt: z.string().datetime().optional(),
   payload: z.record(z.string(), z.union([z.string().max(2000), z.number(), z.boolean(), z.null()])),
-});
+}).transform((input) => ({ ...input, slug: resolveSlug(input.slug, input.title) }));
 
 const settingsInput = z.object({
   id: z.string().uuid(),

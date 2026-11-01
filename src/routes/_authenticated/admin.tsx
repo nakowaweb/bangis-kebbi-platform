@@ -1,3 +1,4 @@
+import { normalizeExternalUrl, resolveSlug, slugify } from "@/lib/url-utils";
 import { GalleryPicker } from "@/components/admin/gallery-picker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
@@ -129,7 +130,7 @@ function AdminPage() {
     mutationFn: () => saveEntry({ data: {
       ...(editor.id ? { id: editor.id } : {}),
       contentType: editor.contentType,
-      slug: editor.slug,
+      slug: resolveSlug(editor.slug, editor.title),
       title: editor.title,
       ...(editor.summary ? { summary: editor.summary } : {}),
       ...(editor.body ? { body: editor.body } : {}),
@@ -140,7 +141,7 @@ function AdminPage() {
       tags: splitList(editor.tags),
       language: editor.language,
       gallery: splitList(editor.gallery),
-      projectUrl: editor.projectUrl,
+      projectUrl: normalizeExternalUrl(editor.projectUrl),
       completedOn: editor.completedOn,
       ...(editor.seoTitle ? { seoTitle: editor.seoTitle } : {}),
       ...(editor.seoDescription ? { seoDescription: editor.seoDescription } : {}),
@@ -255,7 +256,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
   return <aside className="h-fit rounded-lg border border-border bg-card p-5 shadow-sm lg:sticky lg:top-24 lg:max-h-[calc(100dvh-7rem)] lg:overflow-y-auto lg:overscroll-contain"><div className="mb-5 flex items-center justify-between"><h2 className="font-display text-lg font-bold">{editor.id ? "Edit content" : "New content"}</h2><Badge variant="outline">{editor.status}</Badge></div><div className="grid gap-4">
     <Field label="Content area"><Select value={editor.contentType} onValueChange={(value) => update("contentType", value as EditorState["contentType"])}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent>{contentTypes.map((type) => <SelectItem key={type} value={type}>{type.replaceAll("_", " ")}</SelectItem>)}</SelectContent></Select></Field>
     <Field label="Title"><Input value={editor.title} maxLength={200} onChange={(event) => update("title", event.target.value)} /></Field>
-    <Field label="URL name"><Input value={editor.slug} maxLength={160} pattern="[a-z0-9]+(?:-[a-z0-9]+)*" onChange={(event) => update("slug", event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} /></Field>
+    <Field label="URL name"><Input value={editor.slug} maxLength={160} placeholder={slugify(editor.title) || "auto-generated-from-title"} onChange={(event) => update("slug", event.target.value.toLowerCase().replace(/[^a-z0-9-]/g, "-"))} onBlur={() => update("slug", slugify(editor.slug))} /></Field>
     <Field label="Short description"><Textarea value={editor.summary} maxLength={1000} onChange={(event) => update("summary", event.target.value)} /></Field>
     <Field label="Full content"><Textarea className="min-h-32" value={editor.body} maxLength={20000} onChange={(event) => update("body", event.target.value)} /></Field>
     <p className="text-xs text-muted-foreground">Special pages: CV = area “about”, address “professional-cv”. Privacy / Terms / Refund = area “footer”, address “privacy-policy”, “terms-of-use” or “refund-policy”. Published text replaces the built-in wording.</p>
@@ -282,7 +283,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
       <p className="text-xs text-muted-foreground">Remove both to take the video off the page. Upload a new file to replace it.</p>
     </div></div>
     <Field label="Publication date (optional)"><Input type="datetime-local" value={editor.publishedAt} onChange={(event) => update("publishedAt", event.target.value)} /></Field>
-    <Field label={editor.contentType === "business" ? "Registration / referral link (opens the company's site)" : "Project link (optional)"}><Input value={editor.projectUrl} maxLength={500} placeholder="https://" onChange={(event) => update("projectUrl", event.target.value)} /></Field>
+    <Field label={editor.contentType === "business" ? "Registration / referral link (opens the company's site)" : "Project link (optional)"}><Input value={editor.projectUrl} maxLength={500} placeholder="example.com or https://example.com" onChange={(event) => update("projectUrl", event.target.value)} onBlur={() => update("projectUrl", normalizeExternalUrl(editor.projectUrl))} /></Field>
     {editor.contentType === "business" ? <div className="grid gap-3 rounded-md border border-border bg-secondary/40 p-3">
       <p className="text-xs font-bold uppercase text-primary">Business Opportunity</p>
       <Field label="Opportunity category"><Select value={["digital-services","business-networking","technology","community","global-opportunities"].includes(editor.category) ? editor.category : "none"} onValueChange={(value) => update("category", value === "none" ? "" : value)}><SelectTrigger><SelectValue /></SelectTrigger><SelectContent><SelectItem value="none">Not an opportunity</SelectItem><SelectItem value="digital-services">Digital Services</SelectItem><SelectItem value="business-networking">Business Networking</SelectItem><SelectItem value="technology">Technology</SelectItem><SelectItem value="community">Community</SelectItem><SelectItem value="global-opportunities">Global Opportunities</SelectItem></SelectContent></Select></Field>
@@ -306,7 +307,7 @@ function ContentEditor({ editor, setEditor, saving, onSave, onArchive, onRestore
     <Button variant="outline" onClick={() => setShowPreview(!showPreview)}><Eye /> {showPreview ? "Hide draft preview" : "Preview draft"}</Button>
     {showPreview && <article className="rounded-lg border border-border bg-secondary p-4"><Badge variant="outline">{editor.status}</Badge><h3 className="mt-3 font-display text-xl font-bold">{editor.title || "Untitled content"}</h3>{editor.summary && <p className="mt-2 text-sm font-medium">{editor.summary}</p>}{editor.body && <div className="mt-3 whitespace-pre-line text-sm leading-6 text-muted-foreground">{editor.body}</div>}</article>}
     {editor.slug && previewPath(editor) && editor.status === "published" && <a href={previewPath(editor) as string} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-primary hover:underline">Open published page</a>}
-    <Button disabled={saving || !editor.title || !editor.slug} onClick={onSave}><Save /> {saving ? "Saving…" : "Save content"}</Button>
+    <Button disabled={saving || !editor.title} onClick={onSave}><Save /> {saving ? "Saving…" : "Save content"}</Button>
     {onArchive && <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive"><Archive /> Archive item</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Are you sure you want to archive this?</AlertDialogTitle><AlertDialogDescription>The item will leave the public website. Its history remains available for restoration.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={onArchive}>Archive</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
     {onRestore && <Button variant="outline" onClick={onRestore}><RotateCcw /> Restore as draft</Button>}
     {onDelete && <AlertDialog><AlertDialogTrigger asChild><Button variant="destructive"><Trash2 /> Permanently delete</Button></AlertDialogTrigger><AlertDialogContent><AlertDialogHeader><AlertDialogTitle>Permanently delete this archived item?</AlertDialogTitle><AlertDialogDescription>This Super Admin action cannot be undone. Use restore if the content may be needed later.</AlertDialogDescription></AlertDialogHeader><AlertDialogFooter><AlertDialogCancel>Cancel</AlertDialogCancel><AlertDialogAction onClick={onDelete}>Delete permanently</AlertDialogAction></AlertDialogFooter></AlertDialogContent></AlertDialog>}
