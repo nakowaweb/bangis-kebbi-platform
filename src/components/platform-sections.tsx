@@ -691,7 +691,7 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
               )}
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}
-                <h3 className="min-w-0 font-display text-base font-bold">{cardLink(<span className="hover:text-brand-cyan">{p.name}</span>, "hover:text-brand-cyan")}</h3>
+                <h3 className="min-w-0 font-display text-base font-bold">{cardLink(<span>{p.name}</span>, "hover:text-brand-cyan")}</h3>
                 {p.excerpt ? <p className="line-clamp-2 text-sm text-primary-foreground/75">{p.excerpt}</p> : null}
                 {cardLink(
                   <>{language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View Details"} <ArrowRight className="size-3.5 rtl:rotate-180" /></>,
