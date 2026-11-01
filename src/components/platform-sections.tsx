@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { normalizeExternalUrl } from "@/lib/url-utils";
 import { useSiteLayout, useSiteText } from "@/lib/use-site-layout";
 import {
   Pointer,
@@ -569,7 +570,7 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
   return <section className="border-b border-border bg-background py-5"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className={`grid gap-5 overflow-hidden rounded-lg border border-border bg-card shadow-sm ${image ? "md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-center" : "p-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"}`}>{image ? <SafeImage src={image} alt={imageAlt ?? ""} loading="lazy" width={720} height={720} className="aspect-[16/10] h-full max-h-52 w-full object-cover object-top md:aspect-square md:max-h-none" /> : <span className={`m-5 grid h-16 w-16 place-items-center rounded-full ${colors}`}><Icon className="h-8 w-8" /></span>}<div className={`min-w-0 ${image ? "px-5 md:px-0" : ""}`}><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-1 font-display text-xl font-bold">{title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p></div><Button variant="outline" className={`shrink-0 ${image ? "mx-5 mb-5 md:my-5 md:ml-0" : ""}`} asChild><Link to={href}>{action} <ArrowRight /></Link></Button></div></div></section>;
 }
 
-type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null };
+type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null; project_url?: string | null };
 export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | undefined; updates?: HubItem[] | undefined }) {
   const t = useSiteText();
   const { language } = useLanguage();
@@ -583,8 +584,8 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState(1);
   const seen = new Set<string>();
-  const newsCards = [...(updates ?? [])].sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? "")).map((item) => ({ kind: "update" as const, id: item.id, slug: item.slug, name: item.title, excerpt: item.summary, image: item.imageUrl, alt: item.image_alt ?? item.title }));
-  const projectCards = (items ?? []).map((item) => ({ kind: "project" as const, id: item.id, slug: item.slug, name: item.title, excerpt: null as string | null, image: item.imageUrl, alt: item.image_alt ?? item.title }));
+  const newsCards = [...(updates ?? [])].sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? "")).map((item) => ({ kind: "update" as const, id: item.id, slug: item.slug, name: item.title, excerpt: item.summary, image: item.imageUrl, alt: item.image_alt ?? item.title, url: "" as string }));
+  const projectCards = (items ?? []).map((item) => ({ kind: "project" as const, id: item.id, slug: item.slug, name: item.title, excerpt: null as string | null, image: item.imageUrl, alt: item.image_alt ?? item.title, url: normalizeExternalUrl(item.project_url) }));
   const projects = [...newsCards, ...projectCards].filter((c) => (seen.has(c.id) ? false : (seen.add(c.id), true)));
   const looped = projects.length >= 3;
   const track = looped ? [...projects.map((p) => ({ ...p, copy: 0 })), ...projects.map((p) => ({ ...p, copy: 1 }))] : projects.map((p) => ({ ...p, copy: 0 }));
@@ -675,16 +676,27 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
           {track.map((p, index) => {
             const clone = p.copy === 1;
             const linkProps = p.kind === "update" ? ({ to: "/blog/$slug", params: { slug: p.slug } } as const) : ({ to: "/projects/$slug", params: { slug: p.slug } } as const);
+            // Projects with a saved website link leave this site directly in a new tab; cards without
+            // one, and news updates, keep the internal detail page so the link never breaks.
+            const external = p.kind === "project" && p.url ? p.url : "";
+            const cardLink = (content: ReactNode, className: string, label?: string) => external
+              ? <a href={external} target="_blank" rel="noopener noreferrer" {...(label ? { "aria-label": label } : {})} className={className}>{content}</a>
+              : <Link {...linkProps} {...(label ? { "aria-label": label } : {})} className={className}>{content}</Link>;
             return (
             <article key={`${p.kind}-${p.id}-${p.copy}`} aria-hidden={clone || undefined} inert={clone || undefined} className="motion-card w-[82%] shrink-0 snap-start overflow-hidden rounded-xl border border-brand-cyan/20 bg-primary-foreground/5 transition-transform duration-300 lg:hover:-translate-y-1 motion-reduce:transition-none sm:w-[46%] lg:w-[32%]">
-              <Link {...linkProps} draggable={false} className="block aspect-[16/10] overflow-hidden bg-primary-foreground/10" aria-label={`${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`}>
-                {p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading="lazy" fetchPriority="low" decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>}
-              </Link>
+              {cardLink(
+                p.image ? <SafeImage src={p.image} alt={clone ? "" : p.alt} loading="lazy" fetchPriority="low" decoding="async" sizes="(min-width: 1024px) 400px, (min-width: 640px) 46vw, 82vw" width={960} height={600} draggable={false} className="hub-float size-full object-cover" /> : <span className="grid size-full place-items-center"><FolderKanban className="size-10 opacity-60" /></span>,
+                "block aspect-[16/10] overflow-hidden bg-primary-foreground/10",
+                `${language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View details"}: ${p.name}`,
+              )}
               <div className="flex flex-col gap-2 p-4">
                 {p.kind === "update" ? <span className="w-fit rounded-full border border-brand-cyan/60 px-2.5 py-0.5 text-xs font-semibold text-brand-cyan">{t("blog.updateLabel")}</span> : null}
-                <h3 className="min-w-0 font-display text-base font-bold"><Link {...linkProps} className="hover:text-brand-cyan">{p.name}</Link></h3>
+                <h3 className="min-w-0 font-display text-base font-bold">{cardLink(<span>{p.name}</span>, "hover:text-brand-cyan")}</h3>
                 {p.excerpt ? <p className="line-clamp-2 text-sm text-primary-foreground/75">{p.excerpt}</p> : null}
-                <Link {...linkProps} className="inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10">{language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View Details"} <ArrowRight className="size-3.5 rtl:rotate-180" /></Link>
+                {cardLink(
+                  <>{language === "ar" ? "عرض التفاصيل" : language === "ha" ? "Duba cikakkun bayanai" : "View Details"} <ArrowRight className="size-3.5 rtl:rotate-180" /></>,
+                  "inline-flex min-h-10 w-fit items-center gap-1 rounded-md border border-brand-cyan/60 px-4 text-sm font-semibold hover:bg-primary-foreground/10",
+                )}
               </div>
             </article>
             );
