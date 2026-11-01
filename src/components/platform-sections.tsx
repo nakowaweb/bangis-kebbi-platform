@@ -569,7 +569,7 @@ function CompactPlatform({ image, imageAlt, icon: Icon, eyebrow, title, descript
   return <section className="border-b border-border bg-background py-5"><div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8"><div className={`grid gap-5 overflow-hidden rounded-lg border border-border bg-card shadow-sm ${image ? "md:grid-cols-[180px_minmax(0,1fr)_auto] md:items-center" : "p-5 md:grid-cols-[auto_minmax(0,1fr)_auto] md:items-center"}`}>{image ? <SafeImage src={image} alt={imageAlt ?? ""} loading="lazy" width={720} height={720} className="aspect-[16/10] h-full max-h-52 w-full object-cover object-top md:aspect-square md:max-h-none" /> : <span className={`m-5 grid h-16 w-16 place-items-center rounded-full ${colors}`}><Icon className="h-8 w-8" /></span>}<div className={`min-w-0 ${image ? "px-5 md:px-0" : ""}`}><p className="text-xs font-bold uppercase text-primary">{eyebrow}</p><h2 className="mt-1 font-display text-xl font-bold">{title}</h2><p className="mt-2 max-w-3xl text-sm leading-6 text-muted-foreground">{description}</p></div><Button variant="outline" className={`shrink-0 ${image ? "mx-5 mb-5 md:my-5 md:ml-0" : ""}`} asChild><Link to={href}>{action} <ArrowRight /></Link></Button></div></div></section>;
 }
 
-type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null };
+type HubItem = { id: string; slug: string; title: string; summary: string | null; category?: string | null; payload: unknown; imageUrl?: string | null; image_alt?: string | null; published_at?: string | null; project_url?: string | null };
 export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | undefined; updates?: HubItem[] | undefined }) {
   const t = useSiteText();
   const { language } = useLanguage();
@@ -583,8 +583,8 @@ export function SelectedWorkSection({ items, updates }: { items?: HubItem[] | un
   const [page, setPage] = useState(0);
   const [pages, setPages] = useState(1);
   const seen = new Set<string>();
-  const newsCards = [...(updates ?? [])].sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? "")).map((item) => ({ kind: "update" as const, id: item.id, slug: item.slug, name: item.title, excerpt: item.summary, image: item.imageUrl, alt: item.image_alt ?? item.title }));
-  const projectCards = (items ?? []).map((item) => ({ kind: "project" as const, id: item.id, slug: item.slug, name: item.title, excerpt: null as string | null, image: item.imageUrl, alt: item.image_alt ?? item.title }));
+  const newsCards = [...(updates ?? [])].sort((a, b) => (b.published_at ?? "").localeCompare(a.published_at ?? "")).map((item) => ({ kind: "update" as const, id: item.id, slug: item.slug, name: item.title, excerpt: item.summary, image: item.imageUrl, alt: item.image_alt ?? item.title, url: "" as string }));
+  const projectCards = (items ?? []).map((item) => ({ kind: "project" as const, id: item.id, slug: item.slug, name: item.title, excerpt: null as string | null, image: item.imageUrl, alt: item.image_alt ?? item.title, url: normalizeExternalUrl(item.project_url) }));
   const projects = [...newsCards, ...projectCards].filter((c) => (seen.has(c.id) ? false : (seen.add(c.id), true)));
   const looped = projects.length >= 3;
   const track = looped ? [...projects.map((p) => ({ ...p, copy: 0 })), ...projects.map((p) => ({ ...p, copy: 1 }))] : projects.map((p) => ({ ...p, copy: 0 }));
