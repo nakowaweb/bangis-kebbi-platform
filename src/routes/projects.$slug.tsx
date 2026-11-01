@@ -1,3 +1,4 @@
+import { normalizeExternalUrl } from "@/lib/url-utils";
 import { EntryVideo } from "@/components/entry-video";
 import { SafeImage } from "@/components/safe-image";
 import { Link, createFileRoute, notFound } from "@tanstack/react-router";
@@ -83,7 +84,7 @@ function ProjectPage() {
           {project && project.tags.length > 0 && <div><dt className="text-xs font-bold uppercase text-primary">{labels.tools}</dt><dd className="text-sm text-muted-foreground">{project.tags.join(", ")}</dd></div>}
         </dl>
         {project?.project_url && (
-          <a href={project.project_url} rel="noopener noreferrer" target="_blank" className="mt-5 inline-block text-sm font-semibold text-primary hover:underline">{labels.visit}</a>
+          <a href={normalizeExternalUrl(project.project_url)} rel="noopener noreferrer" target="_blank" className="mt-5 inline-block text-sm font-semibold text-primary hover:underline">{labels.visit}</a>
         )}
         {!project?.project_url && <p className="mt-8 border-l-2 border-primary pl-4 text-sm text-muted-foreground">{labels.futureUrl}</p>}
         {gallery.length > 0 && (
