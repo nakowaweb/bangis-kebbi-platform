@@ -76,7 +76,7 @@ function currentSiteItems(): Item[] {
       { slug: "quick-nav-services", title: "Services", image: quickNavServices, imageAlt: "Professional gear and tools" },
       { slug: "quick-nav-umrah", title: "Umrah", image: quickNavUmrah, imageAlt: "Kaaba at Masjid al-Haram" },
       { slug: "quick-nav-projects", title: "Projects", image: quickNavProjects, imageAlt: "Laptop displaying web development" },
-      { slug: "quick-nav-blog", title: "Blog", image: quickNavBlog, imageAlt: "Article document with pen" },
+      { slug: "quick-nav-blog", title: "NEWS & UPDATE", image: quickNavBlog, imageAlt: "Article document with pen" },
       { slug: "quick-nav-foundation", title: "BK Foundation", image: quickNavFoundation, imageAlt: "Helping hands supporting people" },
       { slug: "quick-nav-community", title: "Verified Partners", image: quickNavCommunity, imageAlt: "Verified professional partners" },
       { slug: "quick-nav-cv", title: "CV", image: quickNavCv, imageAlt: "Professional résumé document" },
@@ -192,7 +192,7 @@ export function CurrentSiteImporter({ entries, media, onDone }: { entries: Entry
     <div className="mb-6 rounded-lg border border-border bg-card p-4">
       <strong className="text-sm">Bring the current website into the CMS</strong>
       <p className="mt-1 text-sm text-muted-foreground">
-        {missing.length} services, projects, blog posts, hero slides and community items are shown on the website but are not yet in the CMS. This copies them (with their images) so you can edit, replace or remove them here. Nothing already in the CMS is changed.
+        {missing.length} services, projects, NEWS &amp; UPDATE items, hero slides and community items are shown on the website but are not yet in the CMS. This copies them (with their images) so you can edit, replace or remove them here. Nothing already in the CMS is changed.
       </p>
       <Button className="mt-3" onClick={run} disabled={running}>{running ? `Importing ${progress}` : "Import current website content"}</Button>
     </div>
