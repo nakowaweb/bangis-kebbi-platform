@@ -1,4 +1,5 @@
 import { Link } from "@tanstack/react-router";
+import { normalizeExternalUrl } from "@/lib/url-utils";
 import { useSiteLayout, useSiteText } from "@/lib/use-site-layout";
 import {
   Pointer,
