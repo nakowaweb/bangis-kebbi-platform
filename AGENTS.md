@@ -20,3 +20,4 @@
 - Google sign-in returns via public `/auth/callback`; only validated same-origin paths restored.
 - Homepage layout, motion/speeds, EN/AR/HA overrides and service minis live in the `homepage/site-layout` content row (no schema change).
 - Super Admin Umrah corrections/deletions use V9 SECURITY DEFINER functions: confirmation, balance reversal, audit in one transaction.
+- Admin content-type display names use a shared browser-safe formatter; stored type keys and routes remain unchanged to preserve existing content relationships.

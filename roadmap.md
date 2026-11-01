@@ -1,6 +1,7 @@
 # Roadmap
 
 ## Done
+- Admin content-area options, filters, item lists, translation lists and activity displays use NEWS & UPDATE / News Category without changing stored types or routes; authenticated editing remains an owner check.
 - Final shared-header correction: dedicated logo space, compact two-row desktop navigation, phone dashboard/search/menu access, and visible EN/AR/HA controls without overflow.
 - NEWS & UPDATE naming, homepage megaphone accent, and Refund Policy links added to mobile navigation and the footer Platforms column.
 - Homepage carousel requests reduced to lazy, low-priority card images with only the first three unique upcoming images warmed after the section becomes visible.

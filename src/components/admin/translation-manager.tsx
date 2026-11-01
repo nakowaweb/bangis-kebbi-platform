@@ -3,6 +3,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { Languages, Save, Sparkles, Trash2 } from "lucide-react";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { adminContentLabel } from "@/lib/admin-content-labels";
 
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
@@ -60,7 +61,7 @@ export function AdminTranslationManager() {
 
   const byKey = useMemo(() => new Map(translations.map((row) => [`${row.content_entry_id}:${row.language}`, row])), [translations]);
   const visible = useMemo(
-    () => entries.filter((entry) => `${entry.title} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())),
+    () => entries.filter((entry) => `${entry.title} ${adminContentLabel(entry.content_type)} ${entry.content_type} ${entry.slug}`.toLowerCase().includes(query.toLowerCase())),
     [entries, query],
   );
   const selected = entries.find((entry) => entry.id === selectedId) ?? null;
@@ -131,7 +132,7 @@ export function AdminTranslationManager() {
               <button key={entry.id} type="button" onClick={() => openEntry(entry.id, language)} className={`grid w-full gap-2 border-b border-border p-4 text-left transition last:border-b-0 hover:bg-secondary/60 sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center ${selectedId === entry.id ? "bg-secondary/60" : ""}`}>
                 <span className="min-w-0">
                   <strong className="block truncate text-sm">{entry.title}</strong>
-                  <span className="mt-1 block text-xs text-muted-foreground">{entry.content_type.replaceAll("_", " ")} · {entry.slug}</span>
+                  <span className="mt-1 block text-xs text-muted-foreground">{adminContentLabel(entry.content_type)} · {entry.slug}</span>
                 </span>
                 <span className="flex items-center gap-2">
                   {row?.is_machine_generated && row.status !== "published" ? <Badge variant="outline"><Sparkles className="h-3 w-3" /> Draft</Badge> : null}
